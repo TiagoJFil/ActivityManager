@@ -19,7 +19,7 @@ class ExampleTest {
         assertEquals(3, result)
     }
 
-    @Test
+    @Test(expected = FileNotFoundException::class)
     @Throws(FileNotFoundException::class)
     fun do_not_ignore_unexpected_exceptions_on_tests() {
         // test methods can have a non-empty `throws` exception list.
