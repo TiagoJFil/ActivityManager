@@ -55,6 +55,19 @@ class TableTest{
         }
     }
 
+    @Test
+    fun test_UPDATE_operation(){
+        dataSource.connection.use {
+           it.createStatement().use{ statement ->
+               val updt = statement.executeUpdate(
+                       "update $studentTable set name = 'Joao' where course = 2 and number = 9999"
+               )
+               assertEquals(1, updt)
+           }
+        }
+    }
+
+
     @After
     fun deleteMockTables(){
 
