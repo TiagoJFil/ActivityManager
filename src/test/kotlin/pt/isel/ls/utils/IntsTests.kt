@@ -6,6 +6,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class IntsTests {
+
     @Test
     fun max_returns_greatest() {
         assertEquals(1, max(1, -2))
@@ -59,4 +60,7 @@ class IntsTests {
         val ix: Int = indexOfBinary(v, 1, 1, 2)
         assertTrue(ix < 0)
     }
+
+    
+
 }
