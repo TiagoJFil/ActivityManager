@@ -2,15 +2,12 @@ package pt.isel.ls.db
 
 import org.junit.After
 import org.junit.Before
-import org.junit.FixMethodOrder
 import org.junit.Test
-import org.junit.runners.MethodSorters
 import org.postgresql.ds.PGSimpleDataSource
 import kotlin.test.assertEquals
 
 private val jdbcDatabaseURL: String = System.getenv("JDBC_DATABASE_URL")
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class TableTest{
 
     private val dataSource = PGSimpleDataSource()
@@ -57,6 +54,19 @@ class TableTest{
             }
         }
     }
+
+    @Test
+    fun test_UPDATE_operation(){
+        dataSource.connection.use {
+           it.createStatement().use{ statement ->
+               val updt = statement.executeUpdate(
+                       "update $studentTable set name = 'Joao' where course = 2 and number = 9999"
+               )
+               assertEquals(1, updt)
+           }
+        }
+    }
+
 
     @Test
     fun test_DELETE_operation(){
