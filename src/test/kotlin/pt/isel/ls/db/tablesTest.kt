@@ -2,12 +2,15 @@ package pt.isel.ls.db
 
 import org.junit.After
 import org.junit.Before
+import org.junit.FixMethodOrder
 import org.junit.Test
+import org.junit.runners.MethodSorters
 import org.postgresql.ds.PGSimpleDataSource
 import kotlin.test.assertEquals
 
 private val jdbcDatabaseURL: String = System.getenv("JDBC_DATABASE_URL")
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class TableTest{
 
     private val dataSource = PGSimpleDataSource()
@@ -54,6 +57,23 @@ class TableTest{
             }
         }
     }
+
+    @Test
+    fun test_DELETE_operation(){
+        dataSource.connection.use {
+            it.createStatement().use { statement ->
+                statement.executeUpdate(
+                    """insert into $studentTable (course, number, name)values (2, 9, 'Tiago')"""
+                )
+                val rs = statement.executeUpdate(
+                    """delete from $studentTable where course = 2 and name = 'Tiago'"""
+                )
+
+                assertEquals(rs, 1 )
+            }
+        }
+    }
+
 
     @After
     fun deleteMockTables(){
