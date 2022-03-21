@@ -78,7 +78,6 @@ class TableTest{
                 val rs = statement.executeUpdate(
                     """delete from $studentTable where course = 2 and name = 'Tiago'"""
                 )
-
                 assertEquals(rs, 1 )
             }
         }
