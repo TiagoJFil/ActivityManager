@@ -1,4 +1,4 @@
-package pt.isel.ls
+package pt.isel.ls.utils
 
 import java.io.FileInputStream
 import java.io.FileNotFoundException
