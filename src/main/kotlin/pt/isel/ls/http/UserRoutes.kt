@@ -1,12 +1,14 @@
 package pt.isel.ls.http
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
+import org.http4k.core.Status.Companion.CREATED
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.path
@@ -21,6 +23,26 @@ class UserRoutes(
 ){
     @Serializable
     data class UserList(val users: List<User>)
+
+    fun createUser(request: Request): Response {
+        @Serializable data class Res(val authToken: String, val id: String)
+        @Serializable data class User(val name : String? = null, val email : String? = null)
+        try {
+            val bodyString = request.bodyString()
+            val body = Json.decodeFromString<User>(bodyString)
+
+            val res = userServices.createUser(body.name, body.email)
+
+            return Response(CREATED)
+                .header("content-type", "application/json")
+                .body(Json.encodeToString<Res>(Res(res.first, res.second)))
+
+        }catch (e : IllegalArgumentException){
+
+            throw  e
+        }
+    }
+
 
     private fun getUserDetails(request: Request): Response {
         val userId = request.path("id")
@@ -43,7 +65,7 @@ class UserRoutes(
 
     val handler: RoutingHttpHandler =
         routes(
-            "/"     bind  Method.POST to ::getUserDetails,
+            "/"     bind  Method.POST to ::createUser,
             "/"     bind Method.GET to ::getUsers,
             "/{id}" bind Method.GET to ::getUserDetails,
         )
