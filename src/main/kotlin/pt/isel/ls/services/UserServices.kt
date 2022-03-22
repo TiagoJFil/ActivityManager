@@ -14,6 +14,8 @@ class UserServices(val userRepository: UserRepository) {
         return user
     }
 
+    fun getUsers(): List<User> = userRepository.getUsers()
+
 }
 
 

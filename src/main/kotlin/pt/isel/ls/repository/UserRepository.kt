@@ -6,4 +6,6 @@ interface UserRepository{
 
     fun getUserByID(id: String): User?
 
+    fun getUsers(): List<User>
+
 }

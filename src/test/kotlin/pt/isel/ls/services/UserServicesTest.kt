@@ -36,4 +36,10 @@ class UserServicesTest {
     }
     /**/
 
+    @Test fun `get all the users list`(){
+        val userList = userServices.getUsers()
+        val testList = listOf(testUser)
+        assertEquals(testList, userList)
+    }
+
 }

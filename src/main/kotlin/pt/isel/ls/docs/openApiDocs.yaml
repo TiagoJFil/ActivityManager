@@ -1,0 +1,81 @@
+openapi: 3.0.0
+info:
+  description: "Api reference for Sports"
+  version: "0.0.0"
+  title: "Swagger Sports"
+  termsOfService: "http://swagger.io/terms/"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+tags:
+  - name: "Routes"
+    description: "Route management"
+  - name: "Sports and Activities"
+    description: "Sports and Activity management."
+  - name: "User"
+    description: "Operations about user"
+servers:
+  - url: http://localhost:9000/api
+    description: Local Server
+paths:
+  /users/{id}:
+    get:
+      tags:
+        - "User"
+      summary: "Get user by user ID"
+      description: "Gets a user by it's identifier"
+      operationId: "getUserByID"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "User's identifier. Use guestID for testing."
+          required: true
+          schema:
+            type: "string"
+          example: "guestID"
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "User not found"
+  /users:
+    get:
+      tags:
+        - "User"
+      summary: "Get all the users"
+      description: "Gets all the users"
+      operationId: "getUsers"
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersList"
+components:
+  schemas:
+    User:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          example: "guest"
+        email:
+          type: "string"
+          example: "guest@gmail.com"
+        id:
+          type: "string"
+          example: "guestID"
+    UsersList:
+      type: "object"
+      properties:
+        users:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/User"

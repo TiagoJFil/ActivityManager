@@ -44,5 +44,15 @@ class UserIntegrationTests {
         assertEquals(Status.NOT_FOUND, backend(baseRequest).status)
     }
 
+    //Get Users
+    @Test fun `get all users sucessfully`(){
+        val baseRequest = Request(Method.GET, "/api/users")
+        val response = backend(baseRequest).expectOK()
+        val userListFromBody = Json.decodeFromString< UserRoutes.UserList>(response.bodyString())
+
+        val userList = listOf(testUser)
+
+        assertEquals(userList, userListFromBody.users)
+    }
 }
 

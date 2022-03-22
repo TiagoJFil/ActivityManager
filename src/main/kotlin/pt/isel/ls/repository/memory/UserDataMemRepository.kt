@@ -10,4 +10,6 @@ class UserDataMemRepository(guest: User? = null): UserRepository {
 
     override fun getUserByID(id: String): User? = usersMap[id]
 
+    override fun getUsers(): List<User> = usersMap.values.toList()
+
 }
