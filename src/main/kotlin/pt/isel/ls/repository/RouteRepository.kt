@@ -2,7 +2,6 @@ package pt.isel.ls.repository
 
 import pt.isel.ls.entities.Route
 import pt.isel.ls.repository.memory.RouteID
-import pt.isel.ls.entities.RouteID
 
 interface RouteRepository {
 
@@ -10,5 +9,5 @@ interface RouteRepository {
 
     fun addRoute(newRoute: Route)
 
-    fun getRoute(id: RouteID) : Route ?
+    fun getRoute(id: RouteID) : Route?
 }

@@ -20,8 +20,9 @@ class UserIntegrationTests {
     )
 
     private val testDataMem = UserDataMemRepository(testUser)
-    private val userRoutes = UserRoutes(UserServices(testDataMem)).handler
-    private val backend = getApiRoutes(userRoutes)
+    private val userServices = UserServices(testDataMem)
+    private val backend = getApiRoutes(userRoutes(userServices))
+
 
     // Get User Details
     @Test fun `get a specific user sucessfully`() {

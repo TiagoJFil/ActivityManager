@@ -1,12 +1,12 @@
 package pt.isel.ls.entities
 
 import kotlinx.serialization.Serializable
-
-typealias RouteID = String
+import pt.isel.ls.repository.memory.RouteID
+import pt.isel.ls.repository.memory.UserID
 
 @Serializable
 data class Route(
-    val id: String,
+    val id: RouteID,
     val startLocation: String,
     val endLocation: String,
     val distance: Double,

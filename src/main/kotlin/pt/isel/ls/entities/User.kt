@@ -1,10 +1,7 @@
 package pt.isel.ls.entities
 
 import kotlinx.serialization.Serializable
-
-
-typealias UserToken = String
-typealias UserID = String
+import pt.isel.ls.repository.memory.UserID
 
 /**
  * Represents a user
