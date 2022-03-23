@@ -3,9 +3,6 @@ package pt.isel.ls.entities
 import kotlinx.serialization.Serializable
 
 
-internal typealias UserID = String
-internal typealias UserToken = String
-
 typealias UserToken = String
 typealias UserID = String
 

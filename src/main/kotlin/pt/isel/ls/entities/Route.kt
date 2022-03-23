@@ -2,7 +2,7 @@ package pt.isel.ls.entities
 
 import kotlinx.serialization.Serializable
 
-internal typealias RouteID = String
+typealias RouteID = String
 
 @Serializable
 data class Route(

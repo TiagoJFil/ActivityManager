@@ -10,7 +10,7 @@ class RouteServices(val repository: RouteRepository){
     fun getRoute(routeID: String?) : Route? {
         requireNotNull(routeID) {" id must not be null"}
         require(routeID.isNotBlank()) {" id field has no value "}
-        val route = getRoute(routeID)
+        val route = repository.getRoute(routeID)
         checkNotNull(route){" No route found by the id given"}
         return route
     }
