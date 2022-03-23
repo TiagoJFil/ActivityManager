@@ -5,6 +5,7 @@ import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 import pt.isel.ls.services.RouteServices
+import pt.isel.ls.services.SportsServices
 import pt.isel.ls.services.UserServices
 
 /**
@@ -23,10 +24,12 @@ fun getApiRoutes(routes: RoutingHttpHandler) = routes(
  * Gets all main routes from the api Services
  * @param userServices   the user [routes]
  * @param routeServices  the route [routes]
+ * @param sportsServices the sport [routes]
  */
-fun getRoutes(userServices: UserServices, routeServices: RouteServices) = routes(
+fun getAppRoutes(userServices: UserServices, routeServices: RouteServices, sportsServices: SportsServices) = routes(
     userRoutes(userServices),
-    routeRoutes(routeServices, userServices)
+    routeRoutes(routeServices, userServices),
+    sportsRoutes(sportsServices)
 )
 
 private val onErrorFilter = Filter { handler ->

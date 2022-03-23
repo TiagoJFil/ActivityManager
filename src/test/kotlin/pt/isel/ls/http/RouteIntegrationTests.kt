@@ -18,8 +18,6 @@ import pt.isel.ls.utils.guestUser
 import kotlin.test.assertEquals
 
 class RouteIntegrationTests {
-
-
     private val routePath = "/api/routes/"
     private val testDataMem = RouteDataMemRepository()
     private val userTestDataMem = UserDataMemRepository(guestUser)

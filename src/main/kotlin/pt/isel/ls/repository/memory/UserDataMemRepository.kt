@@ -1,15 +1,12 @@
 package pt.isel.ls.repository.memory
 
-
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.entities.User
 
-import pt.isel.ls.repository.db.UserID
-import pt.isel.ls.repository.db.UserToken
+typealias UserID = String
+typealias UserToken = String
 
 const val USER_TOKEN = "TOKEN"
-
-
 
 class UserDataMemRepository(guest: User): UserRepository {
 
@@ -27,8 +24,15 @@ class UserDataMemRepository(guest: User): UserRepository {
         tokenTable[userAuthToken] = userId
     }
 
+    /**
+     * @id user's unique identifier
+     * @return An [User] object or null if there is no user identified by [id]
+     */
     override fun getUserByID(id: UserID): User? = usersMap[id]
 
+    /**
+     * Gets all the users stored
+     */
     override fun getUsers(): List<User> = usersMap.values.toList()
 
     override fun getUserIDByToken(token: UserToken): UserID? = tokenTable[token]
