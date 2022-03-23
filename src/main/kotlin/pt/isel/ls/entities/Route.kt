@@ -12,3 +12,4 @@ data class Route(
     val distance: Double,
     val user: UserID
 )
+

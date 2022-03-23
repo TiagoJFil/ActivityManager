@@ -1,7 +1,6 @@
 package pt.isel.ls.services
 
 import org.junit.Test
-import pt.isel.ls.entities.Email
 import pt.isel.ls.entities.User
 import pt.isel.ls.repository.memory.UserDataMemRepository
 import kotlin.test.assertEquals
@@ -11,7 +10,7 @@ class UserServicesTest {
 
     private val testUser = User(
         name="test",
-        email= Email("test@gmail.com"),
+        email= User.Email("test@gmail.com"),
         id="1234567"
     )
     private val userServices = UserServices(UserDataMemRepository(testUser))
@@ -44,20 +43,20 @@ class UserServicesTest {
         val user = userServices.getUserByID(sut.second)
 
         assertEquals("abc",user.name )
-        assertEquals(Email("abc@gmail.com"),user.email)
+        assertEquals(User.Email("abc@gmail.com"),user.email)
     }
 
     @Test
     fun `cant create a user without a valid email`(){
         assertFailsWith<IllegalArgumentException> {
-            val sut = userServices.createUser("abc", "abc@gm@a.il.com")
+            userServices.createUser("abc", "abc@gm@a.il.com")
         }
     }
 
     @Test
     fun `cant create a user without an email`(){
         assertFailsWith<IllegalArgumentException> {
-            val sut = userServices.createUser("abc", null)
+            userServices.createUser("abc", null)
         }
     }
 
@@ -71,7 +70,7 @@ class UserServicesTest {
     @Test
     fun `cant create a user without a name`(){
         assertFailsWith<IllegalArgumentException> {
-            val sut = userServices.createUser(null, "abc@gm@a.il.com")
+            userServices.createUser(null, "abc@gm@a.il.com")
         }
     }
 

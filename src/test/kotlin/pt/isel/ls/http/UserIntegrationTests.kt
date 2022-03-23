@@ -4,31 +4,24 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.http4k.core.Method
 import org.http4k.core.Request
-import org.http4k.core.Response
-import org.http4k.core.Status
 import org.junit.Test
-import pt.isel.ls.entities.Email
 import pt.isel.ls.repository.memory.UserDataMemRepository
 import pt.isel.ls.entities.User
 import pt.isel.ls.http.utils.*
 import pt.isel.ls.services.UserServices
-import pt.isel.ls.utils.guestUser
 import kotlin.test.assertEquals
 
 class UserIntegrationTests {
     private val userPath = "/api/users/"
     private val testUser = User(
         name="test",
-        email= Email("test@gmail.com"),
+        email= User.Email("test@gmail.com"),
         id="1234567"
     )
 
     private val testDataMem = UserDataMemRepository(testUser)
-    private val userRoutes = UserRoutes(UserServices(testDataMem))
-    private val backend = getApiRoutes(userRoutes.handler)
-
-
-
+    private val userRoutes = UserRoutes(UserServices(testDataMem)).handler
+    private val backend = getApiRoutes(userRoutes)
 
     // Get User Details
     @Test fun `get a specific user sucessfully`() {
@@ -50,7 +43,7 @@ class UserIntegrationTests {
         val baseRequest = Request(Method.POST, userPath)
         val request = baseRequest.body("""{ "name": "abc", "email": "abc@gmail.com" }""")
 
-        val response = backend(request).expectCreated()
+        backend(request).expectCreated()
     }
     @Test fun `try to create a user without the name`(){
         val baseRequest = Request(Method.POST, userPath)
@@ -83,7 +76,7 @@ class UserIntegrationTests {
         val baseRequest = Request(Method.POST, userPath)
         val request = baseRequest.body("""{ "name": "test", "email": "test@gm@ail.com"}""")
 
-        val res =backend(request).expectBadRequest().expectMessage(" Email has the wrong format.")
+        backend(request).expectBadRequest().expectMessage("Email has the wrong format.")
     }
 
     @Test fun `create a user with a blank name parameter`(){
@@ -102,14 +95,12 @@ class UserIntegrationTests {
 
 
     //Get Users
-    @Test fun `get all users sucessfully`(){
+    @Test fun `get a list without creating gives a list with the test user`(){
         val baseRequest = Request(Method.GET, userPath)
         val response = backend(baseRequest).expectOK()
         val userListFromBody = Json.decodeFromString< UserRoutes.UserList>(response.bodyString())
 
-        val userList = listOf(testUser)
-
-        assertEquals(userList, userListFromBody.users)
+        assertEquals(listOf(testUser), userListFromBody.users)
     }
 }
 

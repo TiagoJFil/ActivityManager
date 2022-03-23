@@ -77,7 +77,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResUserCreation"
+                $ref: "#/components/schemas/ResponseUserCreation"
         "400":
           description: "A parameter is missing or is incorrect"
   /routes/{id}:
@@ -110,38 +110,38 @@ paths:
     get:
       tags:
         - "Routes"
-      summary: ""
-      description: ""
-      operationId: ""
+      summary: "Get all routes"
+      description: "Gets all the routes."
+      operationId: "getRoutes"
       responses:
         "200":
-          description: "successful operation"
+          description: "sucessfull operation"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/RouteList"
-    post:
-      tags:
-        - "Routes"
-      summary: "Add a new route"
+  post:
+    tags:
+      - "Routes"
+    summary: "Add a new route"
+    description: ""
+    operationId: ""
+    requestBody:
       description: ""
-      operationId: ""
-      requestBody:
-        description: ""
-        required: true
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RouteCreationBody"
+    responses:
+      "201":
+        description: "A route has been sucessfully created!"
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RouteCreationBody"
-      responses:
-        "201":
-          description: "A route has been sucessfully created!"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResRouteCreation"
-        "400":
-          description: "A parameter is missing or is incorrect"
+              $ref: "#/components/schemas/ResRouteCreation"
+      "400":
+        description: "A parameter is missing or is incorrect"
 components:
   schemas:
     User:
@@ -156,7 +156,7 @@ components:
         id:
           type: "string"
           example: "guestID"
-    ResUserCreation:
+    ResponseUserCreation:
       type: "object"
       properties:
         authToken:
@@ -183,10 +183,11 @@ components:
         id:
           type: "string"
         startLocation:
-          type: "integer"
-          format: "int64"
+          type: "string"
+          example: "Lisboa"
         endLocation:
           type: "string"
+          example: "Fátima"
         distance:
           type: "number"
         user:
@@ -198,4 +199,3 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/Route"
-
