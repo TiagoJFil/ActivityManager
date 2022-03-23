@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.0.1
 info:
   description: "Api reference for Sports"
   version: "0.0.0"
@@ -80,6 +80,68 @@ paths:
                 $ref: "#/components/schemas/ResUserCreation"
         "400":
           description: "A parameter is missing or is incorrect"
+  /routes/{id}:
+    get:
+      tags:
+        - "Routes"
+      summary: "Get route by route ID"
+      description: "Gets a route by it's identifier"
+      operationId: "getRouteByID"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "User's identifier."
+          required: true
+          schema:
+            type: "string"
+          example: "10"
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Route not found"
+  /routes:
+    get:
+      tags:
+        - "Routes"
+      summary: ""
+      description: ""
+      operationId: ""
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RouteList"
+    post:
+      tags:
+        - "Routes"
+      summary: "Add a new route"
+      description: ""
+      operationId: ""
+      requestBody:
+        description: ""
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RouteCreationBody"
+      responses:
+        "201":
+          description: "A route has been sucessfully created!"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResRouteCreation"
+        "400":
+          description: "A parameter is missing or is incorrect"
 components:
   schemas:
     User:
@@ -118,8 +180,22 @@ components:
     Route:
       type: "object"
       properties:
+        id:
+          type: "string"
         startLocation:
           type: "integer"
           format: "int64"
         endLocation:
           type: "string"
+        distance:
+          type: "number"
+        user:
+          type: "string"
+    RouteList:
+      type: "object"
+      properties:
+        routes:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Route"
+

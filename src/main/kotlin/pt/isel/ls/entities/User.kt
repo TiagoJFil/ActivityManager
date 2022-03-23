@@ -1,11 +1,13 @@
 package pt.isel.ls.entities
 
 import kotlinx.serialization.Serializable
-import pt.isel.ls.repository.memory.UserId
 
+
+internal typealias UserID = String
+internal typealias UserToken = String
 
 @Serializable
-data class User(val name: String, val email: Email, val id: UserId)
+data class User(val name: String, val email: Email, val id: UserID)
 
 @Serializable
 data class Email(val value: String){

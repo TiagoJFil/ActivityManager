@@ -1,23 +1,22 @@
 package pt.isel.ls.services
 
 
-import kotlinx.serialization.Serializable
+import org.http4k.core.Status
 import pt.isel.ls.entities.User
 import pt.isel.ls.repository.UserRepository
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import pt.isel.ls.entities.Email
-import pt.isel.ls.repository.memory.UserId
-import pt.isel.ls.repository.memory.UserToken
+import pt.isel.ls.entities.UserID
+import pt.isel.ls.entities.UserToken
+
 
 
 class UserServices(val userRepository: UserRepository) {
 
     /**
      * Verifies the parameters received and creates calls the function [UserRepository] to create a [User]
-     * @return a pair of [Pair] with a [UserToken] and a [UserId]
+     * @return a pair of [Pair] with a [UserToken] and a [UserID]
      */
-    fun createUser(name : String?, email: String?) : Pair<UserToken,UserId>{
+    fun createUser(name : String?, email: String?) : Pair<UserToken,UserID>{
         requireNotNull(name) {" Missing name."}
         requireNotNull(email) {" Missing email."}
         val userId = generateRandomId()
@@ -32,7 +31,7 @@ class UserServices(val userRepository: UserRepository) {
         return Pair(userAuthToken,userId)
     }
 
-    fun getUserByID(id: UserId?): User {
+    fun getUserByID(id: UserID?): User {
         requireNotNull(id){" Parameter id is required. "}
         val user: User? = userRepository.getUserByID(id)
         checkNotNull(user){" User does not exist."}
@@ -43,5 +42,6 @@ class UserServices(val userRepository: UserRepository) {
     fun getUsers(): List<User> = userRepository.getUsers()
 
 }
+
 
 

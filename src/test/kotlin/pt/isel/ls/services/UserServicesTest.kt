@@ -62,6 +62,13 @@ class UserServicesTest {
     }
 
     @Test
+    fun `cant create a user with an empty string`(){
+        assertFailsWith<IllegalArgumentException> {
+            val sut = userServices.createUser("", null)
+        }
+    }
+
+    @Test
     fun `cant create a user without a name`(){
         assertFailsWith<IllegalArgumentException> {
             val sut = userServices.createUser(null, "abc@gm@a.il.com")
