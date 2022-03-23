@@ -51,6 +51,7 @@ class UserIntegrationTests {
 
         backend(request).expectBadRequest().expectMessage(" Missing name.")
     }
+
     @Test fun `try to create a user without the email`(){
         val baseRequest = Request(Method.POST, userPath)
         val request = baseRequest.body("""{  "name": "abc" }""")
@@ -64,6 +65,7 @@ class UserIntegrationTests {
 
         backend(request).expectBadRequest().expectMessage(" Email already registered.")
     }
+
     @Test fun `create a user with an extra parameter`(){
         val baseRequest = Request(Method.POST, userPath)
         val request = baseRequest.body("""{ "name": "test", "email": "test@gmail.com" , "teste" : "teste" }""")
@@ -75,6 +77,20 @@ class UserIntegrationTests {
         val request = baseRequest.body("""{ "name": "test", "email": "test@gm@ail.com"}""")
 
         backend(request).expectBadRequest().expectMessage("Email has the wrong format.")
+    }
+
+    @Test fun `create a user with a blank name parameter`(){
+        val baseRequest = Request(Method.POST, userPath)
+        val request = baseRequest.body("""{ "name": "", "email": "test@gmail.com" }""")
+
+        backend(request).expectBadRequest().expectMessage(" Name field has no value")
+    }
+
+    @Test fun `create a user with a blank email parameter`(){
+        val baseRequest = Request(Method.POST, userPath)
+        val request = baseRequest.body("""{ "name": "abdc", "email": "  " }""")
+
+        backend(request).expectBadRequest().expectMessage(" Email field has no value")
     }
 
 

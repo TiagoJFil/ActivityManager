@@ -10,6 +10,7 @@ import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
+import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.entities.Route
 import pt.isel.ls.repository.memory.RouteDataMemRepository
@@ -23,16 +24,27 @@ class RouteRoutes(
     val routeServices: RouteServices,
     val userServices: UserServices
 ){
-
     @Serializable data class RouteList(val routes: List<Route>)
+
     private fun getRoutes(request: Request): Response{
         val routes = routeServices.getRoutes()
         val bodyString = Json.encodeToString(RouteList(routes))
         return Response(Status.OK).body(bodyString)
     }
 
+    /**
+     * Gets a route identified by the given [RouteID] from the query "id"
+     */
     private fun getRoute(request: Request): Response{
-        TODO()
+        val routeID = request.path ("id")
+
+        val route = routeServices.getRoute(routeID)
+
+        val routeJson = Json.encodeToString(route)
+
+        return Response(Status.OK)
+            .header("content-type", "application/json")
+            .body(routeJson)
     }
 
     @Serializable

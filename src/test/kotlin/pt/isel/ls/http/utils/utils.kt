@@ -25,3 +25,7 @@ fun Response.expectMessage(msg: String) : Response {
     assertEquals(msg,this.bodyString())
     return this
 }
+
+fun Response.expectAuthenticated() : Response {
+    TODO()
+}

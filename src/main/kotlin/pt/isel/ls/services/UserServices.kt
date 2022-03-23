@@ -12,10 +12,13 @@ class UserServices(val repository: UserRepository) {
     /**
      * Verifies the parameters received and creates calls the function [UserRepository] to create a [User]
      * @return a pair of [Pair] with a [UserToken] and a [UserID]
+     * @throws IllegalArgumentException
      */
     fun createUser(name : String?, email: String?) : Pair<UserToken,UserID>{
         requireNotNull(name) {" Missing name."}
         requireNotNull(email) {" Missing email."}
+        require(email.isNotBlank()) {" Email field has no value"}
+        require(name.isNotBlank()) {" Name field has no value"}
         val userId = generateRandomId()
         val userAuthToken = generateUUId()
 
@@ -28,6 +31,9 @@ class UserServices(val repository: UserRepository) {
         return Pair(userAuthToken,userId)
     }
 
+    /**
+     *
+     */
     fun getUserByID(id: UserID?): User {
         requireNotNull(id){" Parameter id is required. "}
         val user: User? = repository.getUserByID(id)

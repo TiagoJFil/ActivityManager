@@ -13,7 +13,7 @@ class RouteDataMemRepository: RouteRepository {
         routesMap[newRoute.id] = newRoute
     }
 
-
+    override fun getRoute(id: RouteID): Route? = routesMap[id]
 }
 
 typealias RouteID = String

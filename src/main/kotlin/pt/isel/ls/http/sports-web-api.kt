@@ -19,6 +19,11 @@ fun getApiRoutes(routes: RoutingHttpHandler) = routes(
 
 )
 
+/**
+ * Gets all main routes from the api Services
+ * @param userServices   the user [routes]
+ * @param routeServices  the route [routes]
+ */
 fun getRoutes(userServices: UserServices, routeServices: RouteServices) = routes(
     userRoutes(userServices),
     routeRoutes(routeServices, userServices)
