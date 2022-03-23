@@ -29,7 +29,7 @@ fun getApiRoutes(routes: RoutingHttpHandler) = routes(
 fun getAppRoutes(userServices: UserServices, routeServices: RouteServices, sportsServices: SportsServices) = routes(
     userRoutes(userServices),
     routeRoutes(routeServices, userServices),
-    sportsRoutes(sportsServices)
+    sportsRoutes(sportsServices,userServices)
 )
 
 private val onErrorFilter = Filter { handler ->

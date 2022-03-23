@@ -25,7 +25,6 @@ class RouteIntegrationTests {
     val backend = getApiRoutes(routeRoutes)
 
     @Test fun `get routes without creating returns empty list`(){
-
         val baseRequest = Request(Method.GET, routePath)
 
         val response = backend(baseRequest).expectOK()

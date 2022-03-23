@@ -1,8 +1,9 @@
 package pt.isel.ls.entities
 
 import kotlinx.serialization.Serializable
+import pt.isel.ls.repository.db.RouteID
 import pt.isel.ls.repository.memory.UserID
-import pt.isel.ls.repository.memory.RouteID
+
 
 @Serializable
 data class Route(
