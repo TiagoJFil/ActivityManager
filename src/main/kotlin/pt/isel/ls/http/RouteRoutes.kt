@@ -8,15 +8,13 @@ import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
-import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.entities.Route
-import pt.isel.ls.repository.memory.RouteDataMemRepository
-import pt.isel.ls.repository.memory.RouteID
+import pt.isel.ls.repository.db.RouteID
+import pt.isel.ls.repository.db.UserID
 import pt.isel.ls.repository.memory.USER_TOKEN
-import pt.isel.ls.repository.memory.UserID
 import pt.isel.ls.services.RouteServices
 import pt.isel.ls.services.UserServices
 

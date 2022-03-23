@@ -1,6 +1,8 @@
 package pt.isel.ls.http
 
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.http4k.core.Method
 import org.http4k.core.Request
@@ -12,6 +14,9 @@ import pt.isel.ls.services.UserServices
 import kotlin.test.assertEquals
 
 class UserIntegrationTests {
+
+    @Serializable
+    private data class UserTester(val name : String? = null, val email : String? = null)
     private val userPath = "/api/users/"
     private val testUser = User(
         name="test",
@@ -41,28 +46,38 @@ class UserIntegrationTests {
     //USER CREATE
     @Test fun `create a correct user`(){
         val baseRequest = Request(Method.POST, userPath)
-        val request = baseRequest.body("""{ "name": "abc", "email": "abc@gmail.com" }""")
+        val user = UserTester("abc","abc@gmail.com")
+        val body = Json.encodeToString(user)
+
+        val request = baseRequest.body(body)
 
         backend(request).expectCreated()
     }
     @Test fun `try to create a user without the name`(){
         val baseRequest = Request(Method.POST, userPath)
-        val request = baseRequest.body("""{ "email": "abc@gmail.com" }""")
+        val user = UserTester(null,"abc@gmail.com")
+        val body = Json.encodeToString(user)
+
+        val request = baseRequest.body(body)
 
         backend(request).expectBadRequest().expectMessage(" Missing name.")
     }
 
     @Test fun `try to create a user without the email`(){
         val baseRequest = Request(Method.POST, userPath)
-        val request = baseRequest.body("""{  "name": "abc" }""")
+        val user = UserTester("abc")
+        val body = Json.encodeToString(user)
 
+        val request = baseRequest.body(body)
         backend(request).expectBadRequest().expectMessage(" Missing email.")
     }
 
     @Test fun `create a user with a repeated email`(){
         val baseRequest = Request(Method.POST, userPath)
-        val request = baseRequest.body("""{ "name": "test", "email": "test@gmail.com" }""")
+        val user = UserTester("test","test@gmail.com")
+        val body = Json.encodeToString(user)
 
+        val request = baseRequest.body(body)
         backend(request).expectBadRequest().expectMessage(" Email already registered.")
     }
 
@@ -74,22 +89,28 @@ class UserIntegrationTests {
     }
     @Test fun `create a user with a wrong email`(){
         val baseRequest = Request(Method.POST, userPath)
-        val request = baseRequest.body("""{ "name": "test", "email": "test@gm@ail.com"}""")
+        val user = UserTester("test","abc@gma@il.com")
+        val body = Json.encodeToString(user)
 
+        val request = baseRequest.body(body)
         backend(request).expectBadRequest().expectMessage("Email has the wrong format.")
     }
 
     @Test fun `create a user with a blank name parameter`(){
         val baseRequest = Request(Method.POST, userPath)
-        val request = baseRequest.body("""{ "name": "", "email": "test@gmail.com" }""")
+        val user = UserTester("","abc@gmail.com")
+        val body = Json.encodeToString(user)
 
+        val request = baseRequest.body(body)
         backend(request).expectBadRequest().expectMessage(" Name field has no value")
     }
 
     @Test fun `create a user with a blank email parameter`(){
         val baseRequest = Request(Method.POST, userPath)
-        val request = baseRequest.body("""{ "name": "abdc", "email": "  " }""")
+        val user = UserTester("abcd","   ")
+        val body = Json.encodeToString(user)
 
+        val request = baseRequest.body(body)
         backend(request).expectBadRequest().expectMessage(" Email field has no value")
     }
 

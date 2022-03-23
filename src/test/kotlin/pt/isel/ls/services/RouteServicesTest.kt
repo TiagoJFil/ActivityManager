@@ -4,8 +4,8 @@ import org.eclipse.jetty.server.Authentication
 import org.junit.Test
 import pt.isel.ls.entities.Route
 import pt.isel.ls.http.routeRoutes
+import pt.isel.ls.repository.db.RouteID
 import pt.isel.ls.repository.memory.RouteDataMemRepository
-import pt.isel.ls.repository.memory.RouteID
 import pt.isel.ls.repository.memory.UserDataMemRepository
 import pt.isel.ls.utils.guestUser
 import kotlin.test.assertEquals
@@ -37,16 +37,17 @@ class RouteServicesTest {
     fun `get a route without an argument throws error `(){
         assertFailsWith<IllegalArgumentException> { routeServices.getRoute(null) }
     }
-/*
+
     @Test
     fun `create a route`(){
         val routeID: RouteID =
             routeServices.createRoute(userId = guestUser.id, startLocation = "a", endLocation = "b", distance = 10.0)
-        val routeCreated = routeServices.getRouteByID(routeID)
+        println(routeID)
+        val routeCreated = routeServices.getRoute(routeID)
         val routeExpected = Route(id = routeID, user = guestUser.id, startLocation = "a", endLocation = "b", distance = 10.0)
         assertEquals(routeExpected,routeCreated)
     }
-*/
+
     @Test
     fun `create a route with an invalid start location`(){
         assertFailsWith<IllegalArgumentException> {

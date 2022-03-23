@@ -4,8 +4,9 @@ package pt.isel.ls.services
 
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.entities.User
-import pt.isel.ls.entities.UserID
-import pt.isel.ls.entities.UserToken
+
+import pt.isel.ls.repository.db.UserID
+import pt.isel.ls.repository.db.UserToken
 
 class UserServices(val repository: UserRepository) {
 

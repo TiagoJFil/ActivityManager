@@ -2,8 +2,9 @@ package pt.isel.ls.services
 
 import pt.isel.ls.entities.Route
 import pt.isel.ls.repository.RouteRepository
-import pt.isel.ls.repository.memory.RouteID
-import pt.isel.ls.repository.memory.UserID
+import pt.isel.ls.repository.db.RouteID
+import pt.isel.ls.repository.db.UserID
+
 
 const val START_LOCATION_REQUIRED = "Start location required"
 const val END_LOCATION_REQUIRED = "End location required"
@@ -20,7 +21,7 @@ class RouteServices(val repository: RouteRepository){
         requireNotNull(distance) { DISTANCE_REQUIRED}
 
         val routeId = generateRandomId()
-        val route = Route(userId, startLocation, endLocation, distance, routeId)
+        val route = Route(routeId, startLocation, endLocation, distance, userId)
 
         repository.addRoute(route)
 

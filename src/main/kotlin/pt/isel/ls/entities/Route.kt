@@ -1,8 +1,8 @@
 package pt.isel.ls.entities
 
 import kotlinx.serialization.Serializable
+import pt.isel.ls.repository.db.UserID
 
-typealias RouteID = String
 
 @Serializable
 data class Route(
