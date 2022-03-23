@@ -1,27 +1,28 @@
 package pt.isel.ls.http
 
-
-
 import org.http4k.core.*
-import org.http4k.core.Status.Companion.MOVED_PERMANENTLY
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
+import pt.isel.ls.services.RouteServices
+import pt.isel.ls.services.UserServices
 
-private val routeRoutes = routes(
-    "/" bind Method.POST to {Response(MOVED_PERMANENTLY)},
-    "/" bind Method.GET to {Response(MOVED_PERMANENTLY)},
-    "/{id}" bind Method.GET to {Response(MOVED_PERMANENTLY)},
+/**
+ *
+ * Binds [routes] to "/api"
+ *
+ * @param routes API main routes as default, parameter used to mock routes in testing
+ */
+fun getApiRoutes(routes: RoutingHttpHandler) = routes(
+
+    "/api" bind routes.withFilter(onErrorFilter)
+
 )
 
-private fun getRoutes(userRoutes: RoutingHttpHandler) = routes(
-    "/users" bind userRoutes,
-    "/routes" bind routeRoutes,
+fun getRoutes(userServices: UserServices, routeServices: RouteServices) = routes(
+    userRoutes(userServices),
+    routeRoutes(routeServices)
 )
-
-fun getApiRoutes(
-    userRoutes: RoutingHttpHandler=userRoutes()
-) = routes("/api" bind getRoutes(userRoutes)).withFilter(onErrorFilter)
 
 private val onErrorFilter = Filter { handler ->
     val handlerWrapper: HttpHandler = { request ->

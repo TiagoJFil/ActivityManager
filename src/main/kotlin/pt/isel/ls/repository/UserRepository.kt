@@ -1,18 +1,20 @@
 package pt.isel.ls.repository
 
-import pt.isel.ls.entities.Email
 import pt.isel.ls.entities.User
-import pt.isel.ls.repository.memory.UserId
-import pt.isel.ls.repository.memory.UserToken
+import pt.isel.ls.entities.UserID
+import pt.isel.ls.entities.UserToken
 
 interface UserRepository{
 
     //fun hasUser(id: UserId): Boolean
 
     fun getUserByID(id: String): User?
-    fun addUser(newUser: User, userId: UserId, userAuthToken: UserToken)
+
+    fun addUser(newUser: User, userId: UserID, userAuthToken: UserToken)
 
     fun getUsers(): List<User>
 
-    fun userHasRepeatedEmail(userId: UserId, email: Email): Boolean
+    fun userHasRepeatedEmail(userId: UserID, email: User.Email): Boolean
+
+
 }

@@ -14,17 +14,13 @@ import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.entities.User
-import pt.isel.ls.repository.memory.UserDataMemRepository
 import pt.isel.ls.services.UserServices
-import pt.isel.ls.utils.guestUser
+
 
 class UserRoutes(
-    val userServices: UserServices = UserServices(UserDataMemRepository(guestUser))
+    val userServices: UserServices
 ){
-    @Serializable
-    data class UserList(val users: List<User>)
-
-    fun createUser(request: Request): Response {
+    private fun createUser(request: Request): Response {
         @Serializable data class Res(val authToken: String, val id: String)
         @Serializable data class User(val name : String? = null, val email : String? = null)
         try {
@@ -35,10 +31,9 @@ class UserRoutes(
 
             return Response(CREATED)
                 .header("content-type", "application/json")
-                .body(Json.encodeToString<Res>(Res(res.first, res.second)))
+                .body(Json.encodeToString(Res(res.first, res.second)))
 
         }catch (e : IllegalArgumentException){
-
             throw  e
         }
     }
@@ -54,6 +49,7 @@ class UserRoutes(
 
     }
 
+    @Serializable data class UserList(val users: List<User>)
     private fun getUsers(request: Request): Response{
         val users = userServices.getUsers()
         val usersJsonString = Json.encodeToString(UserList(users))
@@ -64,7 +60,7 @@ class UserRoutes(
     }
 
     val handler: RoutingHttpHandler =
-        routes(
+        "/users" bind routes(
             "/"     bind  Method.POST to ::createUser,
             "/"     bind Method.GET to ::getUsers,
             "/{id}" bind Method.GET to ::getUserDetails,
@@ -72,7 +68,7 @@ class UserRoutes(
 }
 
 
-fun userRoutes() = UserRoutes().handler
+fun userRoutes(userServices: UserServices) = UserRoutes(userServices).handler
 
 
 
