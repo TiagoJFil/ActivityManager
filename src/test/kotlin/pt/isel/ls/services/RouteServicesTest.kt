@@ -1,14 +1,21 @@
 package pt.isel.ls.services
 
+import org.eclipse.jetty.server.Authentication
 import org.junit.Test
+import pt.isel.ls.entities.Route
 import pt.isel.ls.http.routeRoutes
 import pt.isel.ls.repository.memory.RouteDataMemRepository
+import pt.isel.ls.repository.memory.RouteID
+import pt.isel.ls.repository.memory.UserDataMemRepository
+import pt.isel.ls.utils.guestUser
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class RouteServicesTest {
 
 
     val routeServices = RouteServices(RouteDataMemRepository())
+    val userMem = UserDataMemRepository(guestUser)
 
 
     @Test
@@ -17,5 +24,34 @@ class RouteServicesTest {
         assertEquals(emptyList(), routeServices.getRoutes())
 
     }
+/*
+    @Test
+    fun `create a route`(){
+        val routeID: RouteID =
+            routeServices.createRoute(userId = guestUser.id, startLocation = "a", endLocation = "b", distance = 10.0)
+        val routeCreated = routeServices.getRouteByID(routeID)
+        val routeExpected = Route(id = routeID, user = guestUser.id, startLocation = "a", endLocation = "b", distance = 10.0)
+        assertEquals(routeExpected,routeCreated)
+    }
+*/
+    @Test
+    fun `create a route with an invalid start location`(){
+        assertFailsWith<IllegalArgumentException> {
+            routeServices.createRoute(userId = guestUser.id, startLocation = " ", endLocation = "b", distance = 10.0)
+        }
+    }
 
+    @Test
+    fun `create a route with an invalid end location`(){
+        assertFailsWith<IllegalArgumentException> {
+            routeServices.createRoute(userId = guestUser.id, startLocation = "a", endLocation = null, distance = 10.0)
+        }
+    }
+
+    @Test
+    fun `create a route with an invalid distance`(){
+        assertFailsWith<IllegalArgumentException> {
+            routeServices.createRoute(userId = guestUser.id, startLocation = "a", endLocation = "b", distance = null)
+        }
+    }
 }

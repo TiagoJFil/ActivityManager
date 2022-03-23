@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.0.1
 info:
   description: "Api reference for Sports"
   version: "0.0.0"
@@ -80,20 +80,70 @@ paths:
                 $ref: "#/components/schemas/ResponseUserCreation"
         "400":
           description: "A parameter is missing or is incorrect"
-    /routes:
-      get:
-        tags:
-          - "Routes"
-        summary: "Get all routes"
-        description: "Gets all the routes."
-        operationId: "getRoutes"
-        responses:
-          "200":
-            description: "sucessfull operation"
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/RouteList"
+  /routes/{id}:
+    get:
+      tags:
+        - "Routes"
+      summary: "Get route by route ID"
+      description: "Gets a route by it's identifier"
+      operationId: "getRouteByID"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "User's identifier."
+          required: true
+          schema:
+            type: "string"
+          example: "10"
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Route not found"
+  /routes:
+    get:
+      tags:
+        - "Routes"
+      summary: "Get all routes"
+      description: "Gets all the routes."
+      operationId: "getRoutes"
+      responses:
+        "200":
+          description: "sucessfull operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RouteList"
+    post:
+      tags:
+        - "Routes"
+      summary: "Add a new route"
+      description: "Adds a route"
+      operationId: "addRoute"
+      requestBody:
+        description: "start location, end location and distance to attribute to a route"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RouteCreationBody"
+      responses:
+        "201":
+          description: "A route has been sucessfully created!"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResRouteCreation"
+        "400":
+          description: "A parameter is missing or is incorrect"
+        "401":
+          description: "Unauthenticated"
 components:
   schemas:
     User:
@@ -132,19 +182,40 @@ components:
     Route:
       type: "object"
       properties:
+        id:
+          type: "string"
         startLocation:
           type: "string"
           example: "Lisboa"
         endLocation:
           type: "string"
           example: "Fátima"
-        duration:
+        distance:
           type: "number"
-          format: "double"
+        user:
+          type: "string"
     RouteList:
       type: "object"
       properties:
         routes:
           type: "array"
           items:
-            $ref: "#components/schema/Route"
+            $ref: "#/components/schemas/Route"
+    RouteCreationBody:
+      type: "object"
+      properties:
+        startLocation:
+          type: "string"
+          example: "Lisboa"
+        endLocation:
+          type: "string"
+          example: "Fátima"
+        distance:
+          type: "number"
+          example: 20.0
+    ResRouteCreation:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          example: "routeID"

@@ -1,6 +1,7 @@
 package pt.isel.ls.http
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.http4k.core.Method
@@ -12,10 +13,15 @@ import org.http4k.routing.bind
 import org.http4k.routing.routes
 import pt.isel.ls.entities.Route
 import pt.isel.ls.repository.memory.RouteDataMemRepository
+import pt.isel.ls.repository.memory.RouteID
+import pt.isel.ls.repository.memory.USER_TOKEN
+import pt.isel.ls.repository.memory.UserID
 import pt.isel.ls.services.RouteServices
+import pt.isel.ls.services.UserServices
 
 class RouteRoutes(
-    val routeServices: RouteServices
+    val routeServices: RouteServices,
+    val userServices: UserServices
 ){
 
     @Serializable data class RouteList(val routes: List<Route>)
@@ -29,8 +35,22 @@ class RouteRoutes(
         TODO()
     }
 
+    @Serializable
+    data class RouteCreation(
+        val startLocation:String? = null,
+        val endLocation: String? = null,
+        val distance: Double?=null
+    )
+    @Serializable data class RouteIDResponse(val id: RouteID)
     private fun createRoute(request: Request): Response{
-        TODO()
+        val routeInfo = Json.decodeFromString<RouteCreation>(request.bodyString())
+        val userId: UserID = userServices.getUserByToken(USER_TOKEN)
+        val routeId: RouteID =
+            routeServices.createRoute(userId,routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)
+
+        return Response(Status.CREATED)
+            .header("content-type", "application/json")
+            .body(Json.encodeToString(RouteIDResponse(routeId)))
     }
 
 
@@ -44,4 +64,5 @@ class RouteRoutes(
 
 }
 
-fun routeRoutes(routeServices: RouteServices) = RouteRoutes(routeServices).handler
+fun routeRoutes(routeServices: RouteServices, userServices: UserServices) =
+    RouteRoutes(routeServices, userServices).handler

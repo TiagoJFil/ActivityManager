@@ -9,6 +9,11 @@ class RouteDataMemRepository: RouteRepository {
 
     override fun getRoutes(): List<Route> = routesMap.values.toList()
 
+    override fun addRoute(newRoute: Route){
+        routesMap[newRoute.id] = newRoute
+    }
+
+
 }
 
 typealias RouteID = String

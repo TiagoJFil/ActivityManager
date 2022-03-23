@@ -21,7 +21,7 @@ fun getApiRoutes(routes: RoutingHttpHandler) = routes(
 
 fun getRoutes(userServices: UserServices, routeServices: RouteServices) = routes(
     userRoutes(userServices),
-    routeRoutes(routeServices)
+    routeRoutes(routeServices, userServices)
 )
 
 private val onErrorFilter = Filter { handler ->

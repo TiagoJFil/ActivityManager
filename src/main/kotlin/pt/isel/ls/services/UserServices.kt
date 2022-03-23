@@ -38,6 +38,8 @@ class UserServices(val repository: UserRepository) {
 
     fun getUsers(): List<User> = repository.getUsers()
 
+    fun getUserByToken(token: UserToken): UserID =
+        repository.getUserIDByToken(token) ?: throw IllegalAccessException("Invalid Token")
 }
 
 

@@ -2,7 +2,9 @@ package pt.isel.ls.services
 
 import org.junit.Test
 import pt.isel.ls.entities.User
+import pt.isel.ls.repository.memory.USER_TOKEN
 import pt.isel.ls.repository.memory.UserDataMemRepository
+import pt.isel.ls.utils.guestUser
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
@@ -77,4 +79,16 @@ class UserServicesTest {
         assertEquals(testList, userList)
     }
 
+    @Test
+    fun `get an user id from an invalid token`(){
+        assertFailsWith<IllegalAccessException> {
+            userServices.getUserByToken("")
+        }
+    }
+
+    @Test
+    fun `get an user id from a token`(){
+        val id = userServices.getUserByToken(USER_TOKEN)
+        assertEquals(testUser.id, id)
+    }
 }
