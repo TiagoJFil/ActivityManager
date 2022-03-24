@@ -20,6 +20,9 @@ import pt.isel.ls.services.UserServices
 class UserRoutes(
     val userServices: UserServices
 ){
+    /**
+     * Creates an [User] with the information that comes in the body of the HTTP request.
+     */
     private fun createUser(request: Request): Response {
         @Serializable data class Res(val authToken: String, val id: String)
         @Serializable data class User(val name : String? = null, val email : String? = null)
@@ -38,7 +41,9 @@ class UserRoutes(
         }
     }
 
-
+    /**
+     * Gets the user that is identified by the id that comes in the params of uri's path.
+     */
     private fun getUserDetails(request: Request): Response {
         val userId = request.path("id")
         val userResponse = userServices.getUserByID(userId)
@@ -50,6 +55,10 @@ class UserRoutes(
     }
 
     @Serializable data class UserList(val users: List<User>)
+
+    /**
+     * Gets all the users.
+     */
     private fun getUsers(request: Request): Response{
         val users = userServices.getUsers()
         val usersJsonString = Json.encodeToString(UserList(users))

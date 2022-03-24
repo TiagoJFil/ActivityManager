@@ -1,7 +1,8 @@
 package pt.isel.ls.entities
 
 import kotlinx.serialization.Serializable
-import pt.isel.ls.repository.memory.RouteID
+import pt.isel.ls.repository.db.RouteID
+
 import pt.isel.ls.repository.memory.UserID
 
 typealias SportID = String

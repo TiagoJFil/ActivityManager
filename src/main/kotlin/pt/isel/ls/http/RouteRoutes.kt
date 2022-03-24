@@ -24,6 +24,9 @@ class RouteRoutes(
 ){
     @Serializable data class RouteList(val routes: List<Route>)
 
+    /**
+     * Gets all the routes.
+     */
     private fun getRoutes(request: Request): Response{
         val routes = routeServices.getRoutes()
         val bodyString = Json.encodeToString(RouteList(routes))
@@ -52,6 +55,10 @@ class RouteRoutes(
         val distance: Double?=null
     )
     @Serializable data class RouteIDResponse(val id: RouteID)
+
+    /**
+     * Creates a route with the information that come in the body of the HTTP request.
+     */
     private fun createRoute(request: Request): Response{
         val routeInfo = Json.decodeFromString<RouteCreation>(request.bodyString())
         val userId: UserID = userServices.getUserByToken(USER_TOKEN)

@@ -11,6 +11,7 @@ interface UserRepository{
     //fun hasUser(id: UserId): Boolean
 
     fun getUserByID(id: String): User?
+
     fun addUser(newUser: User, userId: UserID, userAuthToken: UserToken)
 
     fun getUsers(): List<User>
