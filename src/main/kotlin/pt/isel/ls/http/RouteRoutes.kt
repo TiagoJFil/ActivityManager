@@ -12,11 +12,11 @@ import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.entities.Route
-import pt.isel.ls.repository.RouteID
-import pt.isel.ls.repository.UserID
 import pt.isel.ls.repository.memory.USER_TOKEN
 import pt.isel.ls.services.RouteServices
 import pt.isel.ls.services.UserServices
+import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.UserID
 
 class RouteRoutes(
     val routeServices: RouteServices,

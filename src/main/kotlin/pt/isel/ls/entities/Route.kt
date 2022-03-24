@@ -1,9 +1,8 @@
 package pt.isel.ls.entities
 
 import kotlinx.serialization.Serializable
-import pt.isel.ls.repository.RouteID
-
-import pt.isel.ls.repository.memory.UserID
+import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.UserID
 
 /**
  * Represents a route

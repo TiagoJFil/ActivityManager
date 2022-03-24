@@ -1,15 +1,12 @@
 package pt.isel.ls.repository
 
-
 import pt.isel.ls.entities.User
+import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.UserToken
 
+interface UserRepository {
 
-typealias UserID = String
-typealias UserToken = String
-
-interface UserRepository{
-
-    //fun hasUser(id: UserId): Boolean
+    // fun hasUser(id: UserId): Boolean
 
     fun getUserByID(id: String): User?
 

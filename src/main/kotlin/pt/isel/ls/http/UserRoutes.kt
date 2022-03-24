@@ -23,21 +23,22 @@ class UserRoutes(
     /**
      * Creates an [User] with the information that comes in the body of the HTTP request.
      */
+) {
+    @Serializable data class UserIDResponse(val authToken: String, val id: String)
+    @Serializable data class UserCreationBody(val name: String? = null, val email: String? = null)
     private fun createUser(request: Request): Response {
-        @Serializable data class Res(val authToken: String, val id: String)
-        @Serializable data class User(val name : String? = null, val email : String? = null)
+
         try {
             val bodyString = request.bodyString()
-            val body = Json.decodeFromString<User>(bodyString)
+            val body = Json.decodeFromString<UserCreationBody>(bodyString)
 
             val res = userServices.createUser(body.name, body.email)
 
             return Response(CREATED)
                 .header("content-type", "application/json")
-                .body(Json.encodeToString(Res(res.first, res.second)))
-
-        }catch (e : IllegalArgumentException){
-            throw  e
+                .body(Json.encodeToString(UserIDResponse(res.first, res.second)))
+        } catch (e: IllegalArgumentException) {
+            throw e
         }
     }
 

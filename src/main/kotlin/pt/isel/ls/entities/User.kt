@@ -1,8 +1,7 @@
 package pt.isel.ls.entities
 
 import kotlinx.serialization.Serializable
-import pt.isel.ls.repository.UserID
-
+import pt.isel.ls.utils.UserID
 
 /**
  * Represents a user
@@ -13,7 +12,7 @@ import pt.isel.ls.repository.UserID
  *
  */
 @Serializable
-data class User(val name: String, val email: Email, val id: UserID){
+data class User(val name: String, val email: Email, val id: UserID) {
 
     /**
      * Represents an email from a [User]
@@ -21,8 +20,8 @@ data class User(val name: String, val email: Email, val id: UserID){
      * @property value String value of the email
      */
     @Serializable
-    data class Email(val value: String){
-        companion object{
+    data class Email(val value: String) {
+        companion object {
             private val emailRegex = Regex(
                 "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$"
             )
@@ -31,7 +30,7 @@ data class User(val name: String, val email: Email, val id: UserID){
         }
 
         init {
-            require(emailRegex.matches(value)){ INVALID_FORMAT }
+            require(emailRegex.matches(value)) { INVALID_FORMAT }
         }
 
     }

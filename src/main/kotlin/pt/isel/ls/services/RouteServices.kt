@@ -1,10 +1,8 @@
 package pt.isel.ls.services
 
 import pt.isel.ls.entities.Route
-import pt.isel.ls.repository.RouteID
-import pt.isel.ls.repository.RouteRepository
-import pt.isel.ls.repository.UserID
-
+import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.UserID
 
 const val START_LOCATION_REQUIRED = "Start location required"
 const val END_LOCATION_REQUIRED = "End location required"

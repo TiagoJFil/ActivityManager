@@ -1,8 +1,8 @@
 package pt.isel.ls.repository.memory
 
 import pt.isel.ls.entities.Route
-import pt.isel.ls.repository.RouteID
 import pt.isel.ls.repository.RouteRepository
+import pt.isel.ls.utils.RouteID
 
 class RouteDataMemRepository: RouteRepository {
 

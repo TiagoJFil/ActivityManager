@@ -59,7 +59,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UsersList"
+                $ref: "#/components/schemas/UserList"
     post:
       tags:
         - "User"
@@ -79,7 +79,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResponseUserCreation"
+                $ref: "#/components/schemas/UserCreationResponse"
         "400":
           description: "A parameter is missing or is incorrect"
   /routes/{id}:
@@ -141,7 +141,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResRouteCreation"
+                $ref: "#/components/schemas/RouteCreationResponse"
         "400":
           description: "A parameter is missing or is incorrect"
         "401":
@@ -160,6 +160,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SportList"
+    post:
+      tags:
+        - "Sports"
+      summary: "Create a sport"
+      description: "Create a sport with a name and description"
+      operationId: "createsport"
+      requestBody:
+        description: "start location, end location and distance to attribute to a route"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SportCreationBody"
+      responses:
+        "200":
+          description: "Sport created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SportCreationResponse"
+        "400":
+          description: "A required parameter is missing or is incorrect"
 components:
   schemas:
     User:
@@ -174,13 +196,13 @@ components:
         id:
           type: "string"
           example: "guestID"
-    ResponseUserCreation:
+    UserList:
       type: "object"
       properties:
-        authToken:
-          type: "string"
-        id:
-          type: "string"
+        users:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/User"
     UserCreationBody:
       type: "object"
       properties:
@@ -188,13 +210,13 @@ components:
           type: "string"
         email:
           type: "string"
-    UsersList:
+    UserCreationResponse:
       type: "object"
       properties:
-        users:
-          type: "array"
-          items:
-            $ref: "#/components/schemas/User"
+        authToken:
+          type: "string"
+        id:
+          type: "string"
     Route:
       type: "object"
       properties:
@@ -228,8 +250,8 @@ components:
           example: "Fátima"
         distance:
           type: "number"
-          example: 20.0
-    ResRouteCreation:
+          example: 128.7
+    RouteCreationResponse:
       type: "object"
       properties:
         id:
@@ -247,12 +269,13 @@ components:
           example: "sportID"
         name:
           type: "string"
-          example: "futebol"
+          example: "Football"
         description:
           type: "string"
+          example: "Game played with feet."
         user:
           type: "string"
-          example: "userID"
+          example: "guestID"
     SportList:
       type: "object"
       properties:
@@ -260,3 +283,20 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/Sport"
+    SportCreationBody:
+      type: "object"
+      required:
+        - name
+      properties:
+        name:
+          type: "string"
+          example: "Football"
+        description:
+          type: "string"
+          example: "Game played with feet."
+    SportCreationResponse:
+      type: "object"
+      properties:
+        sportID:
+          type: "string"
+          example: "123141245"

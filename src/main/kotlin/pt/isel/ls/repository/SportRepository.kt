@@ -1,7 +1,7 @@
 package pt.isel.ls.repository
 
 import pt.isel.ls.entities.Sport
-import pt.isel.ls.entities.SportID
+import pt.isel.ls.utils.SportID
 
 interface SportRepository {
 
@@ -10,5 +10,4 @@ interface SportRepository {
     fun getSports(): List<Sport>
 
     fun getSportByID(sportID: SportID): Sport?
-
 }

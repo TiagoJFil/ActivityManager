@@ -1,11 +1,10 @@
 package pt.isel.ls.repository.memory
 
-import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.entities.User
+import pt.isel.ls.repository.UserRepository
+import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.UserToken
 
-
-typealias UserID = String
-typealias UserToken = String
 const val USER_TOKEN = "TOKEN"
 
 class UserDataMemRepository(guest: User): UserRepository {

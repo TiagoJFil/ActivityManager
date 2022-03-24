@@ -1,10 +1,8 @@
 package pt.isel.ls.repository.memory
 
 import pt.isel.ls.entities.Sport
-import pt.isel.ls.entities.SportID
 import pt.isel.ls.repository.SportRepository
-
-
+import pt.isel.ls.utils.SportID
 
 class SportDataMemRepository: SportRepository {
 
@@ -16,7 +14,7 @@ class SportDataMemRepository: SportRepository {
      * @param sport the sport to add
      */
     override fun addSport(sport: Sport) {
-        TODO("Not yet implemented")
+        sportsMap[sport.id] = sport
     }
 
 

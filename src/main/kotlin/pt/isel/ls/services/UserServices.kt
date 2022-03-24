@@ -2,10 +2,10 @@ package pt.isel.ls.services
 
 
 
-import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.entities.User
-import pt.isel.ls.repository.memory.UserID
-import pt.isel.ls.repository.memory.UserToken
+import pt.isel.ls.repository.UserRepository
+import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.UserToken
 
 const val NAME_REQUIRED = "Missing name."
 const val EMAIL_REQUIRED = "Missing email."
