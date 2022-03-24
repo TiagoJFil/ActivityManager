@@ -2,10 +2,9 @@ package pt.isel.ls.repository.db
 
 import pt.isel.ls.entities.Route
 import pt.isel.ls.repository.RouteRepository
+import pt.isel.ls.utils.RouteID
 
-typealias RouteID = String
-
-class RouteDbRepository: RouteRepository {
+class RouteDbRepository : RouteRepository {
     override fun getRoutes(): List<Route> {
         TODO("Not yet implemented")
     }
@@ -17,5 +16,4 @@ class RouteDbRepository: RouteRepository {
     override fun getRoute(id: RouteID): Route? {
         TODO("Not yet implemented")
     }
-
 }

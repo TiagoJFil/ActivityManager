@@ -12,19 +12,20 @@ import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.entities.Route
-import pt.isel.ls.repository.db.RouteID
-import pt.isel.ls.repository.db.UserID
 import pt.isel.ls.repository.memory.USER_TOKEN
 import pt.isel.ls.services.RouteServices
 import pt.isel.ls.services.UserServices
+import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.UserID
 
 class RouteRoutes(
     val routeServices: RouteServices,
     val userServices: UserServices
-){
-    @Serializable data class RouteList(val routes: List<Route>)
+) {
+    @Serializable
+    data class RouteList(val routes: List<Route>)
 
-    private fun getRoutes(request: Request): Response{
+    private fun getRoutes(request: Request): Response {
         val routes = routeServices.getRoutes()
         val bodyString = Json.encodeToString(RouteList(routes))
         return Response(Status.OK).body(bodyString)
@@ -33,8 +34,8 @@ class RouteRoutes(
     /**
      * Gets a route identified by the given [RouteID] from the query "id"
      */
-    private fun getRoute(request: Request): Response{
-        val routeID = request.path ("id")
+    private fun getRoute(request: Request): Response {
+        val routeID = request.path("id")
 
         val route = routeServices.getRoute(routeID)
 
@@ -47,31 +48,31 @@ class RouteRoutes(
 
     @Serializable
     data class RouteCreation(
-        val startLocation:String? = null,
+        val startLocation: String? = null,
         val endLocation: String? = null,
-        val distance: Double?=null
+        val distance: Double? = null
     )
-    @Serializable data class RouteIDResponse(val id: RouteID)
-    private fun createRoute(request: Request): Response{
+
+    @Serializable
+    data class RouteIDResponse(val id: RouteID)
+
+    private fun createRoute(request: Request): Response {
         val routeInfo = Json.decodeFromString<RouteCreation>(request.bodyString())
         val userId: UserID = userServices.getUserByToken(USER_TOKEN)
         val routeId: RouteID =
-            routeServices.createRoute(userId,routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)
+            routeServices.createRoute(userId, routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)
 
         return Response(Status.CREATED)
             .header("content-type", "application/json")
             .body(Json.encodeToString(RouteIDResponse(routeId)))
     }
 
-
     val handler =
-        "/routes" bind
-                routes(
-                    "/" bind Method.POST to ::createRoute,
-                    "/" bind Method.GET to ::getRoutes,
-                    "/{id}" bind Method.GET to ::getRoute,
-                )
-
+        "/routes" bind routes(
+            "/" bind Method.POST to ::createRoute,
+            "/" bind Method.GET to ::getRoutes,
+            "/{id}" bind Method.GET to ::getRoute,
+        )
 }
 
 fun routeRoutes(routeServices: RouteServices, userServices: UserServices) =

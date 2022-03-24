@@ -1,21 +1,20 @@
 package pt.isel.ls.repository.memory
 
-import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.entities.User
-
-typealias UserID = String
-typealias UserToken = String
+import pt.isel.ls.repository.UserRepository
+import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.UserToken
 
 const val USER_TOKEN = "TOKEN"
 
-class UserDataMemRepository(guest: User): UserRepository {
+class UserDataMemRepository(guest: User) : UserRepository {
 
-    private val tokenTable = mutableMapOf<UserToken,UserID>( USER_TOKEN to guest.id)
+    private val tokenTable = mutableMapOf<UserToken, UserID>(USER_TOKEN to guest.id)
 
     private val usersMap: MutableMap<UserID, User> = mutableMapOf(guest.id to guest)
 
-    //override fun hasUser(id: UserId) = usersMap.contains(id)
-    override fun userHasRepeatedEmail(userId: UserID, email : User.Email) : Boolean{
+    // override fun hasUser(id: UserId) = usersMap.contains(id)
+    override fun userHasRepeatedEmail(userId: UserID, email: User.Email): Boolean {
         return usersMap.values.any { it.email == email }
     }
 
@@ -36,5 +35,4 @@ class UserDataMemRepository(guest: User): UserRepository {
     override fun getUsers(): List<User> = usersMap.values.toList()
 
     override fun getUserIDByToken(token: UserToken): UserID? = tokenTable[token]
-
 }

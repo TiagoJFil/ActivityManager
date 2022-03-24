@@ -1,7 +1,9 @@
 package pt.isel.ls.repository
 
-import pt.isel.ls.entities.*
-import pt.isel.ls.repository.memory.UserID
+import pt.isel.ls.entities.Activity
+import pt.isel.ls.utils.ActivityID
+import pt.isel.ls.utils.SportID
+import pt.isel.ls.utils.UserID
 
 interface ActivityRepository {
 
@@ -14,5 +16,4 @@ interface ActivityRepository {
     fun getActivity(activityID: ActivityID): Activity?
 
     fun deleteActivity(activityID: ActivityID): Boolean
-
 }

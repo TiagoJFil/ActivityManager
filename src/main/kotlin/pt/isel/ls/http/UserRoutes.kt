@@ -16,28 +16,26 @@ import org.http4k.routing.routes
 import pt.isel.ls.entities.User
 import pt.isel.ls.services.UserServices
 
-
 class UserRoutes(
     val userServices: UserServices
-){
+) {
+    @Serializable data class UserIDResponse(val authToken: String, val id: String)
+    @Serializable data class UserCreationBody(val name: String? = null, val email: String? = null)
     private fun createUser(request: Request): Response {
-        @Serializable data class Res(val authToken: String, val id: String)
-        @Serializable data class User(val name : String? = null, val email : String? = null)
+
         try {
             val bodyString = request.bodyString()
-            val body = Json.decodeFromString<User>(bodyString)
+            val body = Json.decodeFromString<UserCreationBody>(bodyString)
 
             val res = userServices.createUser(body.name, body.email)
 
             return Response(CREATED)
                 .header("content-type", "application/json")
-                .body(Json.encodeToString(Res(res.first, res.second)))
-
-        }catch (e : IllegalArgumentException){
-            throw  e
+                .body(Json.encodeToString(UserIDResponse(res.first, res.second)))
+        } catch (e: IllegalArgumentException) {
+            throw e
         }
     }
-
 
     private fun getUserDetails(request: Request): Response {
         val userId = request.path("id")
@@ -46,11 +44,10 @@ class UserRoutes(
         return Response(Status.OK)
             .header("content-type", "application/json")
             .body(userEncoded)
-
     }
 
     @Serializable data class UserList(val users: List<User>)
-    private fun getUsers(request: Request): Response{
+    private fun getUsers(request: Request): Response {
         val users = userServices.getUsers()
         val usersJsonString = Json.encodeToString(UserList(users))
 
@@ -61,16 +58,10 @@ class UserRoutes(
 
     val handler: RoutingHttpHandler =
         "/users" bind routes(
-            "/"     bind  Method.POST to ::createUser,
-            "/"     bind Method.GET to ::getUsers,
+            "/" bind Method.POST to ::createUser,
+            "/" bind Method.GET to ::getUsers,
             "/{id}" bind Method.GET to ::getUserDetails,
         )
 }
 
-
 fun userRoutes(userServices: UserServices) = UserRoutes(userServices).handler
-
-
-
-
-

@@ -2,11 +2,10 @@ package pt.isel.ls.repository.db
 
 import pt.isel.ls.entities.User
 import pt.isel.ls.repository.UserRepository
+import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.UserToken
 
-typealias UserToken = String
-typealias UserID = String
-
-class UserDbRepository: UserRepository {
+class UserDbRepository : UserRepository {
 
     override fun getUserByID(id: String): User? {
         TODO("Not yet implemented")
@@ -27,6 +26,4 @@ class UserDbRepository: UserRepository {
     override fun getUserIDByToken(token: UserToken): UserID? {
         TODO("Not yet implemented")
     }
-
-
 }

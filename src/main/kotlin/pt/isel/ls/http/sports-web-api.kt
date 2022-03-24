@@ -1,6 +1,9 @@
 package pt.isel.ls.http
 
-import org.http4k.core.*
+import org.http4k.core.Filter
+import org.http4k.core.HttpHandler
+import org.http4k.core.Response
+import org.http4k.core.Status
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
@@ -12,7 +15,7 @@ import pt.isel.ls.services.UserServices
  *
  * Binds [routes] to "/api"
  *
- * @param routes API main routes as default, parameter used to mock routes in testing
+ * @param routes routes to bind to /api
  */
 fun getApiRoutes(routes: RoutingHttpHandler) = routes(
 
@@ -22,29 +25,25 @@ fun getApiRoutes(routes: RoutingHttpHandler) = routes(
 
 /**
  * Gets all main routes from the api Services
- * @param userServices   the user [routes]
- * @param routeServices  the route [routes]
- * @param sportsServices the sport [routes]
+ * @param userServices   user services
+ * @param routeServices  route services
+ * @param sportsServices sports services
  */
 fun getAppRoutes(userServices: UserServices, routeServices: RouteServices, sportsServices: SportsServices) = routes(
     userRoutes(userServices),
     routeRoutes(routeServices, userServices),
-    sportsRoutes(sportsServices,userServices)
+    sportsRoutes(sportsServices, userServices)
 )
 
 private val onErrorFilter = Filter { handler ->
     val handlerWrapper: HttpHandler = { request ->
-        try{
+        try {
             handler(request)
-        }catch(e: IllegalArgumentException){
+        } catch (e: IllegalArgumentException) {
             Response(Status.BAD_REQUEST).body(e.message.toString())
-        }catch(e: IllegalStateException){
+        } catch (e: IllegalStateException) {
             Response(Status.NOT_FOUND).body(e.message.toString())
         }
     }
     handlerWrapper
 }
-
-
-
-

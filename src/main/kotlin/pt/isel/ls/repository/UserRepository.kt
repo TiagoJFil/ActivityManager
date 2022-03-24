@@ -1,16 +1,15 @@
 package pt.isel.ls.repository
 
-
 import pt.isel.ls.entities.User
-import pt.isel.ls.repository.db.UserID
-import pt.isel.ls.repository.db.UserToken
+import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.UserToken
 
+interface UserRepository {
 
-interface UserRepository{
-
-    //fun hasUser(id: UserId): Boolean
+    // fun hasUser(id: UserId): Boolean
 
     fun getUserByID(id: String): User?
+
     fun addUser(newUser: User, userId: UserID, userAuthToken: UserToken)
 
     fun getUsers(): List<User>
@@ -19,4 +18,3 @@ interface UserRepository{
 
     fun getUserIDByToken(token: UserToken): UserID?
 }
-

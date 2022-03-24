@@ -5,11 +5,11 @@ import org.http4k.core.Status
 import kotlin.test.assertEquals
 
 fun Response.expectOK(): Response {
-    assertEquals(Status.OK,this.status)
+    assertEquals(Status.OK, this.status)
     return this
 }
-fun Response.expectCreated() : Response {
-    assertEquals(Status.CREATED,this.status)
+fun Response.expectCreated(): Response {
+    assertEquals(Status.CREATED, this.status)
     return this
 }
 fun Response.expectNotFound(): Response {
@@ -21,11 +21,11 @@ fun Response.expectBadRequest(): Response {
     return this
 }
 
-fun Response.expectMessage(msg: String) : Response {
-    assertEquals(msg,this.bodyString())
+fun Response.expectMessage(msg: String): Response {
+    assertEquals(msg, this.bodyString())
     return this
 }
 
-fun Response.expectAuthenticated() : Response {
+fun Response.expectAuthenticated(): Response {
     TODO()
 }

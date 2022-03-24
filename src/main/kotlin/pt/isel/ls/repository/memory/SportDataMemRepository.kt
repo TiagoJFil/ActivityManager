@@ -1,16 +1,15 @@
 package pt.isel.ls.repository.memory
 
-import pt.isel.ls.entities.Route
 import pt.isel.ls.entities.Sport
-import pt.isel.ls.entities.SportID
 import pt.isel.ls.repository.SportRepository
+import pt.isel.ls.utils.SportID
 
-class SportDataMemRepository: SportRepository {
+class SportDataMemRepository : SportRepository {
 
     private val sportsMap = mutableMapOf<SportID, Sport>()
 
     override fun addSport(sport: Sport) {
-        TODO("Not yet implemented")
+        sportsMap[sport.id] = sport
     }
 
     override fun getSports(): List<Sport> = sportsMap.values.toList()
