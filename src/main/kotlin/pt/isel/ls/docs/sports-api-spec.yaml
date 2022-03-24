@@ -12,8 +12,10 @@ tags:
     description: "Operations about user"
   - name: "Routes"
     description: "Route management"
-  - name: "Sports and Activities"
-    description: "Sports and Activity management."
+  - name: "Sports"
+    description: "Sports management."
+  - name: "Activities"
+    description: "Activity management."
 servers:
   - url: http://localhost:9000/api
     description: Local Server
@@ -144,6 +146,20 @@ paths:
           description: "A parameter is missing or is incorrect"
         "401":
           description: "Unauthenticated"
+  /sports:
+    get:
+      tags:
+        - "Sports"
+      summary: "Get all sports"
+      description: "Gets all the sports."
+      operationId: "getsports"
+      responses:
+        "200":
+          description: "sucessfull operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SportList"
 components:
   schemas:
     User:
@@ -219,3 +235,28 @@ components:
         id:
           type: "string"
           example: "routeID"
+    Sport:
+      type: "object"
+      required:
+        - id
+        - name
+        - user
+      properties:
+        id:
+          type: "string"
+          example: "sportID"
+        name:
+          type: "string"
+          example: "futebol"
+        description:
+          type: "string"
+        user:
+          type: "string"
+          example: "userID"
+    SportList:
+      type: "object"
+      properties:
+        sports:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Sport"

@@ -4,7 +4,8 @@ import org.eclipse.jetty.server.Authentication
 import org.junit.Test
 import pt.isel.ls.entities.Route
 import pt.isel.ls.http.routeRoutes
-import pt.isel.ls.repository.db.RouteID
+import pt.isel.ls.repository.RouteID
+
 import pt.isel.ls.repository.memory.RouteDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
 import pt.isel.ls.utils.guestUser
@@ -42,7 +43,7 @@ class RouteServicesTest {
     fun `create a route`(){
         val routeID: RouteID =
             routeServices.createRoute(userId = guestUser.id, startLocation = "a", endLocation = "b", distance = 10.0)
-        println(routeID)
+
         val routeCreated = routeServices.getRoute(routeID)
         val routeExpected = Route(id = routeID, user = guestUser.id, startLocation = "a", endLocation = "b", distance = 10.0)
         assertEquals(routeExpected,routeCreated)

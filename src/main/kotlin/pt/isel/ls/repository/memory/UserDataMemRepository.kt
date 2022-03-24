@@ -3,6 +3,7 @@ package pt.isel.ls.repository.memory
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.entities.User
 
+
 typealias UserID = String
 typealias UserToken = String
 const val USER_TOKEN = "TOKEN"

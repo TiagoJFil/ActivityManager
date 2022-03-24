@@ -24,5 +24,9 @@ class SportsServices(
        return sport
     }
 
+    fun getSports(): List<Sport> =
+        sportsRepository.getSports()
+
+
 
 }

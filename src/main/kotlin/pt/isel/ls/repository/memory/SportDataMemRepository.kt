@@ -8,7 +8,7 @@ import pt.isel.ls.repository.SportRepository
 
 class SportDataMemRepository: SportRepository {
 
-    val sportsMap = mutableMapOf<SportID, Sport>()
+    private val sportsMap = mutableMapOf<SportID, Sport>()
 
     /**
      * Adds a sport.
@@ -19,14 +19,13 @@ class SportDataMemRepository: SportRepository {
         TODO("Not yet implemented")
     }
 
+
     /**
      * Gets all the sports.
      *
      * @return [List] of [Sport]
      */
-    override fun getSports(): List<Sport> {
-        TODO("Not yet implemented")
-    }
+    override fun getSports(): List<Sport> = sportsMap.values.toList()
 
     /**
      * @sportID the unique number that identifies the sport

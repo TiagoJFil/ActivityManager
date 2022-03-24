@@ -7,6 +7,14 @@ import pt.isel.ls.entities.User
 import pt.isel.ls.repository.memory.UserID
 import pt.isel.ls.repository.memory.UserToken
 
+const val NAME_REQUIRED = "Missing name."
+const val EMAIL_REQUIRED = "Missing email."
+const val NAME_NO_VALUE = "Name field has no value"
+const val EMAIL_NO_VALUE = "Email field has no value"
+const val EMAIL_ALREADY_EXISTS = "Email already registered."
+const val ID_REQUIRED = "Parameter id is required."
+const val USER_NOT_FOUND = "User does not exist."
+
 class UserServices(val repository: UserRepository) {
 
     /**
@@ -17,17 +25,17 @@ class UserServices(val repository: UserRepository) {
      * @throws IllegalArgumentException
      */
     fun createUser(name : String?, email: String?) : Pair<UserToken,UserID>{
-        requireNotNull(name) {" Missing name."}
-        requireNotNull(email) {" Missing email."}
-        require(email.isNotBlank()) {" Email field has no value"}
-        require(name.isNotBlank()) {" Name field has no value"}
+        requireNotNull(name) { NAME_REQUIRED }
+        requireNotNull(email) { EMAIL_REQUIRED }
+        require(email.isNotBlank()) { EMAIL_NO_VALUE }
+        require(name.isNotBlank()) { NAME_NO_VALUE }
         val userId = generateRandomId()
         val userAuthToken = generateUUId()
 
         val possibleEmail = User.Email(email)
         val user =  User(name, possibleEmail,userId)
 
-        if(repository.userHasRepeatedEmail(userId,possibleEmail)) throw IllegalArgumentException(" Email already registered.")
+        if(repository.userHasRepeatedEmail(userId,possibleEmail)) throw IllegalArgumentException( EMAIL_ALREADY_EXISTS)
         repository.addUser(user,userId,userAuthToken)
 
         return Pair(userAuthToken,userId)
@@ -41,10 +49,10 @@ class UserServices(val repository: UserRepository) {
      * @throws IllegalArgumentException
      */
     fun getUserByID(id: UserID?): User {
-        requireNotNull(id){" Parameter id is required. "}
+        requireNotNull(id){ ID_REQUIRED }
         require(id.isNotBlank()) {" id field has no value "}
         val user: User? = repository.getUserByID(id)
-        checkNotNull(user){" User does not exist."}
+        checkNotNull(user){ USER_NOT_FOUND }
 
         return user
     }

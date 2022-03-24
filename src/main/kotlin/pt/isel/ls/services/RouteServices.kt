@@ -1,9 +1,7 @@
 package pt.isel.ls.services
 
 import pt.isel.ls.entities.Route
-import pt.isel.ls.entities.User
 import pt.isel.ls.repository.RouteRepository
-import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.repository.db.RouteID
 import pt.isel.ls.repository.db.UserID
 
