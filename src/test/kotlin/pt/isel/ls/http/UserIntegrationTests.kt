@@ -40,7 +40,7 @@ class UserIntegrationTests {
 
     @Test fun `get a user that does not exist gives status 404`(){
         val baseRequest = Request(Method.GET, "${userPath}qwiequiwe")
-        backend(baseRequest).expectNotFound().expectMessage(" User does not exist.")
+        backend(baseRequest).expectNotFound().expectMessage("User does not exist.")
     }
 
 
@@ -61,7 +61,7 @@ class UserIntegrationTests {
 
         val request = baseRequest.body(body)
 
-        backend(request).expectBadRequest().expectMessage(" Missing name.")
+        backend(request).expectBadRequest().expectMessage("Missing name.")
     }
 
     @Test fun `try to create a user without the email`(){
@@ -70,7 +70,7 @@ class UserIntegrationTests {
         val body = Json.encodeToString(user)
 
         val request = baseRequest.body(body)
-        backend(request).expectBadRequest().expectMessage(" Missing email.")
+        backend(request).expectBadRequest().expectMessage("Missing email.")
     }
 
     @Test fun `create a user with a repeated email`(){
@@ -79,7 +79,7 @@ class UserIntegrationTests {
         val body = Json.encodeToString(user)
 
         val request = baseRequest.body(body)
-        backend(request).expectBadRequest().expectMessage(" Email already registered.")
+        backend(request).expectBadRequest().expectMessage("Email already registered.")
     }
 
     @Test fun `create a user with an extra parameter`(){
@@ -103,7 +103,7 @@ class UserIntegrationTests {
         val body = Json.encodeToString(user)
 
         val request = baseRequest.body(body)
-        backend(request).expectBadRequest().expectMessage(" Name field has no value")
+        backend(request).expectBadRequest().expectMessage("Name field has no value")
     }
 
     @Test fun `create a user with a blank email parameter`(){
@@ -112,7 +112,7 @@ class UserIntegrationTests {
         val body = Json.encodeToString(user)
 
         val request = baseRequest.body(body)
-        backend(request).expectBadRequest().expectMessage(" Email field has no value")
+        backend(request).expectBadRequest().expectMessage("Email field has no value")
     }
 
 

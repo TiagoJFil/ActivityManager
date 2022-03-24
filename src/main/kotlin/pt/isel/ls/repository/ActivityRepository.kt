@@ -1,7 +1,8 @@
 package pt.isel.ls.repository
 
 import pt.isel.ls.entities.*
-import pt.isel.ls.repository.memory.UserID
+
+typealias ActivityID = String
 
 interface ActivityRepository {
 

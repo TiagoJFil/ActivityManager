@@ -1,7 +1,9 @@
 package pt.isel.ls.repository
 
 import pt.isel.ls.entities.Route
-import pt.isel.ls.repository.db.RouteID
+
+
+typealias RouteID = String
 
 interface RouteRepository {
 

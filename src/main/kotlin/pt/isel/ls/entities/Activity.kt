@@ -5,13 +5,5 @@ import pt.isel.ls.repository.RouteID
 import pt.isel.ls.repository.UserID
 
 
-
 @Serializable
-data class Route(
-    val id: RouteID,
-    val startLocation: String,
-    val endLocation: String,
-    val distance: Double,
-    val user: UserID
-)
-
+data class Activity(val id : String, val date : String, val duration : Int, val sport : SportID, val route : RouteID? = null, val user : UserID)

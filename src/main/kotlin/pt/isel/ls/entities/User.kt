@@ -1,7 +1,8 @@
 package pt.isel.ls.entities
 
 import kotlinx.serialization.Serializable
-import pt.isel.ls.repository.memory.UserID
+import pt.isel.ls.repository.UserID
+
 
 /**
  * Represents a user

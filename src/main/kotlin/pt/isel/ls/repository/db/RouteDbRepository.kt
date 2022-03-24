@@ -1,9 +1,10 @@
 package pt.isel.ls.repository.db
 
 import pt.isel.ls.entities.Route
+import pt.isel.ls.repository.RouteID
 import pt.isel.ls.repository.RouteRepository
 
-typealias RouteID = String
+
 
 class RouteDbRepository: RouteRepository {
     override fun getRoutes(): List<Route> {

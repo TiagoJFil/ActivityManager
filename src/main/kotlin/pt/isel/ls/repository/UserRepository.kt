@@ -2,9 +2,10 @@ package pt.isel.ls.repository
 
 
 import pt.isel.ls.entities.User
-import pt.isel.ls.repository.db.UserID
-import pt.isel.ls.repository.db.UserToken
 
+
+typealias UserID = String
+typealias UserToken = String
 
 interface UserRepository{
 
