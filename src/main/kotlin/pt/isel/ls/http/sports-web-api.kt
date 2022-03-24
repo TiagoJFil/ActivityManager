@@ -1,15 +1,19 @@
 package pt.isel.ls.http
 
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
 import org.http4k.core.Response
 import org.http4k.core.Status
+import org.http4k.core.Status.Companion.BAD_REQUEST
+import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
+import org.http4k.core.Status.Companion.NOT_FOUND
+import org.http4k.lens.Missing
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
-import pt.isel.ls.services.RouteServices
-import pt.isel.ls.services.SportsServices
-import pt.isel.ls.services.UserServices
+import pt.isel.ls.services.*
 
 /**
  *
@@ -39,10 +43,16 @@ private val onErrorFilter = Filter { handler ->
     val handlerWrapper: HttpHandler = { request ->
         try {
             handler(request)
-        } catch (e: IllegalArgumentException) {
-            Response(Status.BAD_REQUEST).body(e.message.toString())
-        } catch (e: IllegalStateException) {
-            Response(Status.NOT_FOUND).body(e.message.toString())
+        }catch(appError: AppError){
+
+            val body = Json.encodeToString(HttpError(appError.code, appError.message))
+            val baseResponse = Response(INTERNAL_SERVER_ERROR).body(body)
+
+            when (appError) {
+                is MissingParameter, is InvalidParameter -> baseResponse.status(BAD_REQUEST)
+                is ResourceNotFound -> baseResponse.status(NOT_FOUND)
+            }
+
         }
     }
     handlerWrapper
