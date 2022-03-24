@@ -4,6 +4,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.http4k.core.Method
 import org.http4k.core.Request
+import pt.isel.ls.entities.User
 import pt.isel.ls.http.utils.expectOK
 import pt.isel.ls.repository.memory.SportDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
@@ -32,5 +33,15 @@ class SportIntegrationTests {
 
         assertEquals(emptyList(), sportList.routes)
     }
+/*
+    @Test
+    fun `get a specific sport sucessfully`() {
+        val sportID = sportServices.createSport()
+        val baseRequest = Request(Method.GET, "$sportsPath${sportID}")
+        val response = backend(baseRequest).expectOK()
+        val sportFromBody = Json.decodeFromString<User>(response.bodyString())
 
+        assertEquals(testUser, userFromBody)
+    }
+*/
 }

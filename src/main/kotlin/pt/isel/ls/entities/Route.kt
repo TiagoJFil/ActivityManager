@@ -1,10 +1,19 @@
 package pt.isel.ls.entities
 
 import kotlinx.serialization.Serializable
-import pt.isel.ls.repository.db.RouteID
+import pt.isel.ls.repository.RouteID
+
 import pt.isel.ls.repository.memory.UserID
 
-
+/**
+ * Represents a route
+ *
+ * @property id respective route's id
+ * @property startLocation route's start location
+ * @property endLocation route's end location
+ * @property distance route's distance
+ * @property user route's user
+ */
 @Serializable
 data class Route(
     val id: RouteID,

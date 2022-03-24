@@ -1,14 +1,17 @@
 package pt.isel.ls.services
 
 import pt.isel.ls.entities.Route
+import pt.isel.ls.repository.RouteID
 import pt.isel.ls.repository.RouteRepository
-import pt.isel.ls.repository.db.RouteID
-import pt.isel.ls.repository.db.UserID
+import pt.isel.ls.repository.UserID
 
 
 const val START_LOCATION_REQUIRED = "Start location required"
 const val END_LOCATION_REQUIRED = "End location required"
 const val DISTANCE_REQUIRED = "Distance required"
+const val ID_EMPTY = " id field has no value "
+const val NO_ROUTE_FOUND = " No route found by the id given"
+
 
 
 class RouteServices(val repository: RouteRepository){
@@ -49,11 +52,11 @@ class RouteServices(val repository: RouteRepository){
      * @throws IllegalArgumentException
      * @throws IllegalStateException
      */
-    fun getRoute(routeID: String?) : Route? {
-        requireNotNull(routeID) {" id must not be null"}
-        require(routeID.isNotBlank()) {" id field has no value "}
+    fun getRoute(routeID: String?) : Route {
+        requireNotNull(routeID) { ID_REQUIRED }
+        require(routeID.isNotBlank()) { ID_EMPTY }
         val route = repository.getRoute(routeID)
-        checkNotNull(route){" No route found by the id given"}
+        checkNotNull(route){NO_ROUTE_FOUND}
         return route
     }
 

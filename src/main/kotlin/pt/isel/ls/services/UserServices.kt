@@ -50,7 +50,7 @@ class UserServices(val repository: UserRepository) {
      */
     fun getUserByID(id: UserID?): User {
         requireNotNull(id){ ID_REQUIRED }
-        require(id.isNotBlank()) {" id field has no value "}
+        require(id.isNotBlank()) { ID_EMPTY }
         val user: User? = repository.getUserByID(id)
         checkNotNull(user){ USER_NOT_FOUND }
 

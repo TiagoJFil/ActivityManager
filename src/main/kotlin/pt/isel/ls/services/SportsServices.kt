@@ -24,6 +24,11 @@ class SportsServices(
        return sport
     }
 
+    /**
+     * Gets all the existing sports
+     *
+     * @return [List] of [Sport]
+     */
     fun getSports(): List<Sport> =
         sportsRepository.getSports()
 
