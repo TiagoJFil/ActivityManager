@@ -32,5 +32,8 @@ data class User(val name: String, val email: Email, val id: UserID) {
         init {
             require(emailRegex.matches(value)) { INVALID_FORMAT }
         }
+
     }
+
 }
+

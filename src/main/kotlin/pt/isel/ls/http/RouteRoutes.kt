@@ -21,11 +21,10 @@ import pt.isel.ls.utils.UserID
 class RouteRoutes(
     val routeServices: RouteServices,
     val userServices: UserServices
-) {
-    @Serializable
-    data class RouteList(val routes: List<Route>)
+){
+    @Serializable data class RouteList(val routes: List<Route>)
 
-    private fun getRoutes(request: Request): Response {
+    private fun getRoutes(request: Request): Response{
         val routes = routeServices.getRoutes()
         val bodyString = Json.encodeToString(RouteList(routes))
         return Response(Status.OK).body(bodyString)
@@ -34,8 +33,8 @@ class RouteRoutes(
     /**
      * Gets a route identified by the given [RouteID] from the query "id"
      */
-    private fun getRoute(request: Request): Response {
-        val routeID = request.path("id")
+    private fun getRoute(request: Request): Response{
+        val routeID = request.path ("id")
 
         val route = routeServices.getRoute(routeID)
 

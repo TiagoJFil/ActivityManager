@@ -18,3 +18,4 @@ interface UserRepository {
 
     fun getUserIDByToken(token: UserToken): UserID?
 }
+
