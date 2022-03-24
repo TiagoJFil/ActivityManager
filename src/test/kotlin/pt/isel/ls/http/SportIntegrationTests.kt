@@ -1,11 +1,10 @@
 package pt.isel.ls.http
 
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import org.http4k.core.Method
-import org.http4k.core.Request
-import pt.isel.ls.entities.User
-import pt.isel.ls.http.utils.expectOK
+
+import org.http4k.core.Response
+import pt.isel.ls.entities.Sport
+import pt.isel.ls.http.SportRoutes.*
+import pt.isel.ls.http.utils.*
 import pt.isel.ls.repository.memory.SportDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
 import pt.isel.ls.services.SportsServices
@@ -26,22 +25,27 @@ class SportIntegrationTests {
 
     @Test
     fun `get sports without creating returns empty list`(){
-        val baseRequest = Request(Method.GET, sportsPath)
-
-        val response = backend(baseRequest).expectOK()
-        val sportList = Json.decodeFromString<SportRoutes.SportList>(response.bodyString())
-
-        assertEquals(emptyList(), sportList.routes)
+        val sportList = getRequest<SportList>(backend, sportsPath, Response::expectOK)
+        assertEquals(emptyList(), sportList.sports)
     }
-/*
+
     @Test
     fun `get a specific sport sucessfully`() {
-        val sportID = sportServices.createSport()
-        val baseRequest = Request(Method.GET, "$sportsPath${sportID}")
-        val response = backend(baseRequest).expectOK()
-        val sportFromBody = Json.decodeFromString<User>(response.bodyString())
 
-        assertEquals(testUser, userFromBody)
+        val sportID = postRequest<SportCreationBody, SportsIDResponse>(
+            backend,
+            sportsPath,
+            SportCreationBody("Football", "Game played with feet."),
+            Response::expectCreated
+        ).sportID
+
+        getRequest<Sport>(backend, "${sportsPath}${sportID}", Response::expectOK)
+    }
+/*/
+    @Test
+    fun `get error 404 trying to get a sport`(){
+        getRequest<>(backend, "${sportsPath}adsd3", Response::expectBadRequest)
     }
 */
+
 }

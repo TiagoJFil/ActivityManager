@@ -23,7 +23,7 @@ class UserRoutes(
     /**
      * Creates an [User] with the information that comes in the body of the HTTP request.
      */
-) {
+
     @Serializable data class UserIDResponse(val authToken: String, val id: String)
     @Serializable data class UserCreationBody(val name: String? = null, val email: String? = null)
     private fun createUser(request: Request): Response {

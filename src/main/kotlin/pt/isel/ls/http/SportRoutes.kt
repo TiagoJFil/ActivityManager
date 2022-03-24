@@ -28,6 +28,9 @@ class SportRoutes(
     @Serializable
     data class SportsIDResponse(val sportID: SportID)
 
+    /**
+     * Create a new sport with the information from the body of the HTTP request.
+     */
     private fun createSport(request: Request): Response {
         val sportsBody = Json.decodeFromString<SportCreationBody>(request.bodyString())
 
@@ -39,7 +42,7 @@ class SportRoutes(
     }
 
     /**
-     * Gets the sport that its given in the params of the path of the uri
+     * Gets the sport that its given in the params of the path of the uri.
      */
     private fun getSport(request: Request): Response {
         val sportID = request.path ("id")
@@ -54,6 +57,9 @@ class SportRoutes(
     @Serializable
     data class SportList(val sports: List<Sport>)
 
+    /**
+     * Gets all the available sports.
+     */
     private fun getSports(request: Request): Response {
         val sports = sportsServices.getSports()
         val bodyString = Json.encodeToString(SportList(sports))

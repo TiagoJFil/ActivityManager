@@ -1,9 +1,12 @@
 package pt.isel.ls.repository.memory
 
 import pt.isel.ls.entities.Activity
-import pt.isel.ls.entities.SportID
-import pt.isel.ls.entities.User
+
+
 import pt.isel.ls.repository.*
+import pt.isel.ls.utils.ActivityID
+import pt.isel.ls.utils.SportID
+import pt.isel.ls.utils.UserID
 
 
 class ActivityDataMemRepository(): ActivityRepository {
