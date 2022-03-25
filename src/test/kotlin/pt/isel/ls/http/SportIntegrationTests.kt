@@ -41,11 +41,12 @@ class SportIntegrationTests {
 
         getRequest<Sport>(backend, "${sportsPath}${sportID}", Response::expectOK)
     }
-/*/
+
     @Test
-    fun `get error 404 trying to get a sport`(){
-        getRequest<>(backend, "${sportsPath}adsd3", Response::expectBadRequest)
+    fun `get not found error trying to get a sport`(){
+        val id = 12354
+        getRequest<HttpError>(backend, "${sportsPath}${id}", Response::expectNotFound)
     }
-*/
+
 
 }

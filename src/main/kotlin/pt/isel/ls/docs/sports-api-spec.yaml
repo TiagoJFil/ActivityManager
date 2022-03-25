@@ -42,10 +42,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-        "400":
-          description: "Invalid ID supplied"
         "404":
           description: "User not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
   /users:
     get:
       tags:
@@ -82,6 +84,10 @@ paths:
                 $ref: "#/components/schemas/UserCreationResponse"
         "400":
           description: "A parameter is missing or is incorrect"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
   /routes/{id}:
     get:
       tags:
@@ -92,7 +98,7 @@ paths:
       parameters:
         - name: "id"
           in: "path"
-          description: "User's identifier."
+          description: "Route's identifier."
           required: true
           schema:
             type: "string"
@@ -104,10 +110,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Route"
-        "400":
-          description: "Invalid ID supplied"
         "404":
           description: "Route not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
   /routes:
     get:
       tags:
@@ -144,8 +152,16 @@ paths:
                 $ref: "#/components/schemas/RouteCreationResponse"
         "400":
           description: "A parameter is missing or is incorrect"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
         "401":
           description: "Unauthenticated"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
   /sports:
     get:
       tags:
@@ -182,8 +198,49 @@ paths:
                 $ref: "#/components/schemas/SportCreationResponse"
         "400":
           description: "A required parameter is missing or is incorrect"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+  /sports/{id}:
+    get:
+      tags:
+        - "Sports"
+      summary: "Get a sport"
+      description: "Gets a sport by id"
+      operationId: "getsport"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Sport's identifier."
+          required: true
+          schema:
+            type: "string"
+          example: "1234154"
+      responses:
+        "200":
+          description: "sucessfull operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Sport"
+        "404":
+          description: "Sport not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
 components:
   schemas:
+    HttpError:
+      type: "object"
+      properties:
+        code:
+          type: "int"
+          example: 2000
+        message:
+          type: "string"
+          example: "Invalid parameter: email"
     User:
       type: "object"
       properties:

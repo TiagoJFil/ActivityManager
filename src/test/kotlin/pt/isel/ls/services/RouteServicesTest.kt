@@ -10,6 +10,7 @@ import pt.isel.ls.repository.memory.RouteDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.guestUser
+import javax.sound.midi.MidiChannel
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
@@ -27,17 +28,17 @@ class RouteServicesTest {
 
     @Test
     fun `get a route that doesnt exist throws an error `(){
-        assertFailsWith<IllegalStateException> { routeServices.getRoute("312") }
+        assertFailsWith<ResourceNotFound> { routeServices.getRoute("312") }
     }
 
     @Test
-    fun `get a route without an id throws error `(){
-        assertFailsWith<IllegalArgumentException> { routeServices.getRoute(" ") }
+    fun `get a route with a blank id throws error `(){
+        assertFailsWith<InvalidParameter> { routeServices.getRoute(" ") }
     }
 
     @Test
     fun `get a route without an argument throws error `(){
-        assertFailsWith<IllegalArgumentException> { routeServices.getRoute(null) }
+        assertFailsWith<MissingParameter> { routeServices.getRoute(null) }
     }
 
     @Test
@@ -52,21 +53,21 @@ class RouteServicesTest {
 
     @Test
     fun `create a route with an invalid start location`(){
-        assertFailsWith<IllegalArgumentException> {
+        assertFailsWith<InvalidParameter> {
             routeServices.createRoute(userId = guestUser.id, startLocation = " ", endLocation = "b", distance = 10.0)
         }
     }
 
     @Test
-    fun `create a route with an invalid end location`(){
-        assertFailsWith<IllegalArgumentException> {
+    fun `create a route without end location`(){
+        assertFailsWith<MissingParameter> {
             routeServices.createRoute(userId = guestUser.id, startLocation = "a", endLocation = null, distance = 10.0)
         }
     }
 
     @Test
-    fun `create a route with an invalid distance`(){
-        assertFailsWith<IllegalArgumentException> {
+    fun `create a route without distance`(){
+        assertFailsWith<MissingParameter> {
             routeServices.createRoute(userId = guestUser.id, startLocation = "a", endLocation = "b", distance = null)
         }
     }

@@ -7,35 +7,28 @@ import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 
-const val NAME_REQUIRED = "Missing name."
-const val EMAIL_REQUIRED = "Missing email."
-const val NAME_NO_VALUE = "Name field has no value"
-const val EMAIL_NO_VALUE = "Email field has no value"
-const val EMAIL_ALREADY_EXISTS = "Email already registered."
-const val ID_REQUIRED = "Parameter id is required."
-const val USER_NOT_FOUND = "User does not exist."
-
 class UserServices(val repository: UserRepository) {
 
     /**
-     * Verifies the parameters received and creates calls the function [UserRepository] to create a [User].
+     * Verifies the parameters received and calls the function [UserRepository] to create a [User].
      * @param name the user's name
      * @param email the user's email
      * @return a pair of [Pair] with a [UserToken] and a [UserID]
      * @throws IllegalArgumentException
      */
     fun createUser(name : String?, email: String?) : Pair<UserToken,UserID>{
-        requireNotNull(name) { NAME_REQUIRED }
-        requireNotNull(email) { EMAIL_REQUIRED }
-        require(email.isNotBlank()) { EMAIL_NO_VALUE }
-        require(name.isNotBlank()) { NAME_NO_VALUE }
+        if(name == null) throw MissingParameter("name")
+        if(name.isBlank()) throw InvalidParameter("name")
+        if(email == null) throw MissingParameter("email")
+        if(email.isBlank()) throw InvalidParameter("email")
+
         val userId = generateRandomId()
         val userAuthToken = generateUUId()
 
         val possibleEmail = User.Email(email)
         val user =  User(name, possibleEmail,userId)
 
-        if(repository.userHasRepeatedEmail(userId,possibleEmail)) throw IllegalArgumentException( EMAIL_ALREADY_EXISTS)
+        if(repository.userHasRepeatedEmail(userId,possibleEmail)) throw InvalidParameter("email already exists")
         repository.addUser(user,userId,userAuthToken)
 
         return Pair(userAuthToken,userId)
@@ -49,12 +42,9 @@ class UserServices(val repository: UserRepository) {
      * @throws IllegalArgumentException
      */
     fun getUserByID(id: UserID?): User {
-        requireNotNull(id){ ID_REQUIRED }
-        require(id.isNotBlank()) { ID_EMPTY }
-        val user: User? = repository.getUserByID(id)
-        checkNotNull(user){ USER_NOT_FOUND }
-
-        return user
+        if (id == null) throw MissingParameter("id")
+        if (id.isBlank()) throw InvalidParameter("id")
+        return repository.getUserByID(id) ?: throw ResourceNotFound("User", "$id")
     }
 
     /**

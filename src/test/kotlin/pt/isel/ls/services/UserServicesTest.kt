@@ -25,15 +25,15 @@ class UserServicesTest {
     }
 
     @Test
-    fun `get an invalid user throws IllegalStateException`(){
-        assertFailsWith<IllegalStateException> {
+    fun `get an invalid user throws resource not found`(){
+        assertFailsWith<ResourceNotFound> {
             userServices.getUserByID("INVALID_ID")
         }
     }
 
     @Test
-    fun `get a user id without passing the id throws IllegalArgumentException`(){
-        assertFailsWith<IllegalArgumentException> {
+    fun `get a user id without passing the id throws missing parameter`(){
+        assertFailsWith<MissingParameter> {
             userServices.getUserByID(null)
         }
     }
@@ -50,29 +50,29 @@ class UserServicesTest {
 
     @Test
     fun `cant create a user without a valid email`(){
-        assertFailsWith<IllegalArgumentException> {
+        assertFailsWith<InvalidParameter> {
             userServices.createUser("abc", "abc@gm@a.il.com")
         }
     }
 
     @Test
     fun `cant create a user without an email`(){
-        assertFailsWith<IllegalArgumentException> {
+        assertFailsWith<MissingParameter> {
             userServices.createUser("abc", null)
         }
     }
 
     @Test
     fun `cant create a user with an empty string`(){
-        assertFailsWith<IllegalArgumentException> {
-            val sut = userServices.createUser("", null)
+        assertFailsWith<InvalidParameter> {
+            userServices.createUser("", "emailteste@hotmail.com")
         }
     }
 
     @Test
     fun `cant create a user without a name`(){
-        assertFailsWith<IllegalArgumentException> {
-            userServices.createUser(null, "abc@gm@a.il.com")
+        assertFailsWith<MissingParameter> {
+            userServices.createUser(null, "emailteste12@hotmail.com")
         }
     }
 

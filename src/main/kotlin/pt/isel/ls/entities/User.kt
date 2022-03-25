@@ -1,6 +1,7 @@
 package pt.isel.ls.entities
 
 import kotlinx.serialization.Serializable
+import pt.isel.ls.services.InvalidParameter
 import pt.isel.ls.utils.UserID
 
 /**
@@ -30,9 +31,8 @@ data class User(val name: String, val email: Email, val id: UserID) {
         }
 
         init {
-            require(emailRegex.matches(value)) { INVALID_FORMAT }
+            if(!emailRegex.matches(value)) throw InvalidParameter("email")
         }
-
     }
 
 }
