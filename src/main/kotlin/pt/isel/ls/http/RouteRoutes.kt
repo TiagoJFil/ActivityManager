@@ -12,9 +12,9 @@ import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.entities.Route
-import pt.isel.ls.repository.memory.USER_TOKEN
 import pt.isel.ls.services.RouteServices
 import pt.isel.ls.services.UserServices
+import pt.isel.ls.utils.GUEST_TOKEN
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
 
@@ -61,7 +61,7 @@ class RouteRoutes(
      */
     private fun createRoute(request: Request): Response{
         val routeInfo = Json.decodeFromString<RouteCreation>(request.bodyString())
-        val userId: UserID = userServices.getUserByToken(USER_TOKEN)
+        val userId: UserID = userServices.getUserByToken(GUEST_TOKEN)
         val routeId: RouteID =
             routeServices.createRoute(userId,routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)
 
@@ -81,5 +81,5 @@ class RouteRoutes(
 
 }
 
-fun routeRoutes(routeServices: RouteServices, userServices: UserServices) =
+fun Route(routeServices: RouteServices, userServices: UserServices) =
     RouteRoutes(routeServices, userServices).handler

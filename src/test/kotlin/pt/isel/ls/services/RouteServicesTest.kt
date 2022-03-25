@@ -10,7 +10,6 @@ import pt.isel.ls.repository.memory.RouteDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.guestUser
-import javax.sound.midi.MidiChannel
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 

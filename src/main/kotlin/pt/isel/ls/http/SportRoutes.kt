@@ -13,7 +13,7 @@ import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.entities.Sport
-import pt.isel.ls.repository.memory.USER_TOKEN
+import pt.isel.ls.utils.GUEST_TOKEN
 import pt.isel.ls.services.SportsServices
 import pt.isel.ls.services.UserServices
 import pt.isel.ls.utils.SportID
@@ -34,7 +34,7 @@ class SportRoutes(
     private fun createSport(request: Request): Response {
         val sportsBody = Json.decodeFromString<SportCreationBody>(request.bodyString())
 
-        val userID = userServices.getUserByToken(USER_TOKEN) // TODO: Extract token
+        val userID = userServices.getUserByToken(GUEST_TOKEN) // TODO: Extract token
         val sportID = sportsServices.createSport(userID, sportsBody.name, sportsBody.description)
 
         return Response(Status.CREATED)
@@ -76,5 +76,5 @@ class SportRoutes(
     )
 }
 
-fun sportsRoutes(sportsServices: SportsServices, userServices: UserServices) =
+fun Sport(sportsServices: SportsServices, userServices: UserServices) =
     SportRoutes(sportsServices, userServices).handler

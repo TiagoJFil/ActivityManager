@@ -5,10 +5,10 @@ import org.junit.Before
 import org.junit.Test
 import org.postgresql.ds.PGSimpleDataSource
 import kotlin.test.assertEquals
-
+/**
 private val jdbcDatabaseURL: String = System.getenv("JDBC_DATABASE_URL")
 
-class TableTest{
+class DbAccessTest{
 
     private val dataSource = PGSimpleDataSource()
     private val studentTable = "studentstest"
@@ -97,4 +97,4 @@ class TableTest{
         }
 
     }
-}
+}*/

@@ -1,31 +1,20 @@
 package pt.isel.ls.http
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import org.http4k.core.Method
-import org.http4k.core.Request
 import org.http4k.core.Response
-import org.junit.FixMethodOrder
-import org.junit.Test
-import org.junit.runners.MethodSorters
+import org.junit.Before
 import pt.isel.ls.repository.memory.UserDataMemRepository
 import pt.isel.ls.entities.User
 import pt.isel.ls.http.UserRoutes.*
 import pt.isel.ls.http.utils.*
 import pt.isel.ls.services.UserServices
 import pt.isel.ls.services.generateRandomId
-import pt.isel.ls.utils.UserID
+import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
-
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class UserIntegrationTests {
 
-    @Serializable
-    private data class UserTester(val name : String? = null, val email : String? = null)
     private val userPath = "/api/users/"
     private val testUser = User(
         name="test",
@@ -35,7 +24,7 @@ class UserIntegrationTests {
 
     private val testDataMem = UserDataMemRepository(testUser)
     private val userServices = UserServices(testDataMem)
-    private val backend = getApiRoutes(userRoutes(userServices))
+    private val backend = getApiRoutes(User(userServices))
 
     @Test fun `create multiple Users`(){
         val userCount = 1000
@@ -109,12 +98,13 @@ class UserIntegrationTests {
         postRequest<UserCreationBody, HttpError>(backend,userPath, body, Response::expectBadRequest)
     }
 
-
-    //Get Users
-    //"a" at the beggining to be the first test method to run
+    @Before
     @Test fun `a get a list without creating gives a list with the test user`(){
         val usersList = getRequest<UserList>(backend, userPath, Response::expectOK)
         assertEquals(listOf(testUser), usersList.users)
     }
+
+
+
 }
 

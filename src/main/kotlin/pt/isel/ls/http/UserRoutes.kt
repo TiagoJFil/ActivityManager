@@ -78,7 +78,7 @@ class UserRoutes(
 }
 
 
-fun userRoutes(userServices: UserServices) = UserRoutes(userServices).handler
+fun User(userServices: UserServices) = UserRoutes(userServices).handler
 
 
 

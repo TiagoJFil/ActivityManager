@@ -7,3 +7,5 @@ val guestUser = User(
     id = "guestID",
     email = User.Email("guest@gmail.com")
 )
+
+const val GUEST_TOKEN = "TOKEN"

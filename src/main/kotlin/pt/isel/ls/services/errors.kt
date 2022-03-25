@@ -9,8 +9,11 @@ data class InvalidParameter(val parameterName: String)
 data class MissingParameter(val parameterName: String)
     : AppError(2001, """Missing required parameter: "$parameterName" """)
 
-
 data class ResourceNotFound(val resourceName: String, val resourceID: String)
     : AppError(2002, """ $resourceName with id $resourceID  not found.""")
+
+
+
+
 
 

@@ -2,14 +2,15 @@ package pt.isel.ls.repository.memory
 
 import pt.isel.ls.entities.User
 import pt.isel.ls.repository.UserRepository
+import pt.isel.ls.utils.GUEST_TOKEN
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 
-const val USER_TOKEN = "TOKEN"
+
 
 class UserDataMemRepository(guest: User): UserRepository {
 
-    private val tokenTable = mutableMapOf<UserToken,UserID>( USER_TOKEN to guest.id)
+    private val tokenTable = mutableMapOf<UserToken,UserID>( GUEST_TOKEN to guest.id)
 
     private val usersMap: MutableMap<UserID, User> = mutableMapOf(guest.id to guest)
 
