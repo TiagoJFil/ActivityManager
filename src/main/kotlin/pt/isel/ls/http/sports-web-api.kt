@@ -3,17 +3,22 @@ package pt.isel.ls.http
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.http4k.core.*
+import org.http4k.core.Filter
+import org.http4k.core.HttpHandler
+import org.http4k.core.Response
+import org.http4k.core.Status
 import org.http4k.core.Status.Companion.BAD_REQUEST
 import org.http4k.core.Status.Companion.CONFLICT
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.NOT_FOUND
-import org.http4k.lens.Invalid
-import org.http4k.routing.ResourceLoader.Companion.Classpath
+import org.http4k.lens.Missing
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
-import org.http4k.routing.static
+import pt.isel.ls.services.ActivityServices
+import pt.isel.ls.services.RouteServices
+import pt.isel.ls.services.SportsServices
+import pt.isel.ls.services.UserServices
 import pt.isel.ls.services.*
 import java.net.ResponseCache
 
@@ -35,10 +40,11 @@ fun getApiRoutes(routes: RoutingHttpHandler) = routes(
  * @param routeServices  route services
  * @param sportsServices sports services
  */
-fun getAppRoutes(userServices: UserServices, routeServices: RouteServices, sportsServices: SportsServices) = routes(
+fun getAppRoutes(userServices: UserServices, routeServices: RouteServices, sportsServices: SportsServices, activityServices : ActivityServices) = routes(
     User(userServices),
     Route(routeServices, userServices),
     Sport(sportsServices, userServices),
+    activityRoutes(activityServices,sportsServices,userServices)
 )
 
 

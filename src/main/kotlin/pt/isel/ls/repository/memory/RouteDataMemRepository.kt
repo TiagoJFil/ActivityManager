@@ -18,11 +18,10 @@ class RouteDataMemRepository: RouteRepository {
     /**
      * Adds a new route.
      *
-     * @param newRoute the route to add
+     * @param route the route to add
      */
-    override fun addRoute(newRoute: Route){
-
-        routesMap[newRoute.id] = newRoute
+    override fun addRoute(route: Route) {
+        routesMap[route.id] = route
     }
 
     /**

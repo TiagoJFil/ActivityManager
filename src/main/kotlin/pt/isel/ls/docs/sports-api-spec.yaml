@@ -198,6 +198,22 @@ paths:
                 $ref: "#/components/schemas/SportCreationResponse"
         "400":
           description: "A required parameter is missing or is incorrect"
+  /activity/{sid}:
+    post:
+      description: "Creates a new activity associated to a sport"
+      requestBody:
+        description: "duration, date and route id(optional) to be attributed to an activity"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivityCreationBody"
+      parameters: []
+      responses:
+        "201":
+          description: "Created"
+        "400":
+          description: "A required parameter is missing or is incorrect"
           content:
             application/json:
               schema:
@@ -357,3 +373,16 @@ components:
         sportID:
           type: "string"
           example: "123141245"
+    ActivityCreationBody:
+      type: "object"
+      required:
+        - duration
+        - date
+      properties:
+        duration:
+          type: "string"
+        date:
+          type: "string"
+        rid:
+          type: "string"
+

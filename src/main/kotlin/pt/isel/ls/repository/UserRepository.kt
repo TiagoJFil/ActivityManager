@@ -10,7 +10,7 @@ interface UserRepository {
 
     fun getUserByID(id: String): User?
 
-    fun addUser(newUser: User, userId: UserID, userAuthToken: UserToken)
+    fun addUser(newUser: User, userAuthToken: UserToken)
 
     fun getUsers(): List<User>
 

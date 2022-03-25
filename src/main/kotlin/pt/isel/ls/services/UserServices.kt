@@ -29,7 +29,8 @@ class UserServices(val repository: UserRepository) {
         val user =  User(name, possibleEmail,userId)
 
         if(repository.userHasRepeatedEmail(userId,possibleEmail)) throw InvalidParameter("email already exists")
-        repository.addUser(user,userId,userAuthToken)
+        repository.addUser(user,userAuthToken)
+
 
         return Pair(userAuthToken,userId)
     }

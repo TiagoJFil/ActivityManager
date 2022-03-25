@@ -1,19 +1,16 @@
-package pt.isel.ls.repository.memory
+package pt.isel.ls.repository.db
 
 import pt.isel.ls.entities.Activity
-import pt.isel.ls.entities.Route
-import pt.isel.ls.repository.*
+import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 
 
-class ActivityDataMemRepository(): ActivityRepository {
-
-    private val activtiesMap = mutableMapOf<ActivityID, Activity>()
+class ActivityDbRepository: ActivityRepository {
 
     override fun addActivity(activity: Activity) {
-        activtiesMap[activity.id] = activity
+        TODO("Not yet implemented")
     }
 
     override fun getActivitiesBySport(sportID: SportID): List<Activity> {
@@ -31,5 +28,4 @@ class ActivityDataMemRepository(): ActivityRepository {
     override fun deleteActivity(activityID: ActivityID): Boolean {
         TODO("Not yet implemented")
     }
-
 }
