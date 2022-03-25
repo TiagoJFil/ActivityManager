@@ -16,9 +16,14 @@ import org.http4k.routing.routes
 import pt.isel.ls.entities.User
 import pt.isel.ls.services.UserServices
 
+
 class UserRoutes(
     val userServices: UserServices
-) {
+){
+    /**
+     * Creates an [User] with the information that comes in the body of the HTTP request.
+     */
+
     @Serializable data class UserIDResponse(val authToken: String, val id: String)
     @Serializable data class UserCreationBody(val name: String? = null, val email: String? = null)
     private fun createUser(request: Request): Response {
@@ -32,6 +37,9 @@ class UserRoutes(
             .body(Json.encodeToString(UserIDResponse(res.first, res.second)))
     }
 
+    /**
+     * Gets the user that is identified by the id that comes in the params of uri's path.
+     */
     private fun getUserDetails(request: Request): Response {
         val userId = request.path("id")
         val userResponse = userServices.getUserByID(userId)
@@ -39,10 +47,15 @@ class UserRoutes(
         return Response(Status.OK)
             .header("content-type", "application/json")
             .body(userEncoded)
+
     }
 
     @Serializable data class UserList(val users: List<User>)
-    private fun getUsers(request: Request): Response {
+
+    /**
+     * Gets all the users.
+     */
+    private fun getUsers(request: Request): Response{
         val users = userServices.getUsers()
         val usersJsonString = Json.encodeToString(UserList(users))
 
@@ -53,10 +66,16 @@ class UserRoutes(
 
     val handler: RoutingHttpHandler =
         "/users" bind routes(
-            "/" bind Method.POST to ::createUser,
-            "/" bind Method.GET to ::getUsers,
+            "/"     bind  Method.POST to ::createUser,
+            "/"     bind Method.GET to ::getUsers,
             "/{id}" bind Method.GET to ::getUserDetails,
         )
 }
 
+
 fun userRoutes(userServices: UserServices) = UserRoutes(userServices).handler
+
+
+
+
+

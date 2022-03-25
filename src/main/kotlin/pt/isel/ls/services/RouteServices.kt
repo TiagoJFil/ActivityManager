@@ -2,21 +2,34 @@ package pt.isel.ls.services
 
 import pt.isel.ls.entities.Route
 import pt.isel.ls.repository.RouteRepository
-import pt.isel.ls.utils.RouteID
-import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.*
 
-const val START_LOCATION_REQUIRED = "Start location required"
-const val END_LOCATION_REQUIRED = "End location required"
-const val DISTANCE_REQUIRED = "Distance required"
 
-class RouteServices(val repository: RouteRepository) {
+class RouteServices(val repository: RouteRepository){
 
+     /**
+     * Calls the function [RouteRepository] to get all the routes.
+     * @return [List] of [Route]
+     */
     fun getRoutes() = repository.getRoutes()
 
-    fun createRoute(userId: UserID, startLocation: String?, endLocation: String?, distance: Double?): RouteID {
-        require(startLocation != null && startLocation.isNotBlank()) { START_LOCATION_REQUIRED }
-        require(endLocation != null && endLocation.isNotBlank()) { END_LOCATION_REQUIRED }
-        requireNotNull(distance) { DISTANCE_REQUIRED }
+    /**
+     * Verifies the parameters received and calls the function [RouteRepository] to create a [Route].
+     * @param userId the unique id that identifies the user
+     * @param startLocation the starting location
+     * @param endLocation the end location
+     * @param distance the route's distance
+     * @return [RouteID] the unique id that identifies the route
+     */
+    fun createRoute(userId: UserID, startLocation: String?, endLocation: String?, distance: Double?): RouteID{
+
+        if(startLocation == null) throw MissingParameter("startLocation")
+        if(startLocation.isBlank()) throw InvalidParameter("startLocation")
+
+        if(endLocation == null) throw MissingParameter("endLocation")
+        if(endLocation.isBlank())  throw InvalidParameter("endLocation")
+
+        if(distance == null) throw MissingParameter("distance")
 
         val routeId = generateRandomId()
         val route = Route(routeId, startLocation, endLocation, distance, userId)
@@ -26,11 +39,16 @@ class RouteServices(val repository: RouteRepository) {
         return routeId
     }
 
+    /**
+     * Verifies the parameters received and calls the function [RouteRepository] to get a [Route].
+     *
+     * @param routeID the unique id that identifies the route
+     * @return [Route] the route identified by the given id
+     */
     fun getRoute(routeID: String?): Route {
-        requireNotNull(routeID) { " id must not be null" }
-        require(routeID.isNotBlank()) { " id field has no value " }
-        val route = repository.getRoute(routeID)
-        checkNotNull(route) { " No route found by the id given" }
-        return route
+        if (routeID == null) throw MissingParameter("routeID")
+        if (routeID.isBlank()) throw InvalidParameter("routeID")
+        return repository.getRoute(routeID) ?: throw ResourceNotFound("Route", "$routeID")
     }
+
 }

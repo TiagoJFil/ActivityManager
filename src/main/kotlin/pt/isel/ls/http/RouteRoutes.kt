@@ -24,6 +24,9 @@ class RouteRoutes(
 ){
     @Serializable data class RouteList(val routes: List<Route>)
 
+    /**
+     * Gets all the routes.
+     */
     private fun getRoutes(request: Request): Response{
         val routes = routeServices.getRoutes()
         val bodyString = Json.encodeToString(RouteList(routes))
@@ -47,31 +50,35 @@ class RouteRoutes(
 
     @Serializable
     data class RouteCreation(
-        val startLocation: String? = null,
+        val startLocation:String? = null,
         val endLocation: String? = null,
-        val distance: Double? = null
+        val distance: Double?=null
     )
+    @Serializable data class RouteIDResponse(val id: RouteID)
 
-    @Serializable
-    data class RouteIDResponse(val id: RouteID)
-
-    private fun createRoute(request: Request): Response {
+    /**
+     * Creates a route with the information that come in the body of the HTTP request.
+     */
+    private fun createRoute(request: Request): Response{
         val routeInfo = Json.decodeFromString<RouteCreation>(request.bodyString())
         val userId: UserID = userServices.getUserByToken(USER_TOKEN)
         val routeId: RouteID =
-            routeServices.createRoute(userId, routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)
+            routeServices.createRoute(userId,routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)
 
         return Response(Status.CREATED)
             .header("content-type", "application/json")
             .body(Json.encodeToString(RouteIDResponse(routeId)))
     }
 
+
     val handler =
-        "/routes" bind routes(
-            "/" bind Method.POST to ::createRoute,
-            "/" bind Method.GET to ::getRoutes,
-            "/{id}" bind Method.GET to ::getRoute,
-        )
+        "/routes" bind
+                routes(
+                    "/" bind Method.POST to ::createRoute,
+                    "/" bind Method.GET to ::getRoutes,
+                    "/{id}" bind Method.GET to ::getRoute,
+                )
+
 }
 
 fun routeRoutes(routeServices: RouteServices, userServices: UserServices) =

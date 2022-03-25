@@ -25,11 +25,11 @@ inline fun <reified T> getRequest(backend: HttpHandler, uri: String, expectedSta
  * and tries to parse the response body to a [BodyRes] object, calling an expect function
  * which ensures that the response has a determined status code.
  */
-inline fun <reified ResponseBody, reified RequestBody> postRequest(
+inline fun <reified RequestBody, reified ResponseBody> postRequest(
     backend: HttpHandler,
     uri: String,
-    expectedStatus: Response.() -> Response,
-    body: RequestBody
+    body: RequestBody,
+    expectedStatus: Response.() -> Response
 ): ResponseBody =
     Json.decodeFromString(
         backend(

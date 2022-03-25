@@ -10,6 +10,7 @@ import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.routing.bind
+import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.entities.Sport
 import pt.isel.ls.repository.memory.USER_TOKEN
@@ -27,6 +28,9 @@ class SportRoutes(
     @Serializable
     data class SportsIDResponse(val sportID: SportID)
 
+    /**
+     * Create a new sport with the information from the body of the HTTP request.
+     */
     private fun createSport(request: Request): Response {
         val sportsBody = Json.decodeFromString<SportCreationBody>(request.bodyString())
 
@@ -37,13 +41,25 @@ class SportRoutes(
             .body(Json.encodeToString(SportsIDResponse(sportID)))
     }
 
+    /**
+     * Gets the sport that its given in the params of the path of the uri.
+     */
     private fun getSport(request: Request): Response {
-        TODO()
+        val sportID = request.path ("id")
+        val sport = sportsServices.getSport(sportID)
+        val sportJson = Json.encodeToString(sport)
+
+        return Response(Status.OK)
+            .header("content-type", "application/json")
+            .body(sportJson)
     }
 
     @Serializable
     data class SportList(val sports: List<Sport>)
 
+    /**
+     * Gets all the available sports.
+     */
     private fun getSports(request: Request): Response {
         val sports = sportsServices.getSports()
         val bodyString = Json.encodeToString(SportList(sports))

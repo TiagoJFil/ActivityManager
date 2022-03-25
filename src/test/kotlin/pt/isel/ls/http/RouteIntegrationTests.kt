@@ -5,16 +5,16 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.http4k.core.Method
 import org.http4k.core.Request
+import org.http4k.core.Response
 import org.junit.Test
-import pt.isel.ls.http.utils.expectNotFound
-import pt.isel.ls.http.utils.expectBadRequest
-import pt.isel.ls.http.utils.expectCreated
-import pt.isel.ls.http.utils.expectMessage
-import pt.isel.ls.http.utils.expectOK
+import pt.isel.ls.entities.Route
+import pt.isel.ls.http.RouteRoutes.*
+import pt.isel.ls.http.RouteRoutes.RouteCreation.Companion
+import pt.isel.ls.http.utils.*
 import pt.isel.ls.repository.memory.RouteDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
 import pt.isel.ls.services.*
-import pt.isel.ls.utils.guestUser
+import pt.isel.ls.utils.*
 import kotlin.test.assertEquals
 
 class RouteIntegrationTests {
@@ -25,70 +25,48 @@ class RouteIntegrationTests {
     val backend = getApiRoutes(routeRoutes)
 
     @Test fun `get routes without creating returns empty list`(){
-        val baseRequest = Request(Method.GET, routePath)
-
-        val response = backend(baseRequest).expectOK()
-        val routesList = Json.decodeFromString<RouteRoutes.RouteList>(response.bodyString())
-
+        val routesList = getRequest<RouteList>(backend, routePath, Response::expectOK)
         assertEquals(emptyList(), routesList.routes)
     }
 
     @Test fun `create a route successfully`(){
-        val baseRequest = Request(Method.POST, routePath)
-        val routeCreation =
-            Json.encodeToString(RouteRoutes.RouteCreation(startLocation = "a", endLocation = "b", distance = 10.0))
-        backend(baseRequest.body(routeCreation)).expectCreated()
+        val body = RouteCreation(startLocation = "a", endLocation = "b", distance = 10.0)
+        postRequest<RouteCreation, RouteIDResponse>(backend, routePath, body, Response::expectCreated)
     }
 
 
     //TODO(Autenthication)
     @Test fun `create a route without start location`(){
-        val baseRequest = Request(Method.POST, routePath)
-        val routeCreation =
-            Json.encodeToString(RouteRoutes.RouteCreation(endLocation = "b", distance = 10.0))
-        backend(baseRequest.body(routeCreation)).expectBadRequest().expectMessage(START_LOCATION_REQUIRED)
+        val body = RouteCreation(endLocation = "b", distance = 10.0)
+        postRequest<RouteCreation, HttpError>(backend, routePath, body, Response::expectBadRequest)
     }
 
     @Test fun `create a route without end location`(){
-        val baseRequest = Request(Method.POST, routePath)
-        val routeCreation =
-            Json.encodeToString(RouteRoutes.RouteCreation(distance = 20.0, startLocation = "a"))
-        backend(baseRequest.body(routeCreation)).expectBadRequest().expectMessage(END_LOCATION_REQUIRED)
+        val body = RouteCreation(distance = 20.0, startLocation = "a")
+        postRequest<RouteCreation, HttpError>(backend, routePath, body, Response::expectBadRequest)
     }
 
     @Test fun `create a route without distance`(){
-        val baseRequest = Request(Method.POST, routePath)
-        val routeCreation =
-            Json.encodeToString(RouteRoutes.RouteCreation(endLocation = "b", startLocation = "c"))
-        backend(baseRequest.body(routeCreation)).expectBadRequest().expectMessage(DISTANCE_REQUIRED)
+        val body = RouteCreation(endLocation = "b", startLocation = "c")
+        postRequest<RouteCreation, HttpError>(backend, routePath, body, Response::expectBadRequest)
     }
 
     @Test fun `create a route with a blank parameter`(){
-        val baseRequest = Request(Method.POST, routePath)
-        val routeCreation =
-            Json.encodeToString(RouteRoutes.RouteCreation(startLocation = " ", endLocation = "b", distance = 10.0))
-        backend(baseRequest.body(routeCreation)).expectBadRequest().expectMessage(START_LOCATION_REQUIRED)
+        val body = RouteCreation(startLocation = " ", endLocation = "b", distance = 10.0)
+        postRequest<RouteCreation, HttpError>(backend, routePath, body, Response::expectBadRequest)
     }
 
 
     @Test fun `try to get a route that doesnt exist`(){
         val id = 123
-
-        val baseRequest = Request(Method.GET, "${routePath}${id}")
-
-        backend(baseRequest).expectNotFound()
+        println("${routePath}${id}")
+        getRequest<HttpError>(backend, "${routePath}${id}", Response::expectNotFound)
     }
 
     @Test fun `get a route`(){
-
-        val createRequest = Request(Method.POST, routePath)
-        val body = Json.encodeToString(RouteRoutes.RouteCreation(startLocation = "a", endLocation = "b", distance = 10.0))
-        val resString = backend(createRequest.body(body)).expectCreated().bodyString()
-
-        val routeId = Json.decodeFromString<RouteRoutes.RouteIDResponse>(resString).id
-
-        val baseRequest = Request(Method.GET, "${routePath}${routeId}")
-        backend(baseRequest).expectOK()
+        val body = RouteCreation(startLocation = "a", endLocation = "b", distance = 10.0)
+        val routeResponse = postRequest<RouteCreation, RouteIDResponse>(backend, routePath, body, Response::expectCreated)
+        getRequest<Route>(backend, "$routePath${routeResponse.id}", Response::expectOK)
     }
 
 
