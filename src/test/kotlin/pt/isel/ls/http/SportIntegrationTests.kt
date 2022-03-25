@@ -30,7 +30,7 @@ class SportIntegrationTests {
         val response = backend(baseRequest).expectOK()
         val sportList = Json.decodeFromString<SportRoutes.SportList>(response.bodyString())
 
-        assertEquals(emptyList(), sportList.routes)
+        assertEquals(emptyList(), sportList.sports)
     }
 
 }

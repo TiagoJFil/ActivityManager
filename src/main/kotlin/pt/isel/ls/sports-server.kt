@@ -6,11 +6,14 @@ import org.http4k.routing.RoutingHttpHandler
 import org.http4k.server.Http4kServer
 import org.http4k.server.Jetty
 import org.http4k.server.asServer
+import pt.isel.ls.http.ActivityRoutes
 import pt.isel.ls.http.getApiRoutes
 import pt.isel.ls.http.getAppRoutes
+import pt.isel.ls.repository.memory.ActivityDataMemRepository
 import pt.isel.ls.repository.memory.RouteDataMemRepository
 import pt.isel.ls.repository.memory.SportDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
+import pt.isel.ls.services.ActivityServices
 import pt.isel.ls.services.RouteServices
 import pt.isel.ls.services.SportsServices
 import pt.isel.ls.services.UserServices
@@ -29,11 +32,15 @@ fun main() {
     val sportsRepo = SportDataMemRepository()
     val sportsServices = SportsServices(sportsRepo)
 
+    val activityRepo = ActivityDataMemRepository()
+    val activityServices = ActivityServices(activityRepo)
+
     val api = getApiRoutes(
         getAppRoutes(
             userServices = userServices,
             routeServices = routeServices,
-            sportsServices = sportsServices
+            sportsServices = sportsServices,
+            activityServices = activityServices
         )
     )
 

@@ -1,15 +1,23 @@
 package pt.isel.ls.http
 
+import kotlinx.datetime.LocalDate
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.routing.bind
+import org.http4k.routing.path
 import org.http4k.routing.routes
+import pt.isel.ls.repository.memory.USER_TOKEN
 import pt.isel.ls.services.ActivityServices
-import pt.isel.ls.services.RouteServices
 import pt.isel.ls.services.SportsServices
 import pt.isel.ls.services.UserServices
+import pt.isel.ls.utils.UserID
+import java.time.format.DateTimeFormatter
 
 
 class ActivityRoutes(
@@ -17,9 +25,27 @@ class ActivityRoutes(
     val sportsServices: SportsServices,
     val userServices: UserServices
 ){
+    @Serializable
+    data class ActivityCreation(
+        val duration: String? = null,
+        val date: String? = null,
+        val rid: String? = null,
+    )
+    @Serializable
+    data class ActivityIdResponse(val id : String)
 
     private fun createActivity(request: Request): Response {
-        TODO()
+        val sportID = request.path("sid")
+        if(sportID == null) throw  IllegalArgumentException()
+
+        val activityBody = Json.decodeFromString<ActivityCreation>(request.bodyString())
+        val userId: UserID = userServices.getUserByToken(USER_TOKEN)
+
+
+        val activityId = activityServices.createActivity(userId, sportID, activityBody.duration, activityBody.date, activityBody.rid)
+            return Response(Status.CREATED)
+                .body(Json.encodeToString(ActivityIdResponse(activityId)))
+
     }
 
 
@@ -27,7 +53,7 @@ class ActivityRoutes(
     val handler =
         "/activity" bind
                 routes(
-                    "/{sid}" bind Method.POST to { Response(Status.NOT_IMPLEMENTED) },
+                    "/{sid}" bind Method.POST to ::createActivity,
                 )
 
 }

@@ -18,9 +18,9 @@ class UserDataMemRepository(guest: User) : UserRepository {
         return usersMap.values.any { it.email == email }
     }
 
-    override fun addUser(newUser: User, userId: UserID, userAuthToken: UserToken) {
-        usersMap[userId] = newUser
-        tokenTable[userAuthToken] = userId
+    override fun addUser(newUser: User, userAuthToken: UserToken) {
+        usersMap[newUser.id] = newUser
+        tokenTable[userAuthToken] = newUser.id
     }
 
     /**

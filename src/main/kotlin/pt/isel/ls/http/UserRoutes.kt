@@ -22,19 +22,14 @@ class UserRoutes(
     @Serializable data class UserIDResponse(val authToken: String, val id: String)
     @Serializable data class UserCreationBody(val name: String? = null, val email: String? = null)
     private fun createUser(request: Request): Response {
+        val bodyString = request.bodyString()
+        val body = Json.decodeFromString<UserCreationBody>(bodyString)
 
-        try {
-            val bodyString = request.bodyString()
-            val body = Json.decodeFromString<UserCreationBody>(bodyString)
+        val res = userServices.createUser(body.name, body.email)
 
-            val res = userServices.createUser(body.name, body.email)
-
-            return Response(CREATED)
-                .header("content-type", "application/json")
-                .body(Json.encodeToString(UserIDResponse(res.first, res.second)))
-        } catch (e: IllegalArgumentException) {
-            throw e
-        }
+        return Response(CREATED)
+            .header("content-type", "application/json")
+            .body(Json.encodeToString(UserIDResponse(res.first, res.second)))
     }
 
     private fun getUserDetails(request: Request): Response {

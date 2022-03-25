@@ -10,9 +10,8 @@ class RouteDataMemRepository : RouteRepository {
 
     override fun getRoutes(): List<Route> = routesMap.values.toList()
 
-    override fun addRoute(newRoute: Route) {
-
-        routesMap[newRoute.id] = newRoute
+    override fun addRoute(route: Route) {
+        routesMap[route.id] = route
     }
 
     override fun getRoute(id: RouteID): Route? = routesMap[id]
