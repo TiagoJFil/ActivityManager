@@ -8,9 +8,11 @@ import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.utils.*
 import java.time.DateTimeException
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
-class ActivityServices(val activityRepository: ActivityRepository, val userRepository: UserRepository){
+class ActivityServices(private val activityRepository: ActivityRepository, private val userRepository: UserRepository){
 
+    private val durationFormat = DateTimeFormatter.ofPattern("HH:mm:ss.SSS")
     /**
      * Creates a new activity.
      *
@@ -24,23 +26,24 @@ class ActivityServices(val activityRepository: ActivityRepository, val userRepos
      */
     fun createActivity(userId: UserID, sportID: String?, duration: String?, date: String?, rid: String?): ActivityID {
         try {
-            if(sportID == null) throw MissingParameter("sportsID")
+            if(sportID == null) throw MissingParameter("sportID")
+            if(sportID.isBlank())  throw InvalidParameter("sportID")
             if(duration == null) throw MissingParameter("duration")
+            if(duration.isBlank())  throw InvalidParameter("duration")
             if(date == null) throw MissingParameter("date")
-            if(duration.isBlank()) throw InvalidParameter("duration")
-            if(date.isBlank()) throw InvalidParameter("date")
-            if(rid != null && rid.isBlank()) InvalidParameter("rid")
-            val format = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
-            val formatVerification = format.parse(duration)
+            if(date.isBlank())  throw InvalidParameter("date")
+            if(rid != null && rid.isBlank())  throw InvalidParameter("rid")
+            durationFormat.parse(duration)
 
             val activityId = generateRandomId()
             val activity = Activity(activityId, date.toLocalDate(), duration, sportID, rid, userId)
-            //TODO("SID_NOT_FOUND ERROR) and DATE_INVALID THROW
 
             activityRepository.addActivity(activity)
             return activityId
         }catch (e: DateTimeException){
-            throw IllegalArgumentException("Wrong duration format")
+            throw InvalidParameter("duration")
+        }catch (e: IllegalArgumentException){
+            throw InvalidParameter("date")
         }
     }
 

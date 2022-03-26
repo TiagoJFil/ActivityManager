@@ -1,14 +1,10 @@
 package pt.isel.ls.api
 
-import kotlinx.datetime.toLocalDate
 import kotlinx.serialization.Serializable
 import org.http4k.core.Response
 import org.junit.Before
-import pt.isel.ls.api.ActivityRoutes.ActivityCreation
-import pt.isel.ls.api.SportRoutes.SportCreationBody
 import pt.isel.ls.api.UserRoutes.*
 import pt.isel.ls.api.utils.*
-import pt.isel.ls.entities.Activity
 import pt.isel.ls.repository.memory.UserDataMemRepository
 import pt.isel.ls.entities.User
 import pt.isel.ls.repository.memory.ActivityDataMemRepository

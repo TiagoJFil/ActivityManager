@@ -18,31 +18,29 @@ import pt.isel.ls.utils.UserID
 
 
 class ActivityRoutes(
-    val activityServices: ActivityServices,
-    val sportsServices: SportsServices,
-    val userServices: UserServices
+    private val activityServices: ActivityServices,
+    private val sportsServices: SportsServices,
+    private val userServices: UserServices
 ){
-    @Serializable
-    data class ActivityCreation(
+    @Serializable data class ActivityCreationBody(
         val duration: String? = null,
         val date: String? = null,
         val rid: String? = null,
     )
-    @Serializable
-    data class ActivityIdResponse(val activityID : String)
+    @Serializable data class ActivityIdResponse(val activityID : String)
 
+    /**
+     * Creates an [Activity] using the information received in the path and body of the request.
+     */
     private fun createActivity(request: Request): Response {
         val sportID = request.path("sid")
-        if(sportID == null) throw  IllegalArgumentException() //TODO: Throw InvalidParameter error in Activity services
 
-
-        val activityBody = Json.decodeFromString<ActivityCreation>(request.bodyString())
+        val activityBody = Json.decodeFromString<ActivityCreationBody>(request.bodyString())
         val userId: UserID = userServices.getUserByToken(getToken(request))
 
         val activityId = activityServices.createActivity(userId, sportID, activityBody.duration, activityBody.date, activityBody.rid)
-            return Response(Status.CREATED)
-                .body(Json.encodeToString(ActivityIdResponse(activityId)))
-
+        return Response(Status.CREATED)
+            .body(Json.encodeToString(ActivityIdResponse(activityId)))
     }
 
 

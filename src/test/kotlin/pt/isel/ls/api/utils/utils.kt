@@ -2,7 +2,7 @@ package pt.isel.ls.api.utils
 
 import org.http4k.core.Response
 import org.http4k.routing.RoutingHttpHandler
-import pt.isel.ls.api.ActivityRoutes.ActivityCreation
+import pt.isel.ls.api.ActivityRoutes.ActivityCreationBody
 import pt.isel.ls.api.ActivityRoutes.ActivityIdResponse
 import pt.isel.ls.api.RouteRoutes
 import pt.isel.ls.api.RouteRoutes.RouteIDResponse
@@ -39,7 +39,7 @@ fun RoutingHttpHandler.createUser(userCreationBody: UserCreationBody): UserIDRes
  * Helper function to create an activity, ensures it is created and returns the respective [ListActivities]
  * @param activityCreationBody the body of the activity to be created. Must be valid.
  */
-fun RoutingHttpHandler.createActivity(activityCreationBody: ActivityCreation, sportID: SportID): ActivityIdResponse
+fun RoutingHttpHandler.createActivity(activityCreationBody: ActivityCreationBody, sportID: SportID): ActivityIdResponse
         = postRequest(
         this,
         "$ACTIVITY_PATH$sportID",

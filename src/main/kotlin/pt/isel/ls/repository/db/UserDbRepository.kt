@@ -13,9 +13,7 @@ class UserDbRepository: UserRepository {
     private val dataSource = PGSimpleDataSource()
     private val userTable = "users"
     override fun getUserByID(id: UserID): User? {
-    TODO()
-    /*
-
+  /*
         dataSource.setURL(jdbcDatabaseURL)
         dataSource.connection.use {
             it.createStatement().use { statement ->
@@ -27,18 +25,9 @@ class UserDbRepository: UserRepository {
                 }
             }
         }
-        dataSource.connection.use {
-            val pstmt =it.prepareStatement("select * from $userTable where id = ?)")
+*/
 
-            pstmt.setString(1,id)
-            pstmt.
-            pstmt.apply {
-                val res = this.executeUpdate()
-
-            }
-        }
-        */
-
+        return null
     }
 
             override fun addUser(newUser: User, userAuthToken: UserToken) {
