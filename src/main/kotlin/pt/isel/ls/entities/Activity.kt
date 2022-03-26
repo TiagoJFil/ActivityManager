@@ -1,13 +1,10 @@
 package pt.isel.ls.entities
 
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 /**

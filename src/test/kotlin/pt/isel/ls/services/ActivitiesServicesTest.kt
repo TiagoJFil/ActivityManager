@@ -6,8 +6,6 @@ import pt.isel.ls.entities.Activity
 import pt.isel.ls.repository.memory.ActivityDataMemRepository
 import pt.isel.ls.repository.memory.SportDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
-import pt.isel.ls.utils.GUEST_TOKEN
-import pt.isel.ls.utils.Order
 import pt.isel.ls.utils.guestUser
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -94,5 +92,22 @@ class ActivitiesServicesTest {
             val sportID = sportServicesTest.createSport(guestUser.id, "Futebol", null)
             activitiesServices.getActivities(sportID, "ascending", null, "")
         }
+    }
+
+
+
+    @Test
+    fun `get an activity that doesnt exist throws an error`(){
+        assertFailsWith<ResourceNotFound> { activitiesServices.getActivity("312") }
+    }
+
+    @Test
+    fun `get an activity with a blank id throws error `(){
+        assertFailsWith<InvalidParameter> { activitiesServices.getActivity(" ") }
+    }
+
+    @Test
+    fun `get an activity without an argument throws error `(){
+        assertFailsWith<MissingParameter> { activitiesServices.getActivity(null) }
     }
 }

@@ -45,7 +45,8 @@ class ActivityDataMemRepository(): ActivityRepository {
      * @param activityID the identifier of the activity to get
      * @return [Activity] if the id exists or null if it doesn't
      */
-    override fun getActivity(activityID: ActivityID): Activity? = activitiesMap[activityID]
+    override fun getActivity(activityID: ActivityID): Activity? =activitiesMap[activityID]
+
 
     /**
      * Gets the activities that match the given sport id, date, route id
