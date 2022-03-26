@@ -18,47 +18,46 @@ import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 class SportIntegrationTests {
-    private val sportsPath = "/api/sports/"
     private val testDataMem = SportDataMemRepository()
     private val userTestDataMem = UserDataMemRepository(guestUser)
     private val userServices = UserServices(userTestDataMem)
     private val sportServices = SportsServices(testDataMem)
-    private val activityServices = ActivityServices(ActivityDataMemRepository())
+    private val activityServices = ActivityServices(ActivityDataMemRepository(), UserDataMemRepository(guestUser))
     private val backend = getApiRoutes(Sport(sportServices,userServices, activityServices))
 
 
     @Test
     fun `get sports without creating returns empty list`(){
-        val sportList = getRequest<SportList>(backend, sportsPath, Response::expectOK)
+        val sportList = getRequest<SportList>(backend, SPORT_PATH, Response::expectOK)
         assertEquals(emptyList(), sportList.sports)
     }
 
     @Test
     fun `get a specific sport sucessfully`() {
-        val sportID = createSport(SportCreationBody("Football", "Game played with feet."))
-        getRequest<Sport>(backend, "${sportsPath}${sportID}", Response::expectOK)
+        val sport = backend.createSport(SportCreationBody("Football", "Game played with feet.")).sportID
+        getRequest<Sport>(backend, "${SPORT_PATH}${sport}", Response::expectOK)
     }
 
     @Test fun `get not found error trying to get a sport that does not exist`(){
         val id = 12354
-        getRequest<HttpError>(backend, "${sportsPath}${id}", Response::expectNotFound)
+        getRequest<HttpError>(backend, "${SPORT_PATH}${id}", Response::expectNotFound)
     }
 
     @Test fun `create a sport sucessfully`(){
 
-        createSport(SportCreationBody("Basketball", "Game played with hands."))
+        backend.createSport(SportCreationBody("Basketball", "Game played with hands."))
 
     }
 
     @Test fun `create a sport without description is allowed`(){
 
-        createSport(SportCreationBody("Basketball"))
+        backend.createSport(SportCreationBody("Basketball"))
 
     }
 
     @Test fun `create a sport with a blank description is allowed`(){
 
-        createSport(SportCreationBody("Basketball", ""))
+        backend.createSport(SportCreationBody("Basketball", ""))
 
     }
 
@@ -66,7 +65,7 @@ class SportIntegrationTests {
 
         postRequest<SportCreationBody, HttpError>(
             backend,
-            sportsPath,
+            SPORT_PATH,
             SportCreationBody(description = ""),
             authHeader(GUEST_TOKEN),
             Response::expectBadRequest
@@ -78,7 +77,7 @@ class SportIntegrationTests {
 
         postRequest<SportCreationBody, HttpError>(
             backend,
-            sportsPath,
+            SPORT_PATH,
             SportCreationBody(name="", description = ""),
             authHeader(GUEST_TOKEN),
             Response::expectBadRequest
@@ -92,28 +91,17 @@ class SportIntegrationTests {
         val description = "Played with a cue"
 
         val creationBodies = List(1000){SportCreationBody(name, description)}
-        val sportsIds: List<String> = creationBodies.map { createSport(it).sportID }
+        val sportsIds: List<String> = creationBodies.map { backend.createSport(it).sportID }
 
         val expected = sportsIds.map { Sport(id=it, name, description, guestUser.id) }
-        val sportList = getRequest<SportList>(backend, sportsPath, Response::expectOK).sports
+        val sportList = getRequest<SportList>(backend, SPORT_PATH, Response::expectOK).sports
 
         expected.forEach { assertContains(sportList, it) }
 
     }
 
 
-    /**
-     * Helper function to create a sport, ensures it is created and returns the respective [SportIDResponse]
-     * @param sportCreationBody the body of the sport to be created. Must be valid.
-     */
-    private fun createSport(sportCreationBody: SportCreationBody): SportIDResponse
-        = postRequest(
-            backend,
-            sportsPath,
-            sportCreationBody,
-            headers = authHeader(GUEST_TOKEN),
-            Response::expectCreated
-        )
+
 
 
 

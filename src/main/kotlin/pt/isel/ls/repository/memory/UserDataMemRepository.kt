@@ -58,4 +58,8 @@ class UserDataMemRepository(guest: User) : UserRepository {
      */
     override fun getUserIDByToken(token: UserToken): UserID? = tokenTable[token]
 
+    /**
+     * Checks if the user with the given id exists
+     */
+    override fun hasUser(userID: UserID): Boolean = usersMap[userID] != null
 }

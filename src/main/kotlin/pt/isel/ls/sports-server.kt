@@ -36,7 +36,7 @@ fun main() {
     val sportsServices = SportsServices(sportsRepo)
 
     val activityRepo = ActivityDataMemRepository()
-    val activityServices = ActivityServices(activityRepo)
+    val activityServices = ActivityServices(activityRepo, userRepo)
 
     val api = getApiRoutes(
         getAppRoutes(

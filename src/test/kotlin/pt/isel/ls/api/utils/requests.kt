@@ -41,10 +41,11 @@ inline fun <reified RequestBody, reified ResponseBody> postRequest(
 ): ResponseBody =
     Json.decodeFromString(
         backend(
-            Request(Method.POST, uri).body(Json.encodeToString(body))
+            Request(Method.POST, uri)
+                    .body(Json.encodeToString(body))
+                    .headers(headers)
         )
             .expectedStatus()
-            .headers(headers)
             .bodyString()
     )
 

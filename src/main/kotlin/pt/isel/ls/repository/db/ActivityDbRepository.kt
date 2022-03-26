@@ -1,10 +1,9 @@
 package pt.isel.ls.repository.db
 
+import kotlinx.datetime.LocalDate
 import pt.isel.ls.entities.Activity
 import pt.isel.ls.repository.ActivityRepository
-import pt.isel.ls.utils.ActivityID
-import pt.isel.ls.utils.SportID
-import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.*
 
 
 class ActivityDbRepository: ActivityRepository {
@@ -22,6 +21,10 @@ class ActivityDbRepository: ActivityRepository {
     }
 
     override fun getActivity(activityID: ActivityID): Activity? {
+        TODO("Not yet implemented")
+    }
+
+    override fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?): List<Activity> {
         TODO("Not yet implemented")
     }
 

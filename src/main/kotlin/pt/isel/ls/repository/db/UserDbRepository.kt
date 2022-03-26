@@ -69,5 +69,9 @@ class UserDbRepository: UserRepository {
         TODO("Not yet implemented")
     }
 
+    override fun hasUser(userID: UserID): Boolean {
+        TODO("Not yet implemented")
+    }
+
 
 }

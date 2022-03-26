@@ -200,6 +200,9 @@ paths:
           description: "A required parameter is missing or is incorrect"
   /activity/{sid}:
     post:
+      tags:
+        - "Activities"
+      summary: "Create an activity"
       description: "Creates a new activity associated to a sport"
       requestBody:
         description: "duration, date and route id(optional) to be attributed to an activity"
@@ -208,7 +211,14 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/ActivityCreationBody"
-      parameters: []
+      parameters:
+        - name: "sid"
+          in: "path"
+          description: "Sport's identifier."
+          required: true
+          schema:
+            type: "string"
+          example: "1234"
       responses:
         "201":
           description: "Created"
@@ -246,6 +256,56 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HttpError"
+  /sports/{id}/activities:
+    get:
+      tags:
+        - "Activities"
+      summary: "Get a list of activities"
+      description: "Gets the activities that the sports match the given id"
+      operationId: "getActivities"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Sport's identifier."
+          required: true
+          schema:
+            type: "string"
+          example: "1234154"
+        - name: "rid"
+          in: query
+          description: "Route's identifier."
+          required: false
+          schema:
+            type: "string"
+          example: "123"
+        - name: "date"
+          in: query
+          description: "Date."
+          required: false
+          schema:
+            type: "string"
+          example: "2002-12-31"
+        - name: "orderBy"
+          in: query
+          description: "order method."
+          required: true
+          schema:
+            type: "string"
+          example: "ascending or descending"
+      responses:
+        "200":
+          description: "sucessfull operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityList"
+        "400":
+          description: "A required parameter is missing or is incorrect"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+
 components:
   schemas:
     HttpError:
@@ -373,6 +433,33 @@ components:
         sportID:
           type: "string"
           example: "123141245"
+    Activity:
+      type: "object"
+      required:
+        - id
+        - date
+        - duration
+        - sport
+        - user
+      properties:
+        id:
+          type: "string"
+          example: "1234"
+        date:
+          type: "string"
+          example: "2002-05-20"
+        duration:
+          type: "string"
+          example: "02:10:32.123"
+        sport:
+          type: "string"
+          example: "2222"
+        route:
+          type: "string"
+          example: "3333"
+        user:
+          type: "string"
+          example: "1111"
     ActivityCreationBody:
       type: "object"
       required:
@@ -385,4 +472,11 @@ components:
           type: "string"
         rid:
           type: "string"
+    ActivityList:
+      type: "object"
+      properties:
+        activities:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Activity"
 
