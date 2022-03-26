@@ -26,8 +26,6 @@ data class User(val name: String, val email: Email, val id: UserID) {
             private val emailRegex = Regex(
                 "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$"
             )
-
-            private const val INVALID_FORMAT = "Email has the wrong format."
         }
 
         init {

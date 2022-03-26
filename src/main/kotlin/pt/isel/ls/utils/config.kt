@@ -2,6 +2,7 @@ package pt.isel.ls.utils
 
 import pt.isel.ls.entities.User
 
+
 val guestUser = User(
     name = "guest",
     id = "guestID",
@@ -9,3 +10,4 @@ val guestUser = User(
 )
 
 const val GUEST_TOKEN = "TOKEN"
+

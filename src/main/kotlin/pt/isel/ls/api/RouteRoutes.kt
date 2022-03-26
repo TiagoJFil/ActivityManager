@@ -1,4 +1,4 @@
-package pt.isel.ls.http
+package pt.isel.ls.api
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -14,7 +14,6 @@ import org.http4k.routing.routes
 import pt.isel.ls.entities.Route
 import pt.isel.ls.services.RouteServices
 import pt.isel.ls.services.UserServices
-import pt.isel.ls.utils.GUEST_TOKEN
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
 
@@ -54,14 +53,14 @@ class RouteRoutes(
         val endLocation: String? = null,
         val distance: Double?=null
     )
-    @Serializable data class RouteIDResponse(val id: RouteID)
+    @Serializable data class RouteIDResponse(val routeID: RouteID)
 
     /**
      * Creates a route with the information that come in the body of the HTTP request.
      */
     private fun createRoute(request: Request): Response{
         val routeInfo = Json.decodeFromString<RouteCreation>(request.bodyString())
-        val userId: UserID = userServices.getUserByToken(GUEST_TOKEN)
+        val userId: UserID = userServices.getUserByToken(getToken(request))
         val routeId: RouteID =
             routeServices.createRoute(userId,routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)
 

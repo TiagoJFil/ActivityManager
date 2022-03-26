@@ -87,7 +87,7 @@ class UserServicesTest {
 
     @Test
     fun `get an user id from an invalid token`(){
-        assertFailsWith<IllegalAccessException> {
+        assertFailsWith<UnauthenticatedError> {
             userServices.getUserByToken("")
         }
     }

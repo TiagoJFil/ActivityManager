@@ -60,8 +60,11 @@ class UserServices(val repository: UserRepository) {
      *
      * @param token the user's unique token
      */
-    fun getUserByToken(token: UserToken): UserID =
-        repository.getUserIDByToken(token) ?: throw IllegalAccessException("Invalid Token")
+    fun getUserByToken(token: UserToken?): UserID{
+        if(token == null) throw UnauthenticatedError()
+        return repository.getUserIDByToken(token) ?: throw UnauthenticatedError()
+    }
+
 }
 
 

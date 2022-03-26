@@ -1,7 +1,5 @@
 package pt.isel.ls.services
 
-
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toLocalDate
 import pt.isel.ls.entities.Activity
 import pt.isel.ls.repository.ActivityRepository
@@ -21,6 +19,14 @@ const val RID_NO_VALUE = "RID field has no value."
 
 
 class ActivityServices(val repository: ActivityRepository){
+    /**
+     * Creates a new activity.
+     * @param sportID The sports id of the activity.
+     * @param duration The duration of the activity.
+     * @param date The date of the activity.
+     * @param rid The id of the route where the activity will take place.
+     * @param userId The id of the user that created the activity.
+     */
     fun createActivity(userId: UserID, sportID: String?, duration: String?, date: String?, rid: String?): ActivityID {
         try {
             requireNotNull(sportID) { SID_REQUIRED }
@@ -43,6 +49,12 @@ class ActivityServices(val repository: ActivityRepository){
         }catch (e: DateTimeException){
             throw IllegalArgumentException("Wrong duration format")
         }
+    }
+
+    fun getSportActivities(sportID: String?): List<Activity> {
+        if(sportID == null) throw MissingParameter("sportID")
+        if(sportID.isBlank()) throw InvalidParameter("sportID")
+        return repository.getActivitiesBySport(sportID)
     }
 
 }

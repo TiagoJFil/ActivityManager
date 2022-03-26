@@ -7,14 +7,14 @@ import pt.isel.ls.utils.*
 
 class RouteServices(val repository: RouteRepository){
 
-     /**
-     * Calls the function [RouteRepository] to get all the routes.
-     * @return [List] of [Route]
+    /**
+     * Returns a list of all routes.
+     * @return a list of all routes.
      */
     fun getRoutes() = repository.getRoutes()
 
     /**
-     * Verifies the parameters received and calls the function [RouteRepository] to create a [Route].
+     * Creates a new route.
      * @param userId the unique id that identifies the user
      * @param startLocation the starting location
      * @param endLocation the end location
@@ -40,7 +40,7 @@ class RouteServices(val repository: RouteRepository){
     }
 
     /**
-     * Verifies the parameters received and calls the function [RouteRepository] to get a [Route].
+     * Gets a route by its unique id.
      *
      * @param routeID the unique id that identifies the route
      * @return [Route] the route identified by the given id

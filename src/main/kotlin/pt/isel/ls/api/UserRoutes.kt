@@ -1,4 +1,4 @@
-package pt.isel.ls.http
+package pt.isel.ls.api
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -14,11 +14,13 @@ import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.entities.User
+import pt.isel.ls.services.ActivityServices
 import pt.isel.ls.services.UserServices
 
 
 class UserRoutes(
-    val userServices: UserServices
+    val userServices: UserServices,
+    val activityServices: ActivityServices
 ){
     /**
      * Creates an [User] with the information that comes in the body of the HTTP request.
@@ -73,7 +75,8 @@ class UserRoutes(
 }
 
 
-fun User(userServices: UserServices) = UserRoutes(userServices).handler
+fun User(userServices: UserServices, activityServices: ActivityServices)
+    = UserRoutes(userServices, activityServices).handler
 
 
 

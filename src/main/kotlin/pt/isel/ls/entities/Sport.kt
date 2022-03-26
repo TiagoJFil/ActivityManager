@@ -13,5 +13,10 @@ import pt.isel.ls.utils.UserID
  * @property user respective sport's user
  */
 @Serializable
-data class Sport(val id : SportID, val name: String, val description : String? = null, val user: UserID)
+data class Sport(
+    val id: SportID,
+    val name: String,
+    val description: String? = null,
+    val user: UserID
+)
 

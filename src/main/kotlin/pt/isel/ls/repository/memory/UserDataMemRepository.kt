@@ -7,11 +7,16 @@ import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 
 
+class UserDataMemRepository(guest: User) : UserRepository {
 
-class UserDataMemRepository(guest: User): UserRepository {
+    /**
+     * Mapping between a token and a user id
+     */
+    private val tokenTable = mutableMapOf<UserToken, UserID>(GUEST_TOKEN to guest.id)
 
-    private val tokenTable = mutableMapOf<UserToken,UserID>( GUEST_TOKEN to guest.id)
-
+    /**
+     * Mapping between a user id and it's identified user
+     */
     private val usersMap: MutableMap<UserID, User> = mutableMapOf(guest.id to guest)
 
     /**
@@ -21,8 +26,7 @@ class UserDataMemRepository(guest: User): UserRepository {
      * @param email the user's email
      * @return [Boolean] true if another user already has the given email or false if it doesn't
      */
-    //override fun hasUser(id: UserId) = usersMap.contains(id)
-    override fun userHasRepeatedEmail(userId: UserID, email : User.Email) : Boolean{
+    override fun userHasRepeatedEmail(userId: UserID, email: User.Email): Boolean {
         return usersMap.values.any { it.email == email }
     }
 
@@ -30,12 +34,8 @@ class UserDataMemRepository(guest: User): UserRepository {
      * Adds a new user.
      *
      * @param newUser the new [User] to add
-     * @param userId the [UserID] of the user to add
      * @param userAuthToken the [UserToken] of the user to add
      */
-    override fun addUser(newUser: User, userId: UserID, userAuthToken: UserToken) {
-        usersMap[userId] = newUser
-        tokenTable[userAuthToken] = userId
     override fun addUser(newUser: User, userAuthToken: UserToken) {
         usersMap[newUser.id] = newUser
         tokenTable[userAuthToken] = newUser.id

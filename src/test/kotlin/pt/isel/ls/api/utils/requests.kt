@@ -1,12 +1,9 @@
-package pt.isel.ls.http.utils
+package pt.isel.ls.api.utils
 
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.http4k.core.HttpHandler
-import org.http4k.core.Method
-import org.http4k.core.Request
-import org.http4k.core.Response
+import org.http4k.core.*
 
 /**
  * Makes a get request from [backend] handler
@@ -39,12 +36,15 @@ inline fun <reified RequestBody, reified ResponseBody> postRequest(
     backend: HttpHandler,
     uri: String,
     body: RequestBody,
-    expectedStatus: Response.() -> Response
+    headers: Headers= emptyList(),
+    expectedStatus: Response.() -> Response,
 ): ResponseBody =
     Json.decodeFromString(
         backend(
             Request(Method.POST, uri).body(Json.encodeToString(body))
         )
             .expectedStatus()
+            .headers(headers)
             .bodyString()
     )
+

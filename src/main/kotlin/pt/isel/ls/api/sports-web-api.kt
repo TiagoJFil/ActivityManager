@@ -1,17 +1,15 @@
-package pt.isel.ls.http
+package pt.isel.ls.api
 
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
+import org.http4k.core.Request
 import org.http4k.core.Response
-import org.http4k.core.Status
 import org.http4k.core.Status.Companion.BAD_REQUEST
-import org.http4k.core.Status.Companion.CONFLICT
-import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.NOT_FOUND
-import org.http4k.lens.Missing
+import org.http4k.core.Status.Companion.UNAUTHORIZED
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
@@ -20,7 +18,7 @@ import pt.isel.ls.services.RouteServices
 import pt.isel.ls.services.SportsServices
 import pt.isel.ls.services.UserServices
 import pt.isel.ls.services.*
-import java.net.ResponseCache
+import pt.isel.ls.utils.UserToken
 
 /**
  *
@@ -35,18 +33,17 @@ fun getApiRoutes(routes: RoutingHttpHandler) = routes(
 )
 
 /**
- * Gets all main routes from the api Services
+ * Gets all main app routes
  * @param userServices   user services
  * @param routeServices  route services
  * @param sportsServices sports services
  */
 fun getAppRoutes(userServices: UserServices, routeServices: RouteServices, sportsServices: SportsServices, activityServices : ActivityServices) = routes(
-    User(userServices),
+    User(userServices, activityServices),
     Route(routeServices, userServices),
-    Sport(sportsServices, userServices),
-    activityRoutes(activityServices,sportsServices,userServices)
+    Sport(sportsServices, userServices, activityServices),
+    Activity(activityServices,sportsServices,userServices)
 )
-
 
 /**
  * Catches app errors thrown on request handlers
@@ -64,6 +61,7 @@ private val onErrorFilter = Filter { handler ->
 
             when (appError) {
                 is ResourceNotFound -> baseResponse.status(NOT_FOUND)
+                is UnauthenticatedError -> baseResponse.status(UNAUTHORIZED)
                 is MissingParameter, is InvalidParameter -> baseResponse
             }
 
@@ -74,3 +72,14 @@ private val onErrorFilter = Filter { handler ->
     }
     handlerWrapper
 }
+
+/**
+ * Gets the user token from the request
+ * @param request request to get the token from
+ * @return the user token
+ */
+fun getToken(request: Request): UserToken? =
+    request.header("Authorization")?.substringAfter("Bearer ")
+
+
+

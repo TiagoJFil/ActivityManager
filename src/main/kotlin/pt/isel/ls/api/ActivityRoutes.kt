@@ -1,6 +1,5 @@
-package pt.isel.ls.http
+package pt.isel.ls.api
 
-import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -12,12 +11,11 @@ import org.http4k.core.Status
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
-import pt.isel.ls.repository.memory.USER_TOKEN
 import pt.isel.ls.services.ActivityServices
 import pt.isel.ls.services.SportsServices
 import pt.isel.ls.services.UserServices
+import pt.isel.ls.utils.GUEST_TOKEN
 import pt.isel.ls.utils.UserID
-import java.time.format.DateTimeFormatter
 
 
 class ActivityRoutes(
@@ -36,19 +34,17 @@ class ActivityRoutes(
 
     private fun createActivity(request: Request): Response {
         val sportID = request.path("sid")
-        if(sportID == null) throw  IllegalArgumentException()
+        if(sportID == null) throw  IllegalArgumentException() //TODO: Throw InvalidParameter error in Activity services
+
 
         val activityBody = Json.decodeFromString<ActivityCreation>(request.bodyString())
-        val userId: UserID = userServices.getUserByToken(USER_TOKEN)
-
+        val userId: UserID = userServices.getUserByToken(getToken(request))
 
         val activityId = activityServices.createActivity(userId, sportID, activityBody.duration, activityBody.date, activityBody.rid)
             return Response(Status.CREATED)
                 .body(Json.encodeToString(ActivityIdResponse(activityId)))
 
     }
-
-
 
     val handler =
         "/activity" bind
@@ -58,5 +54,5 @@ class ActivityRoutes(
 
 }
 
-fun activityRoutes( activityServices: ActivityServices, sportsServices: SportsServices, userServices: UserServices) =
+fun Activity(activityServices: ActivityServices, sportsServices: SportsServices, userServices: UserServices) =
     ActivityRoutes(activityServices,sportsServices,userServices).handler

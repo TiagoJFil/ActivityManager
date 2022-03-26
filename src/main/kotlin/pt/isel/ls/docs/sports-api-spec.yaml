@@ -252,7 +252,7 @@ components:
       type: "object"
       properties:
         code:
-          type: "int"
+          type: "integer"
           example: 2000
         message:
           type: "string"

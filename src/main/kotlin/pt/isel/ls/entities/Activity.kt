@@ -20,7 +20,6 @@ import java.util.*
  * @param route activity's route id, null by default
  * @param user activity's user
  */
-
 @Serializable
 data class Activity(
     val id: String,
@@ -30,11 +29,3 @@ data class Activity(
     val route: RouteID? = null,
     val user: UserID
 )
-
-fun main(){
-    val pattern = "yyyy-MM-dd"
-    val simpleDateFormat = SimpleDateFormat(pattern)
-    val a = "2002 12 23".toLocalDateTime()
-    val date = simpleDateFormat.format(Date())
-    println(date)
-}

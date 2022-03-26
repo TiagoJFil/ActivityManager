@@ -1,4 +1,4 @@
-package pt.isel.ls.http
+package pt.isel.ls.api
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -13,20 +13,21 @@ import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.entities.Sport
-import pt.isel.ls.utils.GUEST_TOKEN
+import pt.isel.ls.services.ActivityServices
 import pt.isel.ls.services.SportsServices
 import pt.isel.ls.services.UserServices
 import pt.isel.ls.utils.SportID
 
 class SportRoutes(
     val sportsServices: SportsServices,
-    val userServices: UserServices
+    val userServices: UserServices,
+    val activityServices: ActivityServices
 ) {
 
     @Serializable
     data class SportCreationBody(val name: String? = null, val description: String? = null)
     @Serializable
-    data class SportsIDResponse(val sportID: SportID)
+    data class SportIDResponse(val sportID: SportID)
 
     /**
      * Create a new sport with the information from the body of the HTTP request.
@@ -34,11 +35,11 @@ class SportRoutes(
     private fun createSport(request: Request): Response {
         val sportsBody = Json.decodeFromString<SportCreationBody>(request.bodyString())
 
-        val userID = userServices.getUserByToken(GUEST_TOKEN) // TODO: Extract token
+        val userID = userServices.getUserByToken(getToken(request))
         val sportID = sportsServices.createSport(userID, sportsBody.name, sportsBody.description)
 
         return Response(Status.CREATED)
-            .body(Json.encodeToString(SportsIDResponse(sportID)))
+            .body(Json.encodeToString(SportIDResponse(sportID)))
     }
 
     /**
@@ -67,14 +68,28 @@ class SportRoutes(
             .body(bodyString)
     }
 
+    private fun getSportActivities(request: Request): Response {
+        val sportID = request.path("id")
+        val activities = activityServices.getSportActivities(sportID)
+        val activitiesJson = Json.encodeToString(activities)
+
+        return Response(Status.OK)
+            .header("content-type", "application/json")
+            .body(activitiesJson)
+    }
+
+
     val handler = routes(
         "/sports" bind routes(
             "/" bind POST to ::createSport,
             "/{id}" bind GET to ::getSport,
             "/" bind GET to ::getSports,
+            "/{id]/activities"  bind GET to ::getSportActivities
         )
     )
+
+
 }
 
-fun Sport(sportsServices: SportsServices, userServices: UserServices) =
-    SportRoutes(sportsServices, userServices).handler
+fun Sport(sportsServices: SportsServices, userServices: UserServices, activityServices: ActivityServices) =
+    SportRoutes(sportsServices, userServices, activityServices).handler
