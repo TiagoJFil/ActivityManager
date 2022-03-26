@@ -20,15 +20,16 @@ import pt.isel.ls.services.UserServices
 
 
 class UserRoutes(
-    val userServices: UserServices,
-    val activityServices: ActivityServices
+    private val userServices: UserServices,
+    private val activityServices: ActivityServices
 ){
+    @Serializable data class UserIDResponse(val authToken: String, val id: String)
+    @Serializable data class UserCreationBody(val name: String? = null, val email: String? = null)
+    @Serializable data class UserList(val users: List<User>)
+    @Serializable data class ListActivities(val activities: List<Activity>)
     /**
      * Creates an [User] with the information that comes in the body of the HTTP request.
      */
-
-    @Serializable data class UserIDResponse(val authToken: String, val id: String)
-    @Serializable data class UserCreationBody(val name: String? = null, val email: String? = null)
     private fun createUser(request: Request): Response {
         val bodyString = request.bodyString()
         val body = Json.decodeFromString<UserCreationBody>(bodyString)
@@ -50,10 +51,7 @@ class UserRoutes(
         return Response(Status.OK)
             .header("content-type", "application/json")
             .body(userEncoded)
-
     }
-
-    @Serializable data class UserList(val users: List<User>)
 
     /**
      * Gets all the users.
@@ -67,8 +65,6 @@ class UserRoutes(
             .body(usersJsonString)
     }
 
-    @Serializable
-    data class ListActivities(val activities: List<Activity>)
 
     /**
      * Gets all the activities created by the user that matches the given id.

@@ -3,10 +3,8 @@ package pt.isel.ls.api
 import kotlinx.datetime.toLocalDate
 import org.http4k.core.Response
 import org.junit.Test
-import pt.isel.ls.api.ActivityRoutes.ActivityCreation
-import pt.isel.ls.api.ActivityRoutes.ActivityIdResponse
+import pt.isel.ls.api.ActivityRoutes.ActivityCreationBody
 import pt.isel.ls.api.SportRoutes.ListActivities
-import pt.isel.ls.api.SportRoutes.SportList
 import pt.isel.ls.api.utils.*
 import pt.isel.ls.entities.Activity
 import pt.isel.ls.repository.memory.ActivityDataMemRepository
@@ -30,6 +28,42 @@ class ActivitiesIntegrationTests {
     val routeServices = RouteServices(RouteDataMemRepository())
     private val backend = getApiRoutes(getAppRoutes(userServices, routeServices, sportsServices,activityServices))
 
+
+    @Test
+    fun `try to create an activity without the date`(){
+        val sportID = "1"
+        val body = ActivityCreationBody("02:16:32.993",null , "123")
+        postRequest<ActivityCreationBody, HttpError>(backend, "${ACTIVITY_PATH}${sportID}", body, headers = authHeader(GUEST_TOKEN), Response::expectBadRequest)
+    }
+    @Test
+    fun `try to create an activity without the duration`(){
+        val sportID = "13"
+        val body =ActivityCreationBody("02:16:32.993",null , "123")
+        postRequest<ActivityCreationBody, HttpError>(backend, "${ACTIVITY_PATH}${sportID}", body, headers = authHeader(GUEST_TOKEN), Response::expectBadRequest)
+
+    }
+    @Test
+    fun `try to create an activity with an invalid sportId`(){
+        val sportID = "   "
+        val body = ActivityCreationBody("02:16:32.993","2020-01-01", "123")
+        postRequest<ActivityCreationBody, HttpError>(backend, "${ACTIVITY_PATH}${sportID}", body, headers = authHeader(GUEST_TOKEN), Response::expectBadRequest)
+    }
+
+    @Test
+    fun `create an activity without the rid`(){
+        val sportID = "123"
+        val body = ActivityCreationBody("02:16:32.993","2020-01-01", null)
+        backend.createActivity(body,sportID)
+    }
+
+    @Test
+    fun `create an activity sucessfuly`(){
+        val sportID = "1234"
+        val body = ActivityCreationBody("02:16:32.993","2020-01-01", "123")
+        backend.createActivity(body,sportID)
+    }
+
+
     @Test
     fun `get a user's activities returns empty list`() {
         val activitiesList = getRequest<UserRoutes.ListActivities>(
@@ -46,7 +80,7 @@ class ActivitiesIntegrationTests {
         val sportID = backend.createSport(SportRoutes.SportCreationBody("Futebol")).sportID
 
         val activityID = backend.createActivity(
-                ActivityCreation("05:10:32.123", "2002-12-31", "1234"),
+                ActivityCreationBody("05:10:32.123", "2002-12-31", "1234"),
                 sportID
         ).activityID
 
@@ -74,12 +108,12 @@ class ActivitiesIntegrationTests {
         val sportID = backend.createSport(SportRoutes.SportCreationBody("Futebol")).sportID
 
         val activityID1 = backend.createActivity(
-                ActivityCreation("05:10:32.123", "2002-12-31", "1234")
+                ActivityCreationBody("05:10:32.123", "2002-12-31", "1234")
                 ,sportID
         ).activityID
 
         val activityID2 = backend.createActivity(
-                ActivityCreation("02:10:32.123", "2002-12-30", "1234"),
+                ActivityCreationBody("02:10:32.123", "2002-12-30", "1234"),
                 sportID
         ).activityID
 
@@ -113,17 +147,17 @@ class ActivitiesIntegrationTests {
         val sportID = backend.createSport(SportRoutes.SportCreationBody("Futebol")).sportID
 
         backend.createActivity(
-                ActivityCreation("05:10:32.123", "2002-12-31", "1234")
+                ActivityCreationBody("05:10:32.123", "2002-12-31", "1234")
                 ,sportID
         ).activityID
 
         val activityID2 = backend.createActivity(
-                ActivityCreation("02:10:32.123", "2002-05-20", "1234"),
+                ActivityCreationBody("02:10:32.123", "2002-05-20", "1234"),
                 sportID
         ).activityID
 
         val activityID3 = backend.createActivity(
-                ActivityCreation("03:10:32.123", "2002-05-20", "1234"),
+                ActivityCreationBody("03:10:32.123", "2002-05-20", "1234"),
                 sportID
         ).activityID
 
@@ -149,17 +183,17 @@ class ActivitiesIntegrationTests {
         val sportID = backend.createSport(SportRoutes.SportCreationBody("Futebol")).sportID
 
         backend.createActivity(
-                ActivityCreation("05:10:32.123", "2002-12-31", "123456")
+                ActivityCreationBody("05:10:32.123", "2002-12-31", "123456")
                 ,sportID
         ).activityID
 
         val activityID2 = backend.createActivity(
-                ActivityCreation("02:10:32.123", "2002-05-20", "1234"),
+                ActivityCreationBody("02:10:32.123", "2002-05-20", "1234"),
                 sportID
         ).activityID
 
         val activityID3 = backend.createActivity(
-                ActivityCreation("03:10:32.123", "2002-05-20", "1234"),
+                ActivityCreationBody("03:10:32.123", "2002-05-20", "1234"),
                 sportID
         ).activityID
 
@@ -186,12 +220,12 @@ class ActivitiesIntegrationTests {
         val sportID = backend.createSport(SportRoutes.SportCreationBody("Futebol")).sportID
 
         backend.createActivity(
-                ActivityCreation("05:10:32.123", "2002-12-31", "123456")
+                ActivityCreationBody("05:10:32.123", "2002-12-31", "123456")
                 ,sportID
         ).activityID
 
         val activityID2 = backend.createActivity(
-                ActivityCreation("02:10:32.123", "2002-05-20", "12345"),
+                ActivityCreationBody("02:10:32.123", "2002-05-20", "12345"),
                 sportID
         ).activityID
 
@@ -213,7 +247,7 @@ class ActivitiesIntegrationTests {
         val sportID = backend.createSport(SportRoutes.SportCreationBody("Futebol")).sportID
 
         backend.createActivity(
-                ActivityCreation("05:10:32.123", "2002-12-31", "123456")
+                ActivityCreationBody("05:10:32.123", "2002-12-31", "123456")
                 ,sportID
         ).activityID
 

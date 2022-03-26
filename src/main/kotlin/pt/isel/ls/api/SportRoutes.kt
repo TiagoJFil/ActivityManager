@@ -20,16 +20,14 @@ import pt.isel.ls.services.UserServices
 import pt.isel.ls.utils.SportID
 
 class SportRoutes(
-    val sportsServices: SportsServices,
-    val userServices: UserServices,
-    val activityServices: ActivityServices
+    private val sportsServices: SportsServices,
+    private val userServices: UserServices,
+    private val activityServices: ActivityServices
 ) {
-
-    @Serializable
-    data class SportCreationBody(val name: String? = null, val description: String? = null)
-    @Serializable
-    data class SportIDResponse(val sportID: SportID)
-
+    @Serializable data class SportCreationBody(val name: String? = null, val description: String? = null)
+    @Serializable data class SportIDResponse(val sportID: SportID)
+    @Serializable data class SportList(val sports: List<Sport>)
+    @Serializable data class ListActivities(val activities: List<Activity>)
     /**
      * Create a new sport with the information from the body of the HTTP request.
      */
@@ -56,8 +54,6 @@ class SportRoutes(
             .body(sportJson)
     }
 
-    @Serializable
-    data class SportList(val sports: List<Sport>)
 
     /**
      * Gets all the available sports.
@@ -69,8 +65,7 @@ class SportRoutes(
             .body(bodyString)
     }
 
-    @Serializable
-    data class ListActivities(val activities: List<Activity>)
+
     /**
      * Gets all the activities of the sport identified by the id given in the params of the uri's path.
      */

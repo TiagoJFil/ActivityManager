@@ -18,11 +18,16 @@ import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
 
 class RouteRoutes(
-    val routeServices: RouteServices,
-    val userServices: UserServices
+    private val routeServices: RouteServices,
+    private val userServices: UserServices
 ){
     @Serializable data class RouteList(val routes: List<Route>)
-
+    @Serializable data class RouteCreation(
+        val startLocation:String? = null,
+        val endLocation: String? = null,
+        val distance: Double?=null
+    )
+    @Serializable data class RouteIDResponse(val routeID: RouteID)
     /**
      * Gets all the routes.
      */
@@ -47,13 +52,6 @@ class RouteRoutes(
             .body(routeJson)
     }
 
-    @Serializable
-    data class RouteCreation(
-        val startLocation:String? = null,
-        val endLocation: String? = null,
-        val distance: Double?=null
-    )
-    @Serializable data class RouteIDResponse(val routeID: RouteID)
 
     /**
      * Creates a route with the information that come in the body of the HTTP request.
