@@ -14,7 +14,6 @@ import org.http4k.routing.routes
 import pt.isel.ls.services.ActivityServices
 import pt.isel.ls.services.SportsServices
 import pt.isel.ls.services.UserServices
-import pt.isel.ls.utils.GUEST_TOKEN
 import pt.isel.ls.utils.UserID
 
 
@@ -30,7 +29,7 @@ class ActivityRoutes(
         val rid: String? = null,
     )
     @Serializable
-    data class ActivityIdResponse(val id : String)
+    data class ActivityIdResponse(val activityID : String)
 
     private fun createActivity(request: Request): Response {
         val sportID = request.path("sid")
@@ -46,6 +45,9 @@ class ActivityRoutes(
 
     }
 
+
+
+    //TODO(/sports/{id}/activities)
     val handler =
         "/activity" bind
                 routes(

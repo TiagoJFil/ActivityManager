@@ -13,18 +13,17 @@ import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 class RouteIntegrationTests {
-    private val routePath = "/api/routes/"
     private val routeServices = RouteServices(RouteDataMemRepository())
     private val userServices = UserServices(UserDataMemRepository(guestUser))
     private val backend = getApiRoutes(Route(routeServices, userServices))
 
     @Test fun `get routes without creating returns empty list`(){
-        val routesList = getRequest<RouteList>(backend, routePath, Response::expectOK)
+        val routesList = getRequest<RouteList>(backend, ROUTE_PATH, Response::expectOK)
         assertEquals(emptyList(), routesList.routes)
     }
 
     @Test fun `create a route successfully`(){
-        createRoute(RouteCreation(startLocation = "a", endLocation = "b", distance = 10.0))
+        backend.createRoute(RouteCreation(startLocation = "a", endLocation = "b", distance = 10.0))
     }
 
 
@@ -32,7 +31,7 @@ class RouteIntegrationTests {
         val body = RouteCreation(endLocation = "b", distance = 10.0)
         postRequest<RouteCreation, HttpError>(
             backend,
-            routePath,
+            ROUTE_PATH,
             body,
             headers = authHeader(GUEST_TOKEN),
             Response::expectBadRequest
@@ -43,7 +42,7 @@ class RouteIntegrationTests {
         val body = RouteCreation(distance = 20.0, startLocation = "a")
         postRequest<RouteCreation, HttpError>(
             backend,
-            routePath,
+            ROUTE_PATH,
             body,
             authHeader(GUEST_TOKEN),
             Response::expectBadRequest
@@ -54,7 +53,7 @@ class RouteIntegrationTests {
         val body = RouteCreation(endLocation = "b", startLocation = "c")
         postRequest<RouteCreation, HttpError>(
             backend,
-            routePath,
+            ROUTE_PATH,
             body,
             headers = authHeader(GUEST_TOKEN),
             Response::expectBadRequest
@@ -65,7 +64,7 @@ class RouteIntegrationTests {
         val body = RouteCreation(startLocation = " ", endLocation = "b", distance = 10.0)
         postRequest<RouteCreation, HttpError>(
             backend,
-            routePath,
+            ROUTE_PATH,
             body,
             headers = authHeader(GUEST_TOKEN),
             Response::expectBadRequest
@@ -75,14 +74,14 @@ class RouteIntegrationTests {
 
     @Test fun `try to get a route that doesnt exist`(){
         val id = 123
-        println("${routePath}${id}")
-        getRequest<HttpError>(backend, "${routePath}${id}", Response::expectNotFound)
+        println("${ROUTE_PATH}${id}")
+        getRequest<HttpError>(backend, "${ROUTE_PATH}${id}", Response::expectNotFound)
     }
 
     @Test fun `get a route successfully`(){
         val body = RouteCreation(startLocation = "a", endLocation = "b", distance = 10.0)
-        val routeResponse = createRoute(body)
-        getRequest<Route>(backend, "$routePath${routeResponse.routeID}", Response::expectOK)
+        val routeResponse = backend.createRoute(body)
+        getRequest<Route>(backend, "$ROUTE_PATH${routeResponse.routeID}", Response::expectOK)
     }
 
     @Test fun `create multiple routes ensuring they're in the list of routes`(){
@@ -92,30 +91,13 @@ class RouteIntegrationTests {
         val distance = 127.8
 
         val creationBodies = List(1000){RouteCreation("Lisboa", "Fátima", 127.8)}
-        val routeIds: List<String> = creationBodies.map { createRoute(it).routeID }
+        val routeIds: List<String> = creationBodies.map { backend.createRoute(it).routeID }
 
         val expected = routeIds.map { Route(id=it, start, end , distance, guestUser.id) }
-        val routeList = getRequest<RouteList>(backend, routePath, Response::expectOK).routes
+        val routeList = getRequest<RouteList>(backend, ROUTE_PATH, Response::expectOK).routes
 
         expected.forEach { assertContains(routeList, it) }
 
     }
-
-    /**
-     * Helper function to create a route, ensures it is created and returns the respective [RouteIDResponse]
-     * @param routeCreation the route creation body. Must be valid.
-     */
-    private fun createRoute(routeCreation: RouteCreation): RouteIDResponse
-        = postRequest<RouteCreation, RouteIDResponse>(
-            backend,
-            routePath,
-            routeCreation,
-            authHeader(GUEST_TOKEN),
-            Response::expectCreated
-        )
-
-
-
-
 
 }

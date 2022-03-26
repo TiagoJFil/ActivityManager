@@ -17,5 +17,7 @@ interface UserRepository {
     fun userHasRepeatedEmail(userId: UserID, email: User.Email): Boolean
 
     fun getUserIDByToken(token: UserToken): UserID?
+
+    fun hasUser(userID: UserID): Boolean
 }
 

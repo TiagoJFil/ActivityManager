@@ -12,6 +12,7 @@ import org.http4k.core.Status
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
+import pt.isel.ls.entities.Activity
 import pt.isel.ls.entities.Sport
 import pt.isel.ls.services.ActivityServices
 import pt.isel.ls.services.SportsServices
@@ -68,23 +69,31 @@ class SportRoutes(
             .body(bodyString)
     }
 
-    private fun getSportActivities(request: Request): Response {
+    @Serializable
+    data class ListActivities(val activities: List<Activity>)
+    /**
+     * Gets all the activities of the sport identified by the id given in the params of the uri's path.
+     */
+    private fun getActivitiesBySport(request: Request): Response{
+        val order = request.query("orderBy")
+        val date = request.query("date")
+        val routeID = request.query("rid")
         val sportID = request.path("id")
-        val activities = activityServices.getSportActivities(sportID)
-        val activitiesJson = Json.encodeToString(activities)
+        val sport = sportsServices.getSport(sportID)
+        val activities = activityServices.getActivities(sport.id, order, date, routeID)
+        val activitiesJson = Json.encodeToString(UserRoutes.ListActivities(activities))
 
         return Response(Status.OK)
-            .header("content-type", "application/json")
-            .body(activitiesJson)
+                .header("content-type", "application/json")
+                .body(activitiesJson)
     }
-
 
     val handler = routes(
         "/sports" bind routes(
             "/" bind POST to ::createSport,
             "/{id}" bind GET to ::getSport,
             "/" bind GET to ::getSports,
-            "/{id]/activities"  bind GET to ::getSportActivities
+            "/{id}/activities" bind GET to ::getActivitiesBySport
         )
     )
 

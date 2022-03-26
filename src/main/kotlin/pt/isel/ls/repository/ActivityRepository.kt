@@ -1,9 +1,9 @@
 package pt.isel.ls.repository
 
+import kotlinx.datetime.LocalDate
 import pt.isel.ls.entities.Activity
-import pt.isel.ls.utils.ActivityID
-import pt.isel.ls.utils.SportID
-import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.*
+
 
 interface ActivityRepository {
 
@@ -15,5 +15,8 @@ interface ActivityRepository {
 
     fun getActivity(activityID: ActivityID): Activity?
 
+    fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?): List<Activity>
+
     fun deleteActivity(activityID: ActivityID): Boolean
+
 }
