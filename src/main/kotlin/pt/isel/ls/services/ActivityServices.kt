@@ -60,6 +60,18 @@ class ActivityServices(private val activityRepository: ActivityRepository, priva
         else throw ResourceNotFound("User", userID)
     }
 
+    /**
+     * Gets an [Activity] by its id.
+     *
+     * @param activityID the unique identifier of the activity
+     * @return [Activity] with the activity that matches the given id
+     */
+    fun getActivity(activityID: String?): Activity{
+        if (activityID == null) throw MissingParameter("activityID")
+        if (activityID.isBlank()) throw InvalidParameter("activityID")
+
+        return activityRepository.getActivity(activityID) ?: throw ResourceNotFound("Activity", activityID)
+    }
 
     /**
      * Gets the activities that match the given sport id, date, route id

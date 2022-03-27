@@ -11,9 +11,11 @@ import org.http4k.core.Status
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
+import pt.isel.ls.entities.Activity
 import pt.isel.ls.services.ActivityServices
 import pt.isel.ls.services.SportsServices
 import pt.isel.ls.services.UserServices
+import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.UserID
 
 
@@ -40,16 +42,30 @@ class ActivityRoutes(
 
         val activityId = activityServices.createActivity(userId, sportID, activityBody.duration, activityBody.date, activityBody.rid)
         return Response(Status.CREATED)
+            .header("content-type", "application/json")
             .body(Json.encodeToString(ActivityIdResponse(activityId)))
     }
 
+    /**
+     * Gets the [Activity] with the given [ActivityID].
+     */
+    private fun getActivity(request: Request): Response {
+        val activityId  = request.path("id")
 
+        val activity = activityServices.getActivity(activityId)
+        println(activity)
+        val activityJson = Json.encodeToString<Activity>(activity)
+        println(activityJson)
+        return Response(Status.OK)
+            .body(activityJson)
+    }
 
     //TODO(/sports/{id}/activities)
     val handler =
         "/activity" bind
                 routes(
                     "/{sid}" bind Method.POST to ::createActivity,
+                    "/{id}" bind Method.GET to ::getActivity
                 )
 
 }

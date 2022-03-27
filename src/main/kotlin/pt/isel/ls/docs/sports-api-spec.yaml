@@ -198,6 +198,29 @@ paths:
                 $ref: "#/components/schemas/SportCreationResponse"
         "400":
           description: "A required parameter is missing or is incorrect"
+  /activity/{id}:
+    get:
+      tags:
+        - "Activities"
+      summary: "Get an activity"
+      description: "Gets an activity associated to the given id"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Activity's identifier."
+          required: true
+          schema:
+            type: "string"
+          example: "1234"
+      responses:
+        "200":
+          description: "Successful operation"
+        "404":
+          description: "Activity not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
   /activity/{sid}:
     post:
       tags:
@@ -305,6 +328,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HttpError"
+
 
 components:
   schemas:
