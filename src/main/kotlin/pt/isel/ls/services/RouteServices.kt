@@ -5,13 +5,15 @@ import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.utils.*
 
 
-class RouteServices(val repository: RouteRepository){
+class RouteServices(
+    private val routeRepository: RouteRepository
+    ){
 
     /**
      * Returns a list of all routes.
      * @return a list of all routes.
      */
-    fun getRoutes() = repository.getRoutes()
+    fun getRoutes() = routeRepository.getRoutes()
 
     /**
      * Creates a new route.
@@ -29,7 +31,7 @@ class RouteServices(val repository: RouteRepository){
         val routeId = generateRandomId()
         val route = Route(routeId, safeStartLocation, safeEndLocation, distance, userId)
 
-        repository.addRoute(route)
+        routeRepository.addRoute(route)
 
         return routeId
     }
@@ -42,7 +44,7 @@ class RouteServices(val repository: RouteRepository){
      */
     fun getRoute(routeID: String?): Route {
         val safeRouteID = requireParameter(routeID, "routeID")
-        return repository.getRoute(safeRouteID) ?: throw ResourceNotFound("Route", "$routeID")
+        return routeRepository.getRoute(safeRouteID) ?: throw ResourceNotFound("Route", "$routeID")
     }
 
 }

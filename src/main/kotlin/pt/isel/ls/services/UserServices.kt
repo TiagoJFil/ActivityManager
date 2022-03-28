@@ -7,7 +7,9 @@ import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 
-class UserServices(val repository: UserRepository) {
+class UserServices(
+    private val userRepository: UserRepository
+    ) {
 
     /**
      * Verifies the parameters received and calls the function [UserRepository] to create a [User].
@@ -26,8 +28,8 @@ class UserServices(val repository: UserRepository) {
         val possibleEmail = User.Email(safeEmail)
         val user =  User(safeName, possibleEmail,userId)
 
-        if(repository.userHasRepeatedEmail(userId,possibleEmail)) throw InvalidParameter("email already exists")
-        repository.addUser(user,userAuthToken)
+        if(userRepository.userHasRepeatedEmail(userId,possibleEmail)) throw InvalidParameter("email already exists")
+        userRepository.addUser(user,userAuthToken)
 
 
         return Pair(userAuthToken,userId)
@@ -42,7 +44,7 @@ class UserServices(val repository: UserRepository) {
      */
     fun getUserByID(id: UserID?): User {
         val safeUserID = requireParameter(id, "id")
-        return repository.getUserByID(safeUserID) ?: throw ResourceNotFound("User", "$id")
+        return userRepository.getUserByID(safeUserID) ?: throw ResourceNotFound("User", "$id")
     }
 
     /**
@@ -50,7 +52,7 @@ class UserServices(val repository: UserRepository) {
      *
      * @return [List] of [User]
      */
-    fun getUsers(): List<User> = repository.getUsers()
+    fun getUsers(): List<User> = userRepository.getUsers()
 
     /**
      * Gets the user id that matches the given token
@@ -59,7 +61,7 @@ class UserServices(val repository: UserRepository) {
      */
     fun getUserByToken(token: UserToken?): UserID{
         if(token == null) throw UnauthenticatedError()
-        return repository.getUserIDByToken(token) ?: throw UnauthenticatedError()
+        return userRepository.getUserIDByToken(token) ?: throw UnauthenticatedError()
     }
 
 }

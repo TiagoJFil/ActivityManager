@@ -41,6 +41,26 @@ class ActivitiesServicesTest {
     }
 
     @Test
+    fun `try to create an activity without a rid works`(){
+        activitiesServices.createActivity("123","123","02:16:32.993","2002-12-31",null) //doesnt throw
+    }
+
+    @Test
+    fun `get an activity by id that doesnt exist throws an error`(){
+        assertFailsWith<ResourceNotFound> { activitiesServices.getActivity("312") }
+    }
+
+    @Test
+    fun `get an activity by id with a blank id throws error `(){
+        assertFailsWith<InvalidParameter> { activitiesServices.getActivity(" ") }
+    }
+
+    @Test
+    fun `get an activity by id without an argument throws error `(){
+        assertFailsWith<MissingParameter> { activitiesServices.getActivity(null) }
+    }
+
+    @Test
     fun `get an activity by user successfully`(){
         val sportID = sportServicesTest.createSport(guestUser.id, "Futebol", null)
         val activityID =

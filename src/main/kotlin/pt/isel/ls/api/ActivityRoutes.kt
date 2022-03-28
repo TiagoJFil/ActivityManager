@@ -11,6 +11,7 @@ import org.http4k.core.Status
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
+import pt.isel.ls.entities.Activity
 import pt.isel.ls.services.ActivityServices
 import pt.isel.ls.services.UserServices
 import pt.isel.ls.utils.ActivityID
@@ -27,21 +28,35 @@ class ActivityRoutes(
         val date: String? = null,
         val rid: RouteID? = null,
     )
-    @Serializable
-    data class ActivityIDResponse(val activityID : ActivityID)
+    @Serializable data class ActivityIDResponse(val activityID : ActivityID)
 
     /**
      * Creates an [Activity] using the information received in the path and body of the request.
      */
     private fun createActivity(request: Request): Response {
         val sportID = request.path("sid")
-
         val activityBody = Json.decodeFromString<ActivityCreationBody>(request.bodyString())
+
         val userId: UserID = userServices.getUserByToken(getToken(request))
 
         val activityId = activityServices.createActivity(userId, sportID, activityBody.duration, activityBody.date, activityBody.rid)
         return Response(Status.CREATED)
+            .header("content-type", "application/json")
             .body(Json.encodeToString(ActivityIDResponse(activityId)))
+    }
+
+    /**
+     * Gets the [Activity] with the given [ActivityID].
+     */
+    private fun getActivity(request: Request): Response {
+        val activityId  = request.path("id")
+
+        val activity = activityServices.getActivity(activityId)
+
+        val activityJson = Json.encodeToString<Activity>(activity)
+        println(activityJson)
+        return Response(Status.OK)
+            .body(activityJson)
     }
 
     /**
@@ -59,6 +74,7 @@ class ActivityRoutes(
     val handler =
         "/activity" bind
                 routes(
+                    "/{id}" bind Method.GET to ::getActivity,
                     "/{sid}" bind Method.POST to ::createActivity,
                     "/{sid}/{activityID}" bind Method.DELETE to ::deleteActivity
                 )

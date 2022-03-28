@@ -6,7 +6,7 @@ import pt.isel.ls.utils.*
 
 
 class SportsServices(
-    val sportsRepository: SportRepository
+    private val sportsRepository: SportRepository
 ) {
 
     /**

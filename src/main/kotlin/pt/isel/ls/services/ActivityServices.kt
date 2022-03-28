@@ -33,7 +33,8 @@ class ActivityServices(
             val sid = requireParameter(sportID, "sportID")
             val safeDuration = requireParameter(duration, "duration")
             val safeDate = requireParameter(date, "date")
-            if(rid != null && rid.isBlank()) throw InvalidParameter("rid")
+            requireNotBlankParameter(rid, "rid")
+
             durationFormat.parse(duration)
             val activityID = generateRandomId()
             val activity = Activity(
@@ -48,12 +49,23 @@ class ActivityServices(
             activityRepository.addActivity(activity)
 
             return activityID
-
         }catch (e: DateTimeException){
             throw InvalidParameter("duration")
         }catch (e: IllegalArgumentException){
             throw InvalidParameter("date")
         }
+    }
+
+    /**
+     * Gets an [Activity] by its id.
+     *
+     * @param activityID the unique identifier of the activity
+     * @return [Activity] with the activity that matches the given id
+     */
+    fun getActivity(activityID: String?): Activity{
+        val safeActivityID = requireParameter(activityID, "activityID")
+
+        return activityRepository.getActivity(safeActivityID) ?: throw ResourceNotFound("Activity", safeActivityID)
     }
 
     /**
@@ -63,12 +75,10 @@ class ActivityServices(
      * @return [List] of [Activity] with all the activities created by the user that matches the given id
      */
     fun getActivitiesByUser(userID: UserID?): List<Activity>{
-
         val safeUID = requireParameter(userID, "userID")
         if(!userRepository.hasUser(safeUID)) throw ResourceNotFound("userID", safeUID)
 
         return activityRepository.getActivitiesByUser(safeUID)
-
     }
 
 
@@ -91,9 +101,8 @@ class ActivityServices(
             "descending" -> Order.DESCENDING
             else -> throw InvalidParameter("orderBy")
         }
-        if(date != null && date.isBlank()) throw InvalidParameter("date")
-        if(rid != null && rid.isBlank()) throw InvalidParameter("rid")
-
+        requireNotBlankParameter(date, "date")
+        requireNotBlankParameter(rid, "rid")
         try{
             if(date != null) LocalDate.parse(date)
         }catch (e: IllegalArgumentException){

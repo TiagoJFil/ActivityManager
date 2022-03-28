@@ -23,7 +23,6 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 class ActivitiesIntegrationTests {
-    // create activityServices
     private val sportDataMem= SportDataMemRepository()
     private val userDataMem = UserDataMemRepository(guestUser)
     private val routeDataMem = RouteDataMemRepository()
@@ -328,17 +327,31 @@ class ActivitiesIntegrationTests {
         deleteActivity(sportID, activityID, "invalid_token").expectUnauthorized()
     }
 
+    @Test fun `get invalid parameter error trying to get the activities of a sport receiving an invalid date`(){
+        val sportID = backend.createSport(SportRoutes.SportCreationBody("Futebol")).sportID
+        getRequest<HttpError>(backend, "${SPORT_PATH}${sportID}/activities?date=invalido", Response::expectBadRequest)
+    }
+    @Test fun `get an activity that does not exist`(){
+        val activityID = 12
+        getRequest<HttpError>(backend,"${ACTIVITY_PATH}${activityID}", Response::expectNotFound)
+    }
+
+    @Test fun `get an activity that does exist`(){
+        val sportID = "12345"
+        val body = ActivityCreationBody("02:16:32.993","2020-01-01", "123")
+        val activityId =backend.createActivity(body,sportID).activityID
+
+        getRequest<Activity>(backend,"${ACTIVITY_PATH}${activityId}", Response::expectOK)
+    }
+
+    @Test fun `get an activity with a blank id`(){
+        val activityId = "   "
+        getRequest<HttpError>(backend,"${ACTIVITY_PATH}${activityId}", Response::expectBadRequest)
+    }
+
     private fun deleteActivity(sportID: SportID, activityID: ActivityID, token: UserToken)  =
         backend(
             Request(DELETE, "${ACTIVITY_PATH}${sportID}/${activityID}")
                 .header("Authorization", "Bearer $token")
         )
-
-
-
-    @Test fun `get invalid parameter error trying to get the activities of a sport receiving an invalid date`(){
-        val sportID = backend.createSport(SportRoutes.SportCreationBody("Futebol")).sportID
-        getRequest<HttpError>(backend, "${SPORT_PATH}${sportID}/activities?date=invalido", Response::expectBadRequest)
-    }
-
 }
