@@ -1,5 +1,6 @@
 package pt.isel.ls.services
 
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toLocalDate
 import pt.isel.ls.entities.Activity
 import pt.isel.ls.repository.ActivityRepository
@@ -93,6 +94,11 @@ class ActivityServices(
         if(date != null && date.isBlank()) throw InvalidParameter("date")
         if(rid != null && rid.isBlank()) throw InvalidParameter("rid")
 
+        try{
+            if(date != null) LocalDate.parse(date)
+        }catch (e: IllegalArgumentException){
+            throw InvalidParameter("date")
+        }
 
         return activityRepository.getActivities(safeSID, orderByToSend, date?.toLocalDate(), rid)
     }

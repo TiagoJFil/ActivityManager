@@ -336,4 +336,9 @@ class ActivitiesIntegrationTests {
 
 
 
+    @Test fun `get invalid parameter error trying to get the activities of a sport receiving an invalid date`(){
+        val sportID = backend.createSport(SportRoutes.SportCreationBody("Futebol")).sportID
+        getRequest<HttpError>(backend, "${SPORT_PATH}${sportID}/activities?date=invalido", Response::expectBadRequest)
+    }
+
 }

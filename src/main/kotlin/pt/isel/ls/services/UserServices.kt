@@ -17,16 +17,14 @@ class UserServices(val repository: UserRepository) {
      * @throws IllegalArgumentException
      */
     fun createUser(name : String?, email: String?) : Pair<UserToken,UserID>{
-        if(name == null) throw MissingParameter("name")
-        if(name.isBlank()) throw InvalidParameter("name")
-        if(email == null) throw MissingParameter("email")
-        if(email.isBlank()) throw InvalidParameter("email")
+        val safeName = requireParameter(name, "name")
+        val safeEmail = requireParameter(email, "email")
 
         val userId = generateRandomId()
         val userAuthToken = generateUUId()
 
-        val possibleEmail = User.Email(email)
-        val user =  User(name, possibleEmail,userId)
+        val possibleEmail = User.Email(safeEmail)
+        val user =  User(safeName, possibleEmail,userId)
 
         if(repository.userHasRepeatedEmail(userId,possibleEmail)) throw InvalidParameter("email already exists")
         repository.addUser(user,userAuthToken)
@@ -43,9 +41,8 @@ class UserServices(val repository: UserRepository) {
      * @throws IllegalArgumentException
      */
     fun getUserByID(id: UserID?): User {
-        if (id == null) throw MissingParameter("id")
-        if (id.isBlank()) throw InvalidParameter("id")
-        return repository.getUserByID(id) ?: throw ResourceNotFound("User", "$id")
+        val safeUserID = requireParameter(id, "id")
+        return repository.getUserByID(safeUserID) ?: throw ResourceNotFound("User", "$id")
     }
 
     /**

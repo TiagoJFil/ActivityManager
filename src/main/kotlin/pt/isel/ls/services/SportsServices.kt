@@ -16,9 +16,8 @@ class SportsServices(
      * @return [Sport] the sport identified by the given id
      */
     fun getSport(sportID: SportID?): Sport {
-        if (sportID == null) throw MissingParameter("sportsID")
-        if (sportID.isBlank()) throw InvalidParameter("sportsID")
-        return sportsRepository.getSportByID(sportID) ?: throw ResourceNotFound("Sport", "$sportID")
+        val safeSportID = requireParameter(sportID, "sportID")
+        return sportsRepository.getSportByID(safeSportID) ?: throw ResourceNotFound("Sport", "$sportID")
     }
 
     /**
@@ -27,10 +26,9 @@ class SportsServices(
      * @return [SportID] the sport's unique identifier
      */
     fun createSport(userID: UserID, name: String?, description: String?): SportID {
-        if (name == null) throw MissingParameter("name")
-        if (name.isBlank()) throw InvalidParameter("name")
+        val safeName = requireParameter(name, "name")
         val handledDescription = description?.ifBlank { null }
-        val sport = Sport(generateRandomId(), name, handledDescription, userID)
+        val sport = Sport(generateRandomId(), safeName, handledDescription, userID)
         sportsRepository.addSport(sport)
         return sport.id
     }

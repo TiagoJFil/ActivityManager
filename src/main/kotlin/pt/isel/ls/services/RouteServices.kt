@@ -22,17 +22,12 @@ class RouteServices(val repository: RouteRepository){
      * @return [RouteID] the unique id that identifies the route
      */
     fun createRoute(userId: UserID, startLocation: String?, endLocation: String?, distance: Double?): RouteID{
-
-        if(startLocation == null) throw MissingParameter("startLocation")
-        if(startLocation.isBlank()) throw InvalidParameter("startLocation")
-
-        if(endLocation == null) throw MissingParameter("endLocation")
-        if(endLocation.isBlank())  throw InvalidParameter("endLocation")
-
+        val safeStartLocation = requireParameter(startLocation, "startLocation")
+        val safeEndLocation = requireParameter(endLocation, "endLocation")
         if(distance == null) throw MissingParameter("distance")
 
         val routeId = generateRandomId()
-        val route = Route(routeId, startLocation, endLocation, distance, userId)
+        val route = Route(routeId, safeStartLocation, safeEndLocation, distance, userId)
 
         repository.addRoute(route)
 
@@ -46,9 +41,8 @@ class RouteServices(val repository: RouteRepository){
      * @return [Route] the route identified by the given id
      */
     fun getRoute(routeID: String?): Route {
-        if (routeID == null) throw MissingParameter("routeID")
-        if (routeID.isBlank()) throw InvalidParameter("routeID")
-        return repository.getRoute(routeID) ?: throw ResourceNotFound("Route", "$routeID")
+        val safeRouteID = requireParameter(routeID, "routeID")
+        return repository.getRoute(safeRouteID) ?: throw ResourceNotFound("Route", "$routeID")
     }
 
 }
