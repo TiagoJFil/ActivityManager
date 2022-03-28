@@ -22,7 +22,7 @@ class RouteRoutes(
     private val userServices: UserServices
 ){
     @Serializable data class RouteList(val routes: List<Route>)
-    @Serializable data class RouteCreation(
+    @Serializable data class RouteCreationBody(
         val startLocation:String? = null,
         val endLocation: String? = null,
         val distance: Double?=null
@@ -57,7 +57,7 @@ class RouteRoutes(
      * Creates a route with the information that come in the body of the HTTP request.
      */
     private fun createRoute(request: Request): Response{
-        val routeInfo = Json.decodeFromString<RouteCreation>(request.bodyString())
+        val routeInfo = Json.decodeFromString<RouteCreationBody>(request.bodyString())
         val userId: UserID = userServices.getUserByToken(getToken(request))
         val routeId: RouteID =
             routeServices.createRoute(userId,routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)

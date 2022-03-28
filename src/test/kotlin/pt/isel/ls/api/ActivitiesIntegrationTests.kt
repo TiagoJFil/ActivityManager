@@ -1,12 +1,15 @@
 package pt.isel.ls.api
 
 import kotlinx.datetime.toLocalDate
+import org.http4k.core.Method.*
+import org.http4k.core.Request
 import org.http4k.core.Response
 import org.junit.Test
 import pt.isel.ls.api.ActivityRoutes.ActivityCreationBody
 import pt.isel.ls.api.SportRoutes.ListActivities
 import pt.isel.ls.api.utils.*
 import pt.isel.ls.entities.Activity
+import pt.isel.ls.entities.HttpError
 import pt.isel.ls.repository.memory.ActivityDataMemRepository
 import pt.isel.ls.repository.memory.RouteDataMemRepository
 import pt.isel.ls.repository.memory.SportDataMemRepository
@@ -15,17 +18,24 @@ import pt.isel.ls.services.ActivityServices
 import pt.isel.ls.services.RouteServices
 import pt.isel.ls.services.SportsServices
 import pt.isel.ls.services.UserServices
-import pt.isel.ls.utils.GUEST_TOKEN
-import pt.isel.ls.utils.guestUser
+import pt.isel.ls.utils.*
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 class ActivitiesIntegrationTests {
-    val activityServices = ActivityServices(ActivityDataMemRepository(), UserDataMemRepository(guestUser))
-    val userServices = UserServices(UserDataMemRepository(guestUser))
-    val sportsServices = SportsServices(SportDataMemRepository())
-    val routeServices = RouteServices(RouteDataMemRepository())
-    private val backend = getApiRoutes(getAppRoutes(userServices, routeServices, sportsServices,activityServices))
+    // create activityServices
+    private val sportDataMem= SportDataMemRepository()
+    private val userDataMem = UserDataMemRepository(guestUser)
+    private val routeDataMem = RouteDataMemRepository()
+    private val activityDataMem = ActivityDataMemRepository()
+
+
+    private val activityServices = ActivityServices(activityDataMem, userDataMem, sportDataMem)
+    private val userServices = UserServices(userDataMem)
+    private val sportsServices = SportsServices(sportDataMem)
+    private val routeServices = RouteServices(routeDataMem)
+
+    private val backend = getApiRoutes(getAppRoutes(userServices, routeServices, sportsServices, activityServices))
 
 
     @Test
@@ -269,22 +279,61 @@ class ActivitiesIntegrationTests {
         getRequest<HttpError>(backend, "${SPORT_PATH}${sportID}/activities?orderBy=invalido", Response::expectBadRequest)
     }
 
-    @Test fun `get an activity that does not exist`(){
-        val activityID = 12
-        getRequest<HttpError>(backend,"${ACTIVITY_PATH}${activityID}", Response::expectNotFound)
+    @Test fun `delete an activity`(){
+        val sportID = backend.createSport(SportRoutes.SportCreationBody("Futebol")).sportID
+        val activityID = backend.createActivity(
+                ActivityCreationBody("05:10:32.123", "2002-12-31", "123456")
+                ,sportID
+        ).activityID
+
+        deleteActivity(sportID, activityID, GUEST_TOKEN).expectOK()
     }
 
-    @Test fun `get an activity that does exist`(){
-        val sportID = "12345"
-        val body = ActivityCreationBody("02:16:32.993","2020-01-01", "123")
-        val activityId =backend.createActivity(body,sportID).activityID
+    @Test fun `try to delete an activity of a sport that does not exist gives 404`(){
+        val sportID = "RANDOM_SPORT"
+        val activityID = backend.createActivity(
+                ActivityCreationBody("05:10:32.123", "2002-12-31", "123456")
+                ,sportID
+        ).activityID
 
-        getRequest<Activity>(backend,"${ACTIVITY_PATH}${activityId}", Response::expectOK)
+
+        deleteActivity(sportID, activityID, GUEST_TOKEN).expectNotFound()
     }
 
-    @Test fun `get an activity with a blank id`(){
-        val activityId = "   "
-        getRequest<HttpError>(backend,"${ACTIVITY_PATH}${activityId}", Response::expectBadRequest)
+    @Test fun `try to delete an activity through a user that didn't create the activity gives 401`(){
+        val notOwner = backend.createUser(UserRoutes.UserCreationBody("Joao", "joaosousa@gmail.com"))
+        val sportID = backend.createSport(SportRoutes.SportCreationBody("Futebol")).sportID
+        val activityID = backend.createActivity(
+            ActivityCreationBody("05:10:32.123", "2002-12-31", "123456")
+            ,sportID
+        ).activityID
+
+        deleteActivity(sportID, activityID, notOwner.authToken).expectUnauthorized()
     }
+
+    @Test fun `try to delete an activity that does not exist gives 404`(){
+        val sportID = backend.createSport(SportRoutes.SportCreationBody("Futebol")).sportID
+        val activityID = "RANDOM_ACTIVITY"
+
+        deleteActivity(sportID, activityID, GUEST_TOKEN).expectNotFound()
+    }
+
+    @Test fun `try to delete an activity with an invalid token gives 401`(){
+        val sportID = backend.createSport(SportRoutes.SportCreationBody("Futebol")).sportID
+        val activityID = backend.createActivity(
+                ActivityCreationBody("05:10:32.123", "2002-12-31")
+                ,sportID
+        ).activityID
+
+        deleteActivity(sportID, activityID, "invalid_token").expectUnauthorized()
+    }
+
+    private fun deleteActivity(sportID: SportID, activityID: ActivityID, token: UserToken)  =
+        backend(
+            Request(DELETE, "${ACTIVITY_PATH}${sportID}/${activityID}")
+                .header("Authorization", "Bearer $token")
+        )
+
+
 
 }

@@ -1,10 +1,11 @@
 package pt.isel.ls.api.utils
 
+import org.http4k.core.Headers
 import org.http4k.core.Response
 import org.http4k.routing.RoutingHttpHandler
 import pt.isel.ls.api.ActivityRoutes.ActivityCreationBody
-import pt.isel.ls.api.ActivityRoutes.ActivityIdResponse
-import pt.isel.ls.api.RouteRoutes
+import pt.isel.ls.api.ActivityRoutes.ActivityIDResponse
+import pt.isel.ls.api.RouteRoutes.RouteCreationBody
 import pt.isel.ls.api.RouteRoutes.RouteIDResponse
 import pt.isel.ls.api.SportRoutes.SportCreationBody
 import pt.isel.ls.api.SportRoutes.SportIDResponse
@@ -18,9 +19,11 @@ const val ACTIVITY_PATH = "/api/activity/"
 const val SPORT_PATH = "/api/sports/"
 
 /**
- * Auth header
+ * Returns a list of headers with the authorization header injected with the given token.
+ * @param token the token to be injected.
  */
-fun authHeader(token: String) = listOf("Authorization" to  "Bearer $token")
+fun authHeader(token: String): Headers = listOf("Authorization" to  "Bearer $token")
+
 
 /**
  * Helper function to create a user, ensures it is created and returns the respective [UserIDResponse]
@@ -39,12 +42,16 @@ fun RoutingHttpHandler.createUser(userCreationBody: UserCreationBody): UserIDRes
  * Helper function to create an activity, ensures it is created and returns the respective [ListActivities]
  * @param activityCreationBody the body of the activity to be created. Must be valid.
  */
-fun RoutingHttpHandler.createActivity(activityCreationBody: ActivityCreationBody, sportID: SportID): ActivityIdResponse
-        = postRequest(
+fun RoutingHttpHandler.createActivity(
+        activityCreationBody: ActivityCreationBody,
+        sportID: SportID,
+        token: String = GUEST_TOKEN
+): ActivityIDResponse
+        = postRequest<ActivityCreationBody, ActivityIDResponse>(
         this,
         "$ACTIVITY_PATH$sportID",
         activityCreationBody,
-        headers = authHeader(GUEST_TOKEN),
+        headers = authHeader(token),
         Response::expectCreated
 )
 
@@ -53,7 +60,7 @@ fun RoutingHttpHandler.createActivity(activityCreationBody: ActivityCreationBody
  * @param sportCreationBody the body of the sport to be created. Must be valid.
  */
 fun RoutingHttpHandler.createSport(sportCreationBody: SportCreationBody): SportIDResponse
-        = postRequest(
+        = postRequest<SportCreationBody, SportIDResponse>(
         this,
         SPORT_PATH,
         sportCreationBody,
@@ -65,12 +72,11 @@ fun RoutingHttpHandler.createSport(sportCreationBody: SportCreationBody): SportI
  * Helper function to create a route, ensures it is created and returns the respective [RouteIDResponse]
  * @param routeCreation the route creation body. Must be valid.
  */
-fun RoutingHttpHandler.createRoute(routeCreation: RouteRoutes.RouteCreation): RouteIDResponse
-        = postRequest<RouteRoutes.RouteCreation, RouteIDResponse>(
+fun RoutingHttpHandler.createRoute(routeCreation: RouteCreationBody): RouteIDResponse
+        = postRequest<RouteCreationBody, RouteIDResponse>(
         this,
         ROUTE_PATH,
         routeCreation,
         authHeader(GUEST_TOKEN),
         Response::expectCreated
 )
-

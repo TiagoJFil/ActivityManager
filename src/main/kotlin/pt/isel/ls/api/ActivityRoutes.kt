@@ -11,25 +11,24 @@ import org.http4k.core.Status
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
-import pt.isel.ls.entities.Activity
 import pt.isel.ls.services.ActivityServices
-import pt.isel.ls.services.SportsServices
 import pt.isel.ls.services.UserServices
 import pt.isel.ls.utils.ActivityID
+import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
 
 
 class ActivityRoutes(
-    private val activityServices: ActivityServices,
-    private val sportsServices: SportsServices,
-    private val userServices: UserServices
+    val activityServices: ActivityServices,
+    val userServices: UserServices
 ){
     @Serializable data class ActivityCreationBody(
         val duration: String? = null,
         val date: String? = null,
-        val rid: String? = null,
+        val rid: RouteID? = null,
     )
-    @Serializable data class ActivityIdResponse(val activityID : String)
+    @Serializable
+    data class ActivityIDResponse(val activityID : ActivityID)
 
     /**
      * Creates an [Activity] using the information received in the path and body of the request.
@@ -42,22 +41,18 @@ class ActivityRoutes(
 
         val activityId = activityServices.createActivity(userId, sportID, activityBody.duration, activityBody.date, activityBody.rid)
         return Response(Status.CREATED)
-            .header("content-type", "application/json")
-            .body(Json.encodeToString(ActivityIdResponse(activityId)))
+            .body(Json.encodeToString(ActivityIDResponse(activityId)))
     }
 
     /**
-     * Gets the [Activity] with the given [ActivityID].
+     * Handler for deleting an [Activity] using the information received in the path of the request.
      */
-    private fun getActivity(request: Request): Response {
-        val activityId  = request.path("id")
-
-        val activity = activityServices.getActivity(activityId)
-        println(activity)
-        val activityJson = Json.encodeToString<Activity>(activity)
-        println(activityJson)
+    private fun deleteActivity(request: Request): Response {
+        val activityId = request.path("activityID")
+        val sportID = request.path("sid")
+        val userId: UserID = userServices.getUserByToken(getToken(request))
+        activityServices.deleteActivity(userId, activityId, sportID)
         return Response(Status.OK)
-            .body(activityJson)
     }
 
     //TODO(/sports/{id}/activities)
@@ -65,10 +60,10 @@ class ActivityRoutes(
         "/activity" bind
                 routes(
                     "/{sid}" bind Method.POST to ::createActivity,
-                    "/{id}" bind Method.GET to ::getActivity
+                    "/{sid}/{activityID}" bind Method.DELETE to ::deleteActivity
                 )
 
 }
 
-fun Activity(activityServices: ActivityServices, sportsServices: SportsServices, userServices: UserServices) =
-    ActivityRoutes(activityServices,sportsServices,userServices).handler
+fun Activity(activityServices: ActivityServices, userServices: UserServices) =
+    ActivityRoutes(activityServices, userServices).handler

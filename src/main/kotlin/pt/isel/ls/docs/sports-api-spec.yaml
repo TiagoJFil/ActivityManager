@@ -3,10 +3,10 @@ info:
   description: "Api reference for Sports"
   version: "0.0.0"
   title: "Swagger Sports"
-  termsOfService: "http://swagger.io/terms/"
+  termsOfService: "https://swagger.io/terms/"
   license:
     name: "Apache 2.0"
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+    url: "https://www.apache.org/licenses/LICENSE-2.0.html"
 tags:
   - name: "User"
     description: "Operations about user"
@@ -279,6 +279,43 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HttpError"
+  /activity/{sid}/{aid}:
+    delete:
+      summary: "Delete an activity"
+      description: "Deletes an activity by id"
+      parameters:
+        - name: "sid"
+          in: "path"
+          description: "Sport's identifier."
+          required: true
+          schema:
+            type: "string"
+          example: "1234154"
+        - name: "aid"
+          in: "path"
+          description: "Activity's identifier."
+          required: true
+          schema:
+            type: "string"
+          example: "1234348673498756"
+      tags:
+        - "Activities"
+      responses:
+        "200":
+          description: "Activity deleted successfully"
+        "404":
+          description: "Sport or Activity not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+        "401":
+          description: "Invalid, missing token or token not belonging to the user that created the activity"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+
   /sports/{id}/activities:
     get:
       tags:

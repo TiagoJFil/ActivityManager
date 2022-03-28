@@ -43,7 +43,7 @@ class UserDataMemRepository(guest: User) : UserRepository {
 
     /**
      * @param id user's unique identifier
-     * @param return An [User] object or null if there is no user identified by [id]
+     * @return A [User] object or null if there is no user identified by [id]
      */
     override fun getUserByID(id: UserID): User? = usersMap[id]
 
@@ -61,5 +61,5 @@ class UserDataMemRepository(guest: User) : UserRepository {
     /**
      * Checks if the user with the given id exists
      */
-    override fun hasUser(userID: UserID): Boolean = usersMap[userID] != null
+    override fun hasUser(userID: UserID): Boolean = usersMap.containsKey(userID)
 }

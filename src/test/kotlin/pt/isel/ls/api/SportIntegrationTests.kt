@@ -5,6 +5,7 @@ import org.http4k.core.Response
 import pt.isel.ls.entities.Sport
 import pt.isel.ls.api.SportRoutes.*
 import pt.isel.ls.api.utils.*
+import pt.isel.ls.entities.HttpError
 import pt.isel.ls.repository.memory.ActivityDataMemRepository
 import pt.isel.ls.repository.memory.SportDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
@@ -22,7 +23,7 @@ class SportIntegrationTests {
     private val userTestDataMem = UserDataMemRepository(guestUser)
     private val userServices = UserServices(userTestDataMem)
     private val sportServices = SportsServices(testDataMem)
-    private val activityServices = ActivityServices(ActivityDataMemRepository(), UserDataMemRepository(guestUser))
+    private val activityServices = ActivityServices(ActivityDataMemRepository(), userTestDataMem, testDataMem)
     private val backend = getApiRoutes(Sport(sportServices,userServices, activityServices))
 
 
@@ -99,11 +100,6 @@ class SportIntegrationTests {
         expected.forEach { assertContains(sportList, it) }
 
     }
-
-
-
-
-
 
 
 }

@@ -5,9 +5,11 @@ import org.http4k.core.Response
 import org.junit.Before
 import pt.isel.ls.api.UserRoutes.*
 import pt.isel.ls.api.utils.*
+import pt.isel.ls.entities.HttpError
 import pt.isel.ls.repository.memory.UserDataMemRepository
 import pt.isel.ls.entities.User
 import pt.isel.ls.repository.memory.ActivityDataMemRepository
+import pt.isel.ls.repository.memory.SportDataMemRepository
 import pt.isel.ls.services.ActivityServices
 import pt.isel.ls.services.UserServices
 import pt.isel.ls.services.generateRandomId
@@ -18,14 +20,14 @@ import kotlin.test.assertEquals
 
 class UserIntegrationTests {
     private val testUser = User(
-            name = "test",
-            email = User.Email("test@gmail.com"),
-            id = "1234567"
+        name = "test",
+        email = User.Email("test@gmail.com"),
+        id = "1234567"
     )
 
     private val testDataMem = UserDataMemRepository(testUser)
     private val userServices = UserServices(testDataMem)
-    private val activityServices = ActivityServices(ActivityDataMemRepository(), UserDataMemRepository(testUser))
+    private val activityServices = ActivityServices(ActivityDataMemRepository(), testDataMem, SportDataMemRepository())
     private val backend = getApiRoutes(User(userServices, activityServices))
 
     @Test
@@ -71,11 +73,11 @@ class UserIntegrationTests {
     fun `try to create a user without the name gives 400`() {
         val body = UserCreationBody(email = "abc@gmail.com")
         postRequest<UserCreationBody, HttpError>(
-                backend,
-                USER_PATH,
-                body,
-                authHeader(GUEST_TOKEN),
-                Response::expectBadRequest
+            backend,
+            USER_PATH,
+            body,
+            authHeader(GUEST_TOKEN),
+            Response::expectBadRequest
         )
     }
 
@@ -83,11 +85,11 @@ class UserIntegrationTests {
     fun `try to create a user without the email gives 400`() {
         val body = UserCreationBody(name = "Maria")
         postRequest<UserCreationBody, HttpError>(
-                backend,
-                USER_PATH,
-                body,
-                authHeader(GUEST_TOKEN),
-                Response::expectBadRequest
+            backend,
+            USER_PATH,
+            body,
+            authHeader(GUEST_TOKEN),
+            Response::expectBadRequest
         )
     }
 
@@ -95,11 +97,11 @@ class UserIntegrationTests {
     fun `create a user with a repeated email gives 400`() {
         val body = UserCreationBody("Maria", testUser.email.value)
         postRequest<UserCreationBody, HttpError>(
-                backend,
-                USER_PATH,
-                body,
-                authHeader(GUEST_TOKEN),
-                Response::expectBadRequest
+            backend,
+            USER_PATH,
+            body,
+            authHeader(GUEST_TOKEN),
+            Response::expectBadRequest
         )
     }
 
@@ -110,11 +112,11 @@ class UserIntegrationTests {
 
         val body = ExtraParam("Manel", "test123@gmail.com", "teste")
         postRequest<ExtraParam, HttpError>(
-                backend,
-                USER_PATH,
-                body,
-                authHeader(GUEST_TOKEN),
-                Response::expectBadRequest
+            backend,
+            USER_PATH,
+            body,
+            authHeader(GUEST_TOKEN),
+            Response::expectBadRequest
         )
     }
 
@@ -122,11 +124,11 @@ class UserIntegrationTests {
     fun `create a user with a wrong email gives 400`() {
         val body = UserCreationBody("Maria", "tes@t123@gmail.com")
         postRequest<UserCreationBody, HttpError>(
-                backend,
-                USER_PATH,
-                body,
-                authHeader(GUEST_TOKEN),
-                Response::expectBadRequest
+            backend,
+            USER_PATH,
+            body,
+            authHeader(GUEST_TOKEN),
+            Response::expectBadRequest
         )
     }
 
@@ -134,11 +136,11 @@ class UserIntegrationTests {
     fun `create a user with a blank name parameter gives 400`() {
         val body = UserCreationBody("", "test1234@gmail.com")
         postRequest<UserCreationBody, HttpError>(
-                backend,
-                USER_PATH,
-                body,
-                authHeader(GUEST_TOKEN),
-                Response::expectBadRequest
+            backend,
+            USER_PATH,
+            body,
+            authHeader(GUEST_TOKEN),
+            Response::expectBadRequest
         )
     }
 
@@ -146,11 +148,11 @@ class UserIntegrationTests {
     fun `create a user with a blank email parameter gives 400`() {
         val body = UserCreationBody("Mario", "")
         postRequest<UserCreationBody, HttpError>(
-                backend,
-                USER_PATH,
-                body,
-                authHeader(GUEST_TOKEN),
-                Response::expectBadRequest
+            backend,
+            USER_PATH,
+            body,
+            authHeader(GUEST_TOKEN),
+            Response::expectBadRequest
         )
     }
 

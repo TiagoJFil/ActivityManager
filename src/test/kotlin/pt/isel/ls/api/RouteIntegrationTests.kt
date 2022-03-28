@@ -5,6 +5,7 @@ import org.junit.Test
 import pt.isel.ls.entities.Route
 import pt.isel.ls.api.RouteRoutes.*
 import pt.isel.ls.api.utils.*
+import pt.isel.ls.entities.HttpError
 import pt.isel.ls.repository.memory.RouteDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
 import pt.isel.ls.services.*
@@ -23,13 +24,13 @@ class RouteIntegrationTests {
     }
 
     @Test fun `create a route successfully`(){
-        backend.createRoute(RouteCreation(startLocation = "a", endLocation = "b", distance = 10.0))
+        backend.createRoute(RouteCreationBody(startLocation = "a", endLocation = "b", distance = 10.0))
     }
 
 
     @Test fun `create a route without start location gives 400`(){
-        val body = RouteCreation(endLocation = "b", distance = 10.0)
-        postRequest<RouteCreation, HttpError>(
+        val body = RouteCreationBody(endLocation = "b", distance = 10.0)
+        postRequest<RouteCreationBody, HttpError>(
             backend,
             ROUTE_PATH,
             body,
@@ -39,8 +40,8 @@ class RouteIntegrationTests {
     }
 
     @Test fun `create a route without end location gives 400`(){
-        val body = RouteCreation(distance = 20.0, startLocation = "a")
-        postRequest<RouteCreation, HttpError>(
+        val body = RouteCreationBody(distance = 20.0, startLocation = "a")
+        postRequest<RouteCreationBody, HttpError>(
             backend,
             ROUTE_PATH,
             body,
@@ -50,8 +51,8 @@ class RouteIntegrationTests {
     }
 
     @Test fun `create a route without distance gives 400`(){
-        val body = RouteCreation(endLocation = "b", startLocation = "c")
-        postRequest<RouteCreation, HttpError>(
+        val body = RouteCreationBody(endLocation = "b", startLocation = "c")
+        postRequest<RouteCreationBody, HttpError>(
             backend,
             ROUTE_PATH,
             body,
@@ -61,8 +62,8 @@ class RouteIntegrationTests {
     }
 
     @Test fun `create a route with a blank parameter gives 400`(){
-        val body = RouteCreation(startLocation = " ", endLocation = "b", distance = 10.0)
-        postRequest<RouteCreation, HttpError>(
+        val body = RouteCreationBody(startLocation = " ", endLocation = "b", distance = 10.0)
+        postRequest<RouteCreationBody, HttpError>(
             backend,
             ROUTE_PATH,
             body,
@@ -79,7 +80,7 @@ class RouteIntegrationTests {
     }
 
     @Test fun `get a route successfully`(){
-        val body = RouteCreation(startLocation = "a", endLocation = "b", distance = 10.0)
+        val body = RouteCreationBody(startLocation = "a", endLocation = "b", distance = 10.0)
         val routeResponse = backend.createRoute(body)
         getRequest<Route>(backend, "$ROUTE_PATH${routeResponse.routeID}", Response::expectOK)
     }
@@ -90,7 +91,7 @@ class RouteIntegrationTests {
         val end = "Fátima"
         val distance = 127.8
 
-        val creationBodies = List(1000){RouteCreation("Lisboa", "Fátima", 127.8)}
+        val creationBodies = List(1000){RouteCreationBody("Lisboa", "Fátima", 127.8)}
         val routeIds: List<String> = creationBodies.map { backend.createRoute(it).routeID }
 
         val expected = routeIds.map { Route(id=it, start, end , distance, guestUser.id) }

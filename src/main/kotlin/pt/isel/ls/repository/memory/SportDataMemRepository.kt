@@ -26,8 +26,14 @@ class SportDataMemRepository: SportRepository {
     override fun getSports(): List<Sport> = sportsMap.values.toList()
 
     /**
-     * @sportID the unique number that identifies the sport
+     * @param sportID the unique number that identifies the sport
      * @return A [Sport] object or null if there is no sport identified by the [sportID]
      */
     override fun getSportByID(sportID: SportID): Sport? = sportsMap[sportID]
+
+    /**
+     * Checks if a sport identified by [sportID] exists.
+     */
+    override fun hasSport(sportID: SportID): Boolean = sportsMap.containsKey(sportID)
+
 }

@@ -6,8 +6,7 @@ import pt.isel.ls.repository.*
 import pt.isel.ls.utils.*
 
 
-
-class ActivityDataMemRepository(): ActivityRepository {
+class ActivityDataMemRepository: ActivityRepository {
 
     private val activitiesMap = mutableMapOf<ActivityID, Activity>()
 
@@ -21,23 +20,11 @@ class ActivityDataMemRepository(): ActivityRepository {
     }
 
     /**
-     * Gets all the activities that contain the given sport id.
-     *
-     * @param sportID the sport unique identifier that the activity must contain
-     * @return [List] of [Activity] that contain the given sport unique identifier
-     */
-    override fun getActivitiesBySport(sportID: SportID): List<Activity> {
-        TODO("Not yet implemented")
-    }
-
-    /**
-     * Gets all the activities that contain the given user id.
-     *
-     * @param userID the user unique identifier that the activity must contain
-     * @return [List] of [Activity] that contain the given user unique identifier
+     * Gets all the activities that were created by the given user.
+     * @param userID the user unique identifier that the activity must have
+     * @return [List] of [Activity] that were created by the given user
      */
     override fun getActivitiesByUser(userID: UserID): List<Activity> = activitiesMap.values.filter { it.user == userID }
-
 
     /**
      * Gets the activity that matches the given unique activity identifier.
@@ -45,15 +32,14 @@ class ActivityDataMemRepository(): ActivityRepository {
      * @param activityID the identifier of the activity to get
      * @return [Activity] if the id exists or null if it doesn't
      */
-    override fun getActivity(activityID: ActivityID): Activity? =activitiesMap[activityID]
-
+    override fun getActivity(activityID: ActivityID): Activity? = activitiesMap[activityID]
 
     /**
      * Gets the activities that match the given sport id, date, route id
      * and orders it by the given orderBy ([Order.ASCENDING] or [Order.DESCENDING])
      *
      * @param sid sport identifier
-     * @param orderBy order by duration time, this parameter only has two possible values - ascending or descending
+     * @param orderBy order by duration time, this parameter only has two possible values - [Order.ASCENDING] or [Order.DESCENDING]
      * @param date activity date (optional)
      * @param rid route identifier (optional)
      *
@@ -84,10 +70,14 @@ class ActivityDataMemRepository(): ActivityRepository {
      * @param activityID the id of the activity to delete
      * @return [Boolean] true if it deleted successfully
      */
-    override fun deleteActivity(activityID: ActivityID): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun deleteActivity(activityID: ActivityID): Boolean
+            = activitiesMap.remove(activityID) != null
 
-
+    /**
+     * Checks if the activity identified by the given identifier exists.
+     * @param activityID the id of the activity to check
+     * @return [Boolean] true if it exists
+     */
+    override fun hasActivity(activityID: ActivityID): Boolean = activitiesMap.containsKey(activityID)
 
 }

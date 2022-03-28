@@ -1,16 +1,19 @@
 package pt.isel.ls.services
 
-
 import kotlinx.datetime.toLocalDate
 import pt.isel.ls.entities.Activity
 import pt.isel.ls.repository.ActivityRepository
+import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.utils.*
 import java.time.DateTimeException
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 
-class ActivityServices(private val activityRepository: ActivityRepository, private val userRepository: UserRepository){
+class ActivityServices(
+    private val activityRepository: ActivityRepository,
+    private val userRepository: UserRepository,
+    private val sportRepository: SportRepository
+){
 
     private val durationFormat = DateTimeFormatter.ofPattern("HH:mm:ss.SSS")
     /**
@@ -26,20 +29,25 @@ class ActivityServices(private val activityRepository: ActivityRepository, priva
      */
     fun createActivity(userId: UserID, sportID: String?, duration: String?, date: String?, rid: String?): ActivityID {
         try {
-            if(sportID == null) throw MissingParameter("sportID")
-            if(sportID.isBlank())  throw InvalidParameter("sportID")
-            if(duration == null) throw MissingParameter("duration")
-            if(duration.isBlank())  throw InvalidParameter("duration")
-            if(date == null) throw MissingParameter("date")
-            if(date.isBlank())  throw InvalidParameter("date")
-            if(rid != null && rid.isBlank())  throw InvalidParameter("rid")
+            val sid = requireParameter(sportID, "sportID")
+            val safeDuration = requireParameter(duration, "duration")
+            val safeDate = requireParameter(date, "date")
+            if(rid != null && rid.isBlank()) throw InvalidParameter("rid")
             durationFormat.parse(duration)
-
-            val activityId = generateRandomId()
-            val activity = Activity(activityId, date.toLocalDate(), duration, sportID, rid, userId)
+            val activityID = generateRandomId()
+            val activity = Activity(
+                id=activityID,
+                date=safeDate.toLocalDate(),
+                duration=safeDuration,
+                sport=sid,
+                route=rid,
+                user=userId
+            )
 
             activityRepository.addActivity(activity)
-            return activityId
+
+            return activityID
+
         }catch (e: DateTimeException){
             throw InvalidParameter("duration")
         }catch (e: IllegalArgumentException){
@@ -54,24 +62,14 @@ class ActivityServices(private val activityRepository: ActivityRepository, priva
      * @return [List] of [Activity] with all the activities created by the user that matches the given id
      */
     fun getActivitiesByUser(userID: UserID?): List<Activity>{
-        if (userID == null) throw MissingParameter("userID")
-        if (userID.isBlank()) throw InvalidParameter("userID")
-        return if(userRepository.hasUser(userID)) activityRepository.getActivitiesByUser(userID)
-        else throw ResourceNotFound("User", userID)
+
+        val safeUID = requireParameter(userID, "userID")
+        if(!userRepository.hasUser(safeUID)) throw ResourceNotFound("userID", safeUID)
+
+        return activityRepository.getActivitiesByUser(safeUID)
+
     }
 
-    /**
-     * Gets an [Activity] by its id.
-     *
-     * @param activityID the unique identifier of the activity
-     * @return [Activity] with the activity that matches the given id
-     */
-    fun getActivity(activityID: String?): Activity{
-        if (activityID == null) throw MissingParameter("activityID")
-        if (activityID.isBlank()) throw InvalidParameter("activityID")
-
-        return activityRepository.getActivity(activityID) ?: throw ResourceNotFound("Activity", activityID)
-    }
 
     /**
      * Gets the activities that match the given sport id, date, route id
@@ -85,8 +83,7 @@ class ActivityServices(private val activityRepository: ActivityRepository, priva
      * @return [List] of [Activity]
      */
     fun getActivities(sid: SportID?, orderBy: String?, date: String?, rid: RouteID?): List<Activity>{
-        if (sid == null) throw MissingParameter("sid")
-        if (sid.isBlank()) throw InvalidParameter("sid")
+        val safeSID = requireParameter(sid, "sportID")
 
         val orderByToSend = when(orderBy?.lowercase()){
             "ascending", null -> Order.ASCENDING
@@ -97,7 +94,31 @@ class ActivityServices(private val activityRepository: ActivityRepository, priva
         if(rid != null && rid.isBlank()) throw InvalidParameter("rid")
 
 
-        return activityRepository.getActivities(sid, orderByToSend, date?.toLocalDate(), rid)
+        return activityRepository.getActivities(safeSID, orderByToSend, date?.toLocalDate(), rid)
     }
+
+    /**
+     * Deletes an activity.
+     * @param activityId The id of the activity to be deleted.
+     * @param userID The id of the user that created the activity.
+     * @return true if the activity was deleted, false otherwise.
+     */
+    fun deleteActivity(userID: UserID, activityId: ActivityID?, sportID: SportID?): Boolean {
+
+        val safeSID = requireParameter(sportID, "sportID")
+        if(!sportRepository.hasSport(safeSID)) throw ResourceNotFound("Sport", safeSID)
+        val safeAID = requireParameter(activityId, "activityId")
+        if(!activityRepository.hasActivity(safeAID)) throw ResourceNotFound("activityId", safeAID)
+        if(!ownsActivity(userID, safeAID)) throw UnauthenticatedError("User does not own this activity")
+
+        return activityRepository.deleteActivity(safeAID)
+    }
+
+    /**
+     * Checks if the user identified by [userId] owns the activity identified by [activityId].
+     */
+    private fun ownsActivity(userId: UserID, activityId: ActivityID): Boolean
+        = activityRepository.getActivity(activityId)?.user == userId
+
 
 }

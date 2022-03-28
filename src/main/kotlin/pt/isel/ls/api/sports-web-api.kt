@@ -13,6 +13,7 @@ import org.http4k.core.Status.Companion.UNAUTHORIZED
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
+import pt.isel.ls.entities.HttpError
 import pt.isel.ls.services.ActivityServices
 import pt.isel.ls.services.RouteServices
 import pt.isel.ls.services.SportsServices
@@ -42,7 +43,7 @@ fun getAppRoutes(userServices: UserServices, routeServices: RouteServices, sport
     User(userServices, activityServices),
     Route(routeServices, userServices),
     Sport(sportsServices, userServices, activityServices),
-    Activity(activityServices,sportsServices,userServices)
+    Activity(activityServices, userServices)
 )
 
 /**
@@ -75,11 +76,17 @@ private val onErrorFilter = Filter { handler ->
 
 /**
  * Gets the user token from the request
+ *
+ * TODO: PASS TOKEN TO SERVICES AND CONVERT TO USERID
+ *
  * @param request request to get the token from
- * @return the user token
+ * @return the user token or null if not found or in invalid format
  */
 fun getToken(request: Request): UserToken? =
-    request.header("Authorization")?.substringAfter("Bearer ")
+    request
+        .header("Authorization")
+        ?.substringAfter("Bearer ", missingDelimiterValue = "")
+        ?.ifBlank { null }
 
 
 

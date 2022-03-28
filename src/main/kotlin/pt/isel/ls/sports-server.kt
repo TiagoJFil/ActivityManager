@@ -1,8 +1,6 @@
 package pt.isel.ls
 
-import org.http4k.core.Filter
-import org.http4k.core.HttpHandler
-import org.http4k.core.Request
+
 import org.http4k.core.then
 import org.http4k.filter.DebuggingFilters.PrintRequestAndResponse
 import org.http4k.routing.RoutingHttpHandler
@@ -20,7 +18,6 @@ import pt.isel.ls.services.RouteServices
 import pt.isel.ls.services.SportsServices
 import pt.isel.ls.services.UserServices
 import pt.isel.ls.utils.guestUser
-import java.util.logging.Handler
 
 private const val DEFAULT_PORT = 9000
 
@@ -36,7 +33,7 @@ fun main() {
     val sportsServices = SportsServices(sportsRepo)
 
     val activityRepo = ActivityDataMemRepository()
-    val activityServices = ActivityServices(activityRepo, userRepo)
+    val activityServices = ActivityServices(activityRepo, userRepo, sportsRepo)
 
     val api = getApiRoutes(
         getAppRoutes(

@@ -10,4 +10,7 @@ interface SportRepository {
     fun getSports(): List<Sport>
 
     fun getSportByID(sportID: SportID): Sport?
+
+    fun hasSport(sportID: SportID): Boolean
+
 }
