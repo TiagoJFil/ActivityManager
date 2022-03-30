@@ -1,10 +1,11 @@
-package pt.isel.ls.entities
+package pt.isel.ls.services.dto
 
-import kotlinx.datetime.LocalDate
-import kotlinx.serialization.Serializable
+
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
+import kotlinx.serialization.Serializable
+import pt.isel.ls.services.entities.Activity
 
 
 /**
@@ -20,7 +21,7 @@ import pt.isel.ls.utils.UserID
 @Serializable
 data class Activity(
     val id: String,
-    val date: LocalDate,
+    val date: String,
     val duration: String,
     val sport: SportID,
     val route: RouteID? = null,
