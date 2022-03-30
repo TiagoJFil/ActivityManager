@@ -19,11 +19,21 @@ import pt.isel.ls.services.entities.Activity
  * @param user activity's user
  */
 @Serializable
-data class Activity(
+data class ActivityDTO(
     val id: String,
     val date: String,
     val duration: String,
     val sport: SportID,
     val route: RouteID? = null,
     val user: UserID
-)
+){
+    
+    constructor(activityEntity: Activity) : this(
+        activityEntity.id,
+        activityEntity.date.toString(),
+        activityEntity.duration.toFormat(),
+        activityEntity.sport,
+        activityEntity.route,
+        activityEntity.user
+    )
+}
