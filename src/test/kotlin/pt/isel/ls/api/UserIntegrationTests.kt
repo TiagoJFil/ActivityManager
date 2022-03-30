@@ -2,6 +2,7 @@ package pt.isel.ls.api
 
 import kotlinx.serialization.Serializable
 import org.http4k.core.Response
+import org.junit.After
 import org.junit.Before
 import pt.isel.ls.api.UserRoutes.*
 import pt.isel.ls.api.utils.*
@@ -45,8 +46,8 @@ class UserIntegrationTests {
     // Get User Details
     @Test
     fun `get a specific user sucessfully`() {
-        val user = getRequest<User>(backend, "$USER_PATH${testUser.id}", Response::expectOK)
-        assertEquals(testUser, user)
+        val user = getRequest<UserDTO>(testClient, "$USER_PATH${guestUser.id}", Response::expectOK)
+        assertEquals(guestUser.toDTO(), user)
     }
 
     @Test

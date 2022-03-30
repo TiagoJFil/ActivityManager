@@ -1,8 +1,8 @@
 package pt.isel.ls.services
 
 
-
-import pt.isel.ls.entities.User
+import pt.isel.ls.services.dto.UserDTO
+import pt.isel.ls.services.dto.toDTO
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
@@ -14,7 +14,7 @@ class UserServices(
 ) {
 
     /**
-     * Verifies the parameters received and calls the function [UserRepository] to create a [User].
+     * Verifies the parameters received and calls the function [UserRepository] to create a [UserDTO].
      * @param name the user's name
      * @param email the user's email
      * @return a pair of [Pair] with a [UserToken] and a [UserID]
@@ -39,10 +39,10 @@ class UserServices(
     }
 
     /**
-     * Verifies the parameters received and calls the function [UserRepository] to get an [User].
+     * Verifies the parameters received and calls the function [UserRepository] to get an [UserDTO].
      *
-     * @param id the unique id that identifies the user
-     * @return [User] the user identified by the given id
+     * @param uid the unique id that identifies the user
+     * @return [UserDTO] the user identified by the given id
      * @throws IllegalArgumentException
      */
     fun getUserByID(uid: UserID?): UserDTO {

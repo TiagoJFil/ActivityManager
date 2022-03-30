@@ -12,18 +12,17 @@ import pt.isel.ls.services.dto.HttpError
 import pt.isel.ls.services.dto.toDTO
 import pt.isel.ls.utils.GUEST_TOKEN
 import pt.isel.ls.utils.guestUser
+import pt.isel.ls.utils.testSport
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 class SportIntegrationTests {
-    private val testDataMem = SportDataMemRepository()
-    private val userTestDataMem = UserDataMemRepository(guestUser)
-    private val userServices = UserServices(userTestDataMem)
-    private val sportServices = SportsServices(testDataMem)
-    private val activityServices = ActivityServices(ActivityDataMemRepository(), userTestDataMem, testDataMem)
-    private val backend = getApiRoutes(Sport(sportServices,userServices, activityServices))
+    private var testClient = getApiRoutes(getAppRoutes(TEST_ENV))
 
+    @After fun tearDown() {
+        testClient = getApiRoutes(getAppRoutes(TEST_ENV))
+    }
 
     @Test fun `get sports without creating returns a list with the testSport list`(){
 

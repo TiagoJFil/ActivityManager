@@ -12,7 +12,7 @@ import pt.isel.ls.utils.UserToken
 class UserDataMemRepository(guest: User) : UserRepository {
 
     /**
-     * Mapping between a token and a user id
+     * Mapping between a [UserToken] and a [UserID]
      */
     private val tokenTable: MutableMap<UserToken, UserID> = mutableMapOf(GUEST_TOKEN to guest.id)
 
@@ -22,7 +22,7 @@ class UserDataMemRepository(guest: User) : UserRepository {
     private val emailsMap: MutableMap<String, UserID> = mutableMapOf(guest.email.value to guest.id)
 
     /**
-     * Mapping between a user id and it's identified user
+     * Mapping between a [UserID] and it's identified [User]
      */
     private val usersMap: MutableMap<UserID, User> = mutableMapOf(guest.id to guest)
 
@@ -54,7 +54,7 @@ class UserDataMemRepository(guest: User) : UserRepository {
 
     /**
      * @param id user's unique identifier
-     * @return A [User] object or null if there is no user identified by [id]
+     * @return A [UserDTO] object or null if there is no user identified by [id]
      */
     override fun getUserByID(userID: UserID): User? = usersMap[userID]
 
@@ -74,3 +74,4 @@ class UserDataMemRepository(guest: User) : UserRepository {
      */
     override fun hasUser(userID: UserID): Boolean = usersMap.containsKey(userID)
 }
+

@@ -17,9 +17,9 @@ import pt.isel.ls.utils.RouteID
 
 class RouteRoutes(
     private val routeServices: RouteServices,
-    private val userServices: UserServices
+
 ){
-    @Serializable data class RouteList(val routes: List<Route>)
+    @Serializable data class RouteList(val routes: List<RouteDTO>)
     @Serializable data class RouteCreationBody(
         val startLocation:String? = null,
         val endLocation: String? = null,
@@ -39,7 +39,7 @@ class RouteRoutes(
      * Gets a route identified by the given [RouteID] from the query "id"
      */
     private fun getRoute(request: Request): Response{
-        val routeID = request.path ("id")
+        val routeID = request.path ("rid")
 
         val route = routeServices.getRoute(routeID)
 
@@ -56,9 +56,10 @@ class RouteRoutes(
      */
     private fun createRoute(request: Request): Response{
         val routeInfo = Json.decodeFromString<RouteCreationBody>(request.bodyString())
-        val userId: UserID = userServices.getUserByToken(getToken(request))
+        val token = getToken(request)
+
         val routeId: RouteID =
-            routeServices.createRoute(userId,routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)
+            routeServices.createRoute(token,routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)
 
         return Response(Status.CREATED)
             .header("content-type", "application/json")
@@ -71,10 +72,10 @@ class RouteRoutes(
                 routes(
                     "/" bind Method.POST to ::createRoute,
                     "/" bind Method.GET to ::getRoutes,
-                    "/{id}" bind Method.GET to ::getRoute,
+                    "/{rid}" bind Method.GET to ::getRoute,
                 )
 
 }
 
-fun Route(routeServices: RouteServices, userServices: UserServices) =
-    RouteRoutes(routeServices, userServices).handler
+fun Route(routeServices: RouteServices) =
+    RouteRoutes(routeServices).handler

@@ -14,9 +14,12 @@ class SportDataMemRepository(testSport : Sport): SportRepository {
     private val sportsMap = mutableMapOf<SportID, Sport>(testSport.id to testSport)
 
     /**
-     * Adds a sport.
+     * Adds a new sport to the repository.
      *
-     * @param sport the sport to add
+     * @param sportID The sport's id.
+     * @param name The sport's name.
+     * @param description The sport's description(optional).
+     * @param userID The user's id.
      */
     override fun addSport(sportID: SportID, name: String, description: String?, userID: UserID) {
         val sport = Sport(sportID, name, description, userID)

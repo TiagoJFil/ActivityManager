@@ -5,18 +5,28 @@ import org.junit.After
 import pt.isel.ls.api.utils.TEST_ENV
 import pt.isel.ls.services.dto.SportDTO
 import pt.isel.ls.repository.memory.SportDataMemRepository
+import pt.isel.ls.repository.memory.UserDataMemRepository
+import pt.isel.ls.services.dto.toDTO
+import pt.isel.ls.utils.GUEST_TOKEN
 import pt.isel.ls.utils.guestUser
+import pt.isel.ls.utils.testSport
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class SportServicesTest {
 
-    val sportsServices = SportsServices(SportDataMemRepository())
+    private var sportsServices = TEST_ENV.sportsServices
+
+    @After
+    fun tearDown() {
+        sportsServices = TEST_ENV.sportsServices
+    }
 
     @Test
     fun `get all the sports list`(){
-        assertEquals(emptyList(), sportsServices.getSports())
+        assertEquals(listOf(testSport.toDTO()), sportsServices.getSports())
     }
+
 
     @Test
     fun `get a sport`(){
@@ -31,7 +41,7 @@ class SportServicesTest {
     fun `create a sport without name throws MissingParam`(){
 
         assertFailsWith<MissingParameter> {
-            sportsServices.createSport(guestUser.id, null, "A game played with feet")
+            sportsServices.createSport(GUEST_TOKEN, null, "A game played with feet")
         }
 
     }
@@ -75,12 +85,15 @@ class SportServicesTest {
 
     @Test
     fun `create 1000 sports checking if they are in getAll`(){
+        //val
+
         val sports = (1..1000).map { i ->
             val sportID = sportsServices.createSport(GUEST_TOKEN, "Football$i", "A game played with feet")
             sportsServices.getSport(sportID)
         }
-        assertEquals(1000,sportsServices.getSports().size)
-        assertEquals(sports,sportsServices.getSports())
+        val allSports = listOf(testSport.toDTO()) + sports
+        assertEquals(1001,sportsServices.getSports().size)
+        assertEquals(allSports,sportsServices.getSports())
     }
 
 

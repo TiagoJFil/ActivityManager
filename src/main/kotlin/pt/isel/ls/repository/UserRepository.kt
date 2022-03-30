@@ -1,6 +1,7 @@
 package pt.isel.ls.repository
 
-import pt.isel.ls.entities.User
+import pt.isel.ls.services.entities.User
+import pt.isel.ls.services.entities.User.Email
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 

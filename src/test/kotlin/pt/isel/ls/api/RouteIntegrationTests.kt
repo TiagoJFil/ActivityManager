@@ -14,6 +14,7 @@ import pt.isel.ls.utils.*
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
+
 class RouteIntegrationTests {
 
     private var testClient = getApiRoutes(getAppRoutes(TEST_ENV))
@@ -80,14 +81,14 @@ class RouteIntegrationTests {
 
     @Test fun `try to get a route that doesnt exist`(){
         val id = 123
-        println("${ROUTE_PATH}${id}")
-        getRequest<HttpError>(backend, "${ROUTE_PATH}${id}", Response::expectNotFound)
+
+        getRequest<HttpError>(testClient, "${ROUTE_PATH}${id}", Response::expectNotFound)
     }
 
     @Test fun `get a route successfully`(){
         val body = RouteCreationBody(startLocation = "a", endLocation = "b", distance = 10.0)
-        val routeResponse = backend.createRoute(body)
-        getRequest<Route>(backend, "$ROUTE_PATH${routeResponse.routeID}", Response::expectOK)
+        val routeResponse = testClient.createRoute(body)
+        getRequest<RouteDTO>(testClient, "$ROUTE_PATH${routeResponse.routeID}", Response::expectOK)
     }
 
     @Test fun `create multiple routes ensuring they're in the list of routes`(){
@@ -99,8 +100,8 @@ class RouteIntegrationTests {
         val creationBodies = List(1000){RouteCreationBody("Lisboa", "Fátima", 127.8)}
         val routeIds: List<String> = creationBodies.map { testClient.createRoute(it).routeID }
 
-        val expected = routeIds.map { Route(id=it, start, end , distance, guestUser.id) }
-        val routeList = getRequest<RouteList>(backend, ROUTE_PATH, Response::expectOK).routes
+        val expected = routeIds.map { RouteDTO(id=it, start, end , distance, guestUser.id) }
+        val routeList = getRequest<RouteList>(testClient, ROUTE_PATH, Response::expectOK).routes
 
         expected.forEach { assertContains(routeList, it) }
 

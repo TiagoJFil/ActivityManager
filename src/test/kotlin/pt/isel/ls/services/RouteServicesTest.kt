@@ -14,6 +14,7 @@ import pt.isel.ls.services.dto.toDTO
 import pt.isel.ls.utils.GUEST_TOKEN
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.guestUser
+import pt.isel.ls.utils.testRoute
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
@@ -28,8 +29,8 @@ class RouteServicesTest {
     }
 
     @Test
-    fun `get routes without creating returns an empty list`(){
-        assertEquals(emptyList(), routeServices.getRoutes())
+    fun `get routes without creating returns a list with the testRoute`(){
+        assertEquals(listOf(testRoute.toDTO()), routeServices.getRoutes())
     }
 
     @Test
@@ -50,31 +51,31 @@ class RouteServicesTest {
     @Test
     fun `create a route`(){
         val routeID: RouteID =
-            routeServices.createRoute(userId = guestUser.id, startLocation = "a", endLocation = "b", distance = 10.0)
+            routeServices.createRoute(token = GUEST_TOKEN, startLocation = "a", endLocation = "b", distance = 10.0)
 
         val routeCreated = routeServices.getRoute(routeID)
-        val routeExpected = Route(id = routeID, user = guestUser.id, startLocation = "a", endLocation = "b", distance = 10.0)
+        val routeExpected = RouteDTO(id = routeID, user = guestUser.id, startLocation = "a", endLocation = "b", distance = 10.0)
         assertEquals(routeExpected,routeCreated)
     }
 
     @Test
     fun `create a route with an invalid start location`(){
         assertFailsWith<InvalidParameter> {
-            routeServices.createRoute(userId = guestUser.id, startLocation = " ", endLocation = "b", distance = 10.0)
+            routeServices.createRoute(token = GUEST_TOKEN, startLocation = " ", endLocation = "b", distance = 10.0)
         }
     }
 
     @Test
     fun `create a route without end location`(){
         assertFailsWith<MissingParameter> {
-            routeServices.createRoute(userId = guestUser.id, startLocation = "a", endLocation = null, distance = 10.0)
+            routeServices.createRoute(token = GUEST_TOKEN, startLocation = "a", endLocation = null, distance = 10.0)
         }
     }
 
     @Test
     fun `create a route without distance`(){
         assertFailsWith<MissingParameter> {
-            routeServices.createRoute(userId = guestUser.id, startLocation = "a", endLocation = "b", distance = null)
+            routeServices.createRoute(token = GUEST_TOKEN, startLocation = "a", endLocation = "b", distance = null)
         }
     }
 }

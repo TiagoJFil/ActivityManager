@@ -48,8 +48,8 @@ class UserServicesTest {
 
         val user = userServices.getUserByID(sut.second)
 
-        assertEquals("abc",user.name )
-        assertEquals(User.Email("abc@gmail.com"),user.email)
+        assertEquals("abc", user.name)
+        assertEquals("abc@gmail.com", user.email)
     }
 
     @Test
@@ -81,12 +81,10 @@ class UserServicesTest {
     }
 
 
-    /**/
-
     @Test
     fun `get all the users list`() {
         val userList = userServices.getUsers()
-        val testList = listOf(testUser)
+        val testList = listOf(guestUser.toDTO())
         assertEquals(testList, userList)
     }
 }

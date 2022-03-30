@@ -3,11 +3,14 @@ package pt.isel.ls.services
 import pt.isel.ls.services.dto.RouteDTO
 import pt.isel.ls.services.dto.toDTO
 import pt.isel.ls.repository.RouteRepository
+import pt.isel.ls.repository.UserRepository
+import pt.isel.ls.services.entities.Route
 import pt.isel.ls.utils.*
 
 
 class RouteServices(
-    private val routeRepository: RouteRepository
+    private val routeRepository: RouteRepository,
+    private val userRepository: UserRepository
     ){
 
     /**
@@ -20,7 +23,7 @@ class RouteServices(
 
     /**
      * Creates a new route.
-     * @param userId the unique id that identifies the user
+     * @param token the user token to be used to verify the user.
      * @param startLocation the starting location
      * @param endLocation the end location
      * @param distance the route's distance
@@ -34,7 +37,6 @@ class RouteServices(
         if(distance == null) throw MissingParameter("distance")
 
         val routeId = generateRandomId()
-        val route = Route(routeId, safeStartLocation, safeEndLocation, distance, userId)
 
         routeRepository.addRoute(routeId, safeStartLocation, safeEndLocation, distance, userID)
 
@@ -45,9 +47,9 @@ class RouteServices(
      * Gets a route by its unique id.
      *
      * @param routeID the unique id that identifies the route
-     * @return [Route] the route identified by the given id
+     * @return [RouteDTO] the route identified by the given id
      */
-    fun getRoute(routeID: String?): Route {
+    fun getRoute(routeID: String?): RouteDTO {
         val safeRouteID = requireParameter(routeID, "routeID")
         return routeRepository.getRoute(safeRouteID)?.toDTO()
                 ?: throw ResourceNotFound("Route", "$routeID")

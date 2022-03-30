@@ -15,11 +15,10 @@ import org.http4k.routing.routes
 import pt.isel.ls.services.dto.SportDTO
 import pt.isel.ls.services.SportsServices
 import pt.isel.ls.utils.SportID
+import pt.isel.ls.utils.UserToken
 
 class SportRoutes(
-    val sportsServices: SportsServices,
-    val userServices: UserServices,
-    val activityServices: ActivityServices
+    val sportsServices: SportsServices
 ) {
 
     @Serializable
@@ -33,8 +32,9 @@ class SportRoutes(
     private fun createSport(request: Request): Response {
         val sportsBody = Json.decodeFromString<SportCreationBody>(request.bodyString())
 
-        val userID = userServices.getUserByToken(getToken(request))
-        val sportID = sportsServices.createSport(userID, sportsBody.name, sportsBody.description)
+
+        val token : UserToken? = getToken(request)
+        val sportID = sportsServices.createSport(token, sportsBody.name, sportsBody.description)
 
         return Response(Status.CREATED)
             .header("content-type", "application/json")
@@ -45,7 +45,7 @@ class SportRoutes(
      * Gets the sport that its given in the params of the path of the uri.
      */
     private fun getSport(request: Request): Response {
-        val sportID = request.path ("id")
+        val sportID = request.path ("sid")
         val sport = sportsServices.getSport(sportID)
         val sportJson = Json.encodeToString(sport)
 
@@ -68,24 +68,7 @@ class SportRoutes(
             .body(bodyString)
     }
 
-    @Serializable
-    data class ListActivities(val activities: List<Activity>)
-    /**
-     * Gets all the activities of the sport identified by the id given in the params of the uri's path.
-     */
-    private fun getActivitiesBySport(request: Request): Response{
-        val order = request.query("orderBy")
-        val date = request.query("date")
-        val routeID = request.query("rid")
-        val sportID = request.path("id")
-        val sport = sportsServices.getSport(sportID)
-        val activities = activityServices.getActivities(sport.id, order, date, routeID)
-        val activitiesJson = Json.encodeToString(UserRoutes.ListActivities(activities))
 
-        return Response(Status.OK)
-            .header("content-type", "application/json")
-            .body(activitiesJson)
-    }
 
     val handler = routes(
         "/sports" bind routes(

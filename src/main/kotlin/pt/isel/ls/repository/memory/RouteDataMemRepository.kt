@@ -16,14 +16,17 @@ class RouteDataMemRepository(testRoute: Route): RouteRepository {
     /**
      * Gets all the existing routes.
      *
-     * @return [List] of [Route]
+     * @return [List] of [RouteDTO]
      */
     override fun getRoutes(): List<Route> = routesMap.values.toList()
 
     /**
-     * Adds a new route.
-     *
-     * @param route the route to add
+     * Adds a new route to the repository.
+     * @param routeId The id of the route to be added.
+     * @param startLocation The start location of the route.
+     * @param endLocation The end location of the route.
+     * @param distance The distance of the route.
+     * @param userID The id of the user that created the route.
      */
     override fun addRoute(
             routeId: RouteID,
@@ -40,9 +43,17 @@ class RouteDataMemRepository(testRoute: Route): RouteRepository {
      * Gets a route by the given id.
      *
      * @param id the unique identifier of the route to get
-     * @return [Route] the route object or null if the id doesn't exist
+     * @return [RouteDTO] the route object or null if the id doesn't exist
      */
-    override fun getRoute(id: RouteID): Route? = routesMap[id]
+    override fun getRoute(routeID: RouteID): Route? = routesMap[routeID]
+
+    /**
+     * Verifies if a route with the given id exists in the repository.
+     * @param routeID The id of the route to be verified.
+     * @return [Boolean] True if the route exists, false otherwise.
+     */
+    override fun hasRoute(routeID: RouteID): Boolean =
+            routesMap[routeID] != null
 
 }
 
