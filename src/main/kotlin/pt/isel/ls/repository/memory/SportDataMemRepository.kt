@@ -23,17 +23,16 @@ class SportDataMemRepository(testSport : Sport): SportRepository {
         sportsMap[sportID] = sport
     }
 
-
     /**
      * Gets all the sports.
      *
-     * @return [List] of [Sport]
+     * @return [List] of [SportDTO]
      */
     override fun getSports(): List<Sport> = sportsMap.values.toList()
 
     /**
      * @param sportID the unique number that identifies the sport
-     * @return A [Sport] object or null if there is no sport identified by the [sportID]
+     * @return A [SportDTO] object or null if there is no sport identified by the [sportID]
      */
     override fun getSportByID(sportID: SportID): Sport? = sportsMap[sportID]
 

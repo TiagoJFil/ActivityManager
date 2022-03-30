@@ -1,7 +1,10 @@
 package pt.isel.ls.repository
 
-import pt.isel.ls.entities.Sport
+import pt.isel.ls.services.dto.SportDTO
+import pt.isel.ls.services.entities.Sport
+import pt.isel.ls.services.entities.User
 import pt.isel.ls.utils.SportID
+import pt.isel.ls.utils.UserID
 
 interface SportRepository {
 

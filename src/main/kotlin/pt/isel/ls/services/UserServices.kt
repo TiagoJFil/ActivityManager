@@ -6,10 +6,12 @@ import pt.isel.ls.entities.User
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.services.entities.User
+import pt.isel.ls.services.entities.User.Email
 
 class UserServices(
-    private val userRepository: UserRepository
-    ) {
+        private val userRepository: UserRepository
+) {
 
     /**
      * Verifies the parameters received and calls the function [UserRepository] to create a [User].
@@ -18,7 +20,7 @@ class UserServices(
      * @return a pair of [Pair] with a [UserToken] and a [UserID]
      * @throws IllegalArgumentException
      */
-    fun createUser(name : String?, email: String?) : Pair<UserToken,UserID>{
+    fun createUser(name: String?, email: String?): Pair<UserToken, UserID> {
         val safeName = requireParameter(name, "name")
         val safeEmail = requireParameter(email, "email")
 
@@ -33,7 +35,7 @@ class UserServices(
         userRepository.addUser(safeName, possibleEmail, userId, userAuthToken)
 
 
-        return Pair(userAuthToken,userId)
+        return Pair(userAuthToken, userId)
     }
 
     /**

@@ -16,9 +16,10 @@ class SportsServices(
      * @param sportID the id that identifies the [Sport] to get
      * @return [Sport] the sport identified by the given id
      */
-    fun getSport(sportID: SportID?): Sport {
+    fun getSport(sportID: SportID?): SportDTO {
         val safeSportID = requireParameter(sportID, "sportID")
-        return sportsRepository.getSportByID(safeSportID) ?: throw ResourceNotFound("Sport", "$sportID")
+        return sportsRepository.getSportByID(safeSportID)?.toDTO()
+                ?: throw ResourceNotFound("Sport", "$sportID")
     }
 
     /**
@@ -37,7 +38,7 @@ class SportsServices(
     /**
      * Gets all the existing sports
      *
-     * @return [List] of [Sport]
+     * @return [List] of [SportDTO]
      */
     fun getSports(): List<SportDTO> =
             sportsRepository

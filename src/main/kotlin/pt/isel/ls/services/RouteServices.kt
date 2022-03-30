@@ -14,7 +14,9 @@ class RouteServices(
      * Returns a list of all routes.
      * @return a list of all routes.
      */
-    fun getRoutes() = routeRepository.getRoutes()
+    fun getRoutes() = routeRepository
+            .getRoutes()
+            .map(Route::toDTO)
 
     /**
      * Creates a new route.
@@ -47,7 +49,8 @@ class RouteServices(
      */
     fun getRoute(routeID: String?): Route {
         val safeRouteID = requireParameter(routeID, "routeID")
-        return routeRepository.getRoute(safeRouteID) ?: throw ResourceNotFound("Route", "$routeID")
+        return routeRepository.getRoute(safeRouteID)?.toDTO()
+                ?: throw ResourceNotFound("Route", "$routeID")
     }
 
 }

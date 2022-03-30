@@ -31,10 +31,9 @@ class SportIntegrationTests {
         assertEquals(listOf(testSport.toDTO()), sportList.sports)
     }
 
-    @Test
-    fun `get a specific sport sucessfully`() {
-        val sport = backend.createSport(SportCreationBody("Football", "Game played with feet.")).sportID
-        getRequest<Sport>(backend, "${SPORT_PATH}${sport}", Response::expectOK)
+    @Test fun `get a specific sport sucessfully`() {
+        val sport = testClient.createSport(SportCreationBody("Football", "Game played with feet.")).sportID
+        getRequest<SportDTO>(testClient, "${SPORT_PATH}${sport}", Response::expectOK)
     }
 
     @Test fun `get not found error trying to get a sport that does not exist`(){
@@ -92,8 +91,8 @@ class SportIntegrationTests {
         val creationBodies = List(1000){SportCreationBody(name, description)}
         val sportsIds: List<String> = creationBodies.map { testClient.createSport(it).sportID }
 
-        val expected = sportsIds.map { Sport(id=it, name, description, guestUser.id) }
-        val sportList = getRequest<SportList>(backend, SPORT_PATH, Response::expectOK).sports
+        val expected = sportsIds.map { SportDTO(id=it, name, description, guestUser.id) }
+        val sportList = getRequest<SportList>(testClient, SPORT_PATH, Response::expectOK).sports
 
         expected.forEach { assertContains(sportList, it) }
 

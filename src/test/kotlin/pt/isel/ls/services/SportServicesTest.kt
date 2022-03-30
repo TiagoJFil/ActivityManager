@@ -22,7 +22,7 @@ class SportServicesTest {
     fun `get a sport`(){
         val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", "A game played with feet")
         val sport = sportsServices.getSport(sportID)
-        val expected = Sport(sportID,"Football", "A game played with feet", guestUser.id)
+        val expected = SportDTO(sportID,"Football", "A game played with feet", guestUser.id)
         assertEquals(expected,sport)
     }
 
@@ -49,7 +49,7 @@ class SportServicesTest {
     fun `create a sport without description is allowed`(){
         val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", null)
         val sport = sportsServices.getSport(sportID)
-        val expected = Sport(sportID,"Football", null, guestUser.id)
+        val expected = SportDTO(sportID,"Football", null, guestUser.id)
         assertEquals(expected,sport)
     }
 
@@ -57,7 +57,7 @@ class SportServicesTest {
     fun `create a sport with blank description is allowed`(){
         val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", "")
         val sport = sportsServices.getSport(sportID)
-        val expected = Sport(sportID,"Football", null, guestUser.id)
+        val expected = SportDTO(sportID,"Football", null, guestUser.id)
         assertEquals(expected,sport)
     }
 
@@ -67,8 +67,8 @@ class SportServicesTest {
         val sportID2 = sportsServices.createSport(GUEST_TOKEN, "Football", "A game played with feet")
         val sport1 = sportsServices.getSport(sportID1)
         val sport2 = sportsServices.getSport(sportID2)
-        val expected1 = Sport(sportID1,"Football", "A game played with feet", guestUser.id)
-        val expected2 = Sport(sportID2,"Football", "A game played with feet", guestUser.id)
+        val expected1 = SportDTO(sportID1,"Football", "A game played with feet", guestUser.id)
+        val expected2 = SportDTO(sportID2,"Football", "A game played with feet", guestUser.id)
         assertEquals(expected1,sport1)
         assertEquals(expected2,sport2)
     }

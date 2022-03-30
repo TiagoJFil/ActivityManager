@@ -55,7 +55,7 @@ class SportRoutes(
     }
 
     @Serializable
-    data class SportList(val sports: List<Sport>)
+    data class SportList(val sports: List<SportDTO>)
 
     /**
      * Gets all the available sports.

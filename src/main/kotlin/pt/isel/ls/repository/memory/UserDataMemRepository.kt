@@ -14,23 +14,29 @@ class UserDataMemRepository(guest: User) : UserRepository {
     /**
      * Mapping between a token and a user id
      */
-    private val tokenTable = mutableMapOf<UserToken, UserID>(GUEST_TOKEN to guest.id)
+    private val tokenTable: MutableMap<UserToken, UserID> = mutableMapOf(GUEST_TOKEN to guest.id)
+
+    /**
+     * Mapping between an email and a [UserID]
+     */
+    private val emailsMap: MutableMap<String, UserID> = mutableMapOf(guest.email.value to guest.id)
 
     /**
      * Mapping between a user id and it's identified user
      */
     private val usersMap: MutableMap<UserID, User> = mutableMapOf(guest.id to guest)
 
+
     /**
-     * Checks if the specified user has a repeated email
-     *
-     * @param userId the unique id that identifies an user
-     * @param email the user's email
-     * @return [Boolean] true if another user already has the given email or false if it doesn't
-     */
-    override fun userHasRepeatedEmail(userId: UserID, email: User.Email): Boolean {
-        return usersMap.values.any { it.email == email }
-    }
+    * Checks if the specified user has a repeated email
+    *
+    *  to check
+    * @param email the user's email
+    * @return [Boolean] true if another user already has the given email or false if it doesn't
+    */
+    override fun hasRepeatedEmail(email: Email): Boolean =
+            emailsMap[email.value] != null
+
 
     /**
      * Adds a new user to the repository.
