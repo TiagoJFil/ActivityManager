@@ -1,9 +1,8 @@
-package pt.isel.ls.entities
+package pt.isel.ls.services.entities
 
 import kotlinx.serialization.Serializable
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
-
 /**
  * Represents a sport
  *
@@ -14,9 +13,9 @@ import pt.isel.ls.utils.UserID
  */
 @Serializable
 data class Sport(
-    val id: SportID,
-    val name: String,
-    val description: String? = null,
-    val user: UserID
+        val id: SportID,
+        val name: String,
+        val description: String? = null,
+        val user: UserID
 )
 

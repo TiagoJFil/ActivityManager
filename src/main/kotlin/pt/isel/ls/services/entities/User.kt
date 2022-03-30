@@ -1,8 +1,9 @@
-package pt.isel.ls.entities
+package pt.isel.ls.services.entities
 
-import kotlinx.serialization.Serializable
+
 import pt.isel.ls.services.InvalidParameter
 import pt.isel.ls.utils.UserID
+
 
 /**
  * Represents a user
@@ -12,26 +13,26 @@ import pt.isel.ls.utils.UserID
  * @property id unique identifier
  *
  */
-@Serializable
 data class User(val name: String, val email: Email, val id: UserID) {
 
     /**
      * Represents an email from a [User]
      * @throws IllegalArgumentException if the email is not valid (wrong email format)
      * @property value String value of the email
-     */
-    @Serializable
+     * */
     data class Email(val value: String) {
         companion object {
             private val emailRegex = Regex(
-                "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$"
+                    "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)" +
+                            "*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$"
             )
         }
 
         init {
-            if(!emailRegex.matches(value)) throw InvalidParameter("email")
+            if (!emailRegex.matches(value)) throw InvalidParameter("email")
         }
     }
 
 }
+
 

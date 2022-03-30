@@ -1,6 +1,5 @@
-package pt.isel.ls.entities
+package pt.isel.ls.services.entities
 
-import kotlinx.serialization.Serializable
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
 
@@ -13,12 +12,10 @@ import pt.isel.ls.utils.UserID
  * @property distance route's distance
  * @property user route's user
  */
-@Serializable
 data class Route(
-    val id: RouteID,
-    val startLocation: String,
-    val endLocation: String,
-    val distance: Double,
-    val user: UserID
+        val id: RouteID,
+        val startLocation: String,
+        val endLocation: String,
+        val distance: Double,
+        val user: UserID
 )
-
