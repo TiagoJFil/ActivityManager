@@ -75,9 +75,9 @@ class ActivityDataMemRepository(testActivity: Activity): ActivityRepository {
         if (activities.isEmpty()) return activities
 
         return if (orderBy == Order.ASCENDING)
-            activities.sortedBy { it.duration }
+            activities.sortedBy { it.duration.millis }
         else
-            activities.sortedByDescending { it.duration }
+            activities.sortedByDescending { it.duration.millis }
     }
 
     /**

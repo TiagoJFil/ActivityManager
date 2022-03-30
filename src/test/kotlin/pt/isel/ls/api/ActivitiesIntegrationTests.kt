@@ -1,6 +1,5 @@
 package pt.isel.ls.api
 
-import kotlinx.datetime.toLocalDate
 import org.http4k.core.Method.*
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -239,7 +238,7 @@ class ActivitiesIntegrationTests {
         val activity1 =
                 ActivityDTO(activityID2, date, "02:10:32.123", sportID, testRoute.id, guestUser.id)
 
-        val expectedActivitiesList = listOf<Activity>(activity1)
+        val expectedActivitiesList = listOf<ActivityDTO>(testActivity.toDTO(), activity1).sortedBy { it.duration }
         assertContentEquals(expectedActivitiesList, activitiesList)
     }
 
@@ -314,8 +313,8 @@ class ActivitiesIntegrationTests {
     }
 
     private fun deleteActivity(sportID: SportID, activityID: ActivityID, token: UserToken)  =
-        backend(
-            Request(DELETE, "${ACTIVITY_PATH}${sportID}/${activityID}")
+        testClient(
+            Request(DELETE, activityResourceLocation(sportID, activityID))
                 .header("Authorization", "Bearer $token")
         )
 }

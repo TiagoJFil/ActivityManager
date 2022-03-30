@@ -38,7 +38,6 @@ class ActivityServices(
     fun createActivity(userId: UserID, sportID: String?, duration: String?, date: String?, rid: String?): ActivityID {
         try {
             val sid = requireParameter(sportID, "sportID")
-            val safeDuration = requireParameter(duration, "duration")
             val safeDate = requireParameter(date, "date")
             requireNotBlankParameter(rid, "rid")
 
@@ -59,7 +58,7 @@ class ActivityServices(
             )
 
             return activityID
-        }catch (e: DateTimeException){
+        }catch (e: ParseException){
             throw InvalidParameter("duration")
         }catch (e: IllegalArgumentException){
             throw InvalidParameter("date")
@@ -67,28 +66,30 @@ class ActivityServices(
     }
 
     /**
-     * Gets an [Activity] by its id.
+     * Gets an [ActivityDTO] by its id.
      *
      * @param activityID the unique identifier of the activity
-     * @return [Activity] with the activity that matches the given id
+     * @return [ActivityDTO] with the activity that matches the given id
      */
-    fun getActivity(activityID: String?): Activity{
+    fun getActivity(activityID: String?): ActivityDTO {
         val safeActivityID = requireParameter(activityID, "activityID")
 
-        return activityRepository.getActivity(safeActivityID) ?: throw ResourceNotFound("Activity", safeActivityID)
+        return activityRepository.getActivity(safeActivityID)?.toDTO()
+                ?: throw ResourceNotFound("Activity", safeActivityID)
     }
 
     /**
      * Gets the activities created by a user.
      *
      * @param userID the unique identifier of the user that created the activity
-     * @return [List] of [Activity] with all the activities created by the user that matches the given id
+     * @return [List] of [ActivityDTO] with all the activities created by the user that matches the given id
      */
-    fun getActivitiesByUser(userID: UserID?): List<Activity>{
+    fun getActivitiesByUser(userID: UserID?): List<ActivityDTO>{
         val safeUID = requireParameter(userID, "userID")
         if(!userRepository.hasUser(safeUID)) throw ResourceNotFound("userID", safeUID)
 
         return activityRepository.getActivitiesByUser(safeUID)
+                .map(Activity::toDTO)
     }
 
 
@@ -101,9 +102,9 @@ class ActivityServices(
      * @param date activity date (optional)
      * @param rid route identifier (optional)
      *
-     * @return [List] of [Activity]
+     * @return [List] of [ActivityDTO]
      */
-    fun getActivities(sid: SportID?, orderBy: String?, date: String?, rid: RouteID?): List<Activity>{
+    fun getActivities(sid: SportID?, orderBy: String?, date: String?, rid: RouteID?): List<ActivityDTO>{
         val safeSID = requireParameter(sid, "sportID")
 
         val orderByToSend = when(orderBy?.lowercase()){
@@ -120,6 +121,7 @@ class ActivityServices(
         }
 
         return activityRepository.getActivities(safeSID, orderByToSend, date?.toLocalDate(), rid)
+                .map(Activity::toDTO)
     }
 
     /**

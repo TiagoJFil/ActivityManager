@@ -1,6 +1,5 @@
 package pt.isel.ls
 
-
 import org.http4k.core.then
 import org.http4k.filter.DebuggingFilters.PrintRequestAndResponse
 import org.http4k.routing.RoutingHttpHandler
@@ -20,6 +19,7 @@ import pt.isel.ls.services.UserServices
 import pt.isel.ls.utils.guestUser
 
 private const val DEFAULT_PORT = 9000
+
 
 fun main() {
 

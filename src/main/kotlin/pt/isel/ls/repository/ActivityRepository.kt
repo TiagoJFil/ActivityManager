@@ -1,7 +1,8 @@
 package pt.isel.ls.repository
 
 import kotlinx.datetime.LocalDate
-import pt.isel.ls.entities.Activity
+import pt.isel.ls.services.dto.ActivityDTO
+import pt.isel.ls.services.entities.Activity
 import pt.isel.ls.utils.*
 
 interface ActivityRepository {
@@ -28,7 +29,7 @@ interface ActivityRepository {
     /**
      * Gets all the activities that were created by the given user.
      * @param userID the user unique identifier that the activity must have
-     * @return [List] of [Activity] that were created by the given user
+     * @return [List] of [ActivityDTO] that were created by the given user
      */
     fun getActivitiesByUser(userID: UserID): List<Activity>
 
@@ -36,7 +37,7 @@ interface ActivityRepository {
      * Gets the activity that matches the given unique activity identifier.
      *
      * @param activityID the identifier of the activity to get
-     * @return [Activity] if the id exists or null if it doesn't
+     * @return [ActivityDTO] if the id exists or null if it doesn't
      */
     fun getActivity(activityID: ActivityID): Activity?
 
@@ -50,7 +51,7 @@ interface ActivityRepository {
      * @param date activity date (optional)
      * @param rid route identifier (optional)
      *
-     * @return [List] of [Activity]
+     * @return [List] of [ActivityDTO]
      */
     fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?): List<Activity>
 

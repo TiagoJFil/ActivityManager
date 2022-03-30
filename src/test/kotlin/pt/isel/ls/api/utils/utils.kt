@@ -16,7 +16,7 @@ import pt.isel.ls.utils.*
 
 const val ROUTE_PATH = "/api/routes/"
 const val USER_PATH = "/api/users/"
-const val ACTIVITY_PATH = "/api/activity/"
+const val ACTIVITY_PATH = "/api/sports/"
 const val SPORT_PATH = "/api/sports/"
 
 val TEST_ENV: Environment

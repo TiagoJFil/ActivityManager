@@ -30,7 +30,7 @@ class ActivityRoutes(
     @Serializable data class ActivityIDResponse(val activityID : ActivityID)
 
     /**
-     * Creates an [Activity] using the information received in the path and body of the request.
+     * Creates an [ActivityDTO] using the information received in the path and body of the request.
      */
     private fun createActivity(request: Request): Response {
         val sportID = request.path("sid")
@@ -45,7 +45,7 @@ class ActivityRoutes(
     }
 
     /**
-     * Gets the [Activity] with the given [ActivityID].
+     * Gets the [ActivityDTO] with the given [ActivityID].
      */
     private fun getActivity(request: Request): Response {
         val activityId  = request.path("id")

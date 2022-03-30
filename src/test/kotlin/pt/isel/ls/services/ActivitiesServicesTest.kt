@@ -118,8 +118,11 @@ class ActivitiesServicesTest {
         val activityID =
             activitiesServices.createActivity(guestUser.id, sportID, "02:10:32.123", "2002-05-20", "123")
 
-        val activity =
-            Activity(activityID, "2002-05-20".toLocalDate(), "02:10:32.123", sportID, "123", guestUser.id)
+        val activitiesExpected = listOf(
+                testActivity.toDTO(),
+                ActivityDTO(activityID, "2002-05-20", "02:10:32.123", sportID, testRoute.id, guestUser.id)
+        )
+
 
         val activities = activitiesServices.getActivities(sportID, "ascending", null, null)
 
