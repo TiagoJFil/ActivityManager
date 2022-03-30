@@ -13,9 +13,7 @@ import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
-import pt.isel.ls.entities.Activity
-import pt.isel.ls.entities.User
-import pt.isel.ls.services.ActivityServices
+import pt.isel.ls.services.dto.UserDTO
 import pt.isel.ls.services.UserServices
 
 
@@ -66,27 +64,12 @@ class UserRoutes(
     }
 
 
-    /**
-     * Gets all the activities created by the user that matches the given id.
-     */
-    private fun getActivitiesByUser(request: Request): Response{
-        val userId = request.path("id")
-
-        val userResponse = userServices.getUserByID(userId)
-        val activities = activityServices.getActivitiesByUser(userResponse.id)
-        val activitiesJson = Json.encodeToString(ListActivities(activities))
-
-        return Response(Status.OK)
-                .header("content-type", "application/json")
-                .body(activitiesJson)
-    }
 
     val handler: RoutingHttpHandler =
         "/users" bind routes(
             "/"     bind  Method.POST to ::createUser,
             "/"     bind Method.GET to ::getUsers,
-            "/{id}" bind Method.GET to ::getUserDetails,
-            "/{id}/activities" bind Method.GET to ::getActivitiesByUser
+            "/{uid}" bind Method.GET to ::getUserDetails,
         )
 }
 

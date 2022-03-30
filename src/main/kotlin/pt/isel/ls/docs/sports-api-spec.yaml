@@ -20,7 +20,7 @@ servers:
   - url: http://localhost:9000/api
     description: Local Server
 paths:
-  /users/{id}:
+  /users/{uid}:
     get:
       tags:
         - "User"
@@ -28,7 +28,7 @@ paths:
       description: "Gets a user by it's identifier"
       operationId: "getUserByID"
       parameters:
-        - name: "id"
+        - name: "uid"
           in: "path"
           description: "User's identifier. Use guestID for testing."
           required: true
@@ -88,7 +88,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HttpError"
-  /routes/{id}:
+  /routes/{rid}:
     get:
       tags:
         - "Routes"
@@ -96,7 +96,7 @@ paths:
       description: "Gets a route by it's identifier"
       operationId: "getRouteByID"
       parameters:
-        - name: "id"
+        - name: "rid"
           in: "path"
           description: "Route's identifier."
           required: true
@@ -195,19 +195,30 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SportCreationResponse"
+                $ref: "#/components/schemas/SportIDResponse"
         "400":
           description: "A required parameter is missing or is incorrect"
-  /activity/{id}:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+  /sports/{sid}/activities/{aid}:
     get:
       tags:
         - "Activities"
       summary: "Get an activity"
       description: "Gets an activity associated to the given id"
       parameters:
-        - name: "id"
+        - name: "aid"
           in: "path"
           description: "Activity's identifier."
+          required: true
+          schema:
+            type: "string"
+          example: "1234"
+        - name: "sid"
+          in: "path"
+          description: "Sport's identifier."
           required: true
           schema:
             type: "string"
@@ -215,13 +226,52 @@ paths:
       responses:
         "200":
           description: "Successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Activity"
         "404":
           description: "Activity not found"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/HttpError"
-  /activity/{sid}:
+    delete:
+      tags:
+        - "Activities"
+      summary: "Delete an activity"
+      description: "Deletes an activity by id"
+      parameters:
+        - name: "sid"
+          in: "path"
+          description: "Sport's identifier."
+          required: true
+          schema:
+            type: "string"
+          example: "1234154"
+        - name: "aid"
+          in: "path"
+          description: "Activity's identifier."
+          required: true
+          schema:
+            type: "string"
+          example: "1234348673498756"
+      responses:
+        "204":
+          description: "Activity deleted successfully"
+        "404":
+          description: "Sport or Activity not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+        "401":
+          description: "Invalid, missing token or token not belonging to the user that created the activity"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+  /sports/{sid}/activities:
     post:
       tags:
         - "Activities"
@@ -251,72 +301,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HttpError"
-  /sports/{id}:
-    get:
-      tags:
-        - "Sports"
-      summary: "Get a sport"
-      description: "Gets a sport by id"
-      operationId: "getsport"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "Sport's identifier."
-          required: true
-          schema:
-            type: "string"
-          example: "1234154"
-      responses:
-        "200":
-          description: "sucessfull operation"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Sport"
-        "404":
-          description: "Sport not found"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/HttpError"
-  /activity/{sid}/{aid}:
-    delete:
-      summary: "Delete an activity"
-      description: "Deletes an activity by id"
-      parameters:
-        - name: "sid"
-          in: "path"
-          description: "Sport's identifier."
-          required: true
-          schema:
-            type: "string"
-          example: "1234154"
-        - name: "aid"
-          in: "path"
-          description: "Activity's identifier."
-          required: true
-          schema:
-            type: "string"
-          example: "1234348673498756"
-      tags:
-        - "Activities"
-      responses:
-        "200":
-          description: "Activity deleted successfully"
-        "404":
-          description: "Sport or Activity not found"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/HttpError"
-        "401":
-          description: "Invalid, missing token or token not belonging to the user that created the activity"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/HttpError"
-
-  /sports/{id}/activities:
     get:
       tags:
         - "Activities"
@@ -324,7 +308,7 @@ paths:
       description: "Gets the activities that the sports match the given id"
       operationId: "getActivities"
       parameters:
-        - name: "id"
+        - name: "sid"
           in: "path"
           description: "Sport's identifier."
           required: true
@@ -365,8 +349,34 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HttpError"
-
-
+  /sports/{sid}:
+    get:
+      tags:
+        - "Sports"
+      summary: "Get a sport"
+      description: "Gets a sport by id"
+      operationId: "getsport"
+      parameters:
+        - name: "sid"
+          in: "path"
+          description: "Sport's identifier."
+          required: true
+          schema:
+            type: "string"
+          example: "1234154"
+      responses:
+        "200":
+          description: "sucessfull operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Sport"
+        "404":
+          description: "Sport not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
 components:
   schemas:
     HttpError:
@@ -402,20 +412,25 @@ components:
       properties:
         name:
           type: "string"
+          example: "testUser"
         email:
           type: "string"
+          example: "email@gmail.com"
     UserCreationResponse:
       type: "object"
       properties:
         authToken:
           type: "string"
+          example: "10a3fa15-6c12-43d0-9112-caa7eddf3249"
         id:
           type: "string"
+          example: "2405411314925"
     Route:
       type: "object"
       properties:
         id:
           type: "string"
+          example: "7974766397186"
         startLocation:
           type: "string"
           example: "Lisboa"
@@ -424,8 +439,10 @@ components:
           example: "Fátima"
         distance:
           type: "number"
+          example: 20.0
         user:
           type: "string"
+          example: "2405411314925"
     RouteList:
       type: "object"
       properties:
@@ -450,7 +467,7 @@ components:
       properties:
         id:
           type: "string"
-          example: "routeID"
+          example: "2405411314925"
     Sport:
       type: "object"
       required:
@@ -460,7 +477,7 @@ components:
       properties:
         id:
           type: "string"
-          example: "sportID"
+          example: "3805411318478"
         name:
           type: "string"
           example: "Football"
@@ -469,7 +486,7 @@ components:
           example: "Game played with feet."
         user:
           type: "string"
-          example: "guestID"
+          example: "2405411314925"
     SportList:
       type: "object"
       properties:
@@ -488,7 +505,7 @@ components:
         description:
           type: "string"
           example: "Game played with feet."
-    SportCreationResponse:
+    SportIDResponse:
       type: "object"
       properties:
         sportID:
@@ -505,7 +522,7 @@ components:
       properties:
         id:
           type: "string"
-          example: "1234"
+          example: "2405411314925"
         date:
           type: "string"
           example: "2002-05-20"
@@ -514,13 +531,13 @@ components:
           example: "02:10:32.123"
         sport:
           type: "string"
-          example: "2222"
+          example: "2405411314925"
         route:
           type: "string"
-          example: "3333"
+          example: "2405411314925"
         user:
           type: "string"
-          example: "1111"
+          example: "2405411314925"
     ActivityCreationBody:
       type: "object"
       required:
@@ -529,10 +546,13 @@ components:
       properties:
         duration:
           type: "string"
+          example: "10:10:10.555"
         date:
           type: "string"
+          example: "2000-12-31"
         rid:
           type: "string"
+          example: "2405411314925"
     ActivityList:
       type: "object"
       properties:
@@ -540,4 +560,3 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/Activity"
-

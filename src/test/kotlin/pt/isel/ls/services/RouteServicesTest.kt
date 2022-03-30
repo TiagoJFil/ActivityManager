@@ -1,13 +1,17 @@
 package pt.isel.ls.services
 
 
+import org.junit.After
 import org.junit.Test
-import pt.isel.ls.entities.Route
+import pt.isel.ls.api.utils.TEST_ENV
+import pt.isel.ls.services.dto.RouteDTO
 
 
 
 import pt.isel.ls.repository.memory.RouteDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
+import pt.isel.ls.services.dto.toDTO
+import pt.isel.ls.utils.GUEST_TOKEN
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.guestUser
 import kotlin.test.assertEquals
@@ -15,10 +19,13 @@ import kotlin.test.assertFailsWith
 
 class RouteServicesTest {
 
+    private var routeServices = TEST_ENV.routeServices
 
-    val routeServices = RouteServices(RouteDataMemRepository())
-    val userMem = UserDataMemRepository(guestUser)
 
+    @After
+    fun tearDown() {
+        routeServices = TEST_ENV.routeServices
+    }
 
     @Test
     fun `get routes without creating returns an empty list`(){

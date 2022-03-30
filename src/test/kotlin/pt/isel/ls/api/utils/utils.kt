@@ -10,8 +10,6 @@ import pt.isel.ls.api.RouteRoutes.RouteIDResponse
 import pt.isel.ls.api.SportRoutes.SportCreationBody
 import pt.isel.ls.api.SportRoutes.SportIDResponse
 import pt.isel.ls.api.UserRoutes.*
-import pt.isel.ls.api.getApiRoutes
-import pt.isel.ls.api.getAppRoutes
 import pt.isel.ls.utils.*
 
 const val ROUTE_PATH = "/api/routes/"
@@ -44,7 +42,7 @@ fun RoutingHttpHandler.createUser(userCreationBody: UserCreationBody): UserIDRes
         )
 
 /**
- * Helper function to create an activity, ensures it is created and returns the respective [ListActivities]
+ * Helper function to create an activity, ensures it is created and returns the respective [ActivityIDResponse]
  * @param activityCreationBody the body of the activity to be created. Must be valid.
  */
 fun RoutingHttpHandler.createActivity(

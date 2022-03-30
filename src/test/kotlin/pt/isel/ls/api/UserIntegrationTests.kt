@@ -5,43 +5,35 @@ import org.http4k.core.Response
 import org.junit.Before
 import pt.isel.ls.api.UserRoutes.*
 import pt.isel.ls.api.utils.*
-import pt.isel.ls.entities.HttpError
-import pt.isel.ls.repository.memory.UserDataMemRepository
-import pt.isel.ls.entities.User
-import pt.isel.ls.repository.memory.ActivityDataMemRepository
-import pt.isel.ls.repository.memory.SportDataMemRepository
-import pt.isel.ls.services.ActivityServices
-import pt.isel.ls.services.UserServices
+import pt.isel.ls.services.dto.HttpError
+import pt.isel.ls.services.dto.UserDTO
+import pt.isel.ls.services.dto.toDTO
 import pt.isel.ls.services.generateRandomId
 import pt.isel.ls.utils.GUEST_TOKEN
+import pt.isel.ls.utils.guestUser
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 class UserIntegrationTests {
-    private val testUser = User(
-        name = "test",
-        email = User.Email("test@gmail.com"),
-        id = "1234567"
-    )
+    private var testClient = getApiRoutes(getAppRoutes(TEST_ENV))
 
-    private val testDataMem = UserDataMemRepository(testUser)
-    private val userServices = UserServices(testDataMem)
-    private val activityServices = ActivityServices(ActivityDataMemRepository(), testDataMem, SportDataMemRepository())
-    private val backend = getApiRoutes(User(userServices, activityServices))
-
+    @After
+    fun tearDown() {
+        testClient = getApiRoutes(getAppRoutes(TEST_ENV))
+    }
     @Test
     fun `create multiple Users`() {
         val userCount = 1000
         val randomEmails = (0 until userCount).map { "${generateRandomId()}@gmail.com" }
         val usersCreationBody = List(userCount) { idx -> UserCreationBody("user$idx", randomEmails[idx]) }
         val responses = usersCreationBody.map {
-            backend.createUser(it)
+            testClient.createUser(it)
         }
 
-        val usersList = getRequest<UserList>(backend, USER_PATH, Response::expectOK).users
+        val usersList = getRequest<UserList>(testClient, USER_PATH, Response::expectOK).users
         val expected = responses.mapIndexed { index, userIDResponse ->
-            User("user$index", User.Email(randomEmails[index]), userIDResponse.id)
+            UserDTO("user$index", randomEmails[index], userIDResponse.id)
         }
 
         expected.forEach {
@@ -59,21 +51,21 @@ class UserIntegrationTests {
 
     @Test
     fun `get a user that does not exist gives status 404`() {
-        getRequest<HttpError>(backend, "${USER_PATH}qwiequiwe", Response::expectNotFound)
+        getRequest<HttpError>(testClient, "${USER_PATH}qwiequiwe", Response::expectNotFound)
     }
 
 
     //USER CREATE
     @Test
     fun `create a correct user gives 201`() {
-        backend.createUser(UserCreationBody("abc", "abc@gmail.com"))
+        testClient.createUser(UserCreationBody("abc", "abc@gmail.com"))
     }
 
     @Test
     fun `try to create a user without the name gives 400`() {
         val body = UserCreationBody(email = "abc@gmail.com")
         postRequest<UserCreationBody, HttpError>(
-            backend,
+            testClient,
             USER_PATH,
             body,
             authHeader(GUEST_TOKEN),
@@ -85,7 +77,7 @@ class UserIntegrationTests {
     fun `try to create a user without the email gives 400`() {
         val body = UserCreationBody(name = "Maria")
         postRequest<UserCreationBody, HttpError>(
-            backend,
+            testClient,
             USER_PATH,
             body,
             authHeader(GUEST_TOKEN),
@@ -95,9 +87,9 @@ class UserIntegrationTests {
 
     @Test
     fun `create a user with a repeated email gives 400`() {
-        val body = UserCreationBody("Maria", testUser.email.value)
+        val body = UserCreationBody("Maria", guestUser.email.value)
         postRequest<UserCreationBody, HttpError>(
-            backend,
+            testClient,
             USER_PATH,
             body,
             authHeader(GUEST_TOKEN),
@@ -112,7 +104,7 @@ class UserIntegrationTests {
 
         val body = ExtraParam("Manel", "test123@gmail.com", "teste")
         postRequest<ExtraParam, HttpError>(
-            backend,
+            testClient,
             USER_PATH,
             body,
             authHeader(GUEST_TOKEN),
@@ -124,7 +116,7 @@ class UserIntegrationTests {
     fun `create a user with a wrong email gives 400`() {
         val body = UserCreationBody("Maria", "tes@t123@gmail.com")
         postRequest<UserCreationBody, HttpError>(
-            backend,
+            testClient,
             USER_PATH,
             body,
             authHeader(GUEST_TOKEN),
@@ -136,7 +128,7 @@ class UserIntegrationTests {
     fun `create a user with a blank name parameter gives 400`() {
         val body = UserCreationBody("", "test1234@gmail.com")
         postRequest<UserCreationBody, HttpError>(
-            backend,
+            testClient,
             USER_PATH,
             body,
             authHeader(GUEST_TOKEN),
@@ -148,7 +140,7 @@ class UserIntegrationTests {
     fun `create a user with a blank email parameter gives 400`() {
         val body = UserCreationBody("Mario", "")
         postRequest<UserCreationBody, HttpError>(
-            backend,
+            testClient,
             USER_PATH,
             body,
             authHeader(GUEST_TOKEN),
@@ -159,8 +151,8 @@ class UserIntegrationTests {
     @Before
     @Test
     fun `a get a list without creating gives a list with the test user`() {
-        val usersList = getRequest<UserList>(backend, USER_PATH, Response::expectOK)
-        assertEquals(listOf(testUser), usersList.users)
+        val usersList = getRequest<UserList>(testClient, USER_PATH, Response::expectOK)
+        assertEquals(listOf(guestUser.toDTO()), usersList.users)
     }
 
 }

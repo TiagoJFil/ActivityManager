@@ -1,20 +1,26 @@
 package pt.isel.ls.repository.memory
 
-import pt.isel.ls.entities.Sport
+import pt.isel.ls.services.dto.SportDTO
 import pt.isel.ls.repository.SportRepository
+import pt.isel.ls.services.entities.Sport
 import pt.isel.ls.utils.SportID
+import pt.isel.ls.utils.UserID
 
-class SportDataMemRepository: SportRepository {
+class SportDataMemRepository(testSport : Sport): SportRepository {
 
-    private val sportsMap = mutableMapOf<SportID, Sport>()
+    /**
+     * Mapping between [SportID] and [Sport]
+     */
+    private val sportsMap = mutableMapOf<SportID, Sport>(testSport.id to testSport)
 
     /**
      * Adds a sport.
      *
      * @param sport the sport to add
      */
-    override fun addSport(sport: Sport) {
-        sportsMap[sport.id] = sport
+    override fun addSport(sportID: SportID, name: String, description: String?, userID: UserID) {
+        val sport = Sport(sportID, name, description, userID)
+        sportsMap[sportID] = sport
     }
 
 

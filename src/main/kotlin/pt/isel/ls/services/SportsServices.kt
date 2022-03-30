@@ -1,6 +1,7 @@
 package pt.isel.ls.services
 
-import pt.isel.ls.entities.Sport
+import pt.isel.ls.services.dto.SportDTO
+import pt.isel.ls.services.dto.toDTO
 import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.utils.*
 
@@ -28,9 +29,9 @@ class SportsServices(
     fun createSport(userID: UserID, name: String?, description: String?): SportID {
         val safeName = requireParameter(name, "name")
         val handledDescription = description?.ifBlank { null }
-        val sport = Sport(generateRandomId(), safeName, handledDescription, userID)
-        sportsRepository.addSport(sport)
-        return sport.id
+        val sportID = generateRandomId()
+        sportsRepository.addSport(sportID, safeName, handledDescription, userID)
+        return sportID
     }
 
     /**
@@ -38,9 +39,10 @@ class SportsServices(
      *
      * @return [List] of [Sport]
      */
-    fun getSports(): List<Sport> =
-        sportsRepository.getSports()
-
-
-
+    fun getSports(): List<SportDTO> =
+            sportsRepository
+                    .getSports()
+                    .map(Sport::toDTO)
 }
+
+

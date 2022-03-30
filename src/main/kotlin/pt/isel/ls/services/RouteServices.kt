@@ -1,6 +1,7 @@
 package pt.isel.ls.services
 
-import pt.isel.ls.entities.Route
+import pt.isel.ls.services.dto.RouteDTO
+import pt.isel.ls.services.dto.toDTO
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.utils.*
 
@@ -23,7 +24,9 @@ class RouteServices(
      * @param distance the route's distance
      * @return [RouteID] the unique id that identifies the route
      */
-    fun createRoute(userId: UserID, startLocation: String?, endLocation: String?, distance: Double?): RouteID{
+    fun createRoute(token: UserToken?, startLocation: String?, endLocation: String?, distance: Double?): RouteID{
+        val userID = userRepository.requireAuthenticated(token)
+
         val safeStartLocation = requireParameter(startLocation, "startLocation")
         val safeEndLocation = requireParameter(endLocation, "endLocation")
         if(distance == null) throw MissingParameter("distance")
@@ -31,7 +34,7 @@ class RouteServices(
         val routeId = generateRandomId()
         val route = Route(routeId, safeStartLocation, safeEndLocation, distance, userId)
 
-        routeRepository.addRoute(route)
+        routeRepository.addRoute(routeId, safeStartLocation, safeEndLocation, distance, userID)
 
         return routeId
     }

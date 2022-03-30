@@ -1,37 +1,42 @@
 package pt.isel.ls.api
 
 import org.http4k.core.Response
+import org.junit.After
+import org.junit.FixMethodOrder
 import org.junit.Test
-import pt.isel.ls.entities.Route
+import org.junit.runners.MethodSorters
+import pt.isel.ls.services.dto.RouteDTO
 import pt.isel.ls.api.RouteRoutes.*
 import pt.isel.ls.api.utils.*
-import pt.isel.ls.entities.HttpError
-import pt.isel.ls.repository.memory.RouteDataMemRepository
-import pt.isel.ls.repository.memory.UserDataMemRepository
-import pt.isel.ls.services.*
+import pt.isel.ls.services.dto.HttpError
+import pt.isel.ls.services.dto.toDTO
 import pt.isel.ls.utils.*
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 class RouteIntegrationTests {
-    private val routeServices = RouteServices(RouteDataMemRepository())
-    private val userServices = UserServices(UserDataMemRepository(guestUser))
-    private val backend = getApiRoutes(Route(routeServices, userServices))
 
-    @Test fun `get routes without creating returns empty list`(){
-        val routesList = getRequest<RouteList>(backend, ROUTE_PATH, Response::expectOK)
-        assertEquals(emptyList(), routesList.routes)
+    private var testClient = getApiRoutes(getAppRoutes(TEST_ENV))
+
+    @After
+    fun tearDown() {
+        testClient = getApiRoutes(getAppRoutes(TEST_ENV))
+    }
+
+    @Test fun `get routes without creating returns a list with the default route`(){
+        val routesList = getRequest<RouteList>(testClient, ROUTE_PATH, Response::expectOK)
+        assertEquals(listOf(testRoute.toDTO()), routesList.routes)
     }
 
     @Test fun `create a route successfully`(){
-        backend.createRoute(RouteCreationBody(startLocation = "a", endLocation = "b", distance = 10.0))
+        testClient.createRoute(RouteCreationBody(startLocation = "a", endLocation = "b", distance = 10.0))
     }
 
 
     @Test fun `create a route without start location gives 400`(){
         val body = RouteCreationBody(endLocation = "b", distance = 10.0)
         postRequest<RouteCreationBody, HttpError>(
-            backend,
+            testClient,
             ROUTE_PATH,
             body,
             headers = authHeader(GUEST_TOKEN),
@@ -42,7 +47,7 @@ class RouteIntegrationTests {
     @Test fun `create a route without end location gives 400`(){
         val body = RouteCreationBody(distance = 20.0, startLocation = "a")
         postRequest<RouteCreationBody, HttpError>(
-            backend,
+            testClient,
             ROUTE_PATH,
             body,
             authHeader(GUEST_TOKEN),
@@ -53,7 +58,7 @@ class RouteIntegrationTests {
     @Test fun `create a route without distance gives 400`(){
         val body = RouteCreationBody(endLocation = "b", startLocation = "c")
         postRequest<RouteCreationBody, HttpError>(
-            backend,
+            testClient,
             ROUTE_PATH,
             body,
             headers = authHeader(GUEST_TOKEN),
@@ -64,7 +69,7 @@ class RouteIntegrationTests {
     @Test fun `create a route with a blank parameter gives 400`(){
         val body = RouteCreationBody(startLocation = " ", endLocation = "b", distance = 10.0)
         postRequest<RouteCreationBody, HttpError>(
-            backend,
+            testClient,
             ROUTE_PATH,
             body,
             headers = authHeader(GUEST_TOKEN),
@@ -92,7 +97,7 @@ class RouteIntegrationTests {
         val distance = 127.8
 
         val creationBodies = List(1000){RouteCreationBody("Lisboa", "Fátima", 127.8)}
-        val routeIds: List<String> = creationBodies.map { backend.createRoute(it).routeID }
+        val routeIds: List<String> = creationBodies.map { testClient.createRoute(it).routeID }
 
         val expected = routeIds.map { Route(id=it, start, end , distance, guestUser.id) }
         val routeList = getRequest<RouteList>(backend, ROUTE_PATH, Response::expectOK).routes

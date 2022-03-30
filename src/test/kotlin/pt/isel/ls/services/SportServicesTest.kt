@@ -1,7 +1,9 @@
 package pt.isel.ls.services
 
 import org.junit.Test
-import pt.isel.ls.entities.Sport
+import org.junit.After
+import pt.isel.ls.api.utils.TEST_ENV
+import pt.isel.ls.services.dto.SportDTO
 import pt.isel.ls.repository.memory.SportDataMemRepository
 import pt.isel.ls.utils.guestUser
 import kotlin.test.assertEquals
@@ -18,7 +20,7 @@ class SportServicesTest {
 
     @Test
     fun `get a sport`(){
-        val sportID = sportsServices.createSport(guestUser.id, "Football", "A game played with feet")
+        val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", "A game played with feet")
         val sport = sportsServices.getSport(sportID)
         val expected = Sport(sportID,"Football", "A game played with feet", guestUser.id)
         assertEquals(expected,sport)
@@ -38,14 +40,14 @@ class SportServicesTest {
     fun `create a sport with empty name throws InvalidParam`(){
 
         assertFailsWith<InvalidParameter> {
-            sportsServices.createSport(guestUser.id, "", "A game played with feet")
+            sportsServices.createSport(GUEST_TOKEN, "", "A game played with feet")
         }
 
     }
 
     @Test
     fun `create a sport without description is allowed`(){
-        val sportID = sportsServices.createSport(guestUser.id, "Football", null)
+        val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", null)
         val sport = sportsServices.getSport(sportID)
         val expected = Sport(sportID,"Football", null, guestUser.id)
         assertEquals(expected,sport)
@@ -53,7 +55,7 @@ class SportServicesTest {
 
     @Test
     fun `create a sport with blank description is allowed`(){
-        val sportID = sportsServices.createSport(guestUser.id, "Football", "")
+        val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", "")
         val sport = sportsServices.getSport(sportID)
         val expected = Sport(sportID,"Football", null, guestUser.id)
         assertEquals(expected,sport)
@@ -61,8 +63,8 @@ class SportServicesTest {
 
     @Test
     fun `create multiple sports with same name is allowed`(){
-        val sportID1 = sportsServices.createSport(guestUser.id, "Football", "A game played with feet")
-        val sportID2 = sportsServices.createSport(guestUser.id, "Football", "A game played with feet")
+        val sportID1 = sportsServices.createSport(GUEST_TOKEN, "Football", "A game played with feet")
+        val sportID2 = sportsServices.createSport(GUEST_TOKEN, "Football", "A game played with feet")
         val sport1 = sportsServices.getSport(sportID1)
         val sport2 = sportsServices.getSport(sportID2)
         val expected1 = Sport(sportID1,"Football", "A game played with feet", guestUser.id)
@@ -74,7 +76,7 @@ class SportServicesTest {
     @Test
     fun `create 1000 sports checking if they are in getAll`(){
         val sports = (1..1000).map { i ->
-            val sportID = sportsServices.createSport(guestUser.id, "Football$i", "A game played with feet")
+            val sportID = sportsServices.createSport(GUEST_TOKEN, "Football$i", "A game played with feet")
             sportsServices.getSport(sportID)
         }
         assertEquals(1000,sportsServices.getSports().size)

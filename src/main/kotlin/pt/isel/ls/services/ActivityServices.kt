@@ -11,11 +11,7 @@ import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.services.entities.Activity
 import pt.isel.ls.services.entities.Activity.Duration
 import pt.isel.ls.utils.*
-import java.time.DateTimeException
-import java.time.format.DateTimeFormatter
-import java.text.SimpleDateFormat
 import java.util.*
-import java.text.DateFormat
 import java.text.ParseException
 
 

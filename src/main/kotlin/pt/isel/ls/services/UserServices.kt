@@ -25,11 +25,12 @@ class UserServices(
         val userId = generateRandomId()
         val userAuthToken = generateUUId()
 
-        val possibleEmail = User.Email(safeEmail)
-        val user =  User(safeName, possibleEmail,userId)
+        val possibleEmail = Email(safeEmail)
 
-        if(userRepository.userHasRepeatedEmail(userId,possibleEmail)) throw InvalidParameter("email already exists")
-        userRepository.addUser(user,userAuthToken)
+        if (userRepository.hasRepeatedEmail(possibleEmail))
+            throw InvalidParameter("email already exists")
+
+        userRepository.addUser(safeName, possibleEmail, userId, userAuthToken)
 
 
         return Pair(userAuthToken,userId)
@@ -42,27 +43,22 @@ class UserServices(
      * @return [User] the user identified by the given id
      * @throws IllegalArgumentException
      */
-    fun getUserByID(id: UserID?): User {
-        val safeUserID = requireParameter(id, "id")
-        return userRepository.getUserByID(safeUserID) ?: throw ResourceNotFound("User", "$id")
+    fun getUserByID(uid: UserID?): UserDTO {
+        val safeUserID = requireParameter(uid, "id")
+        return userRepository.getUserByID(safeUserID)?.toDTO()
+                ?: throw ResourceNotFound("User", "$uid")
     }
 
     /**
      * Calls the function [UserRepository] to get all the users.
      *
-     * @return [List] of [User]
+     * @return [List] of [User
      */
-    fun getUsers(): List<User> = userRepository.getUsers()
+     fun getUsers(): List<UserDTO> = userRepository
+                .getUsers()
+                .map(User::toDTO)
 
-    /**
-     * Gets the user id that matches the given token
-     *
-     * @param token the user's unique token
-     */
-    fun getUserByToken(token: UserToken?): UserID{
-        if(token == null) throw UnauthenticatedError()
-        return userRepository.getUserIDByToken(token) ?: throw UnauthenticatedError()
-    }
+
 
 }
 

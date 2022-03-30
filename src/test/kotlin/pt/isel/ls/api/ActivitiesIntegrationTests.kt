@@ -4,9 +4,7 @@ import org.http4k.core.Method.*
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.junit.After
-import org.junit.FixMethodOrder
 import org.junit.Test
-import org.junit.runners.MethodSorters
 import pt.isel.ls.api.ActivityRoutes.*
 import pt.isel.ls.api.RouteRoutes.*
 import pt.isel.ls.api.SportRoutes.SportCreationBody
@@ -15,7 +13,6 @@ import pt.isel.ls.api.utils.*
 import pt.isel.ls.services.dto.ActivityDTO
 import pt.isel.ls.services.dto.HttpError
 import pt.isel.ls.services.dto.toDTO
-import pt.isel.ls.services.entities.Sport
 import pt.isel.ls.utils.*
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

@@ -1,7 +1,9 @@
 package pt.isel.ls.repository.memory
 
-import pt.isel.ls.entities.User
+import pt.isel.ls.services.dto.UserDTO
 import pt.isel.ls.repository.UserRepository
+import pt.isel.ls.services.entities.User
+import pt.isel.ls.services.entities.User.Email
 import pt.isel.ls.utils.GUEST_TOKEN
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
@@ -31,21 +33,24 @@ class UserDataMemRepository(guest: User) : UserRepository {
     }
 
     /**
-     * Adds a new user.
-     *
-     * @param newUser the new [User] to add
-     * @param userAuthToken the [UserToken] of the user to add
+     * Adds a new user to the repository.
+     * @param userName the user to be added.
+     * @param email the email of the user to be added.
+     * @param userId the id of the user to be added.
+     * @param userAuthToken the authentication token of the user to be added.
      */
-    override fun addUser(newUser: User, userAuthToken: UserToken) {
-        usersMap[newUser.id] = newUser
-        tokenTable[userAuthToken] = newUser.id
+    override fun addUser(userName: String, email: Email, userId: UserID, userAuthToken: UserToken) {
+        val user = User(userName, email, userId)
+        usersMap[userId] = user
+        emailsMap[email.value] = userId
+        tokenTable[userAuthToken] = userId
     }
 
     /**
      * @param id user's unique identifier
      * @return A [User] object or null if there is no user identified by [id]
      */
-    override fun getUserByID(id: UserID): User? = usersMap[id]
+    override fun getUserByID(userID: UserID): User? = usersMap[userID]
 
     /**
      * Gets all the users stored

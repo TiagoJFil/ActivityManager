@@ -14,13 +14,8 @@ import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 import pt.isel.ls.services.dto.HttpError
-import pt.isel.ls.services.ActivityServices
-import pt.isel.ls.services.RouteServices
-import pt.isel.ls.services.SportsServices
-import pt.isel.ls.services.UserServices
 import pt.isel.ls.services.*
 import pt.isel.ls.utils.Environment
-import pt.isel.ls.utils.EnvironmentType
 import pt.isel.ls.utils.UserToken
 
 /**
@@ -37,9 +32,7 @@ fun getApiRoutes(routes: RoutingHttpHandler) = routes(
 
 /**
  * Gets all main app routes
- * @param userServices   user services
- * @param routeServices  route services
- * @param sportsServices sports services
+ * @param env respective environment
  */
 fun getAppRoutes(env: Environment) = routes(
     User(env.userServices),

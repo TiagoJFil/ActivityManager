@@ -4,10 +4,6 @@ import org.junit.After
 import org.junit.Test
 import pt.isel.ls.api.utils.TEST_ENV
 import pt.isel.ls.services.dto.ActivityDTO
-import pt.isel.ls.repository.memory.ActivityDataMemRepository
-import pt.isel.ls.repository.memory.RouteDataMemRepository
-import pt.isel.ls.repository.memory.SportDataMemRepository
-import pt.isel.ls.repository.memory.UserDataMemRepository
 import pt.isel.ls.services.dto.toDTO
 import pt.isel.ls.utils.*
 import kotlin.test.assertEquals

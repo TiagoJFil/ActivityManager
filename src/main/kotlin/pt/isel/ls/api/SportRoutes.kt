@@ -12,11 +12,8 @@ import org.http4k.core.Status
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
-import pt.isel.ls.entities.Activity
-import pt.isel.ls.entities.Sport
-import pt.isel.ls.services.ActivityServices
+import pt.isel.ls.services.dto.SportDTO
 import pt.isel.ls.services.SportsServices
-import pt.isel.ls.services.UserServices
 import pt.isel.ls.utils.SportID
 
 class SportRoutes(
@@ -40,6 +37,7 @@ class SportRoutes(
         val sportID = sportsServices.createSport(userID, sportsBody.name, sportsBody.description)
 
         return Response(Status.CREATED)
+            .header("content-type", "application/json")
             .body(Json.encodeToString(SportIDResponse(sportID)))
     }
 
@@ -66,6 +64,7 @@ class SportRoutes(
         val sports = sportsServices.getSports()
         val bodyString = Json.encodeToString(SportList(sports))
         return Response(Status.OK)
+            .header("content-type", "application/json")
             .body(bodyString)
     }
 
@@ -91,14 +90,13 @@ class SportRoutes(
     val handler = routes(
         "/sports" bind routes(
             "/" bind POST to ::createSport,
-            "/{id}" bind GET to ::getSport,
-            "/" bind GET to ::getSports,
-            "/{id}/activities" bind GET to ::getActivitiesBySport
+            "/{sid}" bind GET to ::getSport,
+            "/" bind GET to ::getSports
         )
     )
 
 
 }
 
-fun Sport(sportsServices: SportsServices, userServices: UserServices, activityServices: ActivityServices) =
-    SportRoutes(sportsServices, userServices, activityServices).handler
+fun Sport(sportsServices: SportsServices) =
+    SportRoutes(sportsServices).handler

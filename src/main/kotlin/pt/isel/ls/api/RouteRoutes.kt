@@ -11,11 +11,9 @@ import org.http4k.core.Status
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
-import pt.isel.ls.entities.Route
+import pt.isel.ls.services.dto.RouteDTO
 import pt.isel.ls.services.RouteServices
-import pt.isel.ls.services.UserServices
 import pt.isel.ls.utils.RouteID
-import pt.isel.ls.utils.UserID
 
 class RouteRoutes(
     private val routeServices: RouteServices,
@@ -34,7 +32,7 @@ class RouteRoutes(
     private fun getRoutes(request: Request): Response{
         val routes = routeServices.getRoutes()
         val bodyString = Json.encodeToString(RouteList(routes))
-        return Response(Status.OK).body(bodyString)
+        return Response(Status.OK).header("content-type", "application/json").body(bodyString)
     }
 
     /**
