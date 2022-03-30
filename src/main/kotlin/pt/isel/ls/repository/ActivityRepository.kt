@@ -7,11 +7,23 @@ import pt.isel.ls.utils.*
 interface ActivityRepository {
 
     /**
-     * Adds a new activity.
+     * Creates a new activity using the parameters received
      *
-     * @param activity the activity to be added
+     * @param activityID the activity ID
+     * @param date the activity date
+     * @param duration the activity duration
+     * @param sportID the activity sport ID
+     * @param routeID the activity route ID
+     * @param userID the activity user ID
      */
-    fun addActivity(activity: Activity)
+    fun addActivity(
+            activityID: ActivityID,
+            date: LocalDate,
+            duration: Activity.Duration,
+            sportID: SportID,
+            routeID: RouteID?,
+            userID: UserID
+    )
 
     /**
      * Gets all the activities that were created by the given user.

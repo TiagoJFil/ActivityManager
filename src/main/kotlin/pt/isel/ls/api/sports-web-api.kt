@@ -13,12 +13,14 @@ import org.http4k.core.Status.Companion.UNAUTHORIZED
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
-import pt.isel.ls.entities.HttpError
+import pt.isel.ls.services.dto.HttpError
 import pt.isel.ls.services.ActivityServices
 import pt.isel.ls.services.RouteServices
 import pt.isel.ls.services.SportsServices
 import pt.isel.ls.services.UserServices
 import pt.isel.ls.services.*
+import pt.isel.ls.utils.Environment
+import pt.isel.ls.utils.EnvironmentType
 import pt.isel.ls.utils.UserToken
 
 /**
@@ -58,7 +60,7 @@ private val onErrorFilter = Filter { handler ->
         }catch(appError: AppError){
 
             val body = Json.encodeToString(HttpError(appError.code, appError.message))
-            val baseResponse = Response(BAD_REQUEST).body(body)
+            val baseResponse = Response(BAD_REQUEST).header("content-type", "application/json").body(body)
 
             when (appError) {
                 is ResourceNotFound -> baseResponse.status(NOT_FOUND)
@@ -68,7 +70,7 @@ private val onErrorFilter = Filter { handler ->
 
         }catch (serializerException: SerializationException){
             val body = Json.encodeToString(HttpError(0, "Invalid body."))
-            Response(BAD_REQUEST).body(body)
+            Response(BAD_REQUEST).header("content-type", "application/json").body(body)
         }
     }
     handlerWrapper

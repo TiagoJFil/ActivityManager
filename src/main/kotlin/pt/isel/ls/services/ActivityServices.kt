@@ -2,21 +2,28 @@ package pt.isel.ls.services
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toLocalDate
-import pt.isel.ls.entities.Activity
+import pt.isel.ls.services.dto.ActivityDTO
+import pt.isel.ls.services.dto.toDTO
 import pt.isel.ls.repository.ActivityRepository
+import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.repository.UserRepository
+import pt.isel.ls.services.entities.Activity
+import pt.isel.ls.services.entities.Activity.Duration
 import pt.isel.ls.utils.*
 import java.time.DateTimeException
 import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.util.*
+import java.text.DateFormat
+import java.text.ParseException
+
 
 class ActivityServices(
     private val activityRepository: ActivityRepository,
     private val userRepository: UserRepository,
     private val sportRepository: SportRepository
 ){
-
-    private val durationFormat = DateTimeFormatter.ofPattern("HH:mm:ss.SSS")
     /**
      * Creates a new activity.
      *
@@ -37,16 +44,19 @@ class ActivityServices(
 
             durationFormat.parse(duration)
             val activityID = generateRandomId()
-            val activity = Activity(
-                id=activityID,
-                date=safeDate.toLocalDate(),
-                duration=safeDuration,
-                sport=sid,
-                route=rid,
-                user=userId
-            )
 
-            activityRepository.addActivity(activity)
+            sportRepository.requireSport(sid)
+            userRepository.requireUser(userID)
+            if(rid != null) routeRepository.requireRoute(rid)
+
+            activityRepository.addActivity(
+                    activityID=activityID,
+                    date=safeDate.toLocalDate(),
+                    duration=Duration(millis),
+                    sportID=sid,
+                    routeID=rid,
+                    userID=userID
+            )
 
             return activityID
         }catch (e: DateTimeException){
@@ -118,8 +128,8 @@ class ActivityServices(
      * @param userID The id of the user that created the activity.
      * @return true if the activity was deleted, false otherwise.
      */
-    fun deleteActivity(userID: UserID, activityId: ActivityID?, sportID: SportID?): Boolean {
-
+    fun deleteActivity(token: UserToken?, activityId: ActivityID?, sportID: SportID?): Boolean {
+        val userID = userRepository.requireAuthenticated(token)
         val safeSID = requireParameter(sportID, "sportID")
         if(!sportRepository.hasSport(safeSID)) throw ResourceNotFound("Sport", safeSID)
         val safeAID = requireParameter(activityId, "activityId")

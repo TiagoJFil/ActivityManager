@@ -23,18 +23,6 @@ private const val DEFAULT_PORT = 9000
 
 fun main() {
 
-    val userRepo = UserDataMemRepository(guestUser)
-    val userServices = UserServices(userRepo)
-
-    val routeRepo = RouteDataMemRepository()
-    val routeServices = RouteServices(routeRepo)
-
-    val sportsRepo = SportDataMemRepository()
-    val sportsServices = SportsServices(sportsRepo)
-
-    val activityRepo = ActivityDataMemRepository()
-    val activityServices = ActivityServices(activityRepo, userRepo, sportsRepo)
-
     val api = getApiRoutes(
         getAppRoutes(
             userServices = userServices,

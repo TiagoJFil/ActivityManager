@@ -1,4 +1,4 @@
-package pt.isel.ls.entities
+package pt.isel.ls.services.dto
 
 import kotlinx.serialization.Serializable
 

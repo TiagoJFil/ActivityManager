@@ -12,14 +12,14 @@ sealed class AppError(val code: Int, message: String): Exception(message)
  * @property parameterName The name of the parameter that is invalid.
  */
 data class InvalidParameter(val parameterName: String)
-    : AppError(2000, """Invalid parameter: "$parameterName" """)
+    : AppError(2000, """Invalid parameter: '$parameterName' """)
 
 /**
  * Error thrown when a parameter is missing.
  * @property parameterName The name of the parameter that is missing.
  */
 data class MissingParameter(val parameterName: String)
-    : AppError(2001, """Missing required parameter: "$parameterName" """)
+    : AppError(2001, """Missing required parameter: '$parameterName' """)
 
 /**
  * Error thrown when a resource is not found.
@@ -27,7 +27,7 @@ data class MissingParameter(val parameterName: String)
  * @property resourceID The id of the resource that is not found.
  */
 data class ResourceNotFound(val resourceName: String, val resourceID: String)
-    : AppError(2002, """ $resourceName with id $resourceID  not found.""")
+    : AppError(2002, """ '$resourceName' with id '$resourceID' not found.""")
 
 
 /**

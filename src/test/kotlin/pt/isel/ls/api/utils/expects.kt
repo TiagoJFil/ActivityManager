@@ -43,3 +43,11 @@ fun Response.expectUnauthorized(): Response {
     assertEquals(Status.UNAUTHORIZED, this.status)
     return this
 }
+
+/**
+ * Ensure that the response has the NO_CONTENT status code.
+ */
+fun Response.expectNoContent(): Response {
+    assertEquals(Status.NO_CONTENT, this.status)
+    return this
+}

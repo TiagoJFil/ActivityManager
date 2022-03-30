@@ -10,13 +10,18 @@ import pt.isel.ls.api.RouteRoutes.RouteIDResponse
 import pt.isel.ls.api.SportRoutes.SportCreationBody
 import pt.isel.ls.api.SportRoutes.SportIDResponse
 import pt.isel.ls.api.UserRoutes.*
-import pt.isel.ls.utils.GUEST_TOKEN
-import pt.isel.ls.utils.SportID
+import pt.isel.ls.api.getApiRoutes
+import pt.isel.ls.api.getAppRoutes
+import pt.isel.ls.utils.*
 
 const val ROUTE_PATH = "/api/routes/"
 const val USER_PATH = "/api/users/"
 const val ACTIVITY_PATH = "/api/activity/"
 const val SPORT_PATH = "/api/sports/"
+
+val TEST_ENV: Environment
+                get()= EnvironmentType.TEST.getEnv()
+
 
 /**
  * Returns a list of headers with the authorization header injected with the given token.
