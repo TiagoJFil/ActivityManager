@@ -1,6 +1,6 @@
 package pt.isel.ls.services
 
-import kotlinx.datetime.toLocalDate
+import org.junit.After
 import org.junit.Test
 import pt.isel.ls.api.utils.TEST_ENV
 import pt.isel.ls.services.dto.ActivityDTO
@@ -64,7 +64,8 @@ class ActivitiesServicesTest {
 
     @Test
     fun `try to create an activity without a rid works`(){
-        activitiesServices.createActivity("123","123","02:16:32.993","2002-12-31",null) //doesnt throw
+        activitiesServices.createActivity(GUEST_TOKEN, testSport.id,"02:16:32.993","2002-12-31",null)
+        //doesn't throw
     }
 
     @Test
@@ -94,7 +95,7 @@ class ActivitiesServicesTest {
         )
 
         val sut = activitiesServices.getActivitiesByUser(guestUser.id)
-        assertEquals(listOf(activity), sut)
+        assertEquals(activitiesExpected, sut)
     }
 
     @Test
@@ -113,10 +114,10 @@ class ActivitiesServicesTest {
 
     @Test
     fun `get activities of a sport`(){
-        val sportID = sportServicesTest.createSport(guestUser.id, "Futebol", null)
+        val sportID = testSport.id
 
         val activityID =
-            activitiesServices.createActivity(guestUser.id, sportID, "02:10:32.123", "2002-05-20", "123")
+            activitiesServices.createActivity(GUEST_TOKEN, sportID, "02:10:32.123", "2002-05-20", testRoute.id)
 
         val activitiesExpected = listOf(
                 testActivity.toDTO(),
@@ -126,13 +127,13 @@ class ActivitiesServicesTest {
 
         val activities = activitiesServices.getActivities(sportID, "ascending", null, null)
 
-        assertEquals(listOf(activity), activities)
+        assertEquals(activitiesExpected, activities)
     }
 
     @Test
     fun `get activities of a sport with a blank date throws invalid parameter`(){
         assertFailsWith<InvalidParameter> {
-            val sportID = sportServicesTest.createSport(guestUser.id, "Futebol", null)
+            val sportID = testSport.id
             activitiesServices.getActivities(sportID, "ascending", "", null)
         }
     }
@@ -140,18 +141,16 @@ class ActivitiesServicesTest {
     @Test
     fun `get activities of a sport with a blank route id throws invalid parameter`(){
         assertFailsWith<InvalidParameter> {
-            val sportID = sportServicesTest.createSport(guestUser.id, "Futebol", null)
+            val sportID = testSport.id
             activitiesServices.getActivities(sportID, "ascending", null, "")
         }
     }
 
     @Test
     fun `delete an activity`(){
-        val sportID = sportServicesTest.createSport(guestUser.id, "Futebol", null)
-        val activityID =
-            activitiesServices.createActivity(guestUser.id, sportID, "02:10:32.123", "2002-05-20", "123")
+        val sportID = testSport.id
 
-        activitiesServices.deleteActivity(guestUser.id, activityID, sportID)
+        activitiesServices.deleteActivity(GUEST_TOKEN, testActivity.id, sportID)
 
         val activities = activitiesServices.getActivities(sportID, "ascending", null, null)
 
@@ -160,9 +159,9 @@ class ActivitiesServicesTest {
 
     @Test
     fun `delete an activity with a user that didn't create it throws Unauthenticated`(){
-        val sportID = sportServicesTest.createSport(guestUser.id, "Futebol", null)
+        val sportID = testSport.id
         val activityID =
-            activitiesServices.createActivity(guestUser.id, sportID, "02:10:32.123", "2002-05-20", "123")
+            activitiesServices.createActivity(GUEST_TOKEN, sportID, "02:10:32.123", "2002-05-20", testRoute.id)
 
         assertFailsWith<UnauthenticatedError> {
             activitiesServices.deleteActivity("RANDOM_USER", activityID, sportID)
@@ -171,23 +170,20 @@ class ActivitiesServicesTest {
 
     @Test
     fun `delete an activity with a sport that doesn't exist throws resource not found`(){
-        val sportID = sportServicesTest.createSport(guestUser.id, "Futebol", null)
+        val sportID = testSport.id
         val activityID =
-            activitiesServices.createActivity(guestUser.id, sportID, "02:10:32.123", "2002-05-20", "123")
+            activitiesServices.createActivity(GUEST_TOKEN, sportID, "02:10:32.123", "2002-05-20", testRoute.id)
 
         assertFailsWith<ResourceNotFound> {
-            activitiesServices.deleteActivity(guestUser.id, activityID, "1111111")
+            activitiesServices.deleteActivity(GUEST_TOKEN, activityID, "1111111")
         }
     }
 
     @Test
-    fun `delete an activity with an activity that doesn't exist throws resource not found`(){
-        val sportID = sportServicesTest.createSport(guestUser.id, "Futebol", null)
-
-        activitiesServices.createActivity(guestUser.id, sportID, "02:10:32.123", "2002-05-20", "123")
-
+    fun `delete an activity that doesn't exist throws resource not found`(){
+        val sportID = testSport.id
         assertFailsWith<ResourceNotFound> {
-            activitiesServices.deleteActivity(guestUser.id, "RANDOM_ACTIVITY", sportID)
+            activitiesServices.deleteActivity(GUEST_TOKEN, "RANDOM_ACTIVITY", sportID)
         }
     }
 

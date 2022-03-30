@@ -41,11 +41,11 @@ fun getApiRoutes(routes: RoutingHttpHandler) = routes(
  * @param routeServices  route services
  * @param sportsServices sports services
  */
-fun getAppRoutes(userServices: UserServices, routeServices: RouteServices, sportsServices: SportsServices, activityServices : ActivityServices) = routes(
-    User(userServices, activityServices),
-    Route(routeServices, userServices),
-    Sport(sportsServices, userServices, activityServices),
-    Activity(activityServices, userServices)
+fun getAppRoutes(env: Environment) = routes(
+    User(env.userServices),
+    Route(env.routeServices),
+    Sport(env.sportsServices),
+    Activity(env.activityServices)
 )
 
 /**

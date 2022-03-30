@@ -100,9 +100,14 @@ class ActivitiesIntegrationTests {
     }
     @Test
     fun `try to create an activity without the duration`(){
-        val sportID = "13"
-        val body =ActivityCreationBody("02:16:32.993",null , "123")
-        postRequest<ActivityCreationBody, HttpError>(backend, "${ACTIVITY_PATH}${sportID}", body, headers = authHeader(GUEST_TOKEN), Response::expectBadRequest)
+        val body =ActivityCreationBody("02:16:32.993",null , testRoute.id)
+        postRequest<ActivityCreationBody, HttpError>(
+                testClient,
+                SPORT_ACTIVITY_PATH,
+                body,
+                headers = authHeader(GUEST_TOKEN),
+                Response::expectBadRequest
+        )
 
     }
     @Test
@@ -271,7 +276,8 @@ class ActivitiesIntegrationTests {
         deleteActivity(testSport.id, testActivity.id, GUEST_TOKEN).expectNoContent()
     }
 
-    @Test fun `try to delete an activity of a sport that does not exist gives 404`(){
+    @Test
+    fun `try to delete an activity of a sport that does not exist gives 404`(){
         val sportID = "RANDOM_SPORT"
         deleteActivity(sportID, testActivity.id, GUEST_TOKEN).expectNotFound()
     }

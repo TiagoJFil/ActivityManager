@@ -8,15 +8,7 @@ import org.http4k.server.Jetty
 import org.http4k.server.asServer
 import pt.isel.ls.api.getApiRoutes
 import pt.isel.ls.api.getAppRoutes
-import pt.isel.ls.repository.memory.ActivityDataMemRepository
-import pt.isel.ls.repository.memory.RouteDataMemRepository
-import pt.isel.ls.repository.memory.SportDataMemRepository
-import pt.isel.ls.repository.memory.UserDataMemRepository
-import pt.isel.ls.services.ActivityServices
-import pt.isel.ls.services.RouteServices
-import pt.isel.ls.services.SportsServices
-import pt.isel.ls.services.UserServices
-import pt.isel.ls.utils.guestUser
+import pt.isel.ls.utils.EnvironmentType
 
 private const val DEFAULT_PORT = 9000
 
@@ -24,12 +16,7 @@ private const val DEFAULT_PORT = 9000
 fun main() {
 
     val api = getApiRoutes(
-        getAppRoutes(
-            userServices = userServices,
-            routeServices = routeServices,
-            sportsServices = sportsServices,
-            activityServices = activityServices
-        )
+        getAppRoutes(EnvironmentType.TEST.environment)
     )
 
     with(server(api, DEFAULT_PORT)) {

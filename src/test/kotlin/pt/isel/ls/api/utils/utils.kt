@@ -54,7 +54,7 @@ fun RoutingHttpHandler.createActivity(
 ): ActivityIDResponse
         = postRequest<ActivityCreationBody, ActivityIDResponse>(
         this,
-        "$ACTIVITY_PATH$sportID",
+        "$ACTIVITY_PATH${sportID}/activities",
         activityCreationBody,
         headers = authHeader(token),
         Response::expectCreated

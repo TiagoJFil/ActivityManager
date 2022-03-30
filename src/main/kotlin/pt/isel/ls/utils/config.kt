@@ -16,9 +16,32 @@ import pt.isel.ls.services.entities.User.Email
 val guestUser = User(
     name = "guest",
     id = "guestID",
-    email = User.Email("guest@gmail.com")
+    email = Email("guest@gmail.com")
 )
 
+val testRoute = Route(
+        id = generateRandomId(),
+        startLocation = "testStartLocation",
+        endLocation = "testEndLocation",
+        distance = 23.0,
+        user = guestUser.id
+)
+
+val testSport = Sport(
+        id = generateRandomId(),
+        name = "testSport",
+        description = "testDescription",
+        user = guestUser.id
+)
+
+val testActivity = Activity(
+        id = generateRandomId(),
+        sport = testSport.id,
+        route = testRoute.id,
+        user = guestUser.id,
+        duration = Activity.Duration(500000),
+        date = "2002-10-02".toLocalDate()
+)
 const val GUEST_TOKEN = "TOKEN"
 
 data class Environment(

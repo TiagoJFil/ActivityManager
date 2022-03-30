@@ -96,4 +96,5 @@ class ActivityDataMemRepository(testActivity: Activity): ActivityRepository {
      */
     override fun hasActivity(activityID: ActivityID): Boolean = activitiesMap.containsKey(activityID)
 
+
 }

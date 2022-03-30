@@ -22,12 +22,13 @@ import java.text.ParseException
 class ActivityServices(
     private val activityRepository: ActivityRepository,
     private val userRepository: UserRepository,
-    private val sportRepository: SportRepository
+    private val sportRepository: SportRepository,
+    private val routeRepository: RouteRepository
 ){
     /**
      * Creates a new activity.
      *
-     * @param userId the id of the user that created the activity
+     * @param token the token of the user that is going to create the activity
      * @param sportID the sports id of the activity
      * @param duration the duration of the activity
      * @param date the date of the activity
@@ -35,13 +36,17 @@ class ActivityServices(
      *
      * @return [ActivityID] the unique activity identifier
      */
-    fun createActivity(userId: UserID, sportID: String?, duration: String?, date: String?, rid: String?): ActivityID {
+    fun createActivity(token: UserToken?, sportID: String?, duration: String?, date: String?, rid: String?): ActivityID {
         try {
+            val userID = userRepository.requireAuthenticated(token)
             val sid = requireParameter(sportID, "sportID")
             val safeDate = requireParameter(date, "date")
+            requireParameter(duration, "duration")
             requireNotBlankParameter(rid, "rid")
 
-            durationFormat.parse(duration)
+            val parsedDate: Date = Duration.dateFormat.parse(duration)
+            val millis: Long = parsedDate.time
+
             val activityID = generateRandomId()
 
             sportRepository.requireSport(sid)
@@ -86,7 +91,8 @@ class ActivityServices(
      */
     fun getActivitiesByUser(userID: UserID?): List<ActivityDTO>{
         val safeUID = requireParameter(userID, "userID")
-        if(!userRepository.hasUser(safeUID)) throw ResourceNotFound("userID", safeUID)
+
+        userRepository.requireUser(safeUID)
 
         return activityRepository.getActivitiesByUser(safeUID)
                 .map(Activity::toDTO)
@@ -106,6 +112,7 @@ class ActivityServices(
      */
     fun getActivities(sid: SportID?, orderBy: String?, date: String?, rid: RouteID?): List<ActivityDTO>{
         val safeSID = requireParameter(sid, "sportID")
+        sportRepository.requireSport(safeSID)
 
         val orderByToSend = when(orderBy?.lowercase()){
             "ascending", null -> Order.ASCENDING
@@ -126,16 +133,18 @@ class ActivityServices(
 
     /**
      * Deletes an activity.
+     * @param token The token of the user that created the activity.
      * @param activityId The id of the activity to be deleted.
-     * @param userID The id of the user that created the activity.
+     * @param sportID The sport id of the activity to be deleted.
      * @return true if the activity was deleted, false otherwise.
      */
     fun deleteActivity(token: UserToken?, activityId: ActivityID?, sportID: SportID?): Boolean {
         val userID = userRepository.requireAuthenticated(token)
         val safeSID = requireParameter(sportID, "sportID")
-        if(!sportRepository.hasSport(safeSID)) throw ResourceNotFound("Sport", safeSID)
         val safeAID = requireParameter(activityId, "activityId")
-        if(!activityRepository.hasActivity(safeAID)) throw ResourceNotFound("activityId", safeAID)
+        sportRepository.requireSport(safeSID)
+        activityRepository.requireActivity(safeAID)
+
         if(!ownsActivity(userID, safeAID)) throw UnauthenticatedError("User does not own this activity")
 
         return activityRepository.deleteActivity(safeAID)
@@ -146,6 +155,5 @@ class ActivityServices(
      */
     private fun ownsActivity(userId: UserID, activityId: ActivityID): Boolean
         = activityRepository.getActivity(activityId)?.user == userId
-
 
 }
