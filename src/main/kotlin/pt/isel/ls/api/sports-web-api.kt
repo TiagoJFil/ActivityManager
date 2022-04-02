@@ -13,20 +13,21 @@ import org.http4k.core.Status.Companion.UNAUTHORIZED
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
+import org.slf4j.LoggerFactory
 import pt.isel.ls.services.dto.HttpError
 import pt.isel.ls.services.*
 import pt.isel.ls.utils.Environment
 import pt.isel.ls.utils.UserToken
+import kotlin.system.measureTimeMillis
 
 /**
- *
  * Binds [routes] to "/api" and applies [onErrorFilter] in all of them
  *
  * @param routes routes to bind to /api
  */
 fun getApiRoutes(routes: RoutingHttpHandler) = routes(
 
-    "/api" bind routes.withFilter(onErrorFilter)
+    "/api" bind routes.withFilter(timeFilter).withFilter(onErrorFilter)
 
 )
 
@@ -40,6 +41,7 @@ fun getAppRoutes(env: Environment) = routes(
     Sport(env.sportsServices),
     Activity(env.activityServices)
 )
+private val logger =  LoggerFactory.getLogger("pt.isel.ls.api.sports-web-api")
 
 /**
  * Catches app errors thrown on request handlers
@@ -69,10 +71,20 @@ private val onErrorFilter = Filter { handler ->
     handlerWrapper
 }
 
+private val timeFilter = Filter { handler ->
+    val handlerWrapper : HttpHandler = { request: Request ->
+        val returnedValue : Response;
+        val time = measureTimeMillis {
+            returnedValue =handler(request)
+        }
+        logger.info("Request from [${request.source}] to uri: [${request.uri}] took $time ms")
+        returnedValue
+    }
+    handlerWrapper
+}
+
 /**
  * Gets the user token from the request
- *
- * TODO: PASS TOKEN TO SERVICES AND CONVERT TO USERID
  *
  * @param request request to get the token from
  * @return the user token or null if not found or in invalid format
@@ -82,6 +94,3 @@ fun getToken(request: Request): UserToken? =
         .header("Authorization")
         ?.substringAfter("Bearer ", missingDelimiterValue = "")
         ?.ifBlank { null }
-
-
-

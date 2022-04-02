@@ -15,6 +15,8 @@ import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.services.dto.UserDTO
 import pt.isel.ls.services.UserServices
+import pt.isel.ls.utils.getLoggerFor
+import pt.isel.ls.utils.infoLogRequest
 
 
 class UserRoutes(
@@ -23,11 +25,16 @@ class UserRoutes(
     @Serializable data class UserIDResponse(val authToken: String, val id: String)
     @Serializable data class UserCreationBody(val name: String? = null, val email: String? = null)
     @Serializable data class UserList(val users: List<UserDTO>)
+    companion object{
+        val logger = getLoggerFor<UserRoutes>()
+    }
 
     /**
      * Creates an [UserDTO] with the information that comes in the body of the HTTP request.
      */
     private fun createUser(request: Request): Response {
+        logger.infoLogRequest(request)
+
         val bodyString = request.bodyString()
         val body = Json.decodeFromString<UserCreationBody>(bodyString)
 
@@ -42,6 +49,8 @@ class UserRoutes(
      * Gets the user that is identified by the id that comes in the params of uri's path.
      */
     private fun getUserDetails(request: Request): Response {
+        logger.infoLogRequest(request)
+
         val userId = request.path("uid")
         val userResponse = userServices.getUserByID(userId)
         val userEncoded = Json.encodeToString(userResponse)
@@ -54,6 +63,8 @@ class UserRoutes(
      * Gets all the users.
      */
     private fun getUsers(request: Request): Response{
+        logger.infoLogRequest(request)
+
         val users = userServices.getUsers()
         val usersJsonString = Json.encodeToString(UserList(users))
 

@@ -8,11 +8,15 @@ import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.services.entities.User
 import pt.isel.ls.services.entities.User.Email
+import pt.isel.ls.utils.getLoggerFor
+import pt.isel.ls.utils.traceFunction
 
 class UserServices(
         private val userRepository: UserRepository
 ) {
-
+    companion object{
+        val logger = getLoggerFor<UserServices>()
+    }
     /**
      * Verifies the parameters received and calls the function [UserRepository] to create a [UserDTO].
      * @param name the user's name
@@ -21,8 +25,10 @@ class UserServices(
      * @throws IllegalArgumentException
      */
     fun createUser(name: String?, email: String?): Pair<UserToken, UserID> {
+        logger.traceFunction("createUser","name: $name","email: $email")
         val safeName = requireParameter(name, "name")
         val safeEmail = requireParameter(email, "email")
+
 
         val userId = generateRandomId()
         val userAuthToken = generateUUId()
@@ -33,7 +39,6 @@ class UserServices(
             throw InvalidParameter("email already exists")
 
         userRepository.addUser(safeName, possibleEmail, userId, userAuthToken)
-
 
         return Pair(userAuthToken, userId)
     }
@@ -46,6 +51,7 @@ class UserServices(
      * @throws IllegalArgumentException
      */
     fun getUserByID(uid: UserID?): UserDTO {
+        logger.traceFunction("getUserByID","uid = $uid")
         val safeUserID = requireParameter(uid, "id")
         return userRepository.getUserByID(safeUserID)?.toDTO()
                 ?: throw ResourceNotFound("User", "$uid")
@@ -56,10 +62,12 @@ class UserServices(
      *
      * @return [List] of [User
      */
-     fun getUsers(): List<UserDTO> = userRepository
-                .getUsers()
-                .map(User::toDTO)
-
+    fun getUsers(): List<UserDTO> {
+        logger.traceFunction("getUsers")
+        return userRepository
+            .getUsers()
+            .map(User::toDTO)
+    }
 
 
 }

@@ -2,6 +2,7 @@ package pt.isel.ls.services
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toLocalDate
+import pt.isel.ls.api.SportRoutes
 import pt.isel.ls.services.dto.ActivityDTO
 import pt.isel.ls.services.dto.toDTO
 import pt.isel.ls.repository.ActivityRepository
@@ -21,6 +22,10 @@ class ActivityServices(
     private val sportRepository: SportRepository,
     private val routeRepository: RouteRepository
 ){
+    companion object{
+        val logger = getLoggerFor<ActivityServices>()
+    }
+
     /**
      * Creates a new activity.
      *
@@ -34,6 +39,7 @@ class ActivityServices(
      */
     fun createActivity(token: UserToken?, sportID: String?, duration: String?, date: String?, rid: String?): ActivityID {
         try {
+            logger.traceFunction("createActivity","sportID: $sportID, duration: $duration, date: $date, rid: $rid")
             val userID = userRepository.requireAuthenticated(token)
             val sid = requireParameter(sportID, "sportID")
             val safeDate = requireParameter(date, "date")
@@ -73,6 +79,7 @@ class ActivityServices(
      * @return [ActivityDTO] with the activity that matches the given id
      */
     fun getActivity(activityID: String?): ActivityDTO {
+        logger.traceFunction("getActivity","activityID: $activityID")
         val safeActivityID = requireParameter(activityID, "activityID")
 
         return activityRepository.getActivity(safeActivityID)?.toDTO()
@@ -86,6 +93,7 @@ class ActivityServices(
      * @return [List] of [ActivityDTO] with all the activities created by the user that matches the given id
      */
     fun getActivitiesByUser(userID: UserID?): List<ActivityDTO>{
+        logger.traceFunction("getActivitiesByUser","userID: $userID")
         val safeUID = requireParameter(userID, "userID")
 
         userRepository.requireUser(safeUID)
@@ -107,6 +115,7 @@ class ActivityServices(
      * @return [List] of [ActivityDTO]
      */
     fun getActivities(sid: SportID?, orderBy: String?, date: String?, rid: RouteID?): List<ActivityDTO>{
+        logger.traceFunction("getActivities","sid: $sid","orderBy: $orderBy","date: $date","rid: $rid")
         val safeSID = requireParameter(sid, "sportID")
         sportRepository.requireSport(safeSID)
 
@@ -135,6 +144,7 @@ class ActivityServices(
      * @return true if the activity was deleted, false otherwise.
      */
     fun deleteActivity(token: UserToken?, activityId: ActivityID?, sportID: SportID?): Boolean {
+        logger.traceFunction("deleteActivity","activityId: $activityId","sportID: $sportID")
         val userID = userRepository.requireAuthenticated(token)
         val safeSID = requireParameter(sportID, "sportID")
         val safeAID = requireParameter(activityId, "activityId")

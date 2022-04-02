@@ -1,7 +1,5 @@
 package pt.isel.ls
 
-import org.http4k.core.then
-import org.http4k.filter.DebuggingFilters.PrintRequestAndResponse
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.server.Http4kServer
 import org.http4k.server.Jetty
@@ -27,9 +25,6 @@ fun main() {
 
 }
 
-fun server(api: RoutingHttpHandler, port: Int): Http4kServer {
+fun server(api: RoutingHttpHandler, port: Int): Http4kServer
+     = api.asServer(Jetty(port)).start()
 
-    val debugApi = PrintRequestAndResponse().then(api)
-
-    return debugApi.asServer(Jetty(port)).start()
-}

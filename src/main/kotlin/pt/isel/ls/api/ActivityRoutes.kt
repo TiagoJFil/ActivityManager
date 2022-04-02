@@ -13,13 +13,11 @@ import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.services.dto.ActivityDTO
 import pt.isel.ls.services.ActivityServices
-import pt.isel.ls.utils.ActivityID
-import pt.isel.ls.utils.RouteID
-import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.*
 
 
 class ActivityRoutes(
-    val activityServices: ActivityServices
+    private val activityServices: ActivityServices
 ){
     @Serializable data class ActivityCreationBody(
         val duration: String? = null,
@@ -28,10 +26,16 @@ class ActivityRoutes(
     )
     @Serializable data class ActivityIDResponse(val activityID : ActivityID)
     @Serializable data class ActivityList(val activities: List<ActivityDTO>)
+    companion object{
+        val logger = getLoggerFor<ActivityRoutes>()
+    }
+
     /**
      * Creates an [ActivityDTO] using the information received in the path and body of the request.
      */
     private fun createActivity(request: Request): Response {
+        logger.infoLogRequest(request)
+
         val sportID = request.path("sid")
 
         val activityBody = Json.decodeFromString<ActivityCreationBody>(request.bodyString())
@@ -47,6 +51,8 @@ class ActivityRoutes(
      * Gets the [ActivityDTO] with the given [ActivityID].
      */
     private fun getActivity(request: Request): Response {
+        logger.infoLogRequest(request)
+
         val activityId  = request.path("aid")
 
         val activity = activityServices.getActivity(activityId)
@@ -62,6 +68,8 @@ class ActivityRoutes(
      * Gets all the activities created by the user that matches the given id.
      */
     private fun getActivitiesByUser(request: Request): Response {
+        logger.infoLogRequest(request)
+
         val userId = request.path("uid")
 
         val activities = activityServices.getActivitiesByUser(userId)
@@ -76,6 +84,8 @@ class ActivityRoutes(
      * Handler for deleting an [ActivityDTO] using the information received in the path of the request.
      */
     private fun deleteActivity(request: Request): Response {
+        logger.infoLogRequest(request)
+
         val activityId = request.path("aid")
         val sportID = request.path("sid")
 
@@ -90,6 +100,8 @@ class ActivityRoutes(
      * Gets all the activities of the sport identified by the id given in the params of the uri's path.
      */
     private fun getActivitiesBySport(request: Request): Response{
+        logger.infoLogRequest(request)
+
         val order = request.query("orderBy")
         val date = request.query("date")
         val routeID = request.query("rid")

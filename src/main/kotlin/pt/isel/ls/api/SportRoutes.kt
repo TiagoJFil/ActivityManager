@@ -16,22 +16,31 @@ import pt.isel.ls.services.dto.SportDTO
 import pt.isel.ls.services.SportsServices
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.getLoggerFor
+import pt.isel.ls.utils.infoLogRequest
 
 class SportRoutes(
-    val sportsServices: SportsServices
+    private val sportsServices: SportsServices
 ) {
 
     @Serializable
     data class SportCreationBody(val name: String? = null, val description: String? = null)
     @Serializable
     data class SportIDResponse(val sportID: SportID)
+    @Serializable
+    data class SportList(val sports: List<SportDTO>)
+
+    companion object{
+        val logger = getLoggerFor<SportRoutes>()
+    }
 
     /**
      * Create a new sport with the information from the body of the HTTP request.
      */
     private fun createSport(request: Request): Response {
-        val sportsBody = Json.decodeFromString<SportCreationBody>(request.bodyString())
+        logger.infoLogRequest(request)
 
+        val sportsBody = Json.decodeFromString<SportCreationBody>(request.bodyString())
 
         val token : UserToken? = getToken(request)
         val sportID = sportsServices.createSport(token, sportsBody.name, sportsBody.description)
@@ -45,6 +54,8 @@ class SportRoutes(
      * Gets the sport that its given in the params of the path of the uri.
      */
     private fun getSport(request: Request): Response {
+        logger.infoLogRequest(request)
+
         val sportID = request.path ("sid")
         val sport = sportsServices.getSport(sportID)
         val sportJson = Json.encodeToString(sport)
@@ -54,13 +65,13 @@ class SportRoutes(
             .body(sportJson)
     }
 
-    @Serializable
-    data class SportList(val sports: List<SportDTO>)
 
     /**
      * Gets all the available sports.
      */
     private fun getSports(request: Request): Response {
+        logger.infoLogRequest(request)
+
         val sports = sportsServices.getSports()
         val bodyString = Json.encodeToString(SportList(sports))
         return Response(Status.OK)
