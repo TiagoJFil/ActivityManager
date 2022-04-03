@@ -1,10 +1,14 @@
 package pt.isel.ls.repository.database
 
+import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.UserRepository
+import pt.isel.ls.repository.database.utils.generatedKey
 import pt.isel.ls.repository.database.utils.transaction
 import pt.isel.ls.services.entities.User
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
+import java.sql.PreparedStatement
+import java.sql.Statement
 
 class UserDBRepository(private val dataSource: PGSimpleDataSource) : UserRepository {
 
