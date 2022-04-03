@@ -1,3 +1,5 @@
+begin transaction ;
+
 drop table if exists activity cascade;
 drop table if exists sport cascade;
 drop table if exists route cascade;
@@ -7,13 +9,13 @@ drop table if exists "user" cascade;
 
 create table "user" (
                         id serial primary key,
-                        email varchar(100) not null,
                         name varchar(35) not null
 );
 create table email(
                       "user" int,
-                      email varchar(100) check(email like '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$') primary key,
+                      email varchar(100) check(email ~* '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$') primary key,
                       foreign key ("user") references "user"(id)
+
 );
 
 create table tokens(
@@ -22,7 +24,6 @@ create table tokens(
                        foreign key ("user") references "user"(id)
 );
 
-alter table "user" add constraint email_foreign_to_user foreign key (email) references email(email);
 
 create table route (
                        id serial primary key,
@@ -52,3 +53,4 @@ create table activity (
                           foreign key (sport) references SPORT(id),
                           foreign key (route) references ROUTE(id)
 );
+commit;

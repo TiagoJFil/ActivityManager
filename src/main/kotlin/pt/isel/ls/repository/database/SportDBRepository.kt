@@ -2,9 +2,11 @@ package pt.isel.ls.repository.database
 
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.SportRepository
+import pt.isel.ls.repository.database.utils.transaction
 import pt.isel.ls.services.entities.Sport
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
+import java.sql.Statement
 
 class SportDBRepository(private val dataSource: PGSimpleDataSource) : SportRepository {
     /**
@@ -15,29 +17,48 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource) : SportRepos
      * @param userID The user's id.
      */
     override fun addSport(name: String, description: String?, userID: UserID) : SportID {
-        val sportId : SportID
         dataSource.connection.use { connection ->
-            connection.prepareStatement(
-                    """INSERT INTO sport(name,description,"user") VALUES (?,?,?)"""
-            ).use { it ->
-                it.setString(1, name)
-                it.setString(2, description)
-                it.setInt(3, userID.toInt())
-                it.executeUpdate()
-                it.generatedKeys.use {
-                    it.next()
-                    sportId = it.getInt(1).toString()
+            return connection.transaction{
+                connection.prepareStatement("""INSERT INTO sport(name,description,"user") VALUES (?,?,?)""", Statement.RETURN_GENERATED_KEYS).use { ps ->
+                    ps.setString(1, name)
+                    ps.setString(2, description)
+                    ps.setInt(3, userID.toInt())
+                    ps.executeUpdate()
+                    ps.generatedKeys.use {
+                        it.next()
+                        it.getInt(1).toString()
+                    }
                 }
             }
         }
-        return sportId
     }
 
     /**
      * Gets all the sports in the repository.
      */
     override fun getSports(): List<Sport> {
-        TODO("Not yet implemented")
+        val sports : MutableList<Sport> = mutableListOf()
+        dataSource.connection.use { connection ->
+            connection.transaction {
+                connection.createStatement().use { statement ->
+                    statement.executeQuery("""SELECT * FROM sport""")
+
+                    statement.resultSet.use { rs ->
+                        while (rs.next()) {
+                            sports.add(
+                                Sport(
+                                    rs.getInt("id").toString(),
+                                    rs.getString("name"),
+                                    rs.getString("description"),
+                                    rs.getInt("user").toString()
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        return sports
     }
 
     /**

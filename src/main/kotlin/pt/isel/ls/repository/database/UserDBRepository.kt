@@ -2,6 +2,7 @@ package pt.isel.ls.repository.database
 
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.UserRepository
+import pt.isel.ls.repository.database.utils.transaction
 import pt.isel.ls.services.entities.User
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
@@ -14,7 +15,34 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource) : UserReposit
      * @return the user with the given id.
      */
     override fun getUserByID(userID: String): User? {
-        TODO("Not yet implemented")
+        dataSource.connection.use { connection->
+             return connection.transaction{
+                 val email : String
+                 val user: User?
+                 connection.createStatement().use { statement ->
+                     statement.executeQuery("""SELECT email FROM email WHERE "user" = $userID""")
+                     email = statement.resultSet.use { emailResultSet ->
+                         if(!emailResultSet.next()) return null
+                         emailResultSet.getString("email")
+                     }
+                 }
+
+                 connection.createStatement().use {
+                     it.executeQuery("""SELECT * FROM "user" WHERE id = $userID""")
+
+                     user = it.resultSet.use { userResultSet->
+                         if(!userResultSet.next()) return null
+                         val uid: UserID = userResultSet.getInt("id").toString()
+                         val name = userResultSet.getString("name")
+
+                         User(name, User.Email(email), uid)
+
+                     }
+                 }
+                 user
+            }
+
+        }
     }
 
     /**
