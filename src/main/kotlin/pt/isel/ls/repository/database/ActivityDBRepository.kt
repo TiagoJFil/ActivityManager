@@ -9,10 +9,8 @@ import pt.isel.ls.repository.database.utils.transaction
 import pt.isel.ls.services.entities.Activity
 import pt.isel.ls.utils.*
 import java.sql.Date
-import java.sql.ResultSet
 import java.sql.Statement
-
-
+import java.sql.Types.INTEGER
 
 
 class ActivityDBRepository(private val dataSource: PGSimpleDataSource) : ActivityRepository {
@@ -31,24 +29,24 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource) : Activit
         sportID: SportID,
         routeID: RouteID?,
         userID: UserID
-    ): ActivityID {
-        dataSource.connection.use { connection ->
-            val query = """INSERT INTO activity (date, duration, sport_id, route_id, user_id)VALUES (?, ?, ?, ?, ?)"""
-            return connection.transaction {
-                connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS).use { statement ->
-                    statement.apply {
-                        setDate(1, Date.valueOf(date.toJavaLocalDate()))
-                        setLong(2, duration.millis)
-                        setInt(3, sportID.toInt())
-                        setInt(4, routeID?.toInt() ?: 0)
-                        setInt(5, userID.toInt())
-                        statement.executeUpdate()
-                    }.generatedKey()
-                }
+    ): ActivityID
+        = dataSource.connection.transaction {
+            val query = """INSERT INTO activity (date, duration, sport, route, "user")VALUES (?, ?, ?, ?, ?)"""
+            val pstmt =  prepareStatement(query, Statement.RETURN_GENERATED_KEYS)
+            pstmt.use { ps ->
+                ps.apply {
+                    setDate(1, Date.valueOf(date.toJavaLocalDate()))
+                    setLong(2, duration.millis)
+                    setInt(3, sportID.toInt())
+                    routeID?.let {
+                        setInt(4, it.toInt())
+                    } ?: setNull(4, INTEGER)
+                    setInt(5, userID.toInt())
+                    executeUpdate()
+                }.generatedKey()
             }
         }
 
-    }
 
     /**
      * Gets all the activities that were created by the given user.

@@ -7,8 +7,11 @@ import java.sql.SQLException
 /**
  * Creates a transaction on the given connection.
  *
- * @param block the block to execute in the transaction
+ * Commits on success.
+ * Rolls back if an exception is thrown.
  *
+ * @param block the block to execute in the transaction
+ * @return the result of the block function invoked in the transaction
  */
 inline fun <R> Connection.transaction(block: Connection.() -> R): R
     = use{

@@ -2,36 +2,24 @@ package pt.isel.ls.repository.database
 
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.RouteRepository
-import pt.isel.ls.repository.database.utils.toRoute
-import pt.isel.ls.repository.database.utils.transaction
-import pt.isel.ls.repository.database.utils.generatedKey
-import pt.isel.ls.repository.database.utils.transaction
+import pt.isel.ls.repository.database.utils.*
 import pt.isel.ls.services.entities.Route
-import pt.isel.ls.services.entities.User
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
-import pt.isel.ls.utils.guestUser
-import pt.isel.ls.utils.testRoute
+import java.sql.ResultSet
 import java.sql.Statement
-
-
 
 class RouteDBRepository(private val dataSource: PGSimpleDataSource) : RouteRepository{
     /**
      * Returns all the routes stored in the repository.
      */
-    override fun getRoutes(): List<Route> {
-        dataSource.connection.use { connection ->
-            val statement = connection.createStatement()
-            val resultSet = statement.executeQuery("SELECT * FROM route")
-            val routes = mutableListOf<Route>()
-            while (resultSet.next()) {
-                routes.add(resultSet.toRoute())
+    override fun getRoutes(): List<Route> =
+        dataSource.connection.transaction {
+            createStatement().use { stmt ->
+                val rs = stmt.executeQuery("SELECT * FROM route")
+                rs.toListOf<Route>(ResultSet::toRoute)
             }
-            return routes
         }
-
-    }
 
     /**
      * Adds a new route to the repository.
@@ -45,63 +33,54 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource) : RouteRepos
         endLocation: String,
         distance: Double,
         userID: UserID
-    ) : RouteID{
-        dataSource.connection.use { connection ->
+    ) : RouteID =
+        dataSource.connection.transaction {
             val query = """INSERT INTO route(startlocation,endlocation,distance,"user") VALUES (?, ?, ?, ?)"""
-             return connection.transaction{
-                connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS).use { stmt ->
-                    stmt.setString(1, startLocation)
-                    stmt.setString(2, endLocation)
-                    stmt.setDouble(3, distance)
-                    stmt.setInt(4, userID.toInt())
-                    stmt.executeUpdate()
-                    stmt.generatedKey()
-                }
+            prepareStatement(query, Statement.RETURN_GENERATED_KEYS).use { stmt ->
+                stmt.apply {
+                    setString(1, startLocation)
+                    setString(2, endLocation)
+                    setDouble(3, distance)
+                    setInt(4, userID.toInt())
+                    executeUpdate()
+                }.generatedKey()
             }
         }
-    }
 
     /**
      * Returns the route with the given id.
      * @param routeID The id of the route to be returned.
      * @return [Route] The route with the given id.
      */
-    override fun getRoute(routeID: RouteID): Route? {
-        dataSource.connection.use { connection ->
-            connection.transaction {
-                connection.prepareStatement(
-                        """SELECT * FROM route WHERE id = ?"""
-                ).use { statement ->
-                    statement.setInt(1, routeID.toInt())
-                    statement.executeQuery().use { resultSet ->
-                        if(resultSet.next()) {
-                            return resultSet.toRoute()
-                        }
-                        return null
-                    }
+    override fun getRoute(routeID: RouteID): Route? =
+        dataSource.connection.transaction {
+            prepareStatement(
+                    """SELECT * FROM route WHERE id = ?"""
+            ).use { statement ->
+                statement.setInt(1, routeID.toInt())
+                statement.executeQuery().use { resultSet ->
+                    resultSet.ifNext { resultSet.toRoute() }
                 }
             }
         }
-    }
+
+
 
     /**
      * Verifies if a route with the given id exists in the repository.
      * @param routeID The id of the route to be verified.
      * @return [Boolean] True if the route exists, false otherwise.
      */
-    override fun hasRoute(routeID: RouteID): Boolean {
-        dataSource.connection.use { connection ->
-            connection.transaction {
-                connection.prepareStatement(
-                        """SELECT * FROM route WHERE id = ?"""
-                ).use { statement ->
-                    statement.setString(1, routeID)
-                    statement.executeQuery().use { resultSet ->
-                        return resultSet.next()
-                    }
+    override fun hasRoute(routeID: RouteID): Boolean =
+        dataSource.connection.transaction {
+            prepareStatement(
+                    """SELECT * FROM route WHERE id = ?"""
+            ).use { statement ->
+                statement.setString(1, routeID)
+                statement.executeQuery().use { resultSet ->
+                    resultSet.next()
                 }
             }
         }
-    }
 
 }

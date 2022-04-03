@@ -2,8 +2,7 @@ package pt.isel.ls.repository.database
 
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.SportRepository
-import pt.isel.ls.repository.database.utils.generatedKey
-import pt.isel.ls.repository.database.utils.transaction
+import pt.isel.ls.repository.database.utils.*
 import pt.isel.ls.services.entities.Sport
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
@@ -21,37 +20,30 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource) : SportRepos
      * @param userID The user's id.
      */
     override fun addSport(name: String, description: String?, userID: UserID): SportID =
-        dataSource.connection.use { connection ->
+        dataSource.connection.transaction {
             val insertSport = """INSERT INTO sport (name, description, "user") VALUES (?, ?, ?)"""
-            connection.transaction {
-                val statement = connection.prepareStatement(insertSport, Statement.RETURN_GENERATED_KEYS)
-                statement.apply {
-                    setString(1, name)
-                    setString(2, description)
-                    setInt(3, userID.toInt())
-                    executeUpdate()
-                }
-                statement.generatedKey()
+            val statement = prepareStatement(insertSport, Statement.RETURN_GENERATED_KEYS)
+            statement.apply {
+                setString(1, name)
+                setString(2, description)
+                setInt(3, userID.toInt())
+                executeUpdate()
             }
+            statement.generatedKey()
         }
 
     /**
      * Gets all the sports in the repository.
      */
-    override fun getSports(): List<Sport> {
-        val sports: MutableList<Sport> = mutableListOf()
+    override fun getSports(): List<Sport> =
         dataSource.connection.transaction {
-            createStatement().use { stmt ->
-                stmt.executeQuery("""SELECT * FROM sport""")
-                stmt.resultSet.use { rs ->
-                    while (rs.next()) {
-                        sports.add(rs.toSport())
-                    }
+           createStatement().use { stmt ->
+                stmt.executeQuery("""SELECT * FROM sport""").use { rs ->
+                    rs.toListOf<Sport>(ResultSet::toSport)
                 }
-            }
+           }
         }
-        return sports
-    }
+
 
     /**
      * Gets a sport by its id.
@@ -60,10 +52,7 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource) : SportRepos
      */
     override fun getSportByID(sportID: SportID): Sport? =
         querySportByID(sportID) { rs: ResultSet ->
-            if (!rs.next())
-                null
-            else
-                rs.toSport()
+            rs.ifNext { rs.toSport() }
         }
 
     /**
@@ -82,16 +71,12 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource) : SportRepos
      * @return [T] The result of calling the block function.
      */
     private fun <T> querySportByID(sportID: SportID, block: (ResultSet) -> T): T =
-        dataSource.connection.use { connection ->
-            connection.transaction {
-                val pstmt = connection.prepareStatement(
-                    """SELECT * FROM sport WHERE id = ?;"""
-                )
-                pstmt.use { ps ->
-                    ps.setInt(1, sportID.toInt())
-                    val resultSet: ResultSet = ps.executeQuery()
-                    resultSet.use { block(it) }
-                }
+        dataSource.connection.transaction {
+            val pstmt = prepareStatement("""SELECT * FROM sport WHERE id = ?;""")
+            pstmt.use { ps ->
+                ps.setInt(1, sportID.toInt())
+                val resultSet: ResultSet = ps.executeQuery()
+                resultSet.use { block(it) }
             }
         }
 
