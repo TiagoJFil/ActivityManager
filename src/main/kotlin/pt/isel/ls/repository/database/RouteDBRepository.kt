@@ -2,9 +2,12 @@ package pt.isel.ls.repository.database
 
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.RouteRepository
+import pt.isel.ls.repository.database.utils.generatedKey
+import pt.isel.ls.repository.database.utils.transaction
 import pt.isel.ls.services.entities.Route
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
+import java.sql.Statement
 
 
 class RouteDBRepository(private val dataSource: PGSimpleDataSource) : RouteRepository{
@@ -28,25 +31,19 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource) : RouteRepos
         distance: Double,
         userID: UserID
     ) : RouteID{
-        val routeID : RouteID
         dataSource.connection.use { connection ->
-            connection.prepareStatement(
-                """INSERT INTO route(id,startlocation,endlocation,distance,"user") VALUES (DEFAULT,?, ?, ?, ?)"""
-
-            ).use { statement ->
-                statement.setString(1, startLocation)
-                statement.setString(2, endLocation)
-                statement.setDouble(3, distance)
-                statement.setString(4, userID)
-                statement.executeUpdate()
-                statement.generatedKeys.use {
-                    it.next()
-                    routeID = it.getInt(1).toString()
+            val query = """INSERT INTO route(startlocation,endlocation,distance,"user") VALUES (?, ?, ?, ?)"""
+             return connection.transaction{
+                connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS).use { stmt ->
+                    stmt.setString(1, startLocation)
+                    stmt.setString(2, endLocation)
+                    stmt.setDouble(3, distance)
+                    stmt.setInt(4, userID.toInt())
+                    stmt.executeUpdate()
+                    stmt.generatedKey()
                 }
             }
-
         }
-        return routeID
     }
 
     /**

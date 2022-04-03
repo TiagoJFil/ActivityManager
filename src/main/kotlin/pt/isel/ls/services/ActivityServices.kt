@@ -49,14 +49,12 @@ class ActivityServices(
             val parsedDate: Date = Duration.dateFormat.parse(duration)
             val millis: Long = parsedDate.time
 
-            val activityID = generateRandomId()
 
             sportRepository.requireSport(sid)
             userRepository.requireUser(userID)
             if(rid != null) routeRepository.requireRoute(rid)
 
-            activityRepository.addActivity(
-                    activityID=activityID,
+            return activityRepository.addActivity(
                     date=safeDate.toLocalDate(),
                     duration=Duration(millis),
                     sportID=sid,
@@ -64,7 +62,7 @@ class ActivityServices(
                     userID=userID
             )
 
-            return activityID
+
         }catch (e: ParseException){
             throw InvalidParameter("duration")
         }catch (e: IllegalArgumentException){

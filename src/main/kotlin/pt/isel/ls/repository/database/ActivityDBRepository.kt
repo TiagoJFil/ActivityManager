@@ -1,16 +1,24 @@
 package pt.isel.ls.repository.database
 
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.ActivityRepository
+import pt.isel.ls.repository.database.utils.generatedKey
+import pt.isel.ls.repository.database.utils.transaction
 import pt.isel.ls.services.entities.Activity
 import pt.isel.ls.utils.*
+import java.sql.Date
+import java.sql.ResultSet
+import java.sql.Statement
+
+
+
 
 class ActivityDBRepository(private val dataSource: PGSimpleDataSource) : ActivityRepository {
     /**
      * Creates a new activity using the parameters received
      *
-     * @param activityID the activity ID
      * @param date the activity date
      * @param duration the activity duration
      * @param sportID the activity sport ID
@@ -18,14 +26,28 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource) : Activit
      * @param userID the activity user ID
      */
     override fun addActivity(
-        activityID: ActivityID,
         date: LocalDate,
         duration: Activity.Duration,
         sportID: SportID,
         routeID: RouteID?,
         userID: UserID
-    ) {
-        TODO("Not yet implemented")
+    ): ActivityID {
+        dataSource.connection.use { connection ->
+            val query = """INSERT INTO activity (date, duration, sport_id, route_id, user_id)VALUES (?, ?, ?, ?, ?)"""
+            return connection.transaction {
+                connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS).use { statement ->
+                    statement.apply {
+                        setDate(1, Date.valueOf(date.toJavaLocalDate()))
+                        setLong(2, duration.millis)
+                        setInt(3, sportID.toInt())
+                        setInt(4, routeID?.toInt() ?: 0)
+                        setInt(5, userID.toInt())
+                        statement.executeUpdate()
+                    }.generatedKey()
+                }
+            }
+        }
+
     }
 
     /**

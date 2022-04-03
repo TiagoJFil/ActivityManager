@@ -2,6 +2,7 @@ package pt.isel.ls.repository.database
 
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.SportRepository
+import pt.isel.ls.repository.database.utils.generatedKey
 import pt.isel.ls.repository.database.utils.transaction
 import pt.isel.ls.services.entities.Sport
 import pt.isel.ls.utils.SportID
@@ -24,10 +25,7 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource) : SportRepos
                     ps.setString(2, description)
                     ps.setInt(3, userID.toInt())
                     ps.executeUpdate()
-                    ps.generatedKeys.use {
-                        it.next()
-                        it.getInt(1).toString()
-                    }
+                    ps.generatedKey()
                 }
             }
         }
