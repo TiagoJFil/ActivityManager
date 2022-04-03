@@ -1,5 +1,10 @@
-insert into courses(name) values ('LEIC');
-insert into students(course, number, name) values (1, 12345, 'Alice');
-insert into students(course, number, name) select cid as course, 12346 as number, 'Bob' as name from courses where name = 'LEIC'
+begin transaction ;
 
-select name from studentstest where course = 2 AND number = 9999
+insert into "user" values (
+                           default,
+                           'abc'
+                          );
+insert into email values (1,'abc@gmail.com');
+
+insert into email values (2,'abdc@gmail.com');
+commit;

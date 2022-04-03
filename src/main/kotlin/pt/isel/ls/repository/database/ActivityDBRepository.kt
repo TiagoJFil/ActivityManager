@@ -6,7 +6,7 @@ import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.services.entities.Activity
 import pt.isel.ls.utils.*
 
-class ActivityDBRepository(dataSource: PGSimpleDataSource) : ActivityRepository {
+class ActivityDBRepository(private val dataSource: PGSimpleDataSource) : ActivityRepository {
     /**
      * Creates a new activity using the parameters received
      *
@@ -41,7 +41,7 @@ class ActivityDBRepository(dataSource: PGSimpleDataSource) : ActivityRepository 
      * Gets the activity that matches the given unique activity identifier.
      *
      * @param activityID the identifier of the activity to get
-     * @return [ActivityDTO] if the id exists or null if it doesn't
+     * @return [Activity] if the id exists or null if it doesn't
      */
     override fun getActivity(activityID: ActivityID): Activity? {
         TODO("Not yet implemented")
@@ -57,7 +57,7 @@ class ActivityDBRepository(dataSource: PGSimpleDataSource) : ActivityRepository 
      * @param date activity date (optional)
      * @param rid route identifier (optional)
      *
-     * @return [List] of [ActivityDTO]
+     * @return [List] of [Activity]
      */
     override fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?): List<Activity> {
         TODO("Not yet implemented")

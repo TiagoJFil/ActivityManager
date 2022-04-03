@@ -3,6 +3,7 @@ package pt.isel.ls.repository.memory
 import pt.isel.ls.services.dto.RouteDTO
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.services.entities.Route
+import pt.isel.ls.services.generateRandomId
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
 
@@ -22,21 +23,21 @@ class RouteDataMemRepository(testRoute: Route): RouteRepository {
 
     /**
      * Adds a new route to the repository.
-     * @param routeId The id of the route to be added.
      * @param startLocation The start location of the route.
      * @param endLocation The end location of the route.
      * @param distance The distance of the route.
      * @param userID The id of the user that created the route.
      */
     override fun addRoute(
-            routeId: RouteID,
             startLocation: String,
             endLocation: String,
             distance: Double,
             userID: UserID
-    ){
-        val route = Route(routeId, startLocation, endLocation, distance, userID)
-        routesMap[routeId] = route
+    ): RouteID{
+        val routeID = generateRandomId()
+        val route = Route(routeID, startLocation, endLocation, distance, userID)
+        routesMap[routeID] = route
+        return routeID
     }
 
     /**

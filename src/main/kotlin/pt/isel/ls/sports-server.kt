@@ -15,7 +15,7 @@ private const val DEFAULT_PORT = 9000
 fun main() {
 
     val api = getApiRoutes(
-        getAppRoutes(EnvironmentType.TEST.getEnv())
+        getAppRoutes(EnvironmentType.PROD.getEnv())
     )
 
     with(server(api, DEFAULT_PORT)) {

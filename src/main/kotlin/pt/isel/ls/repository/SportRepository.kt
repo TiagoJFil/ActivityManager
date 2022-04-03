@@ -9,12 +9,11 @@ interface SportRepository {
     /**
      * Adds a new sport to the repository.
      *
-     * @param sportID The sport's id.
      * @param name The sport's name.
      * @param description The sport's description(optional).
      * @param userID The user's id.
      */
-    fun addSport(sportID: SportID, name: String, description: String?, userID: UserID)
+    fun addSport(name: String, description: String?, userID: UserID) : SportID
 
     /**
      * Gets all the sports in the repository.

@@ -41,9 +41,8 @@ class SportsServices(
 
         val safeName = requireParameter(name, "name")
         val handledDescription = description?.ifBlank { null }
-        val sportID = generateRandomId()
-        sportsRepository.addSport(sportID, safeName, handledDescription, userID)
-        return sportID
+
+        return sportsRepository.addSport( safeName, handledDescription, userID)
     }
     /**
      * Gets all the existing sports
