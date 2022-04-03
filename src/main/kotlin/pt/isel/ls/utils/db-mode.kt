@@ -1,5 +1,6 @@
 package pt.isel.ls.utils
 
+import kotlinx.datetime.toLocalDate
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.repository.RouteRepository
@@ -13,6 +14,8 @@ import pt.isel.ls.repository.memory.ActivityDataMemRepository
 import pt.isel.ls.repository.memory.RouteDataMemRepository
 import pt.isel.ls.repository.memory.SportDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
+import pt.isel.ls.services.entities.Activity
+import pt.isel.ls.services.entities.User
 import pt.isel.ls.services.generateUUId
 
 

@@ -2,15 +2,19 @@ package pt.isel.ls.repository.database
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toLocalDate
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.ActivityRepository
-import pt.isel.ls.repository.database.utils.generatedKey
-import pt.isel.ls.repository.database.utils.transaction
+import pt.isel.ls.repository.database.utils.*
 import pt.isel.ls.services.entities.Activity
+import pt.isel.ls.services.entities.Route
 import pt.isel.ls.utils.*
 import java.sql.Date
+import java.sql.ResultSet
 import java.sql.Statement
+import java.sql.Types
 import java.sql.Types.INTEGER
+
 
 
 class ActivityDBRepository(private val dataSource: PGSimpleDataSource) : ActivityRepository {
@@ -54,8 +58,19 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource) : Activit
      * @return [List] of [Activity] that were created by the given user
      */
     override fun getActivitiesByUser(userID: UserID): List<Activity> {
-        TODO("Not yet implemented")
+        dataSource.connection.transaction {
+            val query = """SELECT * FROM activity WHERE "user" = ?"""
+            val pstmt = prepareStatement(query)
+            pstmt.use { ps ->
+                ps.apply {
+                    setInt(1, userID.toInt())
+                }
+                val rs = ps.executeQuery()
+                return rs.toListOf(ResultSet::toActivity)
+            }
+        }
     }
+
 
     /**
      * Gets the activity that matches the given unique activity identifier.
@@ -64,7 +79,17 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource) : Activit
      * @return [Activity] if the id exists or null if it doesn't
      */
     override fun getActivity(activityID: ActivityID): Activity? {
-        TODO("Not yet implemented")
+        dataSource.connection.transaction {
+            val query = """SELECT * FROM activity WHERE id = ?"""
+            val pstmt = prepareStatement(query)
+            pstmt.use { ps ->
+                ps.apply {
+                    setInt(1, activityID.toInt())
+                }
+                val rs = ps.executeQuery()
+                 return rs.ifNext { rs.toActivity() }
+            }
+        }
     }
 
     /**
@@ -80,7 +105,29 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource) : Activit
      * @return [List] of [Activity]
      */
     override fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?): List<Activity> {
-        TODO("Not yet implemented")
+        dataSource.connection.transaction {
+            val (query, hasDate) = getActivitiesQueryBuilder(date, rid)
+            val pstmt = prepareStatement(query)
+            val ridIdx = if (hasDate) 3 else 2
+            pstmt.use { ps ->
+                ps.apply {
+                    setInt(1, sid.toInt())
+
+                    date?.let {
+                        setDate(2, Date.valueOf(it.toJavaLocalDate()))
+                    }
+
+                    rid?.toIntOrNull()?.let { rid->
+                        setInt(ridIdx, rid)
+                    }
+
+                }
+                val rs = ps.executeQuery()
+                val list = rs.toListOf(ResultSet::toActivity)
+                return if(orderBy == Order.ASCENDING) list.sortedBy { it.duration.millis }
+                else list.sortedByDescending { it.duration.millis }
+            }
+        }
     }
 
     /**
@@ -103,3 +150,22 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource) : Activit
     }
 
 }
+
+typealias HasDate = Boolean
+
+/**
+ * Builds the query to get the activities.
+ */
+private fun getActivitiesQueryBuilder(date: LocalDate?, rid: RouteID?): Pair<String, HasDate>{
+    val sb = StringBuilder()
+    sb.append("SELECT * FROM activity WHERE sport = ? ")
+    if (date != null) {
+        sb.append("AND date = ? ")
+    }
+    if (rid != null) {
+        sb.append("AND route = ? ")
+    }
+
+    return Pair(sb.toString(), date != null)
+}
+
