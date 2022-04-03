@@ -21,6 +21,7 @@ inline fun  <R> Connection.transaction(block: () -> R): R{
         this.autoCommit = true
     }
 }
+
 fun PreparedStatement.generatedKey(): String {
     generatedKeys.use {
         if(!it.next()) throw SQLException("No generated key")

@@ -2,12 +2,18 @@ package pt.isel.ls.repository.database
 
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.RouteRepository
+import pt.isel.ls.repository.database.utils.toRoute
+import pt.isel.ls.repository.database.utils.transaction
 import pt.isel.ls.repository.database.utils.generatedKey
 import pt.isel.ls.repository.database.utils.transaction
 import pt.isel.ls.services.entities.Route
+import pt.isel.ls.services.entities.User
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.guestUser
+import pt.isel.ls.utils.testRoute
 import java.sql.Statement
+
 
 
 class RouteDBRepository(private val dataSource: PGSimpleDataSource) : RouteRepository{
@@ -15,7 +21,16 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource) : RouteRepos
      * Returns all the routes stored in the repository.
      */
     override fun getRoutes(): List<Route> {
-        TODO("Not yet implemented")
+        dataSource.connection.use { connection ->
+            val statement = connection.createStatement()
+            val resultSet = statement.executeQuery("SELECT * FROM route")
+            val routes = mutableListOf<Route>()
+            while (resultSet.next()) {
+                routes.add(resultSet.toRoute())
+            }
+            return routes
+        }
+
     }
 
     /**
@@ -52,7 +67,21 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource) : RouteRepos
      * @return [Route] The route with the given id.
      */
     override fun getRoute(routeID: RouteID): Route? {
-        TODO("Not yet implemented")
+        dataSource.connection.use { connection ->
+            connection.transaction {
+                connection.prepareStatement(
+                        """SELECT * FROM route WHERE id = ?"""
+                ).use { statement ->
+                    statement.setInt(1, routeID.toInt())
+                    statement.executeQuery().use { resultSet ->
+                        if(resultSet.next()) {
+                            return resultSet.toRoute()
+                        }
+                        return null
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -61,7 +90,18 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource) : RouteRepos
      * @return [Boolean] True if the route exists, false otherwise.
      */
     override fun hasRoute(routeID: RouteID): Boolean {
-        TODO("Not yet implemented")
+        dataSource.connection.use { connection ->
+            connection.transaction {
+                connection.prepareStatement(
+                        """SELECT * FROM route WHERE id = ?"""
+                ).use { statement ->
+                    statement.setString(1, routeID)
+                    statement.executeQuery().use { resultSet ->
+                        return resultSet.next()
+                    }
+                }
+            }
+        }
     }
 
 }
