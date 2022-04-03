@@ -3,8 +3,6 @@ package pt.isel.ls.api
 
 import org.http4k.core.Response
 import org.junit.After
-import org.junit.FixMethodOrder
-import org.junit.runners.MethodSorters
 import pt.isel.ls.services.dto.SportDTO
 import pt.isel.ls.api.SportRoutes.*
 import pt.isel.ls.api.utils.*

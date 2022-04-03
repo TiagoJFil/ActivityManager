@@ -5,14 +5,14 @@ drop table if exists tokens cascade ;
 drop table if exists email cascade;
 drop table if exists "user" cascade;
 
+
 create table "user" (
                         id serial primary key,
-                        email varchar(100) not null,
                         name varchar(35) not null
 );
 create table email(
                       "user" int,
-                      email varchar(100) check(email like '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$') primary key,
+                      email varchar(100) constraint email_invalid check(email ~* '^[A-Z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$') primary key,
                       foreign key ("user") references "user"(id)
 );
 
@@ -21,8 +21,6 @@ create table tokens(
                        "user" int not null,
                        foreign key ("user") references "user"(id)
 );
-
-alter table "user" add constraint email_foreign_to_user foreign key (email) references email(email);
 
 create table route (
                        id serial primary key,

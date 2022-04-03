@@ -1,12 +1,13 @@
 package pt.isel.ls.repository.database
 
+import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.services.entities.Route
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
 
 
-class RouteDBRepository : RouteRepository{
+class RouteDBRepository(dataSource: PGSimpleDataSource) : RouteRepository{
     /**
      * Returns all the routes stored in the repository.
      */

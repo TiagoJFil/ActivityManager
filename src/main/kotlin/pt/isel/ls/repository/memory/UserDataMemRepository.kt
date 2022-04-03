@@ -4,6 +4,8 @@ import pt.isel.ls.services.dto.UserDTO
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.services.entities.User
 import pt.isel.ls.services.entities.User.Email
+import pt.isel.ls.services.generateRandomId
+import pt.isel.ls.services.generateUUId
 import pt.isel.ls.utils.GUEST_TOKEN
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
@@ -42,14 +44,16 @@ class UserDataMemRepository(guest: User) : UserRepository {
      * Adds a new user to the repository.
      * @param userName the user to be added.
      * @param email the email of the user to be added.
-     * @param userId the id of the user to be added.
      * @param userAuthToken the authentication token of the user to be added.
+     * @return the user's id.
      */
-    override fun addUser(userName: String, email: Email, userId: UserID, userAuthToken: UserToken) {
+    override fun addUser(userName: String, email: Email, userAuthToken: UserToken): UserID {
+        val userId = generateRandomId()
         val user = User(userName, email, userId)
         usersMap[userId] = user
         emailsMap[email.value] = userId
         tokenTable[userAuthToken] = userId
+        return userId
     }
 
     /**

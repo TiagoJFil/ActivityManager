@@ -3,6 +3,7 @@ package pt.isel.ls.services
 import org.junit.After
 import org.junit.Test
 import pt.isel.ls.api.utils.TEST_ENV
+import pt.isel.ls.api.utils.TEST_PROD
 import pt.isel.ls.services.dto.UserDTO
 import pt.isel.ls.utils.GUEST_TOKEN
 import pt.isel.ls.repository.memory.UserDataMemRepository
