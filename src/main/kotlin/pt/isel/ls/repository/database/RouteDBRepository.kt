@@ -1,12 +1,13 @@
 package pt.isel.ls.repository.database
 
+import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.services.entities.Route
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
 
 
-class RouteDBRepository : RouteRepository{
+class RouteDBRepository(private val dataSource: PGSimpleDataSource) : RouteRepository{
     /**
      * Returns all the routes stored in the repository.
      */
@@ -16,20 +17,36 @@ class RouteDBRepository : RouteRepository{
 
     /**
      * Adds a new route to the repository.
-     * @param routeId The id of the route to be added.
      * @param startLocation The start location of the route.
      * @param endLocation The end location of the route.
      * @param distance The distance of the route.
      * @param userID The id of the user that created the route.
      */
     override fun addRoute(
-        routeId: RouteID,
         startLocation: String,
         endLocation: String,
         distance: Double,
         userID: UserID
-    ) {
-        TODO("Not yet implemented")
+    ) : RouteID{
+        val routeID : RouteID
+        dataSource.connection.use { connection ->
+            connection.prepareStatement(
+                """INSERT INTO route(id,startlocation,endlocation,distance,"user") VALUES (DEFAULT,?, ?, ?, ?)"""
+
+            ).use { statement ->
+                statement.setString(1, startLocation)
+                statement.setString(2, endLocation)
+                statement.setDouble(3, distance)
+                statement.setString(4, userID)
+                statement.executeUpdate()
+                statement.generatedKeys.use {
+                    it.next()
+                    routeID = it.getInt(1).toString()
+                }
+            }
+
+        }
+        return routeID
     }
 
     /**

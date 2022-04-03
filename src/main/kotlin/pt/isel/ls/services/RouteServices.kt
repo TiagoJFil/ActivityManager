@@ -40,11 +40,8 @@ class RouteServices(
         val safeEndLocation = requireParameter(endLocation, "endLocation")
         if(distance == null) throw MissingParameter("distance")
 
-        val routeId = generateRandomId()
 
-        routeRepository.addRoute(routeId, safeStartLocation, safeEndLocation, distance, userID)
-
-        return routeId
+        return routeRepository.addRoute( safeStartLocation, safeEndLocation, distance, userID)
     }
 
     /**

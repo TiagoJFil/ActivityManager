@@ -13,13 +13,12 @@ interface RouteRepository {
 
     /**
      * Adds a new route to the repository.
-     * @param routeId The id of the route to be added.
      * @param startLocation The start location of the route.
      * @param endLocation The end location of the route.
      * @param distance The distance of the route.
      * @param userID The id of the user that created the route.
      */
-    fun addRoute(routeId: RouteID, startLocation: String, endLocation: String, distance: Double, userID: UserID)
+    fun addRoute(startLocation: String, endLocation: String, distance: Double, userID: UserID): RouteID
 
     /**
      * Returns the route with the given id.

@@ -1,11 +1,13 @@
 package pt.isel.ls.repository.database
 
+import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.services.entities.User
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 
-class UserDBRepository : UserRepository {
+class UserDBRepository(private val dataSource: PGSimpleDataSource) : UserRepository {
+
     /**
      * Returns the user with the given id.
      * @param userID the id of the user to be returned.

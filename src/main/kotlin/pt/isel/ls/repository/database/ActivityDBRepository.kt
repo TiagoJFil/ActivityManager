@@ -1,11 +1,12 @@
 package pt.isel.ls.repository.database
 
 import kotlinx.datetime.LocalDate
+import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.services.entities.Activity
 import pt.isel.ls.utils.*
 
-class ActivityDBRepository : ActivityRepository {
+class ActivityDBRepository(private val dataSource: PGSimpleDataSource) : ActivityRepository {
     /**
      * Creates a new activity using the parameters received
      *
@@ -30,7 +31,7 @@ class ActivityDBRepository : ActivityRepository {
     /**
      * Gets all the activities that were created by the given user.
      * @param userID the user unique identifier that the activity must have
-     * @return [List] of [ActivityDTO] that were created by the given user
+     * @return [List] of [Activity] that were created by the given user
      */
     override fun getActivitiesByUser(userID: UserID): List<Activity> {
         TODO("Not yet implemented")
@@ -40,7 +41,7 @@ class ActivityDBRepository : ActivityRepository {
      * Gets the activity that matches the given unique activity identifier.
      *
      * @param activityID the identifier of the activity to get
-     * @return [ActivityDTO] if the id exists or null if it doesn't
+     * @return [Activity] if the id exists or null if it doesn't
      */
     override fun getActivity(activityID: ActivityID): Activity? {
         TODO("Not yet implemented")
@@ -56,7 +57,7 @@ class ActivityDBRepository : ActivityRepository {
      * @param date activity date (optional)
      * @param rid route identifier (optional)
      *
-     * @return [List] of [ActivityDTO]
+     * @return [List] of [Activity]
      */
     override fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?): List<Activity> {
         TODO("Not yet implemented")
