@@ -42,7 +42,8 @@ fun getAppRoutes(env: Environment) = routes(
     Sport(env.sportsServices),
     Activity(env.activityServices)
 )
-private val logger =  LoggerFactory.getLogger("pt.isel.ls.api.sports-web-api")
+private val eLogger =  LoggerFactory.getLogger("pt.isel.ls.api.ERRORS")
+private val tLogger =  LoggerFactory.getLogger("pt.isel.ls.api.TIMER")
 
 /**
  * Catches app errors thrown on request handlers
@@ -60,22 +61,22 @@ private val onErrorFilter = Filter { handler ->
 
             when (appError) {
                 is ResourceNotFound ->{
-                    logger.warnStatus(NOT_FOUND, appError.message ?: "Resource not found")
+                    eLogger.warnStatus(NOT_FOUND, appError.message ?: "Resource not found")
                     baseResponse.status(NOT_FOUND)
                 }
                 is UnauthenticatedError -> {
-                    logger.warnStatus(UNAUTHORIZED, appError.message ?: "Unauthenticated")
+                    eLogger.warnStatus(UNAUTHORIZED, appError.message ?: "Unauthenticated")
                     baseResponse.status(UNAUTHORIZED)
                 }
                 is MissingParameter, is InvalidParameter -> {
-                    logger.warnStatus(BAD_REQUEST, appError.message ?: "Invalid parameter")
+                    eLogger.warnStatus(BAD_REQUEST, appError.message ?: "Invalid parameter")
                     baseResponse
                 }
             }
 
         }catch (serializerException: SerializationException){
             val body = Json.encodeToString(HttpError(0, "Invalid body."))
-            logger.warnStatus(BAD_REQUEST,"Invalid body.")
+            eLogger.warnStatus(BAD_REQUEST,"Invalid body.")
             Response(BAD_REQUEST).header("content-type", "application/json").body(body)
         }
     }
@@ -88,7 +89,7 @@ private val timeFilter = Filter { handler ->
         val time = measureTimeMillis {
             returnedValue =handler(request)
         }
-        logger.info("Request from [${request.source}] to uri: [${request.uri}] took $time ms")
+        tLogger.info("Request from [${request.source}] to uri: [${request.uri}] took $time ms")
         returnedValue
     }
     handlerWrapper

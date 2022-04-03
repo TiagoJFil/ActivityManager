@@ -24,9 +24,7 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource) : SportRepos
             val insertSport = """INSERT INTO sport (name, description, "user") VALUES (?, ?, ?)"""
             val statement = prepareStatement(insertSport, Statement.RETURN_GENERATED_KEYS)
             statement.apply {
-                setString(1, name)
-                setString(2, description)
-                setInt(3, userID.toInt())
+                setSport(name, description, userID.toInt())
                 executeUpdate()
             }
             statement.generatedKey()

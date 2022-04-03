@@ -2,13 +2,17 @@ package pt.isel.ls.repository.database
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toLocalDate
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.repository.database.utils.generatedKey
+import pt.isel.ls.repository.database.utils.setActivity
 import pt.isel.ls.repository.database.utils.transaction
 import pt.isel.ls.services.entities.Activity
+import pt.isel.ls.services.entities.Activity.Duration
 import pt.isel.ls.utils.*
 import java.sql.Date
+import java.sql.ResultSet
 import java.sql.Statement
 import java.sql.Types.INTEGER
 
@@ -25,7 +29,7 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource) : Activit
      */
     override fun addActivity(
         date: LocalDate,
-        duration: Activity.Duration,
+        duration: Duration,
         sportID: SportID,
         routeID: RouteID?,
         userID: UserID
@@ -35,13 +39,7 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource) : Activit
             val pstmt =  prepareStatement(query, Statement.RETURN_GENERATED_KEYS)
             pstmt.use { ps ->
                 ps.apply {
-                    setDate(1, Date.valueOf(date.toJavaLocalDate()))
-                    setLong(2, duration.millis)
-                    setInt(3, sportID.toInt())
-                    routeID?.let {
-                        setInt(4, it.toInt())
-                    } ?: setNull(4, INTEGER)
-                    setInt(5, userID.toInt())
+                    setActivity( date, duration, sportID, routeID, userID)
                     executeUpdate()
                 }.generatedKey()
             }
@@ -90,7 +88,15 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource) : Activit
      * @return [Boolean] true if it deleted successfully
      */
     override fun deleteActivity(activityID: ActivityID): Boolean {
-        TODO("Not yet implemented")
+        dataSource.connection.transaction {
+            val res : Boolean
+            val query = """DELETE FROM activity WHERE id = ?"""
+            prepareStatement(query).use { ps ->
+                ps.setInt(1, activityID.toInt())
+               res = ps.executeUpdate() != 0
+            }
+            return res
+        }
     }
 
     /**
@@ -99,7 +105,14 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource) : Activit
      * @return [Boolean] true if it exists
      */
     override fun hasActivity(activityID: ActivityID): Boolean {
-        TODO("Not yet implemented")
+        dataSource.connection.transaction {
+            createStatement().use { stmt ->
+                stmt.executeQuery("""SELECT * FROM "activity" WHERE id = $activityID""").use {
+                        resultSet ->
+                    return resultSet.next()
+                }
+            }
+        }
     }
 
 }
