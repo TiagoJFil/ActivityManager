@@ -3,7 +3,6 @@ package pt.isel.ls.repository.database
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.repository.database.utils.generatedKey
-import pt.isel.ls.repository.database.utils.toSport
 import pt.isel.ls.repository.database.utils.transaction
 import pt.isel.ls.services.entities.Sport
 import pt.isel.ls.utils.SportID

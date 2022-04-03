@@ -19,10 +19,10 @@ interface UserRepository {
      * Adds a new user to the repository.
      * @param userName the user to be added.
      * @param email the email of the user to be added.
-     * @param userId the id of the user to be added.
      * @param userAuthToken the authentication token of the user to be added.
+     * @return the id of the user added.
      */
-    fun addUser(userName: String, email: Email, userId: UserID, userAuthToken: UserToken)
+    fun addUser(userName: String, email: Email, userAuthToken: UserToken): UserID
 
     /**
      * Gets all the users in the repository.

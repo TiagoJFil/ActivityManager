@@ -30,7 +30,6 @@ class UserServices(
         val safeEmail = requireParameter(email, "email")
 
 
-        val userId = generateRandomId()
         val userAuthToken = generateUUId()
 
         val possibleEmail = Email(safeEmail)
@@ -38,9 +37,9 @@ class UserServices(
         if (userRepository.hasRepeatedEmail(possibleEmail))
             throw InvalidParameter("email already exists")
 
-        userRepository.addUser(safeName, possibleEmail, userId, userAuthToken)
+        val userID = userRepository.addUser(safeName, possibleEmail, userAuthToken)
 
-        return Pair(userAuthToken, userId)
+        return Pair(userAuthToken, userID)
     }
 
     /**

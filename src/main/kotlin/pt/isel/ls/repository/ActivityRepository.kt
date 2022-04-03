@@ -10,7 +10,6 @@ interface ActivityRepository {
     /**
      * Creates a new activity using the parameters received
      *
-     * @param activityID the activity ID
      * @param date the activity date
      * @param duration the activity duration
      * @param sportID the activity sport ID
@@ -18,13 +17,12 @@ interface ActivityRepository {
      * @param userID the activity user ID
      */
     fun addActivity(
-            activityID: ActivityID,
             date: LocalDate,
             duration: Activity.Duration,
             sportID: SportID,
             routeID: RouteID?,
             userID: UserID
-    )
+    ) : ActivityID
 
     /**
      * Gets all the activities that were created by the given user.

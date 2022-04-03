@@ -3,6 +3,7 @@ package pt.isel.ls.repository.memory
 import kotlinx.datetime.LocalDate
 import pt.isel.ls.services.entities.Activity
 import pt.isel.ls.repository.*
+import pt.isel.ls.services.generateRandomId
 import pt.isel.ls.utils.*
 
 
@@ -16,7 +17,6 @@ class ActivityDataMemRepository(testActivity: Activity): ActivityRepository {
     /**
      * Creates a new activity using the parameters received
      *
-     * @param activityID the activity ID
      * @param date the activity date
      * @param duration the activity duration
      * @param sportID the activity sport ID
@@ -24,15 +24,16 @@ class ActivityDataMemRepository(testActivity: Activity): ActivityRepository {
      * @param userID the activity user ID
      */
     override fun addActivity(
-            activityID: ActivityID,
             date: LocalDate,
             duration: Activity.Duration,
             sportID: SportID,
             routeID: RouteID?,
             userID: UserID
-    ) {
+    ) : ActivityID{
+        val activityID = generateRandomId()
         val activity = Activity(activityID, date, duration, sportID,routeID, userID)
         activitiesMap[activity.id] = activity
+        return activityID
     }
 
     /**

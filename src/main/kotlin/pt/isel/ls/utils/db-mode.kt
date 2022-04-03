@@ -13,6 +13,7 @@ import pt.isel.ls.repository.memory.ActivityDataMemRepository
 import pt.isel.ls.repository.memory.RouteDataMemRepository
 import pt.isel.ls.repository.memory.SportDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
+import pt.isel.ls.services.generateUUId
 
 
 enum class DBMODE {
