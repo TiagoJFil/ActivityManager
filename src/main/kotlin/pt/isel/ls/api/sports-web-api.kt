@@ -18,6 +18,7 @@ import pt.isel.ls.services.dto.HttpError
 import pt.isel.ls.services.*
 import pt.isel.ls.utils.Environment
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.warnStatus
 import kotlin.system.measureTimeMillis
 
 /**
@@ -58,13 +59,23 @@ private val onErrorFilter = Filter { handler ->
             val baseResponse = Response(BAD_REQUEST).header("content-type", "application/json").body(body)
 
             when (appError) {
-                is ResourceNotFound -> baseResponse.status(NOT_FOUND)
-                is UnauthenticatedError -> baseResponse.status(UNAUTHORIZED)
-                is MissingParameter, is InvalidParameter -> baseResponse
+                is ResourceNotFound ->{
+                    logger.warnStatus(NOT_FOUND, appError.message ?: "Resource not found")
+                    baseResponse.status(NOT_FOUND)
+                }
+                is UnauthenticatedError -> {
+                    logger.warnStatus(UNAUTHORIZED, appError.message ?: "Unauthenticated")
+                    baseResponse.status(UNAUTHORIZED)
+                }
+                is MissingParameter, is InvalidParameter -> {
+                    logger.warnStatus(BAD_REQUEST, appError.message ?: "Invalid parameter")
+                    baseResponse
+                }
             }
 
         }catch (serializerException: SerializationException){
             val body = Json.encodeToString(HttpError(0, "Invalid body."))
+            logger.warnStatus(BAD_REQUEST,"Invalid body.")
             Response(BAD_REQUEST).header("content-type", "application/json").body(body)
         }
     }

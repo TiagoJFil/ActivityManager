@@ -1,6 +1,7 @@
 package pt.isel.ls.utils
 
 import org.http4k.core.Request
+import org.http4k.core.Status
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -21,3 +22,5 @@ fun Logger.infoLogRequest(request: Request){
 fun Logger.traceFunction(functionName: String, vararg args: String? )=
     trace("Entered $functionName with the following arguments: ${args.asList()}")
 
+fun Logger.warnStatus(status: Status, message: String) =
+    warn("[STATUS]:$status with : $message")

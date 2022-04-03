@@ -1,29 +1,54 @@
-drop table if exists activity;
-drop table if exists users;
-drop table if exists route;
+drop table if exists activity cascade;
+drop table if exists sport cascade;
+drop table if exists route cascade;
+drop table if exists tokens cascade ;
+drop table if exists email cascade;
+drop table if exists "user" cascade;
 
+create table "user" (
+                        id serial primary key,
+                        email varchar(100) not null,
+                        name varchar(35) not null
+);
+create table email(
+                      "user" int,
+                      email varchar(100) check(email like '^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$') primary key,
+                      foreign key ("user") references "user"(id)
+);
 
---may not be user because its a reserved word
-create table users (
-   id serial primary key,
-   email varchar(100) check(email like '%@%.%' ),
-   name varchar(35) not null,
-   CONSTRAINT email_unique UNIQUE (email)
+create table tokens(
+                       token char(36) primary key,
+                       "user" int not null,
+                       foreign key ("user") references "user"(id)
+);
+
+alter table "user" add constraint email_foreign_to_user foreign key (email) references email(email);
+
+create table route (
+                       id serial primary key,
+                       startLocation varchar(200) not null,
+                       endLocation varchar(200) not null,
+                       distance real not null check(distance > 0),
+                       "user" int not null,
+                       foreign key ("user") references "user"(id)
+);
+
+create table sport(
+                      id serial primary key,
+                      name varchar(50) not null,
+                      description varchar(200) DEFAULT null,
+                      "user" int not null,
+                      foreign key ("user") references "user"(id)
 );
 
 create table activity (
-    id serial primary key,
-    name varchar(50) not null,
-    description varchar(200),
-    userID serial not null,
-    foreign key (userID) references USERS(id)
-);
-
-create table route (
-    id serial primary key,
-    startLocation varchar(200) not null,
-    endLocation varchar(200) not null,
-    distance real not null,
-    userID serial not null,
-    foreign key (userID) references USERS(id)
+                          id serial primary key,
+                          date date not null,
+                          duration bigint not null check ( duration  > 0),
+                          sport int not null,
+                          route int DEFAULT null,
+                          "user" int not null,
+                          foreign key ("user") references "user"(id),
+                          foreign key (sport) references SPORT(id),
+                          foreign key (route) references ROUTE(id)
 );
