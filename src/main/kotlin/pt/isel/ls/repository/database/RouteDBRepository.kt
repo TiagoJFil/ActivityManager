@@ -21,6 +21,7 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource) : RouteRepos
             }
         }
 
+
     /**
      * Adds a new route to the repository.
      * @param startLocation The start location of the route.
@@ -38,10 +39,7 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource) : RouteRepos
             val query = """INSERT INTO route(startlocation,endlocation,distance,"user") VALUES (?, ?, ?, ?)"""
             prepareStatement(query, Statement.RETURN_GENERATED_KEYS).use { stmt ->
                 stmt.apply {
-                    setString(1, startLocation)
-                    setString(2, endLocation)
-                    setDouble(3, distance)
-                    setInt(4, userID.toInt())
+                    setRoute(startLocation, endLocation, distance, userID.toInt())
                     executeUpdate()
                 }.generatedKey()
             }
@@ -76,7 +74,7 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource) : RouteRepos
             prepareStatement(
                     """SELECT * FROM route WHERE id = ?"""
             ).use { statement ->
-                statement.setString(1, routeID)
+                statement.setInt(1, routeID.toInt())
                 statement.executeQuery().use { resultSet ->
                     resultSet.next()
                 }
