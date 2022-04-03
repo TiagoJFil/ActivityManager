@@ -1,8 +1,6 @@
 package pt.isel.ls.repository
 
-import pt.isel.ls.services.dto.SportDTO
 import pt.isel.ls.services.entities.Sport
-import pt.isel.ls.services.entities.User
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 
@@ -15,7 +13,7 @@ interface SportRepository {
      * @param description The sport's description(optional).
      * @param userID The user's id.
      */
-    fun addSport(name: String, description: String?, userID: UserID) : SportID
+    fun addSport(name: String, description: String?, userID: UserID): SportID
 
     /**
      * Gets all the sports in the repository.
