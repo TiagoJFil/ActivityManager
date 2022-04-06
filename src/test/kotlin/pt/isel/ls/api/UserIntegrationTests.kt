@@ -10,8 +10,8 @@ import pt.isel.ls.services.dto.HttpError
 import pt.isel.ls.services.dto.UserDTO
 import pt.isel.ls.services.dto.toDTO
 import pt.isel.ls.services.generateRandomId
-import pt.isel.ls.utils.GUEST_TOKEN
-import pt.isel.ls.utils.guestUser
+import pt.isel.ls.config.GUEST_TOKEN
+import pt.isel.ls.config.guestUser
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals

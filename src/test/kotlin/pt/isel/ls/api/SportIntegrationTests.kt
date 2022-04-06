@@ -8,9 +8,9 @@ import pt.isel.ls.api.SportRoutes.*
 import pt.isel.ls.api.utils.*
 import pt.isel.ls.services.dto.HttpError
 import pt.isel.ls.services.dto.toDTO
-import pt.isel.ls.utils.GUEST_TOKEN
-import pt.isel.ls.utils.guestUser
-import pt.isel.ls.utils.testSport
+import pt.isel.ls.config.GUEST_TOKEN
+import pt.isel.ls.config.guestUser
+import pt.isel.ls.config.testSport
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals

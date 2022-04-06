@@ -1,10 +1,5 @@
 package pt.isel.ls.db
 
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
-import org.postgresql.ds.PGSimpleDataSource
-import kotlin.test.assertEquals
 /**
 private val jdbcDatabaseURL: String = System.getenv("JDBC_DATABASE_URL")
 

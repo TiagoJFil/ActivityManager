@@ -2,15 +2,15 @@ package pt.isel.ls.api
 
 import org.http4k.core.Response
 import org.junit.After
-import org.junit.FixMethodOrder
 import org.junit.Test
-import org.junit.runners.MethodSorters
 import pt.isel.ls.services.dto.RouteDTO
 import pt.isel.ls.api.RouteRoutes.*
 import pt.isel.ls.api.utils.*
+import pt.isel.ls.config.GUEST_TOKEN
+import pt.isel.ls.config.guestUser
+import pt.isel.ls.config.testRoute
 import pt.isel.ls.services.dto.HttpError
 import pt.isel.ls.services.dto.toDTO
-import pt.isel.ls.utils.*
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 

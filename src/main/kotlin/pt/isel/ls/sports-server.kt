@@ -6,8 +6,8 @@ import org.http4k.server.Jetty
 import org.http4k.server.asServer
 import pt.isel.ls.api.getApiRoutes
 import pt.isel.ls.api.getAppRoutes
-import pt.isel.ls.utils.EnvironmentType
-import pt.isel.ls.utils.getEnv
+import pt.isel.ls.config.EnvironmentType
+import pt.isel.ls.config.getEnv
 
 private const val DEFAULT_PORT = 9000
 

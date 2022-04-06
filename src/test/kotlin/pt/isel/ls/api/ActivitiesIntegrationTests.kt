@@ -1,19 +1,22 @@
 package pt.isel.ls.api
 
-import org.http4k.core.Method.*
+import org.http4k.core.Method.DELETE
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.junit.After
 import org.junit.Test
-import pt.isel.ls.api.ActivityRoutes.*
-import pt.isel.ls.api.RouteRoutes.*
+import pt.isel.ls.api.ActivityRoutes.ActivityCreationBody
+import pt.isel.ls.api.ActivityRoutes.ActivityList
+import pt.isel.ls.api.RouteRoutes.RouteCreationBody
 import pt.isel.ls.api.SportRoutes.SportCreationBody
-
 import pt.isel.ls.api.utils.*
+import pt.isel.ls.config.*
 import pt.isel.ls.services.dto.ActivityDTO
 import pt.isel.ls.services.dto.HttpError
 import pt.isel.ls.services.dto.toDTO
-import pt.isel.ls.utils.*
+import pt.isel.ls.utils.ActivityID
+import pt.isel.ls.utils.SportID
+import pt.isel.ls.utils.UserToken
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
@@ -30,7 +33,7 @@ class ActivitiesIntegrationTests {
 
     @After
     fun tearDown() {
-        testClient = getApiRoutes(getAppRoutes(TEST_ENV))
+        testClient = getApiRoutes(getAppRoutes(TEST_ENV)) // Resets the client resetting the database
     }
 
     @Test
@@ -123,7 +126,7 @@ class ActivitiesIntegrationTests {
     @Test
     fun `create an activity without the rid`(){
         val body = ActivityCreationBody("02:16:32.993","2020-01-01", null)
-        testClient.createActivity(body,testSport.id)
+        testClient.createActivity(body, testSport.id)
     }
 
     @Test

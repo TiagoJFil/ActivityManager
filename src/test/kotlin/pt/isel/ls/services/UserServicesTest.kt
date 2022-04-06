@@ -3,13 +3,8 @@ package pt.isel.ls.services
 import org.junit.After
 import org.junit.Test
 import pt.isel.ls.api.utils.TEST_ENV
-import pt.isel.ls.api.utils.TEST_PROD
-import pt.isel.ls.services.dto.UserDTO
-import pt.isel.ls.utils.GUEST_TOKEN
-import pt.isel.ls.repository.memory.UserDataMemRepository
 import pt.isel.ls.services.dto.toDTO
-import pt.isel.ls.services.entities.User
-import pt.isel.ls.utils.guestUser
+import pt.isel.ls.config.guestUser
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 

@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory
 import pt.isel.ls.repository.database.utils.DataBaseAccessException
 import pt.isel.ls.services.*
 import pt.isel.ls.services.dto.HttpError
-import pt.isel.ls.utils.Environment
+import pt.isel.ls.config.ServicesInfo
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.warnStatus
 import kotlin.system.measureTimeMillis
@@ -38,7 +38,7 @@ fun getApiRoutes(routes: RoutingHttpHandler) = routes(
  * Gets all main app routes
  * @param env respective environment
  */
-fun getAppRoutes(env: Environment) = routes(
+fun getAppRoutes(env: ServicesInfo) = routes(
     User(env.userServices),
     Route(env.routeServices),
     Sport(env.sportsServices),

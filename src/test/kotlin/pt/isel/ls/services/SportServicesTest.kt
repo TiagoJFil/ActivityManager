@@ -4,12 +4,10 @@ import org.junit.Test
 import org.junit.After
 import pt.isel.ls.api.utils.TEST_ENV
 import pt.isel.ls.services.dto.SportDTO
-import pt.isel.ls.repository.memory.SportDataMemRepository
-import pt.isel.ls.repository.memory.UserDataMemRepository
 import pt.isel.ls.services.dto.toDTO
-import pt.isel.ls.utils.GUEST_TOKEN
-import pt.isel.ls.utils.guestUser
-import pt.isel.ls.utils.testSport
+import pt.isel.ls.config.GUEST_TOKEN
+import pt.isel.ls.config.guestUser
+import pt.isel.ls.config.testSport
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 

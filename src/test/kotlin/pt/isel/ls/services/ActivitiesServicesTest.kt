@@ -3,9 +3,9 @@ package pt.isel.ls.services
 import org.junit.After
 import org.junit.Test
 import pt.isel.ls.api.utils.TEST_ENV
+import pt.isel.ls.config.*
 import pt.isel.ls.services.dto.ActivityDTO
 import pt.isel.ls.services.dto.toDTO
-import pt.isel.ls.utils.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
@@ -42,7 +42,7 @@ class ActivitiesServicesTest {
     fun `try to create an activity with the wrong duration format`(){
         assertFailsWith<InvalidParameter> {
             activitiesServices.createActivity(
-                    token=GUEST_TOKEN,
+                    token= GUEST_TOKEN,
                     sportID = testSport.id,
                     "INVALIDO",
                     "2002-12-31",

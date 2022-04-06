@@ -10,6 +10,10 @@ import pt.isel.ls.api.RouteRoutes.RouteIDResponse
 import pt.isel.ls.api.SportRoutes.SportCreationBody
 import pt.isel.ls.api.SportRoutes.SportIDResponse
 import pt.isel.ls.api.UserRoutes.*
+import pt.isel.ls.config.ServicesInfo
+import pt.isel.ls.config.EnvironmentType
+import pt.isel.ls.config.GUEST_TOKEN
+import pt.isel.ls.config.getEnv
 import pt.isel.ls.utils.*
 
 const val ROUTE_PATH = "/api/routes/"
@@ -17,10 +21,10 @@ const val USER_PATH = "/api/users/"
 const val ACTIVITY_PATH = "/api/sports/"
 const val SPORT_PATH = "/api/sports/"
 
-val TEST_PROD: Environment
+val TEST_PROD: ServicesInfo
                 get() = EnvironmentType.PROD.getEnv()
 
-val TEST_ENV: Environment
+val TEST_ENV: ServicesInfo
                 get()= EnvironmentType.TEST.getEnv()
 
 

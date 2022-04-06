@@ -1,6 +1,10 @@
 package pt.isel.ls.utils
 
 import org.postgresql.ds.PGSimpleDataSource
+import pt.isel.ls.config.guestUser
+import pt.isel.ls.config.testActivity
+import pt.isel.ls.config.testRoute
+import pt.isel.ls.config.testSport
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.repository.SportRepository
