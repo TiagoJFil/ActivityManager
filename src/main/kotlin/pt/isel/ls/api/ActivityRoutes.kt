@@ -92,10 +92,7 @@ class ActivityRoutes(
         val token: UserToken? = getToken(request)
 
         val deleted = activityServices.deleteActivity(token, activityId, sportID)
-        val message = if(deleted) "Activity deleted" else "Activity not deleted"
         return Response(Status.NO_CONTENT)
-                .header("content-type", "application/json")
-                .body(message)
     }
 
 

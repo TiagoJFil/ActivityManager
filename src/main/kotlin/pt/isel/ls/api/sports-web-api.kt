@@ -8,14 +8,16 @@ import org.http4k.core.HttpHandler
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.BAD_REQUEST
+import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.NOT_FOUND
 import org.http4k.core.Status.Companion.UNAUTHORIZED
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 import org.slf4j.LoggerFactory
-import pt.isel.ls.services.dto.HttpError
+import pt.isel.ls.repository.database.utils.DataBaseAccessException
 import pt.isel.ls.services.*
+import pt.isel.ls.services.dto.HttpError
 import pt.isel.ls.utils.Environment
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.warnStatus
@@ -65,7 +67,7 @@ private val onErrorFilter = Filter { handler ->
                     baseResponse.status(NOT_FOUND)
                 }
                 is UnauthenticatedError -> {
-                    eLogger.warnStatus(UNAUTHORIZED, appError.message ?: "Unauthenticated")
+                    eLogger.warnStatus(UNAUTHORIZED, appError.message)
                     baseResponse.status(UNAUTHORIZED)
                 }
                 is MissingParameter, is InvalidParameter -> {
@@ -75,9 +77,17 @@ private val onErrorFilter = Filter { handler ->
             }
 
         }catch (serializerException: SerializationException){
+
             val body = Json.encodeToString(HttpError(0, "Invalid body."))
             eLogger.warnStatus(BAD_REQUEST,"Invalid body.")
             Response(BAD_REQUEST).header("content-type", "application/json").body(body)
+
+        }catch (dbError: DataBaseAccessException) {
+
+            val body = Json.encodeToString(HttpError(0, "Internal Error."))
+            eLogger.error(dbError.message)
+            Response(INTERNAL_SERVER_ERROR).header("content-type", "application/json").body(body)
+
         }
     }
     handlerWrapper
@@ -85,11 +95,11 @@ private val onErrorFilter = Filter { handler ->
 
 private val timeFilter = Filter { handler ->
     val handlerWrapper : HttpHandler = { request: Request ->
-        val returnedValue : Response;
+        val returnedValue : Response
         val time = measureTimeMillis {
-            returnedValue =handler(request)
+            returnedValue = handler(request)
         }
-        tLogger.info("Request from [${request.source}] to uri: [${request.uri}] took $time ms")
+        tLogger.info("Request from ${request.source?.address}:${request.source?.port} to ${request.uri} took $time ms")
         returnedValue
     }
     handlerWrapper

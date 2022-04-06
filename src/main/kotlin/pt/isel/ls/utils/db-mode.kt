@@ -1,6 +1,5 @@
 package pt.isel.ls.utils
 
-import kotlinx.datetime.toLocalDate
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.repository.RouteRepository
@@ -14,14 +13,12 @@ import pt.isel.ls.repository.memory.ActivityDataMemRepository
 import pt.isel.ls.repository.memory.RouteDataMemRepository
 import pt.isel.ls.repository.memory.SportDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
-import pt.isel.ls.services.entities.Activity
-import pt.isel.ls.services.entities.User
-import pt.isel.ls.services.generateUUId
 
 
 enum class DBMODE {
     MEMORY,
-    POSTGRES
+    POSTGRES_PROD,
+    POSTEGRES_TEST
 }
 
 class DbSource(
@@ -34,11 +31,12 @@ class DbSource(
 fun DBMODE.source(): DbSource =
     when(this){
         DBMODE.MEMORY -> memory()
-        DBMODE.POSTGRES -> postgres()
+        DBMODE.POSTGRES_PROD -> postgres("_prod")
+        DBMODE.POSTEGRES_TEST -> postgres("_test")
     }
 
 
-private fun postgres(): DbSource{
+private fun postgres(suffix: String): DbSource{
 
     val jdbcDatabaseURL = System.getenv("JDBC_DATABASE_URL")
         ?: error("Please specify JDBC_DATABASE_URL environment variable")
@@ -47,10 +45,10 @@ private fun postgres(): DbSource{
     }
 
     return DbSource(
-        userRepository = UserDBRepository(dataSource),
-        routeRepository = RouteDBRepository(dataSource),
-        sportRepository = SportDBRepository(dataSource),
-        activityRepository = ActivityDBRepository(dataSource)
+        userRepository = UserDBRepository(dataSource, suffix),
+        routeRepository = RouteDBRepository(dataSource, suffix),
+        sportRepository = SportDBRepository(dataSource, suffix),
+        activityRepository = ActivityDBRepository(dataSource, suffix)
     )
 }
 

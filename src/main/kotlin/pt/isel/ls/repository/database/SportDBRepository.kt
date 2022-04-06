@@ -10,7 +10,7 @@ import java.sql.ResultSet
 import java.sql.Statement
 
 
-class SportDBRepository(private val dataSource: PGSimpleDataSource) : SportRepository {
+class SportDBRepository(private val dataSource: PGSimpleDataSource, val suffix: String) : SportRepository {
 
     /**
      * Adds a new sport to the repository.
@@ -65,7 +65,7 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource) : SportRepos
      * Makes a query to get a sport by its identifier.
      *
      * @param sportID The id of the sport to be queried.
-     * @param block the block to be executed with respective result set.
+     * @param block specifies what the caller wants to do with the result set.
      * @return [T] The result of calling the block function.
      */
     private fun <T> querySportByID(sportID: SportID, block: (ResultSet) -> T): T =

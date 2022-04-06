@@ -11,7 +11,7 @@ import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.Statement
 
-class UserDBRepository(private val dataSource: PGSimpleDataSource) : UserRepository {
+class UserDBRepository(private val dataSource: PGSimpleDataSource, val suffix: String) : UserRepository {
 
     /**
      * Returns the user with the given id.
@@ -21,7 +21,7 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource) : UserReposit
     override fun getUserByID(userID: String): User? =
         dataSource.connection.transaction{
              val email : String = prepareStatement("""SELECT email FROM email WHERE "user" = ?""").use { statement ->
-                 statement.setInt(1, userID.toInt())
+                 statement.setLong(1, userID.toLong()) // Parse to
                  statement.executeQuery().use { emailResultSet ->
                      emailResultSet.ifNext { emailResultSet.getString("email") } ?: return null
                  }
@@ -153,9 +153,9 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource) : UserReposit
      */
     override fun hasUser(userID: UserID): Boolean {
         dataSource.connection.transaction {
-            createStatement().use { stmt ->
-                stmt.executeQuery("""SELECT * FROM "user" WHERE id = $userID""").use {
-                    resultSet ->
+            val statement = prepareStatement("""SELECT * FROM "user" WHERE id = ?""")
+            statement.use { stmt ->
+                stmt.executeQuery().use { resultSet ->
                     return resultSet.next()
                 }
             }

@@ -30,7 +30,6 @@ fun requireParameter(parameter: String?, parameterName: String): String {
 }
 
 
-
 /**
  * Ensures that there is a token associated with the user.
  *

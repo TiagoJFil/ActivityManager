@@ -11,7 +11,7 @@ inline fun <reified T>getLoggerFor(): Logger = LoggerFactory.getLogger(T::class.
 
 fun Logger.infoLogRequest(request: Request){
     info(
-        "[REQUEST RECEIVED]: method={}, uri={}, content-type={} accept={}",
+        "[REQUEST]: method={}, uri={}, content-type={} accept={}",
         request.method,
         request.uri,
         request.header("content-type"),
@@ -21,6 +21,7 @@ fun Logger.infoLogRequest(request: Request){
 
 fun Logger.traceFunction(functionName: String, vararg args: String? )=
     trace("Entered $functionName with the following arguments: ${args.asList()}")
+
 
 fun Logger.warnStatus(status: Status, message: String) =
     warn("[STATUS]:$status with : $message")

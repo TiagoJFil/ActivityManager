@@ -9,7 +9,7 @@ import pt.isel.ls.utils.UserID
 import java.sql.ResultSet
 import java.sql.Statement
 
-class RouteDBRepository(private val dataSource: PGSimpleDataSource) : RouteRepository{
+class RouteDBRepository(private val dataSource: PGSimpleDataSource, val suffix: String) : RouteRepository{
     /**
      * Returns all the routes stored in the repository.
      */
