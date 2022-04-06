@@ -15,7 +15,7 @@ import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
-class SportIntegrationTests {
+class SportApiTests {
     private var testClient = getApiRoutes(getAppRoutes(TEST_ENV))
 
     @After fun tearDown() {

@@ -21,7 +21,7 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 
-class ActivitiesIntegrationTests {
+class ActivitiesApiTests {
 
     private val SPORT_ACTIVITY_PATH = "${ACTIVITY_PATH}${testSport.id}/activities"
     private val USER_ACTIVITY_PATH = "${USER_PATH}${guestUser.id}/activities"

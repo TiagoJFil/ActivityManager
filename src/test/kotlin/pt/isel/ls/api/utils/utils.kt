@@ -16,10 +16,28 @@ import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.config.getEnv
 import pt.isel.ls.utils.*
 
-const val ROUTE_PATH = "/api/routes/"
-const val USER_PATH = "/api/users/"
-const val ACTIVITY_PATH = "/api/sports/"
-const val SPORT_PATH = "/api/sports/"
+const val ROUTE_PATH = ""
+const val USER_PATH = " "
+const val ACTIVITY_PATH = ""
+const val SPORT_PATH = ""
+
+const val INTEGRATION_PORT = 5000
+enum class EndPoints(val path : String){
+        ROUTE("/api/routes/"),
+        USER("/api/users/"),
+        ACTIVITY("/api/sports/"),
+        SPORT("/api/sports/")
+}
+
+val EnvironmentType.prefix: String
+        get() = when(this){
+                EnvironmentType.INTEGRATION_TEST  -> "localhost:"
+                else -> ""
+        }
+
+fun getEndpointPath(endPoint : EndPoints, envType : EnvironmentType):String =
+        "${envType.prefix}${endPoint.path}"
+
 
 val TEST_ENV: ServicesInfo
                 get()= EnvironmentType.TEST.getEnv()

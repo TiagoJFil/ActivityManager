@@ -7,11 +7,12 @@ import org.junit.Test
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.api.getApiRoutes
 import pt.isel.ls.api.getAppRoutes
+import pt.isel.ls.api.utils.INTEGRATION_TEST_ENV
 import pt.isel.ls.api.utils.TEST_ENV
 import pt.isel.ls.repository.database.utils.transaction
 import kotlin.test.assertEquals
 
-/*
+
 
 class DbAccessTest{
     val jdbcDatabaseURL = System.getenv("JDBC_DATABASE_URL")
@@ -19,22 +20,44 @@ class DbAccessTest{
     val dataSource = PGSimpleDataSource().apply {
         setURL(jdbcDatabaseURL)
     }
-    private var testClient = getApiRoutes(getAppRoutes(TEST_ENV))
+    private var testClient = getApiRoutes(getAppRoutes(INTEGRATION_TEST_ENV))
+    val suffix = "todo"
+    private  val userTable = "user$suffix"
+    private val emailTable = "email$suffix"
+    private val tokenTable = "tokens$suffix"
+    private val routeTable = "route$suffix"
+    private val sportTable = "sport$suffix"
+    private val activityTable = "activity$suffix"
 
     @After
     fun tearDown() {
-        testClient = getApiRoutes(getAppRoutes(TEST_ENV))
+        testClient = getApiRoutes(getAppRoutes(INTEGRATION_TEST_ENV))
+        dataSource.connection.transaction {
+            val stmt = createStatement()
+
+            stmt.executeUpdate(
+                """
+                delete from $userTable cascade;           
+                delete from $emailTable cascade;              
+                delete from $tokenTable cascade;              
+                delete from $routeTable cascade;             
+                delete from $sportTable cascade;              
+                delete from $activityTable cascade;               
+                                                 
+            """
+            )
+            val stmt2 = createStatement()
+
+
+
+        }
+
     }
 
     @BeforeClass
     fun createDummyTables(){
 
-        val userTable = "user$suffix"
-        val emailTable = "email$suffix"
-        val tokenTable = "tokens$suffix"
-        val routeTable = "route$suffix"
-        val sportTable = "sport$suffix"
-        val activityTable = "activity$suffix"
+
         dataSource.connection.transaction {
             val stmt = createStatement()
 
@@ -83,9 +106,6 @@ class DbAccessTest{
             foreign key (sport) references "$sportTable"(id),
             foreign key (route) references "$routeTable"(id)
         );""")
-
-
-
         }
 
 
@@ -95,4 +115,3 @@ class DbAccessTest{
 
 
 }
-*/

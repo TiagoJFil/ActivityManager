@@ -33,7 +33,7 @@ inline fun <R> Connection.transaction(block: Connection.() -> R): R
             try {
                 this.block()
                     .also { commit() }
-            } catch (e: SQLException) {
+            } catch (e: Exception) {
                 this.rollback()
                 throw e
             } finally {

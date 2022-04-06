@@ -15,7 +15,7 @@ import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 
-class RouteIntegrationTests {
+class RouteApiTests {
 
     private var testClient = getApiRoutes(getAppRoutes(TEST_ENV))
 

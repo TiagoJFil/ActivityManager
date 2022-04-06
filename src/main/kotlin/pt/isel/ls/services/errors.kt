@@ -29,7 +29,6 @@ data class MissingParameter(val parameterName: String)
 data class ResourceNotFound(val resourceName: String, val resourceID: String)
     : AppError(2002, """ '$resourceName' with id '$resourceID' not found.""")
 
-
 /**
  * Error thrown when a user is not authenticated.
  * @property message The error message.
@@ -37,8 +36,12 @@ data class ResourceNotFound(val resourceName: String, val resourceID: String)
 data class UnauthenticatedError(override val message: String="Invalid or missing token.")
     : AppError(2003, message)
 
-
-
+/**
+ * Error thrown when an internal error occurs.
+ * @property message The error message.
+ */
+data class InternalError(override val message: String)
+    : AppError(2004, message)
 
 
 

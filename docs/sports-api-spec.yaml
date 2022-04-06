@@ -67,6 +67,8 @@ paths:
         - "User"
       summary: "Add a new user"
       description: "Adds a new user with the given name and email and returns its identifier and auth token"
+      security:
+        - bearerAuth: []
       operationId: "addUser"
       requestBody:
         description: "Name and Email to attribute to the user."
@@ -135,6 +137,8 @@ paths:
         - "Routes"
       summary: "Add a new route"
       description: "Adds a route"
+      security:
+        - bearerAuth: [ ]
       operationId: "addRoute"
       requestBody:
         description: "start location, end location and distance to attribute to a route"
@@ -181,6 +185,8 @@ paths:
         - "Sports"
       summary: "Create a sport"
       description: "Create a sport with a name and description"
+      security:
+        - bearerAuth: [ ]
       operationId: "createsport"
       requestBody:
         description: "start location, end location and distance to attribute to a route"
@@ -241,6 +247,8 @@ paths:
         - "Activities"
       summary: "Delete an activity"
       description: "Deletes an activity by id"
+      security:
+        - bearerAuth: []
       parameters:
         - name: "sid"
           in: "path"
@@ -277,6 +285,8 @@ paths:
         - "Activities"
       summary: "Create an activity"
       description: "Creates a new activity associated to a sport"
+      security:
+        - bearerAuth: []
       requestBody:
         description: "duration, date and route id(optional) to be attributed to an activity"
         required: true
@@ -378,6 +388,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/HttpError"
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
   schemas:
     HttpError:
       type: "object"
