@@ -21,11 +21,11 @@ const val USER_PATH = "/api/users/"
 const val ACTIVITY_PATH = "/api/sports/"
 const val SPORT_PATH = "/api/sports/"
 
-val TEST_PROD: ServicesInfo
-                get() = EnvironmentType.PROD.getEnv()
-
 val TEST_ENV: ServicesInfo
                 get()= EnvironmentType.TEST.getEnv()
+
+val INTEGRATION_TEST_ENV : ServicesInfo
+        get() = EnvironmentType.INTEGRATION_TEST.getEnv()
 
 
 /**

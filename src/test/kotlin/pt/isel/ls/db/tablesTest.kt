@@ -1,95 +1,98 @@
 package pt.isel.ls.db
 
-/**
-private val jdbcDatabaseURL: String = System.getenv("JDBC_DATABASE_URL")
+import org.junit.After
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Test
+import org.postgresql.ds.PGSimpleDataSource
+import pt.isel.ls.api.getApiRoutes
+import pt.isel.ls.api.getAppRoutes
+import pt.isel.ls.api.utils.TEST_ENV
+import pt.isel.ls.repository.database.utils.transaction
+import kotlin.test.assertEquals
+
+/*
 
 class DbAccessTest{
-
-    private val dataSource = PGSimpleDataSource()
-    private val studentTable = "studentstest"
-    private val coursesTable = "coursestest"
-
-    @Before
-    fun fillMockTables(){
-        dataSource.setURL(jdbcDatabaseURL)
-        dataSource.connection.use {
-            it.createStatement().use { statement ->
-                statement.apply{
-                    connection.autoCommit = false
-                    executeUpdate(
-                        """create table if not exists $coursesTable(cid serial primary key,name varchar(80));"""
-                    )
-                    executeUpdate(
-                        "create table if not exists $studentTable (" +
-                                "number int primary key," +
-                                "name varchar(80), " +
-                                "course int references courses(cid));"
-                    )
-                    executeUpdate("insert into $coursesTable(cid, name)values (2, 'TEST')")
-                    executeUpdate("insert into $studentTable(course, number, name)values (2, 9999, 'Miguel')")
-                    connection.commit()
-                    connection.autoCommit = true
-                }
-            }
-        }
+    val jdbcDatabaseURL = System.getenv("JDBC_DATABASE_URL")
+        ?: error("Please specify JDBC_DATABASE_URL environment variable")
+    val dataSource = PGSimpleDataSource().apply {
+        setURL(jdbcDatabaseURL)
     }
-
-    @Test
-    fun test_SELECT_operation(){
-        dataSource.connection.use {
-            it.createStatement().use { statement ->
-                val rs = statement.executeQuery(
-                    """select name from $studentTable where course = 2 AND number = 9999"""
-                )
-                rs.apply {
-                    next()
-                    val next = getString(1)
-                    assertEquals(next, "Miguel" )
-                }
-            }
-        }
-    }
-
-    @Test
-    fun test_UPDATE_operation(){
-        dataSource.connection.use {
-           it.createStatement().use{ statement ->
-               val updt = statement.executeUpdate(
-                       "update $studentTable set name = 'Joao' where course = 2 and number = 9999"
-               )
-               assertEquals(1, updt)
-           }
-        }
-    }
-
-
-    @Test
-    fun test_DELETE_operation(){
-        dataSource.connection.use {
-            it.createStatement().use { statement ->
-                statement.executeUpdate(
-                    """insert into $studentTable (course, number, name)values (2, 9, 'Tiago')"""
-                )
-                val rs = statement.executeUpdate(
-                    """delete from $studentTable where course = 2 and name = 'Tiago'"""
-                )
-                assertEquals(rs, 1 )
-            }
-        }
-    }
-
+    private var testClient = getApiRoutes(getAppRoutes(TEST_ENV))
 
     @After
-    fun deleteMockTables(){
+    fun tearDown() {
+        testClient = getApiRoutes(getAppRoutes(TEST_ENV))
+    }
 
-        dataSource.connection.use {
-            it.createStatement().use { statement ->
-               statement.apply {
-                   executeUpdate("drop table if exists $studentTable;")
-                   executeUpdate("drop table if exists $coursesTable;")
-               }
-            }
+    @BeforeClass
+    fun createDummyTables(){
+
+        val userTable = "user$suffix"
+        val emailTable = "email$suffix"
+        val tokenTable = "tokens$suffix"
+        val routeTable = "route$suffix"
+        val sportTable = "sport$suffix"
+        val activityTable = "activity$suffix"
+        dataSource.connection.transaction {
+            val stmt = createStatement()
+
+            stmt.executeUpdate("""
+        create table "$userTable" (
+            id serial primary key,
+            name varchar(35) not null
+        );
+        create table "$emailTable"(
+            "user" int,
+            email varchar(100) constraint email_invalid check(email ~* '^[A-Z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}${'$'}') primary key,
+        foreign key ("user") references "$userTable"(id)
+        );
+
+        create table "$tokenTable"(
+            token char(36) primary key,
+            "user" int not null,
+            foreign key ("user") references "$userTable"(id)
+        );
+
+        create table "$routeTable" (
+            id serial primary key,
+            startLocation varchar(200) not null,
+            endLocation varchar(200) not null,
+            distance real not null check(distance > 0),
+            "user" int not null,
+            foreign key ("user") references "$userTable"(id)
+        );
+
+        create table "$sportTable"(
+            id serial primary key,
+            name varchar(50) not null,
+            description varchar(200) DEFAULT null,
+            "user" int not null,
+            foreign key ("user") references "$userTable"(id)
+        );
+
+        create table "$activityTable" (
+            id serial primary key,
+            date date not null,
+            duration bigint not null check ( duration  > 0),
+            sport int not null,
+            route int DEFAULT null,
+            "user" int not null,
+            foreign key ("user") references "$userTable"(id),
+            foreign key (sport) references "$sportTable"(id),
+            foreign key (route) references "$routeTable"(id)
+        );""")
+
+
+
         }
 
+
+
     }
-}*/
+
+
+
+}
+*/

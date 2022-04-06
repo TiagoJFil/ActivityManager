@@ -10,13 +10,15 @@ import java.sql.ResultSet
 import java.sql.Statement
 
 class RouteDBRepository(private val dataSource: PGSimpleDataSource, val suffix: String) : RouteRepository{
+
+    private val routeTable = "route${suffix}"
     /**
      * Returns all the routes stored in the repository.
      */
     override fun getRoutes(): List<Route> =
         dataSource.connection.transaction {
             createStatement().use { stmt ->
-                val rs = stmt.executeQuery("SELECT * FROM route")
+                val rs = stmt.executeQuery("SELECT * FROM $routeTable")
                 rs.toListOf<Route>(ResultSet::toRoute)
             }
         }
@@ -36,7 +38,7 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, val suffix: 
         userID: UserID
     ) : RouteID =
         dataSource.connection.transaction {
-            val query = """INSERT INTO route(startlocation,endlocation,distance,"user") VALUES (?, ?, ?, ?)"""
+            val query = """INSERT INTO  $routeTable(startlocation,endlocation,distance,"user") VALUES (?, ?, ?, ?)"""
             prepareStatement(query, Statement.RETURN_GENERATED_KEYS).use { stmt ->
                 stmt.apply {
                     setRoute(startLocation, endLocation, distance, userID.toInt())
@@ -53,7 +55,7 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, val suffix: 
     override fun getRoute(routeID: RouteID): Route? =
         dataSource.connection.transaction {
             prepareStatement(
-                    """SELECT * FROM route WHERE id = ?"""
+                    """SELECT * FROM  $routeTable WHERE id = ?"""
             ).use { statement ->
                 statement.setInt(1, routeID.toInt())
                 statement.executeQuery().use { resultSet ->
@@ -72,7 +74,7 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, val suffix: 
     override fun hasRoute(routeID: RouteID): Boolean =
         dataSource.connection.transaction {
             prepareStatement(
-                    """SELECT * FROM route WHERE id = ?"""
+                    """SELECT * FROM $routeTable WHERE id = ?"""
             ).use { statement ->
                 statement.setInt(1, routeID.toInt())
                 statement.executeQuery().use { resultSet ->

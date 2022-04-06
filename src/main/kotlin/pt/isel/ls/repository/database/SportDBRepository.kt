@@ -12,6 +12,8 @@ import java.sql.Statement
 
 class SportDBRepository(private val dataSource: PGSimpleDataSource, val suffix: String) : SportRepository {
 
+    private val sportTable = "sport${suffix}"
+
     /**
      * Adds a new sport to the repository.
      *
@@ -21,7 +23,7 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, val suffix: 
      */
     override fun addSport(name: String, description: String?, userID: UserID): SportID =
         dataSource.connection.transaction {
-            val insertSport = """INSERT INTO sport (name, description, "user") VALUES (?, ?, ?)"""
+            val insertSport = """INSERT INTO $sportTable (name, description, "user") VALUES (?, ?, ?)"""
             val statement = prepareStatement(insertSport, Statement.RETURN_GENERATED_KEYS)
             statement.apply {
                 setSport(name, description, userID.toInt())
@@ -36,7 +38,7 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, val suffix: 
     override fun getSports(): List<Sport> =
         dataSource.connection.transaction {
            createStatement().use { stmt ->
-                stmt.executeQuery("""SELECT * FROM sport""").use { rs ->
+                stmt.executeQuery("""SELECT * FROM $sportTable""").use { rs ->
                     rs.toListOf<Sport>(ResultSet::toSport)
                 }
            }
@@ -70,7 +72,7 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, val suffix: 
      */
     private fun <T> querySportByID(sportID: SportID, block: (ResultSet) -> T): T =
         dataSource.connection.transaction {
-            val pstmt = prepareStatement("""SELECT * FROM sport WHERE id = ?;""")
+            val pstmt = prepareStatement("""SELECT * FROM $sportTable WHERE id = ?;""")
             pstmt.use { ps ->
                 ps.setInt(1, sportID.toInt())
                 val resultSet: ResultSet = ps.executeQuery()

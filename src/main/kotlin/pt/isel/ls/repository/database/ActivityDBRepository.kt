@@ -14,6 +14,8 @@ import java.sql.Statement
 
 class ActivityDBRepository(private val dataSource: PGSimpleDataSource, val suffix: String) : ActivityRepository {
 
+    private val activityTable = "activity$suffix"
+
     /**
      * Creates a new activity using the parameters received
      *
@@ -31,7 +33,7 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource, val suffi
         userID: UserID
     ): ActivityID
         = dataSource.connection.transaction {
-            val query = """INSERT INTO activity (date, duration, sport, route, "user")VALUES (?, ?, ?, ?, ?)"""
+            val query = """INSERT INTO $activityTable (date, duration, sport, route, "user")VALUES (?, ?, ?, ?, ?)"""
             val pstmt =  prepareStatement(query, Statement.RETURN_GENERATED_KEYS)
             pstmt.use { ps ->
                 ps.apply {
@@ -49,7 +51,7 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource, val suffi
      */
     override fun getActivitiesByUser(userID: UserID): List<Activity> {
         dataSource.connection.transaction {
-            val query = """SELECT * FROM activity WHERE "user" = ?"""
+            val query = """SELECT * FROM $activityTable WHERE "user" = ?"""
             val pstmt = prepareStatement(query)
             pstmt.use { ps ->
                 ps.apply {
@@ -106,7 +108,7 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource, val suffi
      */
     private fun getActivitiesQueryBuilder(date: LocalDate?, rid: RouteID?, orderBy: Order): Pair<String, Boolean>{
         val sb = StringBuilder()
-        sb.append(" SELECT * FROM activity WHERE sport = ? ")
+        sb.append(" SELECT * FROM $activityTable WHERE sport = ? ")
         if (date != null) {
             sb.append("AND date = ? ")
         }
@@ -125,7 +127,7 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource, val suffi
      */
     override fun deleteActivity(activityID: ActivityID): Boolean {
         dataSource.connection.transaction {
-            val query = """DELETE FROM activity WHERE id = ?"""
+            val query = """DELETE FROM $activityTable WHERE id = ?"""
             prepareStatement(query).use { ps ->
                 ps.setInt(1, activityID.toInt())
                 return ps.executeUpdate() == 1
@@ -163,7 +165,7 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource, val suffi
      */
     private fun <T> queryActivityByID(activityID: ActivityID, block: (ResultSet) -> T): T =
         dataSource.connection.transaction {
-            val query = """SELECT * FROM activity WHERE id = ?"""
+            val query = """SELECT * FROM $activityTable WHERE id = ?"""
             val pstmt = prepareStatement(query)
             pstmt.use { ps ->
                 ps.setInt(1, activityID.toInt())
