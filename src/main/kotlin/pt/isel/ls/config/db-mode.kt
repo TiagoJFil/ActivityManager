@@ -14,10 +14,13 @@ import pt.isel.ls.repository.memory.RouteDataMemRepository
 import pt.isel.ls.repository.memory.SportDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
 
-enum class DBMODE {
-    MEMORY,
-    POSTGRESQL,
-}
+enum class DBMODE { MEMORY, POSTGRESQL }
+
+fun DBMODE.source(): DbSource =
+    when (this) {
+        DBMODE.MEMORY -> memory()
+        DBMODE.POSTGRESQL -> postgreSQL("_prod")
+    }
 
 class DbSource(
     val userRepository: UserRepository,
@@ -26,30 +29,10 @@ class DbSource(
     val activityRepository: ActivityRepository
 )
 
-fun DBMODE.source(): DbSource =
-    when (this) {
-        DBMODE.MEMORY -> memory()
-        DBMODE.POSTGRESQL -> postgreSQL("_prod")
-    }
-
-private data class DbInfo(val url: String, val user: String, val password: String, val dataBase: String)
-
-private fun getDbConnectionInfo(): DbInfo{
-    val requireEnvVariable = { name: String ->
-        System.getenv(name) ?: error("Please specify JDBC_DATABASE_URL environment variable")
-    }
-
-    return DbInfo(
-        url = requireEnvVariable("JDBC_DATABASE_URL"),
-        user = requireEnvVariable("JDBC_DATABASE_USER"),
-        password = requireEnvVariable("JDBC_DATABASE_PASSWORD"),
-        dataBase = requireEnvVariable("JDBC_DATABASE_NAME")
-    )
-}
 
 private fun postgreSQL(suffix: String): DbSource {
 
-    val dbInfo = getDbConnectionInfo()
+    val dbInfo = dbConnectionInfo()
 
     val dataSource = PGSimpleDataSource().apply {
         setURL(dbInfo.url)

@@ -26,7 +26,7 @@ class UserServicesTest {
     @Test
     fun `get an invalid user throws resource not found`() {
         assertFailsWith<ResourceNotFound> {
-            userServices.getUserByID("INVALID_ID")
+            userServices.getUserByID("13241234")
         }
     }
 

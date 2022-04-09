@@ -5,16 +5,15 @@ import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.service.entities.Route
 import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.service.entities.User
-import pt.isel.ls.utils.repository.generateRandomId
 
 val guestUser = User(
     name = "guest",
-    id = "guestID",
+    id = 0.toString(),
     email = User.Email("guest@gmail.com")
 )
 
 val testRoute = Route(
-    id = generateRandomId(),
+    id = 0.toString(),
     startLocation = "testStartLocation",
     endLocation = "testEndLocation",
     distance = 23.0,
@@ -22,14 +21,14 @@ val testRoute = Route(
 )
 
 val testSport = Sport(
-    id = generateRandomId(),
+    id = 0.toString(),
     name = "testSport",
     description = "testDescription",
     user = guestUser.id
 )
 
 val testActivity = Activity(
-    id = generateRandomId(),
+    id = 0.toString(),
     sport = testSport.id,
     route = testRoute.id,
     user = guestUser.id,

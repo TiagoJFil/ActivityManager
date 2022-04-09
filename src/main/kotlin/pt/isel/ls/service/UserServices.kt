@@ -2,14 +2,15 @@ package pt.isel.ls.service
 
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.UserDTO
-import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.service.generateUUId
+import pt.isel.ls.utils.service.requireIdInteger
 import pt.isel.ls.utils.service.requireParameter
+import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.traceFunction
 
 class UserServices(
@@ -62,9 +63,13 @@ class UserServices(
     fun getUserByID(uid: UserID?): UserDTO {
         logger.traceFunction(::getUserByID.name) { listOf(USER_ID_PARAM to uid) }
 
+
+
         val safeUserID = requireParameter(uid, USER_ID_PARAM)
+        requireIdInteger(safeUserID, USER_ID_PARAM)
         return userRepository.getUserByID(safeUserID)?.toDTO()
             ?: throw ResourceNotFound(RESOURCE_NAME, "$uid")
+
     }
 
     /**

@@ -1,12 +1,13 @@
 package pt.isel.ls.repository.memory
 
 import kotlinx.datetime.LocalDate
-import pt.isel.ls.repository.*
+import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.utils.*
-import pt.isel.ls.utils.repository.generateRandomId
 
 class ActivityDataMemRepository(testActivity: Activity) : ActivityRepository {
+
+    private var currentID = 0
 
     /**
      * Mapping between the [ActivityID] and the [Activity]
@@ -29,10 +30,10 @@ class ActivityDataMemRepository(testActivity: Activity) : ActivityRepository {
         routeID: RouteID?,
         userID: UserID
     ): ActivityID {
-        val activityID = generateRandomId()
-        val activity = Activity(activityID, date, duration, sportID, routeID, userID)
+        val activityID = ++currentID
+        val activity = Activity(activityID.toString(), date, duration, sportID, routeID, userID)
         activitiesMap[activity.id] = activity
-        return activityID
+        return activityID.toString()
     }
 
     /**

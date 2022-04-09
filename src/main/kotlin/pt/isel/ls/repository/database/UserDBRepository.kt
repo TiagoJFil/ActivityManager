@@ -25,7 +25,7 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
     override fun getUserByID(userID: String): User? =
         dataSource.connection.transaction {
             val email: String = prepareStatement("""SELECT email FROM $emailTable WHERE "user" = ?""").use { statement ->
-                statement.setLong(1, userID.toLong()) // Parse to
+                statement.setInt(1, userID.toInt())
                 statement.executeQuery().use { emailResultSet ->
                     emailResultSet.ifNext { emailResultSet.getString("email") } ?: return null
                 }

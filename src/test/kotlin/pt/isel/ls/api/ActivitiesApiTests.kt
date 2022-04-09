@@ -13,10 +13,10 @@ import pt.isel.ls.api.utils.*
 import pt.isel.ls.config.*
 import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.service.dto.HttpError
-import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
@@ -111,7 +111,7 @@ class ActivitiesApiTests {
     }
     @Test
     fun `try to create an activity with an invalid sportId`() {
-        val sportID = "INVALID"
+        val sportID = "123123"
         val body = ActivityCreationInput("02:16:32.993", "2020-01-01", testRoute.id)
         postRequest<ActivityCreationInput, HttpError>(
             testClient,
@@ -136,7 +136,7 @@ class ActivitiesApiTests {
 
     @Test
     fun `get the activities of a user that doesn't exist`() {
-        getRequest<HttpError>(testClient, "${USER_PATH}invalido/activities", Response::expectNotFound)
+        getRequest<HttpError>(testClient, "${USER_PATH}12313/activities", Response::expectNotFound)
     }
 
     @Test
@@ -253,7 +253,7 @@ class ActivitiesApiTests {
 
     @Test
     fun `get not found error trying to get the activities of a sport that does not exist`() {
-        val sportID = "RANDOM_SPORT"
+        val sportID = "123123"
         getRequest<HttpError>(testClient, "${SPORT_PATH}$sportID/activities", Response::expectNotFound)
     }
 
@@ -269,7 +269,7 @@ class ActivitiesApiTests {
 
     @Test
     fun `try to delete an activity of a sport that does not exist gives 404`() {
-        val sportID = "RANDOM_SPORT"
+        val sportID = "123123"
         deleteActivity(sportID, testActivity.id, GUEST_TOKEN).expectNotFound()
     }
 
@@ -281,7 +281,7 @@ class ActivitiesApiTests {
 
     @Test
     fun `try to delete an activity that does not exist gives 404`() {
-        val activityID = "RANDOM_ACTIVITY"
+        val activityID = "1231231"
 
         deleteActivity(testSport.id, activityID, GUEST_TOKEN).expectNotFound()
     }
@@ -299,7 +299,7 @@ class ActivitiesApiTests {
     fun `get an activity that does not exist`() {
         getRequest<HttpError>(
             testClient,
-            activityResourceLocation(testSport.id, "invalido"),
+            activityResourceLocation(testSport.id, "123123"),
             Response::expectNotFound
         )
     }

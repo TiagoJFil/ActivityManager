@@ -10,7 +10,6 @@ import pt.isel.ls.service.RouteServices.Companion.ROUTE_ID_PARAM
 import pt.isel.ls.service.SportsServices.Companion.SPORT_ID_PARAM
 import pt.isel.ls.service.UserServices.Companion.USER_ID_PARAM
 import pt.isel.ls.service.dto.ActivityDTO
-import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.service.entities.Activity.Duration
 import pt.isel.ls.utils.*
@@ -74,17 +73,21 @@ class ActivityServices(
 
             val parsedDate: Date = Duration.format.parse(duration)
             val millis: Long = parsedDate.time
+            requireIdInteger(sid, SPORT_ID_PARAM)
 
             sportRepository.requireSport(sid)
             userRepository.requireUser(userID)
-            if (rid != null) routeRepository.requireRoute(rid)
-            return activityRepository.addActivity(
-                date = safeDate.toLocalDate(),
-                duration = Duration(millis),
-                sportID = sid,
-                routeID = rid,
-                userID = userID
-            )
+            rid?.let{
+                requireIdInteger(it, ROUTE_ID_PARAM)
+                routeRepository.requireRoute(rid)
+            }
+                return activityRepository.addActivity(
+                    date = safeDate.toLocalDate(),
+                    duration = Duration(millis),
+                    sportID = sid,
+                    routeID = rid,
+                    userID = userID
+                )
         } catch (e: ParseException) {
             throw InvalidParameter(DURATION_INVALID_FORMAT)
         } catch (e: IllegalArgumentException) {
@@ -101,6 +104,7 @@ class ActivityServices(
     fun getActivity(activityID: ActivityID?): ActivityDTO {
         logger.traceFunction(::getActivity.name) { listOf(ACTIVITY_ID_PARAM to activityID) }
         val safeActivityID = requireParameter(activityID, ACTIVITY_ID_PARAM)
+        requireIdInteger(safeActivityID, ACTIVITY_ID_PARAM)
 
         return activityRepository.getActivity(safeActivityID)?.toDTO()
             ?: throw ResourceNotFound(RESOURCE_NAME, safeActivityID)
@@ -116,6 +120,7 @@ class ActivityServices(
         logger.traceFunction(::getActivitiesByUser.name) { listOf("userID" to uid) }
         val safeUID = requireParameter(uid, USER_ID_PARAM)
 
+        requireIdInteger(safeUID, USER_ID_PARAM)
         userRepository.requireUser(safeUID)
 
         return activityRepository.getActivitiesByUser(safeUID)
@@ -145,6 +150,7 @@ class ActivityServices(
         val safeSID = requireParameter(sid, SPORT_ID_PARAM)
         sportRepository.requireSport(safeSID)
 
+
         val orderByToSend = when (orderBy?.lowercase()) {
             "ascending", null -> Order.ASCENDING
             "descending" -> Order.DESCENDING
@@ -153,6 +159,10 @@ class ActivityServices(
 
         requireNotBlankParameter(date, DATE_PARAM)
         requireNotBlankParameter(rid, ROUTE_ID_PARAM)
+        rid?.let { requireIdInteger(it, ROUTE_ID_PARAM) }
+        requireIdInteger(safeSID, SPORT_ID_PARAM)
+        rid?.let {  routeRepository.requireRoute(rid) }
+
         try {
             if (date != null) LocalDate.parse(date)
         } catch (e: IllegalArgumentException) {
@@ -180,7 +190,9 @@ class ActivityServices(
         val userID = userRepository.requireAuthenticated(token)
         val safeSID = requireParameter(sid, SPORT_ID_PARAM)
         val safeAID = requireParameter(aid, ACTIVITY_ID_PARAM)
+        requireIdInteger(safeSID, SPORT_ID_PARAM)
         sportRepository.requireSport(safeSID)
+        requireIdInteger(safeAID, ACTIVITY_ID_PARAM)
         activityRepository.requireActivity(safeAID)
 
         if (!ownsActivity(userID, safeAID)) throw UnauthenticatedError(USER_NOT_OWNER)

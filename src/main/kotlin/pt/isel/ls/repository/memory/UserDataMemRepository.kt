@@ -1,30 +1,33 @@
 package pt.isel.ls.repository.memory
 
 import pt.isel.ls.config.GUEST_TOKEN
+import pt.isel.ls.config.guestUser
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
-import pt.isel.ls.utils.repository.generateRandomId
 
 class UserDataMemRepository(guest: User) : UserRepository {
+
+
+    private var currentID = 0
 
     /**
      * Mapping between a [UserToken] and a [UserID]
      */
-    private val tokenTable: MutableMap<UserToken, UserID> = mutableMapOf(GUEST_TOKEN to guest.id)
+    private val tokenTable: MutableMap<UserToken, Int> = mutableMapOf(GUEST_TOKEN to guestUser.id.toInt())
 
     /**
      * Mapping between an email and a [UserID]
      */
-    private val emailsMap: MutableMap<String, UserID> = mutableMapOf(guest.email.value to guest.id)
+    private val emailsMap: MutableMap<String, Int> = mutableMapOf(guest.email.value to guestUser.id.toInt())
 
     /**
      * Mapping between a [UserID] and it's identified [User]
      */
-    private val usersMap: MutableMap<UserID, User> = mutableMapOf(guest.id to guest)
+    private val usersMap: MutableMap<Int, User> = mutableMapOf(guest.id.toInt() to guest)
 
     /**
      * Checks if the specified user has a repeated email
@@ -44,19 +47,19 @@ class UserDataMemRepository(guest: User) : UserRepository {
      * @return the user's id.
      */
     override fun addUser(userName: String, email: Email, userAuthToken: UserToken): UserID {
-        val userId = generateRandomId()
-        val user = User(userName, email, userId)
+        val userId = ++currentID
+        val user = User(userName, email, userId.toString())
         usersMap[userId] = user
         emailsMap[email.value] = userId
         tokenTable[userAuthToken] = userId
-        return userId
+        return userId.toString()
     }
 
     /**
      * @param userID user's unique identifier
      * @return A [UserDTO] object or null if there is no user identified by [userID]
      */
-    override fun getUserByID(userID: UserID): User? = usersMap[userID]
+    override fun getUserByID(userID: UserID): User? = usersMap[userID.toInt()]
 
     /**
      * Gets all the users stored
@@ -67,10 +70,10 @@ class UserDataMemRepository(guest: User) : UserRepository {
      * @param token user's unique token
      * @return the [UserID] identified by the [UserToken]
      */
-    override fun getUserIDByToken(token: UserToken): UserID? = tokenTable[token]
+    override fun getUserIDByToken(token: UserToken): UserID? = tokenTable[token]?.toString()
 
     /**
      * Checks if the user with the given id exists
      */
-    override fun hasUser(userID: UserID): Boolean = usersMap.containsKey(userID)
+    override fun hasUser(userID: UserID): Boolean = usersMap.containsKey(userID.toInt())
 }

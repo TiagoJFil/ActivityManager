@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   description: "Api reference for Sports"
-  version: "0.1.0"
+  version: "0.1.2"
   title: "Swagger Sports"
   termsOfService: "https://swagger.io/terms/"
   license:
@@ -30,7 +30,7 @@ paths:
       parameters:
         - name: "uid"
           in: "path"
-          description: "User's identifier. Use guestID for testing."
+          description: "User's identifier."
           required: true
           schema:
             type: "string"
@@ -67,8 +67,6 @@ paths:
         - "User"
       summary: "Add a new user"
       description: "Adds a new user with the given name and email and returns its identifier and auth token"
-      security:
-        - bearerAuth: []
       operationId: "addUser"
       requestBody:
         description: "Name and Email to attribute to the user."
@@ -305,6 +303,10 @@ paths:
       responses:
         "201":
           description: "Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityIDResponse"
         "400":
           description: "A required parameter is missing or is incorrect"
           content:
@@ -383,6 +385,34 @@ paths:
                 $ref: "#/components/schemas/Sport"
         "404":
           description: "Sport not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+  /users/{uid}/activities:
+    get:
+      tags:
+        - "Activities"
+      summary: "Get a list of activities from a user"
+      description: "Gets the activities that the user match the given id"
+      operationId: "getActivitiesfromuser"
+      parameters:
+        - name: "uid"
+          in: "path"
+          description: "User's identifier."
+          required: true
+          schema:
+            type: "string"
+          example: "1234154"
+      responses:
+        "200":
+          description: "sucessfull operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityList"
+        "404":
+          description: "User not found"
           content:
             application/json:
               schema:
@@ -479,7 +509,7 @@ components:
     RouteCreationResponse:
       type: "object"
       properties:
-        id:
+        routeID:
           type: "string"
           example: "2405411314925"
     Sport:
@@ -552,6 +582,13 @@ components:
         user:
           type: "string"
           example: "2405411314925"
+    ActivityList:
+      type: "object"
+      properties:
+        activities:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Activity"
     ActivityCreationBody:
       type: "object"
       required:
@@ -567,10 +604,9 @@ components:
         rid:
           type: "string"
           example: "2405411314925"
-    ActivityList:
+    ActivityIDResponse:
       type: "object"
       properties:
-        activities:
-          type: "array"
-          items:
-            $ref: "#/components/schemas/Activity"
+        activityID:
+          type: "string"
+          example: "123141245"

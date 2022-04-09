@@ -5,7 +5,6 @@ import pt.isel.ls.service.dto.RouteDTO
 import pt.isel.ls.service.entities.Route
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
-import pt.isel.ls.utils.repository.generateRandomId
 
 class RouteDataMemRepository(testRoute: Route) : RouteRepository {
 
@@ -34,7 +33,7 @@ class RouteDataMemRepository(testRoute: Route) : RouteRepository {
         distance: Double,
         userID: UserID
     ): RouteID {
-        val routeID = generateRandomId()
+        val routeID = ""
         val route = Route(routeID, startLocation, endLocation, distance, userID)
         routesMap[routeID] = route
         return routeID

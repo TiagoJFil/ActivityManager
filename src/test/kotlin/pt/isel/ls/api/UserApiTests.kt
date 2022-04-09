@@ -4,14 +4,15 @@ import kotlinx.serialization.Serializable
 import org.http4k.core.Response
 import org.junit.After
 import org.junit.Before
-import pt.isel.ls.api.UserRoutes.*
+import pt.isel.ls.api.UserRoutes.UserCreationInput
+import pt.isel.ls.api.UserRoutes.UserListOutput
 import pt.isel.ls.api.utils.*
 import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.service.dto.HttpError
 import pt.isel.ls.service.dto.UserDTO
+import pt.isel.ls.utils.service.generateUUId
 import pt.isel.ls.utils.service.toDTO
-import pt.isel.ls.utils.repository.generateRandomId
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -26,7 +27,7 @@ class UserApiTests {
     @Test
     fun `create multiple Users`() {
         val userCount = 1000
-        val randomEmails = (0 until userCount).map { "${generateRandomId()}@gmail.com" }
+        val randomEmails = (0 until userCount).map { "${generateUUId()}@gmail.com" }
         val usersCreationBody = List(userCount) { idx -> UserCreationInput("user$idx", randomEmails[idx]) }
         val responses = usersCreationBody.map {
             testClient.createUser(it)
@@ -51,7 +52,12 @@ class UserApiTests {
 
     @Test
     fun `get a user that does not exist gives status 404`() {
-        getRequest<HttpError>(testClient, "${USER_PATH}qwiequiwe", Response::expectNotFound)
+        getRequest<HttpError>(testClient, "${USER_PATH}90000", Response::expectNotFound)
+    }
+
+    @Test
+    fun `get a user whose id is not an integer`() {
+        getRequest<HttpError>(testClient, "${USER_PATH}qwiequiwe", Response::expectBadRequest)
     }
 
     // USER CREATE

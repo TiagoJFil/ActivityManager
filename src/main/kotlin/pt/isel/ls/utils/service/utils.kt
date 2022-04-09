@@ -34,6 +34,10 @@ fun requireParameter(parameter: String?, parameterName: String): String {
     return parameter
 }
 
+fun requireIdInteger(id:String, parameterName: String) {
+    if(id.toIntOrNull() == null) throw InvalidParameter("$parameterName must be an integer")
+}
+
 /**
  * Ensures that there is a token associated with the user.
  *

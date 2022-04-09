@@ -98,7 +98,7 @@ class ActivitiesServicesTest {
     @Test
     fun `get an activity with an invalid user throws resource not found`() {
         assertFailsWith<ResourceNotFound> {
-            activitiesServices.getActivitiesByUser("invalido")
+            activitiesServices.getActivitiesByUser("12314")
         }
     }
 
@@ -179,7 +179,7 @@ class ActivitiesServicesTest {
     fun `delete an activity that doesn't exist throws resource not found`() {
         val sportID = testSport.id
         assertFailsWith<ResourceNotFound> {
-            activitiesServices.deleteActivity(GUEST_TOKEN, "RANDOM_ACTIVITY", sportID)
+            activitiesServices.deleteActivity(GUEST_TOKEN, "12343124", sportID)
         }
     }
 }
