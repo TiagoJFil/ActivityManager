@@ -1,8 +1,7 @@
 package pt.isel.ls.repository.memory
 
-import pt.isel.ls.services.dto.RouteDTO
 import pt.isel.ls.repository.RouteRepository
-import pt.isel.ls.services.entities.Route
+import pt.isel.ls.service.entities.Route
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
 
@@ -18,7 +17,7 @@ class RouteDataMemRepository(testRoute: Route): RouteRepository {
     /**
      * Gets all the existing routes.
      *
-     * @return [List] of [RouteDTO]
+     * @return [List] of [Route]
      */
     override fun getRoutes(): List<Route> = routesMap.values.toList()
 
@@ -37,15 +36,15 @@ class RouteDataMemRepository(testRoute: Route): RouteRepository {
     ): RouteID{
         val routeID = ++currentID
         val route = Route(routeID.toString(), startLocation, endLocation, distance, userID)
-        routesMap[++currentID] = route
+        routesMap[routeID] = route
         return routeID.toString()
     }
 
     /**
      * Gets a route by the given id.
      *
-     * @param id the unique identifier of the route to get
-     * @return [RouteDTO] the route object or null if the id doesn't exist
+     * @param routeID the unique identifier of the route to get
+     * @return [Route] the route object or null if the id doesn't exist
      */
     override fun getRoute(routeID: RouteID): Route? = routesMap[routeID.toInt()]
 

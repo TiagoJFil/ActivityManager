@@ -244,7 +244,7 @@ class ActivitiesApiTests {
     fun `get a list of activities by sport filtered by inexistent date and route id gives empty list`() {
         val activitiesList = getRequest<ActivityListOutput>(
             testClient,
-            "$SPORT_ACTIVITY_PATH?rid=${testRoute.id}}&date=2002-05-20",
+            "$SPORT_ACTIVITY_PATH?rid=${testRoute.id}&date=2002-05-20",
             Response::expectOK
         ).activities
 
