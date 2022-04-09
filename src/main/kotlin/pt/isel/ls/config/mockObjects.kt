@@ -1,11 +1,11 @@
 package pt.isel.ls.config
 
 import kotlinx.datetime.toLocalDate
+import pt.isel.ls.repository.memory.generateRandomId
 import pt.isel.ls.services.entities.Activity
 import pt.isel.ls.services.entities.Route
 import pt.isel.ls.services.entities.Sport
 import pt.isel.ls.services.entities.User
-import pt.isel.ls.services.generateRandomId
 
 val guestUser = User(
     name = "guest",

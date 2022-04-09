@@ -4,8 +4,7 @@ import pt.isel.ls.services.ActivityServices
 import pt.isel.ls.services.RouteServices
 import pt.isel.ls.services.SportsServices
 import pt.isel.ls.services.UserServices
-import pt.isel.ls.utils.DBMODE
-import pt.isel.ls.utils.source
+
 
 data class ServicesInfo(
     val userServices: UserServices,
@@ -17,7 +16,6 @@ data class ServicesInfo(
 enum class EnvironmentType(val dbMode: DBMODE) {
     PROD(DBMODE.POSTGRES_PROD),
     TEST(DBMODE.MEMORY),
-    INTEGRATION_TEST(DBMODE.POSTEGRES_TEST)
 }
 
 fun EnvironmentType.getEnv() : ServicesInfo {
