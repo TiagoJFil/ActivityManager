@@ -3,7 +3,6 @@ package pt.isel.ls.repository.memory
 import kotlinx.datetime.LocalDate
 import pt.isel.ls.services.entities.Activity
 import pt.isel.ls.repository.*
-import pt.isel.ls.services.generateRandomId
 import pt.isel.ls.utils.*
 
 

@@ -74,6 +74,7 @@ private val onErrorFilter = Filter { handler ->
                     eLogger.warnStatus(BAD_REQUEST, appError.message ?: "Invalid parameter")
                     baseResponse
                 }
+                else -> TODO()
             }
 
         }catch (serializerException: SerializationException){

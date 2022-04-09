@@ -3,7 +3,6 @@ package pt.isel.ls.repository.memory
 import pt.isel.ls.services.dto.SportDTO
 import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.services.entities.Sport
-import pt.isel.ls.services.generateRandomId
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 

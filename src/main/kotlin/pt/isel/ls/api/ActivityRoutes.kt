@@ -91,7 +91,7 @@ class ActivityRoutes(
 
         val token: UserToken? = getToken(request)
 
-        val deleted = activityServices.deleteActivity(token, activityId, sportID)
+        activityServices.deleteActivity(token, activityId, sportID)
         return Response(Status.NO_CONTENT)
     }
 

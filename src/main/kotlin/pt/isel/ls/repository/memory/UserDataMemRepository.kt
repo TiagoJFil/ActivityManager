@@ -4,7 +4,6 @@ import pt.isel.ls.services.dto.UserDTO
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.services.entities.User
 import pt.isel.ls.services.entities.User.Email
-import pt.isel.ls.services.generateRandomId
 import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken

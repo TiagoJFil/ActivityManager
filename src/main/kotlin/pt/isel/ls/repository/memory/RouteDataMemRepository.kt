@@ -3,7 +3,6 @@ package pt.isel.ls.repository.memory
 import pt.isel.ls.services.dto.RouteDTO
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.services.entities.Route
-import pt.isel.ls.services.generateRandomId
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
 
