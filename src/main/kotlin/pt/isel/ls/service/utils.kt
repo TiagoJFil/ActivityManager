@@ -5,6 +5,7 @@ import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.utils.*
+import java.util.UUID
 
 /**
  * @param parameter the parameter to check.
@@ -80,3 +81,9 @@ fun ActivityRepository.requireActivity(activityID: ActivityID) {
 fun RouteRepository.requireRoute(routeID: RouteID) {
     if (!hasRoute(routeID)) throw ResourceNotFound("Route", routeID)
 }
+
+/**
+ * Generates a random UUID.
+ */
+fun generateUUId() = UUID.randomUUID().toString()
+

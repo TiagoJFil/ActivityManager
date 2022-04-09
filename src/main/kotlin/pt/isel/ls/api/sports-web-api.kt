@@ -14,7 +14,7 @@ import org.http4k.routing.bind
 import org.http4k.routing.routes
 import org.http4k.routing.static
 import org.slf4j.LoggerFactory
-import pt.isel.ls.config.Environment
+import pt.isel.ls.config.ServicesInfo
 import pt.isel.ls.repository.database.utils.DataBaseAccessException
 import pt.isel.ls.service.*
 import pt.isel.ls.service.dto.HttpError
@@ -43,7 +43,7 @@ fun swaggerUi(htmlPath: String) = routes(
  * Gets all main app routes
  * @param env respective environment
  */
-fun getAppRoutes(env: Environment) = routes(
+fun getAppRoutes(env: ServicesInfo) = routes(
     User(env.userServices),
     Route(env.routeServices),
     Sport(env.sportsServices),

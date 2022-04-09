@@ -110,7 +110,7 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
         }
 
     /**
-     * Checks if the specified user has a repeated email
+     * Checks if any existing user has the given email.
      * @param email the user's email
      * @return [Boolean] true if another user already has the given email or false if it doesn't
      */
