@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   description: "Api reference for Sports"
-  version: "0.0.0"
+  version: "0.1.0"
   title: "Swagger Sports"
   termsOfService: "https://swagger.io/terms/"
   license:

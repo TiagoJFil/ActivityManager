@@ -1,13 +1,13 @@
 package pt.isel.ls.repository.memory
 
-import pt.isel.ls.services.dto.UserDTO
-import pt.isel.ls.repository.UserRepository
-import pt.isel.ls.services.entities.User
-import pt.isel.ls.services.entities.User.Email
 import pt.isel.ls.config.GUEST_TOKEN
+import pt.isel.ls.repository.UserRepository
+import pt.isel.ls.service.dto.UserDTO
+import pt.isel.ls.service.entities.User
+import pt.isel.ls.service.entities.User.Email
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
-
+import pt.isel.ls.utils.repository.generateRandomId
 
 class UserDataMemRepository(guest: User) : UserRepository {
 
@@ -26,17 +26,15 @@ class UserDataMemRepository(guest: User) : UserRepository {
      */
     private val usersMap: MutableMap<UserID, User> = mutableMapOf(guest.id to guest)
 
-
     /**
-    * Checks if the specified user has a repeated email
-    *
-    *  to check
-    * @param email the user's email
-    * @return [Boolean] true if another user already has the given email or false if it doesn't
-    */
+     * Checks if the specified user has a repeated email
+     *
+     *  to check
+     * @param email the user's email
+     * @return [Boolean] true if another user already has the given email or false if it doesn't
+     */
     override fun hasRepeatedEmail(email: Email): Boolean =
-            emailsMap[email.value] != null
-
+        emailsMap[email.value] != null
 
     /**
      * Adds a new user to the repository.
@@ -55,8 +53,8 @@ class UserDataMemRepository(guest: User) : UserRepository {
     }
 
     /**
-     * @param id user's unique identifier
-     * @return A [UserDTO] object or null if there is no user identified by [id]
+     * @param userID user's unique identifier
+     * @return A [UserDTO] object or null if there is no user identified by [userID]
      */
     override fun getUserByID(userID: UserID): User? = usersMap[userID]
 
@@ -76,4 +74,3 @@ class UserDataMemRepository(guest: User) : UserRepository {
      */
     override fun hasUser(userID: UserID): Boolean = usersMap.containsKey(userID)
 }
-

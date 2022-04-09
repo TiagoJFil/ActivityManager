@@ -2,20 +2,20 @@ package pt.isel.ls.repository.database
 
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.UserRepository
-import pt.isel.ls.repository.database.utils.*
-import pt.isel.ls.services.entities.User
-import pt.isel.ls.services.entities.User.Email
+import pt.isel.ls.service.entities.User
+import pt.isel.ls.service.entities.User.Email
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.repository.*
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.Statement
 
-class UserDBRepository(private val dataSource: PGSimpleDataSource, val suffix: String) : UserRepository {
+class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: String) : UserRepository {
 
-    private val userTable = "user${suffix}"
+    private val userTable = "user$suffix"
     private val emailTable = "email$suffix"
-    private val tokenTable = "token$suffix"
+    private val tokenTable = "tokens$suffix"
 
     /**
      * Returns the user with the given id.
@@ -23,23 +23,23 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, val suffix: S
      * @return the user with the given id.
      */
     override fun getUserByID(userID: String): User? =
-        dataSource.connection.transaction{
-             val email : String = prepareStatement("""SELECT email FROM $userTable WHERE "user" = ?""").use { statement ->
-                 statement.setLong(1, userID.toLong()) // Parse to
-                 statement.executeQuery().use { emailResultSet ->
-                     emailResultSet.ifNext { emailResultSet.getString("email") } ?: return null
-                 }
-             }
+        dataSource.connection.transaction {
+            val email: String = prepareStatement("""SELECT email FROM $emailTable WHERE "user" = ?""").use { statement ->
+                statement.setLong(1, userID.toLong()) // Parse to
+                statement.executeQuery().use { emailResultSet ->
+                    emailResultSet.ifNext { emailResultSet.getString("email") } ?: return null
+                }
+            }
 
-             val user: User? = prepareStatement("""SELECT * FROM $userTable WHERE id = ?""").use { statement ->
-                 statement.setInt(1, userID.toInt())
-                 statement.executeQuery().use { userResultSet->
-                     userResultSet.ifNext {
-                         userResultSet.toUser(Email(email))
-                     }
-                 }
-             }
-             user
+            val user: User? = prepareStatement("""SELECT * FROM $userTable WHERE id = ?""").use { statement ->
+                statement.setInt(1, userID.toInt())
+                statement.executeQuery().use { userResultSet ->
+                    userResultSet.ifNext {
+                        userResultSet.toUser(Email(email))
+                    }
+                }
+            }
+            user
         }
 
     /**
@@ -57,23 +57,22 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, val suffix: S
         }
 
         return dataSource.connection.transaction {
-                val userID: UserID = prepareStatement("""INSERT INTO $userTable (name) VALUES (?)""", Statement.RETURN_GENERATED_KEYS).use { preparedStatement ->
-                    preparedStatement.update(userName)
+            val userID: UserID = prepareStatement("""INSERT INTO $userTable (name) VALUES (?)""", Statement.RETURN_GENERATED_KEYS).use { preparedStatement ->
+                preparedStatement.update(userName)
 
-                    preparedStatement.generatedKey()
-                }
+                preparedStatement.generatedKey()
+            }
 
-                prepareStatement("""INSERT INTO $emailTable ("user", email) VALUES ($userID,?)""").use { preparedStatement ->
-                    preparedStatement.update(email.value)
-                }
+            prepareStatement("""INSERT INTO $emailTable ("user", email) VALUES ($userID,?)""").use { preparedStatement ->
+                preparedStatement.update(email.value)
+            }
 
-                prepareStatement("""INSERT INTO $tokenTable ("user", token) VALUES ($userID, ?)""").use { preparedStatement ->
-                    preparedStatement.update(userAuthToken)
-                }
+            prepareStatement("""INSERT INTO $tokenTable ("user", token) VALUES ($userID, ?)""").use { preparedStatement ->
+                preparedStatement.update(userAuthToken)
+            }
 
-                return@transaction userID
+            return@transaction userID
         }
-
     }
 
     /**
@@ -95,7 +94,6 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, val suffix: S
             }
         }
 
-
     /**
      * Gets all the emails of the users in the repository.
      * Must be called within a transaction block.
@@ -111,14 +109,13 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, val suffix: S
             }
         }
 
-
     /**
      * Checks if any existing user has the given email.
      * @param email the user's email
      * @return [Boolean] true if another user already has the given email or false if it doesn't
      */
     override fun hasRepeatedEmail(email: Email): Boolean =
-        dataSource.connection.transaction{
+        dataSource.connection.transaction {
             prepareStatement("SELECT * FROM $emailTable WHERE email = ?").use { ps ->
                 ps.setString(1, email.value)
                 ps.executeQuery().use { resultSet ->
@@ -127,15 +124,13 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, val suffix: S
             }
         }
 
-
-
     /**
      * Gets the user id by the given token
      * @param token the token of the user.
      * @return [UserID] the user id of the user with the given token.
      */
     override fun getUserIDByToken(token: UserToken): UserID? =
-        dataSource.connection.transaction{
+        dataSource.connection.transaction {
             val query = "SELECT * FROM $tokenTable WHERE token = ?"
             prepareStatement(query).use { stmt ->
                 stmt.setString(1, token)
@@ -147,8 +142,6 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, val suffix: S
             }
         }
 
-
-
     /**
      * Checks if the user with the given id exists.
      *
@@ -159,14 +152,11 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, val suffix: S
         dataSource.connection.transaction {
             val statement = prepareStatement("""SELECT * FROM $userTable WHERE id = ?""")
             statement.use { stmt ->
+                stmt.setInt(1, userID.toInt())
                 stmt.executeQuery().use { resultSet ->
                     return resultSet.next()
                 }
             }
         }
     }
-
 }
-
-
-

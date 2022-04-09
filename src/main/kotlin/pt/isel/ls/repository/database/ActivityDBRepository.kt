@@ -4,15 +4,15 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.ActivityRepository
-import pt.isel.ls.repository.database.utils.*
-import pt.isel.ls.services.entities.Activity
-import pt.isel.ls.services.entities.Activity.Duration
+import pt.isel.ls.service.entities.Activity
+import pt.isel.ls.service.entities.Activity.Duration
 import pt.isel.ls.utils.*
+import pt.isel.ls.utils.repository.*
 import java.sql.Date
 import java.sql.ResultSet
 import java.sql.Statement
 
-class ActivityDBRepository(private val dataSource: PGSimpleDataSource, val suffix: String) : ActivityRepository {
+class ActivityDBRepository(private val dataSource: PGSimpleDataSource, suffix: String) : ActivityRepository {
 
     private val activityTable = "activity$suffix"
 
@@ -31,18 +31,17 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource, val suffi
         sportID: SportID,
         routeID: RouteID?,
         userID: UserID
-    ): ActivityID
-        = dataSource.connection.transaction {
-            val query = """INSERT INTO $activityTable (date, duration, sport, route, "user")VALUES (?, ?, ?, ?, ?)"""
-            val pstmt =  prepareStatement(query, Statement.RETURN_GENERATED_KEYS)
+    ): ActivityID =
+        dataSource.connection.transaction {
+            val query = """INSERT INTO $activityTable (date, duration, sport, route, "user") VALUES (?, ?, ?, ?, ?)"""
+            val pstmt = prepareStatement(query, Statement.RETURN_GENERATED_KEYS)
             pstmt.use { ps ->
                 ps.apply {
-                    setActivity( date, duration, sportID, routeID, userID)
+                    setActivity(date, duration, sportID, routeID, userID)
                     executeUpdate()
                 }.generatedKey()
             }
         }
-
 
     /**
      * Gets all the activities that were created by the given user.
@@ -62,8 +61,6 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource, val suffi
             }
         }
     }
-
-
 
     /**
      * Gets the activities that match the given sport id, date, route id
@@ -91,10 +88,9 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource, val suffi
                         setDate(2, Date.valueOf(it.toJavaLocalDate()))
                     }
 
-                    rid?.toIntOrNull()?.let { rid->
+                    rid?.toIntOrNull()?.let { rid ->
                         setInt(ridIdx, rid)
                     }
-
                 }
                 val rs = ps.executeQuery()
                 return rs.toListOf(ResultSet::toActivity)
@@ -106,7 +102,7 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource, val suffi
      * Builds the query to get the activities based on the given parameters.
      * @return the query and if the query has a date parameter
      */
-    private fun getActivitiesQueryBuilder(date: LocalDate?, rid: RouteID?, orderBy: Order): Pair<String, Boolean>{
+    private fun getActivitiesQueryBuilder(date: LocalDate?, rid: RouteID?, orderBy: Order): Pair<String, Boolean> {
         val sb = StringBuilder()
         sb.append(" SELECT * FROM $activityTable WHERE sport = ? ")
         if (date != null) {
@@ -142,7 +138,7 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource, val suffi
      * @return [Activity] if the id exists or null if it doesn't
      */
     override fun getActivity(activityID: ActivityID): Activity? =
-        queryActivityByID(activityID){ rs ->
+        queryActivityByID(activityID) { rs ->
             rs.ifNext { rs.toActivity() }
         }
 
@@ -152,14 +148,14 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource, val suffi
      * @return [Boolean] true if it exists
      */
     override fun hasActivity(activityID: ActivityID): Boolean =
-        queryActivityByID(activityID){ rs: ResultSet ->
+        queryActivityByID(activityID) { rs: ResultSet ->
             rs.next()
         }
 
     /**
      * Makes a query to get an activity by its identifier.
      *
-     * @param activityID The id of the sport to be queried.
+     * @param activityID The id of the activity to be queried.
      * @param block specifies what the caller wants to do with the result set.
      * @return [T] The result of calling the block function.
      */
@@ -173,8 +169,4 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource, val suffi
                 resultSet.use { block(it) }
             }
         }
-
 }
-
-
-

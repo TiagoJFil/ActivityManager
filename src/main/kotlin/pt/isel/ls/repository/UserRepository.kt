@@ -1,12 +1,11 @@
 package pt.isel.ls.repository
 
-import pt.isel.ls.services.entities.User
-import pt.isel.ls.services.entities.User.Email
+import pt.isel.ls.service.entities.User
+import pt.isel.ls.service.entities.User.Email
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 
 interface UserRepository {
-
 
     /**
      * Returns the user with the given id.
@@ -52,4 +51,3 @@ interface UserRepository {
      */
     fun hasUser(userID: UserID): Boolean
 }
-

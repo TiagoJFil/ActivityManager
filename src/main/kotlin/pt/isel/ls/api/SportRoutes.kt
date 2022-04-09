@@ -12,8 +12,8 @@ import org.http4k.core.Status
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
-import pt.isel.ls.services.dto.SportDTO
-import pt.isel.ls.services.SportsServices
+import pt.isel.ls.service.SportsServices
+import pt.isel.ls.service.dto.SportDTO
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.getLoggerFor
@@ -23,14 +23,11 @@ class SportRoutes(
     private val sportsServices: SportsServices
 ) {
 
-    @Serializable
-    data class SportCreationBody(val name: String? = null, val description: String? = null)
-    @Serializable
-    data class SportIDResponse(val sportID: SportID)
-    @Serializable
-    data class SportList(val sports: List<SportDTO>)
+    @Serializable data class SportCreationInput(val name: String? = null, val description: String? = null)
+    @Serializable data class SportIDOutput(val sportID: SportID)
+    @Serializable data class SportListOutput(val sports: List<SportDTO>)
 
-    companion object{
+    companion object {
         val logger = getLoggerFor<SportRoutes>()
     }
 
@@ -40,14 +37,14 @@ class SportRoutes(
     private fun createSport(request: Request): Response {
         logger.infoLogRequest(request)
 
-        val sportsBody = Json.decodeFromString<SportCreationBody>(request.bodyString())
+        val sportsBody = Json.decodeFromString<SportCreationInput>(request.bodyString())
 
-        val token : UserToken? = getToken(request)
+        val token: UserToken? = getToken(request)
         val sportID = sportsServices.createSport(token, sportsBody.name, sportsBody.description)
 
         return Response(Status.CREATED)
             .header("content-type", "application/json")
-            .body(Json.encodeToString(SportIDResponse(sportID)))
+            .body(Json.encodeToString(SportIDOutput(sportID)))
     }
 
     /**
@@ -56,7 +53,7 @@ class SportRoutes(
     private fun getSport(request: Request): Response {
         logger.infoLogRequest(request)
 
-        val sportID = request.path ("sid")
+        val sportID = request.path("sid")
         val sport = sportsServices.getSport(sportID)
         val sportJson = Json.encodeToString(sport)
 
@@ -65,7 +62,6 @@ class SportRoutes(
             .body(sportJson)
     }
 
-
     /**
      * Gets all the available sports.
      */
@@ -73,13 +69,11 @@ class SportRoutes(
         logger.infoLogRequest(request)
 
         val sports = sportsServices.getSports()
-        val bodyString = Json.encodeToString(SportList(sports))
+        val bodyString = Json.encodeToString(SportListOutput(sports))
         return Response(Status.OK)
             .header("content-type", "application/json")
             .body(bodyString)
     }
-
-
 
     val handler = routes(
         "/sports" bind routes(
@@ -88,8 +82,6 @@ class SportRoutes(
             "/" bind GET to ::getSports
         )
     )
-
-
 }
 
 fun Sport(sportsServices: SportsServices) =

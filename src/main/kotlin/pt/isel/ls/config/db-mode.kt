@@ -14,10 +14,9 @@ import pt.isel.ls.repository.memory.RouteDataMemRepository
 import pt.isel.ls.repository.memory.SportDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
 
-
 enum class DBMODE {
     MEMORY,
-    POSTGRES_PROD
+    POSTGRESQL,
 }
 
 class DbSource(
@@ -28,9 +27,9 @@ class DbSource(
 )
 
 fun DBMODE.source(): DbSource =
-    when(this){
+    when (this) {
         DBMODE.MEMORY -> memory()
-        DBMODE.POSTGRES_PROD -> postgres("_prod")
+        DBMODE.POSTGRESQL -> postgreSQL("_prod")
     }
 
 private data class DbInfo(val url: String, val user: String, val password: String, val dataBase: String)
@@ -48,7 +47,8 @@ private fun getDbConnectionInfo(): DbInfo{
     )
 }
 
-private fun postgres(suffix: String): DbSource{
+private fun postgreSQL(suffix: String): DbSource {
+
     val dbInfo = getDbConnectionInfo()
 
     val dataSource = PGSimpleDataSource().apply {
@@ -66,12 +66,9 @@ private fun postgres(suffix: String): DbSource{
     )
 }
 
-
 private fun memory() = DbSource(
     UserDataMemRepository(guestUser),
     RouteDataMemRepository(testRoute),
     SportDataMemRepository(testSport),
     ActivityDataMemRepository(testActivity)
 )
-
-
