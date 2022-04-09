@@ -14,7 +14,7 @@ val guestUser = User(
 )
 
 val testRoute = Route(
-    id = generateRandomId(),
+    id = 0.toString(),
     startLocation = "testStartLocation",
     endLocation = "testEndLocation",
     distance = 23.0,

@@ -8,10 +8,12 @@ import pt.isel.ls.utils.UserID
 
 class RouteDataMemRepository(testRoute: Route): RouteRepository {
 
+    private var currentID = 0
+
     /**
      * Mapping between the [RouteID] and [Route]
      */
-    private val routesMap = mutableMapOf<RouteID, Route>(testRoute.id to testRoute)
+    private val routesMap = mutableMapOf<Int, Route>(testRoute.id.toInt() to testRoute)
 
     /**
      * Gets all the existing routes.
@@ -33,10 +35,10 @@ class RouteDataMemRepository(testRoute: Route): RouteRepository {
             distance: Double,
             userID: UserID
     ): RouteID{
-        val routeID = generateRandomId()
-        val route = Route(routeID, startLocation, endLocation, distance, userID)
-        routesMap[routeID] = route
-        return routeID
+        val routeID = ++currentID
+        val route = Route(routeID.toString(), startLocation, endLocation, distance, userID)
+        routesMap[++currentID] = route
+        return routeID.toString()
     }
 
     /**
@@ -45,7 +47,7 @@ class RouteDataMemRepository(testRoute: Route): RouteRepository {
      * @param id the unique identifier of the route to get
      * @return [RouteDTO] the route object or null if the id doesn't exist
      */
-    override fun getRoute(routeID: RouteID): Route? = routesMap[routeID]
+    override fun getRoute(routeID: RouteID): Route? = routesMap[routeID.toInt()]
 
     /**
      * Verifies if a route with the given id exists in the repository.
@@ -53,7 +55,7 @@ class RouteDataMemRepository(testRoute: Route): RouteRepository {
      * @return [Boolean] True if the route exists, false otherwise.
      */
     override fun hasRoute(routeID: RouteID): Boolean =
-            routesMap[routeID] != null
+            routesMap[routeID.toInt()] != null
 
 }
 
