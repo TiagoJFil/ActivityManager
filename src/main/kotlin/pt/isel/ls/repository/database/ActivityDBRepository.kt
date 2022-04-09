@@ -4,10 +4,10 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.ActivityRepository
-import pt.isel.ls.repository.database.utils.*
 import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.service.entities.Activity.Duration
 import pt.isel.ls.utils.*
+import pt.isel.ls.utils.repository.*
 import java.sql.Date
 import java.sql.ResultSet
 import java.sql.Statement

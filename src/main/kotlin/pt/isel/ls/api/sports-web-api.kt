@@ -14,11 +14,11 @@ import org.http4k.routing.bind
 import org.http4k.routing.routes
 import org.http4k.routing.static
 import org.slf4j.LoggerFactory
-import pt.isel.ls.config.ServicesInfo
-import pt.isel.ls.repository.database.utils.DataBaseAccessException
+import pt.isel.ls.config.Environment
 import pt.isel.ls.service.*
 import pt.isel.ls.service.dto.HttpError
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.repository.DataBaseAccessException
 import pt.isel.ls.utils.warnStatus
 import kotlin.system.measureTimeMillis
 
@@ -43,7 +43,7 @@ fun swaggerUi(htmlPath: String) = routes(
  * Gets all main app routes
  * @param env respective environment
  */
-fun getAppRoutes(env: ServicesInfo) = routes(
+fun getAppRoutes(env: Environment) = routes(
     User(env.userServices),
     Route(env.routeServices),
     Sport(env.sportsServices),

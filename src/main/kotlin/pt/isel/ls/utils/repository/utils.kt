@@ -1,4 +1,4 @@
-package pt.isel.ls.repository.memory
+package pt.isel.ls.utils.repository
 
 /**
  * Generates an id based on the current time in milliseconds and a random number.

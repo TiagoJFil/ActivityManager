@@ -2,10 +2,10 @@ package pt.isel.ls.repository.database
 
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.SportRepository
-import pt.isel.ls.repository.database.utils.*
 import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.repository.*
 import java.sql.ResultSet
 import java.sql.Statement
 

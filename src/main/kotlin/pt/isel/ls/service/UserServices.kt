@@ -2,12 +2,14 @@ package pt.isel.ls.service
 
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.UserDTO
-import pt.isel.ls.service.dto.toDTO
+import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.getLoggerFor
+import pt.isel.ls.utils.service.generateUUId
+import pt.isel.ls.utils.service.requireParameter
 import pt.isel.ls.utils.traceFunction
 
 class UserServices(

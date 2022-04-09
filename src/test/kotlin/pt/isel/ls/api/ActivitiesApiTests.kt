@@ -13,7 +13,7 @@ import pt.isel.ls.api.utils.*
 import pt.isel.ls.config.*
 import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.service.dto.HttpError
-import pt.isel.ls.service.dto.toDTO
+import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken

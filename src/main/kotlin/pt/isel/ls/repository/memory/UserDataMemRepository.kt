@@ -5,9 +5,9 @@ import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
-import pt.isel.ls.service.generateRandomId
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.repository.generateRandomId
 
 class UserDataMemRepository(guest: User) : UserRepository {
 

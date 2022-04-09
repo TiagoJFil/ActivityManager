@@ -9,7 +9,7 @@ import pt.isel.ls.config.guestUser
 import pt.isel.ls.config.testSport
 import pt.isel.ls.service.dto.HttpError
 import pt.isel.ls.service.dto.SportDTO
-import pt.isel.ls.service.dto.toDTO
+import pt.isel.ls.utils.service.toDTO
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals

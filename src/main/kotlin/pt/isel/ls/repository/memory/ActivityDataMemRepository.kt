@@ -3,8 +3,8 @@ package pt.isel.ls.repository.memory
 import kotlinx.datetime.LocalDate
 import pt.isel.ls.repository.*
 import pt.isel.ls.service.entities.Activity
-import pt.isel.ls.service.generateRandomId
 import pt.isel.ls.utils.*
+import pt.isel.ls.utils.repository.generateRandomId
 
 class ActivityDataMemRepository(testActivity: Activity) : ActivityRepository {
 

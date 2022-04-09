@@ -5,7 +5,7 @@ import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.service.entities.Route
 import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.service.entities.User
-import pt.isel.ls.service.generateRandomId
+import pt.isel.ls.utils.repository.generateRandomId
 
 val guestUser = User(
     name = "guest",

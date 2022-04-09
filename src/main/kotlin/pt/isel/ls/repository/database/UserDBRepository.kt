@@ -2,11 +2,11 @@ package pt.isel.ls.repository.database
 
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.UserRepository
-import pt.isel.ls.repository.database.utils.*
 import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.repository.*
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.Statement

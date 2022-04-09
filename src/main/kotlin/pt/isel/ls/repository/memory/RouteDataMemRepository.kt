@@ -3,9 +3,9 @@ package pt.isel.ls.repository.memory
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.service.dto.RouteDTO
 import pt.isel.ls.service.entities.Route
-import pt.isel.ls.service.generateRandomId
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.repository.generateRandomId
 
 class RouteDataMemRepository(testRoute: Route) : RouteRepository {
 

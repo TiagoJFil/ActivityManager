@@ -10,10 +10,11 @@ import pt.isel.ls.service.RouteServices.Companion.ROUTE_ID_PARAM
 import pt.isel.ls.service.SportsServices.Companion.SPORT_ID_PARAM
 import pt.isel.ls.service.UserServices.Companion.USER_ID_PARAM
 import pt.isel.ls.service.dto.ActivityDTO
-import pt.isel.ls.service.dto.toDTO
+import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.service.entities.Activity.Duration
 import pt.isel.ls.utils.*
+import pt.isel.ls.utils.service.*
 import java.text.ParseException
 import java.util.*
 

@@ -1,4 +1,4 @@
-package pt.isel.ls.repository.database.utils
+package pt.isel.ls.utils.repository
 
 import kotlinx.datetime.toLocalDate
 import pt.isel.ls.service.entities.Activity

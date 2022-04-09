@@ -1,11 +1,15 @@
-package pt.isel.ls.service
+package pt.isel.ls.utils.service
 
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.repository.UserRepository
+import pt.isel.ls.service.InvalidParameter
+import pt.isel.ls.service.MissingParameter
+import pt.isel.ls.service.ResourceNotFound
+import pt.isel.ls.service.UnauthenticatedError
 import pt.isel.ls.utils.*
-import java.util.UUID
+import java.util.*
 
 /**
  * @param parameter the parameter to check.

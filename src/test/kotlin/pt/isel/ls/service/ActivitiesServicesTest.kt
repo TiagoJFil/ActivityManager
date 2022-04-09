@@ -5,7 +5,7 @@ import org.junit.Test
 import pt.isel.ls.api.utils.TEST_ENV
 import pt.isel.ls.config.*
 import pt.isel.ls.service.dto.ActivityDTO
-import pt.isel.ls.service.dto.toDTO
+import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 

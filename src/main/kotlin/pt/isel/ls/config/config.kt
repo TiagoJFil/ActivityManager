@@ -4,8 +4,6 @@ import pt.isel.ls.service.ActivityServices
 import pt.isel.ls.service.RouteServices
 import pt.isel.ls.service.SportsServices
 import pt.isel.ls.service.UserServices
-import pt.isel.ls.utils.DBMODE
-import pt.isel.ls.utils.source
 
 private const val DEFAULT_PORT = 9000
 

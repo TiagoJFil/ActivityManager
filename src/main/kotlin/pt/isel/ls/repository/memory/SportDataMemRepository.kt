@@ -3,9 +3,9 @@ package pt.isel.ls.repository.memory
 import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.service.dto.SportDTO
 import pt.isel.ls.service.entities.Sport
-import pt.isel.ls.service.generateRandomId
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.repository.generateRandomId
 
 class SportDataMemRepository(testSport: Sport) : SportRepository {
 
