@@ -13,19 +13,20 @@ import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
-import pt.isel.ls.services.dto.UserDTO
-import pt.isel.ls.services.UserServices
+import pt.isel.ls.service.UserServices
+import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
 
-
 class UserRoutes(
     private val userServices: UserServices
-){
-    @Serializable data class UserIDResponse(val authToken: String, val id: String)
-    @Serializable data class UserCreationBody(val name: String? = null, val email: String? = null)
-    @Serializable data class UserList(val users: List<UserDTO>)
-    companion object{
+) {
+
+    @Serializable data class UserCreationInput(val name: String? = null, val email: String? = null)
+    @Serializable data class UserIDOutput(val authToken: String, val id: String)
+    @Serializable data class UserListOutput(val users: List<UserDTO>)
+
+    companion object {
         val logger = getLoggerFor<UserRoutes>()
     }
 
@@ -36,13 +37,13 @@ class UserRoutes(
         logger.infoLogRequest(request)
 
         val bodyString = request.bodyString()
-        val body = Json.decodeFromString<UserCreationBody>(bodyString)
+        val body = Json.decodeFromString<UserCreationInput>(bodyString)
 
         val res = userServices.createUser(body.name, body.email)
 
         return Response(CREATED)
             .header("content-type", "application/json")
-            .body(Json.encodeToString(UserIDResponse(res.first, res.second)))
+            .body(Json.encodeToString(UserIDOutput(res.first, res.second)))
     }
 
     /**
@@ -62,32 +63,24 @@ class UserRoutes(
     /**
      * Gets all the users.
      */
-    private fun getUsers(request: Request): Response{
+    private fun getUsers(request: Request): Response {
         logger.infoLogRequest(request)
 
         val users = userServices.getUsers()
-        val usersJsonString = Json.encodeToString(UserList(users))
+        val usersJsonString = Json.encodeToString(UserListOutput(users))
 
         return Response(Status.OK)
             .header("content-type", "application/json")
             .body(usersJsonString)
     }
 
-
-
     val handler: RoutingHttpHandler =
         "/users" bind routes(
-            "/"     bind  Method.POST to ::createUser,
-            "/"     bind Method.GET to ::getUsers,
+            "/" bind Method.POST to ::createUser,
+            "/" bind Method.GET to ::getUsers,
             "/{uid}" bind Method.GET to ::getUserDetails,
         )
 }
 
-
-fun User(userServices: UserServices)
-    = UserRoutes(userServices).handler
-
-
-
-
-
+fun User(userServices: UserServices) =
+    UserRoutes(userServices).handler

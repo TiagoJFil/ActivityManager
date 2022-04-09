@@ -1,22 +1,28 @@
-package pt.isel.ls.services
+package pt.isel.ls.service
 
-
-import pt.isel.ls.services.dto.UserDTO
-import pt.isel.ls.services.dto.toDTO
 import pt.isel.ls.repository.UserRepository
+import pt.isel.ls.service.dto.UserDTO
+import pt.isel.ls.service.dto.toDTO
+import pt.isel.ls.service.entities.User
+import pt.isel.ls.service.entities.User.Email
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
-import pt.isel.ls.services.entities.User
-import pt.isel.ls.services.entities.User.Email
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.traceFunction
 
 class UserServices(
-        private val userRepository: UserRepository
+    private val userRepository: UserRepository
 ) {
-    companion object{
+
+    companion object {
         val logger = getLoggerFor<UserServices>()
+        const val NAME_PARAM = "name"
+        const val EMAIL_PARAM = "email"
+        const val EMAIL_TAKEN = "Email already taken"
+        const val USER_ID_PARAM = "userID"
+        const val RESOURCE_NAME = "User"
     }
+
     /**
      * Verifies the parameters received and calls the function [UserRepository] to create a [UserDTO].
      * @param name the user's name
@@ -25,17 +31,19 @@ class UserServices(
      * @throws IllegalArgumentException
      */
     fun createUser(name: String?, email: String?): Pair<UserToken, UserID> {
-        logger.traceFunction("createUser","name: $name","email: $email")
-        val safeName = requireParameter(name, "name")
-        val safeEmail = requireParameter(email, "email")
+        logger.traceFunction(::createUser.name) {
+            listOf(NAME_PARAM to name, EMAIL_PARAM to email)
+        }
 
+        val safeName = requireParameter(name, NAME_PARAM)
+        val safeEmail = requireParameter(email, EMAIL_PARAM)
 
         val userAuthToken = generateUUId()
 
         val possibleEmail = Email(safeEmail)
 
         if (userRepository.hasRepeatedEmail(possibleEmail))
-            throw InvalidParameter("email already exists")
+            throw InvalidParameter(EMAIL_TAKEN)
 
         val userID = userRepository.addUser(safeName, possibleEmail, userAuthToken)
 
@@ -50,10 +58,11 @@ class UserServices(
      * @throws IllegalArgumentException
      */
     fun getUserByID(uid: UserID?): UserDTO {
-        logger.traceFunction("getUserByID","uid = $uid")
-        val safeUserID = requireParameter(uid, "id")
+        logger.traceFunction(::getUserByID.name) { listOf(USER_ID_PARAM to uid) }
+
+        val safeUserID = requireParameter(uid, USER_ID_PARAM)
         return userRepository.getUserByID(safeUserID)?.toDTO()
-                ?: throw ResourceNotFound("User", "$uid")
+            ?: throw ResourceNotFound(RESOURCE_NAME, "$uid")
     }
 
     /**
@@ -62,13 +71,10 @@ class UserServices(
      * @return [List] of [User
      */
     fun getUsers(): List<UserDTO> {
-        logger.traceFunction("getUsers")
+        logger.traceFunction(::getUsers.name)
+
         return userRepository
             .getUsers()
             .map(User::toDTO)
     }
-
-
 }
-
-

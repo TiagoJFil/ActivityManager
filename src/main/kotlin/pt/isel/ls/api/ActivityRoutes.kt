@@ -11,22 +11,22 @@ import org.http4k.core.Status
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
-import pt.isel.ls.services.dto.ActivityDTO
-import pt.isel.ls.services.ActivityServices
+import pt.isel.ls.service.ActivityServices
+import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.utils.*
-
 
 class ActivityRoutes(
     private val activityServices: ActivityServices
-){
-    @Serializable data class ActivityCreationBody(
+) {
+    @Serializable data class ActivityCreationInput(
         val duration: String? = null,
         val date: String? = null,
         val rid: RouteID? = null,
     )
-    @Serializable data class ActivityIDResponse(val activityID : ActivityID)
-    @Serializable data class ActivityList(val activities: List<ActivityDTO>)
-    companion object{
+    @Serializable data class ActivityIDOutput(val activityID: ActivityID)
+    @Serializable data class ActivityListOutput(val activities: List<ActivityDTO>)
+
+    companion object {
         val logger = getLoggerFor<ActivityRoutes>()
     }
 
@@ -38,13 +38,13 @@ class ActivityRoutes(
 
         val sportID = request.path("sid")
 
-        val activityBody = Json.decodeFromString<ActivityCreationBody>(request.bodyString())
+        val activityBody = Json.decodeFromString<ActivityCreationInput>(request.bodyString())
         val token: UserToken? = getToken(request)
 
         val activityId = activityServices.createActivity(token, sportID, activityBody.duration, activityBody.date, activityBody.rid)
         return Response(Status.CREATED)
             .header("content-type", "application/json")
-            .body(Json.encodeToString(ActivityIDResponse(activityId)))
+            .body(Json.encodeToString(ActivityIDOutput(activityId)))
     }
 
     /**
@@ -53,15 +53,15 @@ class ActivityRoutes(
     private fun getActivity(request: Request): Response {
         logger.infoLogRequest(request)
 
-        val activityId  = request.path("aid")
+        val activityId = request.path("aid")
 
         val activity = activityServices.getActivity(activityId)
 
         val activityJson = Json.encodeToString<ActivityDTO>(activity)
 
         return Response(Status.OK)
-                .header("content-type", "application/json")
-                .body(activityJson)
+            .header("content-type", "application/json")
+            .body(activityJson)
     }
 
     /**
@@ -73,11 +73,11 @@ class ActivityRoutes(
         val userId = request.path("uid")
 
         val activities = activityServices.getActivitiesByUser(userId)
-        val activitiesJson = Json.encodeToString(ActivityList(activities))
+        val activitiesJson = Json.encodeToString(ActivityListOutput(activities))
 
         return Response(Status.OK)
-                .header("content-type", "application/json")
-                .body(activitiesJson)
+            .header("content-type", "application/json")
+            .body(activitiesJson)
     }
 
     /**
@@ -91,15 +91,14 @@ class ActivityRoutes(
 
         val token: UserToken? = getToken(request)
 
-        val deleted = activityServices.deleteActivity(token, activityId, sportID)
+        activityServices.deleteActivity(token, activityId, sportID)
         return Response(Status.NO_CONTENT)
     }
-
 
     /**
      * Gets all the activities of the sport identified by the id given in the params of the uri's path.
      */
-    private fun getActivitiesBySport(request: Request): Response{
+    private fun getActivitiesBySport(request: Request): Response {
         logger.infoLogRequest(request)
 
         val order = request.query("orderBy")
@@ -108,23 +107,22 @@ class ActivityRoutes(
         val sportID = request.path("sid")
 
         val activities = activityServices.getActivities(sportID, order, date, routeID)
-        val activitiesJson = Json.encodeToString(ActivityList(activities))
+        val activitiesJson = Json.encodeToString(ActivityListOutput(activities))
 
         return Response(Status.OK)
-                .header("content-type", "application/json")
-                .body(activitiesJson)
+            .header("content-type", "application/json")
+            .body(activitiesJson)
     }
 
     val handler = routes(
-            "/sports/{sid}/activities" bind routes(
-                        "/" bind Method.POST to ::createActivity,
-                        "/{aid}" bind Method.DELETE to ::deleteActivity,
-                        "/{aid}" bind Method.GET to ::getActivity,
-                        "/" bind Method.GET to ::getActivitiesBySport
-                    ),
-            "/users/{uid}/activities" bind Method.GET to ::getActivitiesByUser
-        )
-
+        "/sports/{sid}/activities" bind routes(
+            "/" bind Method.POST to ::createActivity,
+            "/{aid}" bind Method.DELETE to ::deleteActivity,
+            "/{aid}" bind Method.GET to ::getActivity,
+            "/" bind Method.GET to ::getActivitiesBySport
+        ),
+        "/users/{uid}/activities" bind Method.GET to ::getActivitiesByUser
+    )
 }
 
 fun Activity(activityServices: ActivityServices) =

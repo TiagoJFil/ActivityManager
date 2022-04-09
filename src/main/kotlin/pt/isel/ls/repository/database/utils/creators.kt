@@ -2,14 +2,13 @@ package pt.isel.ls.repository.database.utils
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
-import pt.isel.ls.services.entities.Activity
+import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 import java.sql.Date
 import java.sql.PreparedStatement
 import java.sql.Types
-
 
 fun PreparedStatement.setRoute(startLocation: String, endLocation: String, distance: Double, userID: Int) {
     setString(1, startLocation)

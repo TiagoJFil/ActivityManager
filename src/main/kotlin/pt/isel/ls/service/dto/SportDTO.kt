@@ -1,7 +1,7 @@
-package pt.isel.ls.services.dto
+package pt.isel.ls.service.dto
 
 import kotlinx.serialization.Serializable
-import pt.isel.ls.services.entities.Sport
+import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 
@@ -15,16 +15,15 @@ import pt.isel.ls.utils.UserID
  */
 @Serializable
 data class SportDTO(
-        val id: SportID,
-        val name: String,
-        val description: String? = null,
-        val user: UserID
+    val id: SportID,
+    val name: String,
+    val description: String? = null,
+    val user: UserID
 ) {
     constructor(sportEntity: Sport) : this(
-            sportEntity.id,
-            sportEntity.name,
-            sportEntity.description,
-            sportEntity.user
+        sportEntity.id,
+        sportEntity.name,
+        sportEntity.description,
+        sportEntity.user
     )
 }
-

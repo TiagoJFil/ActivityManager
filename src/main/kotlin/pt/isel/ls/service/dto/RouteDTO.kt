@@ -1,7 +1,7 @@
-package pt.isel.ls.services.dto
+package pt.isel.ls.service.dto
 
 import kotlinx.serialization.Serializable
-import pt.isel.ls.services.entities.Route
+import pt.isel.ls.service.entities.Route
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
 
@@ -16,11 +16,11 @@ import pt.isel.ls.utils.UserID
  */
 @Serializable
 data class RouteDTO(
-        val id: RouteID,
-        val startLocation: String,
-        val endLocation: String,
-        val distance: Double,
-        val user: UserID
+    val id: RouteID,
+    val startLocation: String,
+    val endLocation: String,
+    val distance: Double,
+    val user: UserID
 ) {
     constructor(routeEntity: Route) : this(
         routeEntity.id,
@@ -29,6 +29,4 @@ data class RouteDTO(
         routeEntity.distance,
         routeEntity.user
     )
-
 }
-

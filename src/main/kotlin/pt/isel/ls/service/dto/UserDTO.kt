@@ -1,7 +1,7 @@
-package pt.isel.ls.services.dto
+package pt.isel.ls.service.dto
 
 import kotlinx.serialization.Serializable
-import pt.isel.ls.services.entities.User
+import pt.isel.ls.service.entities.User
 import pt.isel.ls.utils.UserID
 
 /**
@@ -14,14 +14,13 @@ import pt.isel.ls.utils.UserID
  */
 @Serializable
 data class UserDTO(
-        val name: String,
-        val email: String,
-        val id: UserID
+    val name: String,
+    val email: String,
+    val id: UserID
 ) {
     constructor(userEntity: User) : this(
-            userEntity.name,
-            userEntity.email.value,
-            userEntity.id
+        userEntity.name,
+        userEntity.email.value,
+        userEntity.id
     )
 }
-

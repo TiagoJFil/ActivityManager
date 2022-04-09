@@ -1,9 +1,7 @@
-package pt.isel.ls.services.entities
+package pt.isel.ls.service.entities
 
-
-import pt.isel.ls.services.InvalidParameter
+import pt.isel.ls.service.InvalidParameter
 import pt.isel.ls.utils.UserID
-
 
 /**
  * Represents a user
@@ -23,8 +21,8 @@ data class User(val name: String, val email: Email, val id: UserID) {
     data class Email(val value: String) {
         companion object {
             private val emailRegex = Regex(
-                    "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)" +
-                            "*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$"
+                "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)" +
+                    "*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$"
             )
         }
 
@@ -32,7 +30,4 @@ data class User(val name: String, val email: Email, val id: UserID) {
             if (!emailRegex.matches(value)) throw InvalidParameter("email")
         }
     }
-
 }
-
-

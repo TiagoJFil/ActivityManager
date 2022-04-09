@@ -9,23 +9,22 @@ import pt.isel.ls.api.getAppRoutes
 import pt.isel.ls.config.EnvironmentType
 import pt.isel.ls.config.getEnv
 
-private const val DEFAULT_PORT = 9000
 
 
 fun main() {
 
+    val env = EnvironmentType.PROD.getEnv()
+
     val api = getApiRoutes(
-        getAppRoutes(EnvironmentType.PROD.getEnv())
+        getAppRoutes(env)
     )
 
-    with(server(api, DEFAULT_PORT)) {
+    with(server(api, env.serverPort)) {
         start()
         readln()
         stop()
     }
-
 }
 
-fun server(api: RoutingHttpHandler, port: Int): Http4kServer
-     = api.asServer(Jetty(port)).start()
-
+fun server(api: RoutingHttpHandler, port: Int): Http4kServer =
+    api.asServer(Jetty(port)).start()

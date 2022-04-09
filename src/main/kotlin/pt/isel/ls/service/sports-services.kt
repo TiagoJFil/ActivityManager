@@ -1,4 +1,4 @@
-package pt.isel.ls.services
+package pt.isel.ls.service
 
 import java.lang.Math.random
 import java.util.UUID

@@ -1,4 +1,4 @@
-package pt.isel.ls.services.dto
+package pt.isel.ls.service.dto
 
 import kotlinx.serialization.Serializable
 
@@ -7,10 +7,3 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class HttpError(val code: Int, val message: String?)
-
-
-
-
-
-
-

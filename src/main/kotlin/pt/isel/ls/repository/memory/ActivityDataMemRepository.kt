@@ -1,13 +1,12 @@
 package pt.isel.ls.repository.memory
 
 import kotlinx.datetime.LocalDate
-import pt.isel.ls.services.entities.Activity
 import pt.isel.ls.repository.*
-import pt.isel.ls.services.generateRandomId
+import pt.isel.ls.service.entities.Activity
+import pt.isel.ls.service.generateRandomId
 import pt.isel.ls.utils.*
 
-
-class ActivityDataMemRepository(testActivity: Activity): ActivityRepository {
+class ActivityDataMemRepository(testActivity: Activity) : ActivityRepository {
 
     /**
      * Mapping between the [ActivityID] and the [Activity]
@@ -24,14 +23,14 @@ class ActivityDataMemRepository(testActivity: Activity): ActivityRepository {
      * @param userID the activity user ID
      */
     override fun addActivity(
-            date: LocalDate,
-            duration: Activity.Duration,
-            sportID: SportID,
-            routeID: RouteID?,
-            userID: UserID
-    ) : ActivityID{
+        date: LocalDate,
+        duration: Activity.Duration,
+        sportID: SportID,
+        routeID: RouteID?,
+        userID: UserID
+    ): ActivityID {
         val activityID = generateRandomId()
-        val activity = Activity(activityID, date, duration, sportID,routeID, userID)
+        val activity = Activity(activityID, date, duration, sportID, routeID, userID)
         activitiesMap[activity.id] = activity
         return activityID
     }
@@ -69,7 +68,7 @@ class ActivityDataMemRepository(testActivity: Activity): ActivityRepository {
                 date == null && rid == null -> it.sport == sid
                 rid == null -> it.sport == sid && it.date == date
                 date == null -> it.sport == sid && it.route == rid
-                else -> it.sport == sid && it.date == date && it.route==rid
+                else -> it.sport == sid && it.date == date && it.route == rid
             }
         }
 
@@ -87,8 +86,8 @@ class ActivityDataMemRepository(testActivity: Activity): ActivityRepository {
      * @param activityID the id of the activity to delete
      * @return [Boolean] true if it deleted successfully
      */
-    override fun deleteActivity(activityID: ActivityID): Boolean
-            = activitiesMap.remove(activityID) != null
+    override fun deleteActivity(activityID: ActivityID): Boolean =
+        activitiesMap.remove(activityID) != null
 
     /**
      * Checks if the activity identified by the given identifier exists.
@@ -96,6 +95,4 @@ class ActivityDataMemRepository(testActivity: Activity): ActivityRepository {
      * @return [Boolean] true if it exists
      */
     override fun hasActivity(activityID: ActivityID): Boolean = activitiesMap.containsKey(activityID)
-
-
 }

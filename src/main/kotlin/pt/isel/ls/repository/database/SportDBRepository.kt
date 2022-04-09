@@ -3,16 +3,15 @@ package pt.isel.ls.repository.database
 import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.repository.database.utils.*
-import pt.isel.ls.services.entities.Sport
+import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 import java.sql.ResultSet
 import java.sql.Statement
 
+class SportDBRepository(private val dataSource: PGSimpleDataSource, suffix: String) : SportRepository {
 
-class SportDBRepository(private val dataSource: PGSimpleDataSource, val suffix: String) : SportRepository {
-
-    private val sportTable = "sport${suffix}"
+    private val sportTable = "sport$suffix"
 
     /**
      * Adds a new sport to the repository.
@@ -37,13 +36,12 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, val suffix: 
      */
     override fun getSports(): List<Sport> =
         dataSource.connection.transaction {
-           createStatement().use { stmt ->
+            createStatement().use { stmt ->
                 stmt.executeQuery("""SELECT * FROM $sportTable""").use { rs ->
                     rs.toListOf<Sport>(ResultSet::toSport)
                 }
-           }
+            }
         }
-
 
     /**
      * Gets a sport by its id.
@@ -60,8 +58,10 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, val suffix: 
      * @param sportID The id of the sport to be checked.
      * @return [Boolean] True if the sport exists, false otherwise.
      */
-    override fun hasSport(sportID: SportID): Boolean = querySportByID(sportID) { it.next() }
-
+    override fun hasSport(sportID: SportID): Boolean =
+        querySportByID(sportID) { rs: ResultSet ->
+            rs.next()
+        }
 
     /**
      * Makes a query to get a sport by its identifier.
@@ -79,5 +79,4 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, val suffix: 
                 resultSet.use { block(it) }
             }
         }
-
 }

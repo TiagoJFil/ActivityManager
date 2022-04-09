@@ -1,16 +1,15 @@
-package pt.isel.ls.services
+package pt.isel.ls.service
 
 import org.junit.After
 import org.junit.Test
 import pt.isel.ls.api.utils.TEST_ENV
-import pt.isel.ls.services.dto.toDTO
 import pt.isel.ls.config.guestUser
+import pt.isel.ls.service.dto.toDTO
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class UserServicesTest {
     private var userServices = TEST_ENV.userServices
-
 
     @After
     fun tearDown() {
@@ -75,7 +74,6 @@ class UserServicesTest {
             userServices.createUser(null, "emailteste12@hotmail.com")
         }
     }
-
 
     @Test
     fun `get all the users list`() {

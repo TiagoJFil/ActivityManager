@@ -1,13 +1,13 @@
 package pt.isel.ls.repository.memory
 
-import pt.isel.ls.services.dto.SportDTO
 import pt.isel.ls.repository.SportRepository
-import pt.isel.ls.services.entities.Sport
-import pt.isel.ls.services.generateRandomId
+import pt.isel.ls.service.dto.SportDTO
+import pt.isel.ls.service.entities.Sport
+import pt.isel.ls.service.generateRandomId
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 
-class SportDataMemRepository(testSport : Sport): SportRepository {
+class SportDataMemRepository(testSport: Sport) : SportRepository {
 
     /**
      * Mapping between [SportID] and [Sport]
@@ -21,7 +21,7 @@ class SportDataMemRepository(testSport : Sport): SportRepository {
      * @param description The sport's description(optional).
      * @param userID The user's id.
      */
-    override fun addSport(name: String, description: String?, userID: UserID) : SportID {
+    override fun addSport(name: String, description: String?, userID: UserID): SportID {
         val sportID = generateRandomId()
         val sport = Sport(sportID, name, description, userID)
         sportsMap[sportID] = sport
@@ -45,5 +45,4 @@ class SportDataMemRepository(testSport : Sport): SportRepository {
      * Checks if a sport identified by [sportID] exists.
      */
     override fun hasSport(sportID: SportID): Boolean = sportsMap.containsKey(sportID)
-
 }

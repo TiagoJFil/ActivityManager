@@ -1,6 +1,6 @@
 package pt.isel.ls.repository
 
-import pt.isel.ls.services.entities.Sport
+import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 
@@ -33,5 +33,4 @@ interface SportRepository {
      * @return [Boolean] True if the sport exists, false otherwise.
      */
     fun hasSport(sportID: SportID): Boolean
-
 }

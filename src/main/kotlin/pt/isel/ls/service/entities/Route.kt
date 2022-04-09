@@ -1,4 +1,4 @@
-package pt.isel.ls.services.entities
+package pt.isel.ls.service.entities
 
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
@@ -13,9 +13,9 @@ import pt.isel.ls.utils.UserID
  * @property user route's user
  */
 data class Route(
-        val id: RouteID,
-        val startLocation: String,
-        val endLocation: String,
-        val distance: Double,
-        val user: UserID
+    val id: RouteID,
+    val startLocation: String,
+    val endLocation: String,
+    val distance: Double,
+    val user: UserID
 )

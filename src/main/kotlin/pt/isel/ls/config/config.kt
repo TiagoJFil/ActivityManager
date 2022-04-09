@@ -1,26 +1,28 @@
 package pt.isel.ls.config
 
-import pt.isel.ls.services.ActivityServices
-import pt.isel.ls.services.RouteServices
-import pt.isel.ls.services.SportsServices
-import pt.isel.ls.services.UserServices
+import pt.isel.ls.service.ActivityServices
+import pt.isel.ls.service.RouteServices
+import pt.isel.ls.service.SportsServices
+import pt.isel.ls.service.UserServices
 import pt.isel.ls.utils.DBMODE
 import pt.isel.ls.utils.source
 
-data class ServicesInfo(
+private const val DEFAULT_PORT = 9000
+
+data class Environment(
     val userServices: UserServices,
     val activityServices: ActivityServices,
     val routeServices: RouteServices,
-    val sportsServices: SportsServices
+    val sportsServices: SportsServices,
+    val serverPort: Int
 )
 
 enum class EnvironmentType(val dbMode: DBMODE) {
-    PROD(DBMODE.POSTGRES_PROD),
+    PROD(DBMODE.POSTGRESQL),
     TEST(DBMODE.MEMORY),
-    INTEGRATION_TEST(DBMODE.POSTEGRES_TEST)
 }
 
-fun EnvironmentType.getEnv() : ServicesInfo {
+fun EnvironmentType.getEnv(): Environment {
 
     val dbInfo = dbMode.source()
     val userRepo = dbInfo.userRepository
@@ -28,18 +30,12 @@ fun EnvironmentType.getEnv() : ServicesInfo {
     val sportsRepo = dbInfo.sportRepository
     val activityRepo = dbInfo.activityRepository
 
+    val port = System.getenv("SERVER_PORT")?.toInt() ?: DEFAULT_PORT
+
     val userServices = UserServices(userRepo)
     val routeServices = RouteServices(routeRepo, userRepo)
-    val sportsServices = SportsServices(sportsRepo,userRepo)
-    val activityServices = ActivityServices(activityRepo, userRepo, sportsRepo,routeRepo)
+    val sportsServices = SportsServices(sportsRepo, userRepo)
+    val activityServices = ActivityServices(activityRepo, userRepo, sportsRepo, routeRepo)
 
-    return ServicesInfo(userServices, activityServices, routeServices, sportsServices)
+    return Environment(userServices, activityServices, routeServices, sportsServices, port)
 }
-
-
-
-
-
-
-
-

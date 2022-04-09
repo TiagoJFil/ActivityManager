@@ -1,4 +1,4 @@
-package pt.isel.ls.services.entities
+package pt.isel.ls.service.entities
 
 import kotlinx.datetime.LocalDate
 import pt.isel.ls.utils.ActivityID
@@ -20,12 +20,12 @@ import java.util.*
  * @param user activity's user
  */
 data class Activity(
-        val id: ActivityID,
-        val date: LocalDate,
-        val duration: Duration,
-        val sport: SportID,
-        val route: RouteID? = null,
-        val user: UserID
+    val id: ActivityID,
+    val date: LocalDate,
+    val duration: Duration,
+    val sport: SportID,
+    val route: RouteID? = null,
+    val user: UserID
 ) {
     /**
      * Represents an activity's duration
@@ -34,15 +34,13 @@ data class Activity(
      */
     data class Duration(val millis: Long) {
         companion object {
-            val dateFormat: DateFormat = SimpleDateFormat("HH:mm:ss.SSS")
-                    .apply { timeZone = TimeZone.getTimeZone("UTC") }
-
+            val format: DateFormat = SimpleDateFormat("HH:mm:ss.SSS")
+                .apply { timeZone = TimeZone.getTimeZone("UTC") }
         }
 
         /**
          * Formats the duration to a string with the pattern [HH:mm:ss.SSS]
          */
-        fun toFormat(): String = dateFormat.format(Date(millis))
-
+        fun toFormat(): String = format.format(Date(millis))
     }
 }

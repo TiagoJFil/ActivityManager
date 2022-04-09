@@ -1,4 +1,4 @@
-package pt.isel.ls.services
+package pt.isel.ls.service
 
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.repository.RouteRepository
@@ -13,7 +13,7 @@ import pt.isel.ls.utils.*
  * @throws [InvalidParameter] if the parameter is blank.
  */
 fun requireNotBlankParameter(parameter: String?, parameterName: String) {
-    if(parameter != null && parameter.isBlank()) throw InvalidParameter(parameterName)
+    if (parameter != null && parameter.isBlank()) throw InvalidParameter(parameterName)
 }
 
 /**
@@ -29,7 +29,6 @@ fun requireParameter(parameter: String?, parameterName: String): String {
     return parameter
 }
 
-
 /**
  * Ensures that there is a token associated with the user.
  *
@@ -37,7 +36,7 @@ fun requireParameter(parameter: String?, parameterName: String): String {
  * @return [UserID] the user ID associated with the token.
  * @throws [UnauthenticatedError] if the token is not valid.
  */
-fun UserRepository.requireAuthenticated(token: UserToken?): UserID{
+fun UserRepository.requireAuthenticated(token: UserToken?): UserID {
     if (token == null) throw UnauthenticatedError()
     return getUserIDByToken(token) ?: throw UnauthenticatedError()
 }
@@ -48,8 +47,8 @@ fun UserRepository.requireAuthenticated(token: UserToken?): UserID{
  * @param sportID the sport ID to check.
  * @throws ResourceNotFound if the sport does not exist.
  */
-fun SportRepository.requireSport(sportID: SportID){
-    if(!hasSport(sportID)) throw ResourceNotFound("Sport", sportID)
+fun SportRepository.requireSport(sportID: SportID) {
+    if (!hasSport(sportID)) throw ResourceNotFound("Sport", sportID)
 }
 
 /**
@@ -58,8 +57,8 @@ fun SportRepository.requireSport(sportID: SportID){
  * @param userID the user ID to check.
  * @throws ResourceNotFound if the user does not exist.
  */
-fun UserRepository.requireUser(userID: UserID){
-    if(!hasUser(userID)) throw ResourceNotFound("User", userID)
+fun UserRepository.requireUser(userID: UserID) {
+    if (!hasUser(userID)) throw ResourceNotFound("User", userID)
 }
 
 /**
@@ -68,8 +67,8 @@ fun UserRepository.requireUser(userID: UserID){
  * @param activityID the activity ID to check.
  * @throws ResourceNotFound if the user does not exist.
  */
-fun ActivityRepository.requireActivity(activityID: ActivityID){
-    if(!hasActivity(activityID)) throw ResourceNotFound("Activity", activityID)
+fun ActivityRepository.requireActivity(activityID: ActivityID) {
+    if (!hasActivity(activityID)) throw ResourceNotFound("Activity", activityID)
 }
 
 /**
@@ -78,6 +77,6 @@ fun ActivityRepository.requireActivity(activityID: ActivityID){
  * @param routeID the [RouteID] to check.
  * @throws ResourceNotFound if the route does not exist.
  */
-fun RouteRepository.requireRoute(routeID: RouteID){
-    if(!hasRoute(routeID)) throw ResourceNotFound("Route", routeID)
+fun RouteRepository.requireRoute(routeID: RouteID) {
+    if (!hasRoute(routeID)) throw ResourceNotFound("Route", routeID)
 }

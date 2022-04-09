@@ -7,7 +7,7 @@ import org.http4k.core.*
 
 /**
  * Makes a get request from [backend] handler
- * and tries to parse the response body to a [T] object, calling an expect function
+ * and tries to parse the response body to a [ResponseBody] object, calling an expect function
  * which ensures that the response has a determined status code.
  *
  * Generic parameter is the response body expected type.
@@ -36,16 +36,15 @@ inline fun <reified RequestBody, reified ResponseBody> postRequest(
     backend: HttpHandler,
     uri: String,
     body: RequestBody,
-    headers: Headers= emptyList(),
+    headers: Headers = emptyList(),
     expectedStatus: Response.() -> Response,
 ): ResponseBody =
     Json.decodeFromString(
         backend(
             Request(Method.POST, uri)
-                    .body(Json.encodeToString(body))
-                    .headers(headers)
+                .body(Json.encodeToString(body))
+                .headers(headers)
         )
             .expectedStatus()
             .bodyString()
     )
-

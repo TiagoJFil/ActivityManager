@@ -1,23 +1,26 @@
 package pt.isel.ls.repository.database.utils
 
-import java.sql.*
+import java.sql.Connection
+import java.sql.PreparedStatement
+import java.sql.ResultSet
+import java.sql.Statement
 
-class DataBaseAccessException(message: String) : RuntimeException(message)
+class DataBaseAccessException(message: String) : Exception(message) // TODO: Fazer InternalException do services
 
 /**
- * Tries to execute the given [operation] if it fails, it will throw a [DataBaseAccessException]
+ * Tries to execute the given [operation] if it fails throws [DataBaseAccessException]
  */
-inline fun <T> tryDataBaseOperation(operation: () -> T): T{
+inline fun <T> tryDataBaseOperation(operation: () -> T): T {
     return try {
         operation()
-    } catch (e: SQLException) {
+    } catch (e: Exception) {
         throw DataBaseAccessException("Error while accessing the database: ${e.message}")
     }
 }
 
 /**
  * Creates a transaction on the given connection properly allocating and disposing connection resources.
- * Resource management for [Statement]s and [ResultSet]s have to be done by the caller in the [block].
+ * Resource management for [Statement]s and [ResultSet]s have to be done by the caller in [block].
  *
  * Commits on success.
  * Rolls back if an exception is thrown propagating it afterwards.
@@ -26,21 +29,20 @@ inline fun <T> tryDataBaseOperation(operation: () -> T): T{
  * @return the result of the block function invoked in the transaction
  * @throws DataBaseAccessException if an error occurs while accessing the database
  */
-inline fun <R> Connection.transaction(block: Connection.() -> R): R
-    = tryDataBaseOperation{
-        use {
-            this.autoCommit = false
-            try {
-                this.block()
-                    .also { commit() }
-            } catch (e: Exception) {
-                this.rollback()
-                throw e
-            } finally {
-                this.autoCommit = true
-            }
+inline fun <R> Connection.transaction(block: Connection.() -> R): R = tryDataBaseOperation {
+    use {
+        this.autoCommit = false
+        try {
+            this.block()
+                .also { commit() }
+        } catch (e: Exception) {
+            this.rollback()
+            throw e
+        } finally {
+            this.autoCommit = true
         }
     }
+}
 
 /**
  * Gets the last generated key from the given [PreparedStatement].
@@ -48,7 +50,7 @@ inline fun <R> Connection.transaction(block: Connection.() -> R): R
  */
 fun PreparedStatement.generatedKey(): String {
     generatedKeys.use {
-        if(!it.next()) throw SQLException("No generated key")
+        if (!it.next()) throw IllegalStateException("No generated key")
         return it.getInt(1).toString()
     }
 }

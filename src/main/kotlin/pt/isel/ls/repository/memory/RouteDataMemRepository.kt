@@ -1,13 +1,13 @@
 package pt.isel.ls.repository.memory
 
-import pt.isel.ls.services.dto.RouteDTO
 import pt.isel.ls.repository.RouteRepository
-import pt.isel.ls.services.entities.Route
-import pt.isel.ls.services.generateRandomId
+import pt.isel.ls.service.dto.RouteDTO
+import pt.isel.ls.service.entities.Route
+import pt.isel.ls.service.generateRandomId
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
 
-class RouteDataMemRepository(testRoute: Route): RouteRepository {
+class RouteDataMemRepository(testRoute: Route) : RouteRepository {
 
     /**
      * Mapping between the [RouteID] and [Route]
@@ -29,11 +29,11 @@ class RouteDataMemRepository(testRoute: Route): RouteRepository {
      * @param userID The id of the user that created the route.
      */
     override fun addRoute(
-            startLocation: String,
-            endLocation: String,
-            distance: Double,
-            userID: UserID
-    ): RouteID{
+        startLocation: String,
+        endLocation: String,
+        distance: Double,
+        userID: UserID
+    ): RouteID {
         val routeID = generateRandomId()
         val route = Route(routeID, startLocation, endLocation, distance, userID)
         routesMap[routeID] = route
@@ -43,7 +43,7 @@ class RouteDataMemRepository(testRoute: Route): RouteRepository {
     /**
      * Gets a route by the given id.
      *
-     * @param id the unique identifier of the route to get
+     * @param routeID the unique identifier of the route to get
      * @return [RouteDTO] the route object or null if the id doesn't exist
      */
     override fun getRoute(routeID: RouteID): Route? = routesMap[routeID]
@@ -54,7 +54,5 @@ class RouteDataMemRepository(testRoute: Route): RouteRepository {
      * @return [Boolean] True if the route exists, false otherwise.
      */
     override fun hasRoute(routeID: RouteID): Boolean =
-            routesMap[routeID] != null
-
+        routesMap[routeID] != null
 }
-

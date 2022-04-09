@@ -1,12 +1,10 @@
-package pt.isel.ls.services.dto
+package pt.isel.ls.service.dto
 
-
+import kotlinx.serialization.Serializable
+import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
-import kotlinx.serialization.Serializable
-import pt.isel.ls.services.entities.Activity
-
 
 /**
  * Represent an activity
@@ -26,8 +24,8 @@ data class ActivityDTO(
     val sport: SportID,
     val route: RouteID? = null,
     val user: UserID
-){
-    
+) {
+
     constructor(activityEntity: Activity) : this(
         activityEntity.id,
         activityEntity.date.toString(),
