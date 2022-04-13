@@ -16,17 +16,17 @@ class UserDataMemRepository(guest: User) : UserRepository {
     /**
      * Mapping between a [UserToken] and a [UserID]
      */
-    private val tokenTable: MutableMap<UserToken, Int> = mutableMapOf(GUEST_TOKEN to guestUser.id.toInt())
+    private val tokenTable: MutableMap<UserToken, Int> = mutableMapOf(GUEST_TOKEN to guestUser.id)
 
     /**
      * Mapping between an email and a [UserID]
      */
-    private val emailsMap: MutableMap<String, Int> = mutableMapOf(guest.email.value to guestUser.id.toInt())
+    private val emailsMap: MutableMap<String, Int> = mutableMapOf(guest.email.value to guestUser.id)
 
     /**
      * Mapping between a [UserID] and it's identified [User]
      */
-    private val usersMap: MutableMap<Int, User> = mutableMapOf(guest.id.toInt() to guest)
+    private val usersMap: MutableMap<Int, User> = mutableMapOf(guest.id to guest)
 
     /**
      * Checks if the specified user has a repeated email
@@ -47,18 +47,18 @@ class UserDataMemRepository(guest: User) : UserRepository {
      */
     override fun addUser(userName: String, email: Email, userAuthToken: UserToken): UserID {
         val userId = ++currentID
-        val user = User(userName, email, userId.toString())
+        val user = User(userName, email, userId)
         usersMap[userId] = user
         emailsMap[email.value] = userId
         tokenTable[userAuthToken] = userId
-        return userId.toString()
+        return userId
     }
 
     /**
      * @param userID user's unique identifier
      * @return A [UserDTO] object or null if there is no user identified by [userID]
      */
-    override fun getUserByID(userID: UserID): User? = usersMap[userID.toInt()]
+    override fun getUserByID(userID: UserID): User? = usersMap[userID]
 
     /**
      * Gets all the users stored
@@ -69,10 +69,10 @@ class UserDataMemRepository(guest: User) : UserRepository {
      * @param token user's unique token
      * @return the [UserID] identified by the [UserToken]
      */
-    override fun getUserIDByToken(token: UserToken): UserID? = tokenTable[token]?.toString()
+    override fun getUserIDByToken(token: UserToken): UserID? = tokenTable[token]
 
     /**
      * Checks if the user with the given id exists
      */
-    override fun hasUser(userID: UserID): Boolean = usersMap.containsKey(userID.toInt())
+    override fun hasUser(userID: UserID): Boolean = usersMap.containsKey(userID)
 }

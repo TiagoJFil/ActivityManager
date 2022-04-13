@@ -19,7 +19,7 @@ class UserServicesTest {
     /* Get User Details */
     @Test
     fun `get a user by ID successfully`() {
-        val sut = userServices.getUserByID(guestUser.id)
+        val sut = userServices.getUserByID(guestUser.id.toString())
         assertEquals(guestUser.toDTO(), sut)
     }
 
@@ -41,7 +41,7 @@ class UserServicesTest {
     fun `create a user sucessfully`() {
         val sut = userServices.createUser("abc", "abc@gmail.com")
 
-        val user = userServices.getUserByID(sut.second)
+        val user = userServices.getUserByID(sut.second.toString())
 
         assertEquals("abc", user.name)
         assertEquals("abc@gmail.com", user.email)

@@ -2,6 +2,7 @@ package pt.isel.ls.service.dto
 
 import kotlinx.serialization.Serializable
 import pt.isel.ls.service.entities.Activity
+import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
@@ -18,7 +19,7 @@ import pt.isel.ls.utils.UserID
  */
 @Serializable
 data class ActivityDTO(
-    val id: String,
+    val id: ActivityID,
     val date: String,
     val duration: String,
     val sport: SportID,

@@ -39,7 +39,6 @@ private fun postgreSQL(suffix: String): DbSource {
         password = dbInfo.password
         databaseName = dbInfo.dataBase
     }
-
     return DbSource(
         userRepository = UserDBRepository(dataSource, suffix),
         routeRepository = RouteDBRepository(dataSource, suffix),

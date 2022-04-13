@@ -5,7 +5,12 @@ import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
-import pt.isel.ls.utils.repository.*
+import pt.isel.ls.utils.repository.generatedKey
+import pt.isel.ls.utils.repository.ifNext
+import pt.isel.ls.utils.repository.setSport
+import pt.isel.ls.utils.repository.toListOf
+import pt.isel.ls.utils.repository.toSport
+import pt.isel.ls.utils.repository.transaction
 import java.sql.ResultSet
 import java.sql.Statement
 
@@ -25,7 +30,7 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
             val insertSport = """INSERT INTO $sportTable (name, description, "user") VALUES (?, ?, ?)"""
             val statement = prepareStatement(insertSport, Statement.RETURN_GENERATED_KEYS)
             statement.apply {
-                setSport(name, description, userID.toInt())
+                setSport(name, description, userID)
                 executeUpdate()
             }
             statement.generatedKey()
@@ -74,7 +79,7 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
         dataSource.connection.transaction {
             val pstmt = prepareStatement("""SELECT * FROM $sportTable WHERE id = ?;""")
             pstmt.use { ps ->
-                ps.setInt(1, sportID.toInt())
+                ps.setInt(1, sportID)
                 val resultSet: ResultSet = ps.executeQuery()
                 resultSet.use { block(it) }
             }

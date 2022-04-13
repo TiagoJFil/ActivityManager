@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   description: "Api reference for Sports"
-  version: "0.1.2"
+  version: "0.1.3"
   title: "Swagger Sports"
   termsOfService: "https://swagger.io/terms/"
   license:
@@ -33,8 +33,8 @@ paths:
           description: "User's identifier."
           required: true
           schema:
-            type: "string"
-          example: "guestID"
+            type: "integer"
+          example: 20
       responses:
         "200":
           description: "successful operation"
@@ -101,7 +101,7 @@ paths:
           description: "Route's identifier."
           required: true
           schema:
-            type: "string"
+            type: "integer"
           example: "10"
       responses:
         "200":
@@ -218,14 +218,14 @@ paths:
           description: "Activity's identifier."
           required: true
           schema:
-            type: "string"
+            type: "integer"
           example: "1234"
         - name: "sid"
           in: "path"
           description: "Sport's identifier."
           required: true
           schema:
-            type: "string"
+            type: "integer"
           example: "1234"
       responses:
         "200":
@@ -253,15 +253,15 @@ paths:
           description: "Sport's identifier."
           required: true
           schema:
-            type: "string"
+            type: "integer"
           example: "1234154"
         - name: "aid"
           in: "path"
           description: "Activity's identifier."
           required: true
           schema:
-            type: "string"
-          example: "1234348673498756"
+            type: "integer"
+          example: 89
       responses:
         "204":
           description: "Activity deleted successfully"
@@ -298,8 +298,8 @@ paths:
           description: "Sport's identifier."
           required: true
           schema:
-            type: "string"
-          example: "1234"
+            type: "integer"
+          example: 34
       responses:
         "201":
           description: "Created"
@@ -325,15 +325,15 @@ paths:
           description: "Sport's identifier."
           required: true
           schema:
-            type: "string"
-          example: "1234154"
+            type: "integer"
+          example: 67
         - name: "rid"
           in: query
           description: "Route's identifier."
           required: false
           schema:
-            type: "string"
-          example: "123"
+            type: "integer"
+          example: 45
         - name: "date"
           in: query
           description: "Date."
@@ -374,8 +374,8 @@ paths:
           description: "Sport's identifier."
           required: true
           schema:
-            type: "string"
-          example: "1234154"
+            type: "integer"
+          example: 123
       responses:
         "200":
           description: "sucessfull operation"
@@ -402,8 +402,8 @@ paths:
           description: "User's identifier."
           required: true
           schema:
-            type: "string"
-          example: "1234154"
+            type: "integer"
+          example: 14
       responses:
         "200":
           description: "sucessfull operation"
@@ -442,8 +442,8 @@ components:
           type: "string"
           example: "guest@gmail.com"
         id:
-          type: "string"
-          example: "guestID"
+          type: "integer"
+          example: 14
     UserList:
       type: "object"
       properties:
@@ -467,14 +467,14 @@ components:
           type: "string"
           example: "10a3fa15-6c12-43d0-9112-caa7eddf3249"
         id:
-          type: "string"
-          example: "2405411314925"
+          type: "integer"
+          example: 45
     Route:
       type: "object"
       properties:
         id:
-          type: "string"
-          example: "7974766397186"
+          type: "integer"
+          example: 78
         startLocation:
           type: "string"
           example: "Lisboa"
@@ -485,8 +485,8 @@ components:
           type: "number"
           example: 20.0
         user:
-          type: "string"
-          example: "2405411314925"
+          type: "integer"
+          example: 45
     RouteList:
       type: "object"
       properties:
@@ -510,8 +510,8 @@ components:
       type: "object"
       properties:
         routeID:
-          type: "string"
-          example: "2405411314925"
+          type: "integer"
+          example: 123
     Sport:
       type: "object"
       required:
@@ -520,8 +520,8 @@ components:
         - user
       properties:
         id:
-          type: "string"
-          example: "3805411318478"
+          type: "integer"
+          example: 380
         name:
           type: "string"
           example: "Football"
@@ -529,8 +529,8 @@ components:
           type: "string"
           example: "Game played with feet."
         user:
-          type: "string"
-          example: "2405411314925"
+          type: "integer"
+          example: 14
     SportList:
       type: "object"
       properties:
@@ -553,8 +553,8 @@ components:
       type: "object"
       properties:
         sportID:
-          type: "string"
-          example: "123141245"
+          type: "integer"
+          example: 12314
     Activity:
       type: "object"
       required:
@@ -565,8 +565,8 @@ components:
         - user
       properties:
         id:
-          type: "string"
-          example: "2405411314925"
+          type: "integer"
+          example: 240
         date:
           type: "string"
           example: "2002-05-20"
@@ -574,14 +574,14 @@ components:
           type: "string"
           example: "02:10:32.123"
         sport:
-          type: "string"
-          example: "2405411314925"
+          type: "integer"
+          example: 56
         route:
-          type: "string"
-          example: "2405411314925"
+          type: "integer"
+          example: 25
         user:
-          type: "string"
-          example: "2405411314925"
+          type: "integer"
+          example: 24
     ActivityList:
       type: "object"
       properties:
@@ -602,11 +602,11 @@ components:
           type: "string"
           example: "2000-12-31"
         rid:
-          type: "string"
-          example: "2405411314925"
+          type: "integer"
+          example: 123
     ActivityIDResponse:
       type: "object"
       properties:
         activityID:
-          type: "string"
-          example: "123141245"
+          type: "integer"
+          example: 123141245

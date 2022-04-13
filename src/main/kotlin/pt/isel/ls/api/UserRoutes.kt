@@ -15,6 +15,9 @@ import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.service.UserServices
 import pt.isel.ls.service.dto.UserDTO
+import pt.isel.ls.utils.Param
+import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
 
@@ -22,8 +25,8 @@ class UserRoutes(
     private val userServices: UserServices
 ) {
 
-    @Serializable data class UserCreationInput(val name: String? = null, val email: String? = null)
-    @Serializable data class UserIDOutput(val authToken: String, val id: String)
+    @Serializable data class UserCreationInput(val name: Param = null, val email: Param = null)
+    @Serializable data class UserIDOutput(val authToken: UserToken, val id: UserID)
     @Serializable data class UserListOutput(val users: List<UserDTO>)
 
     companion object {

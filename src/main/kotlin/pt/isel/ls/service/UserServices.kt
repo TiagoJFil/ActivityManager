@@ -4,6 +4,7 @@ import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
+import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.getLoggerFor
@@ -60,12 +61,12 @@ class UserServices(
      * @return [UserDTO] the user identified by the given id
      * @throws IllegalArgumentException
      */
-    fun getUserByID(uid: UserID?): UserDTO {
+    fun getUserByID(uid: Param): UserDTO {
         logger.traceFunction(::getUserByID.name) { listOf(USER_ID_PARAM to uid) }
 
         val safeUserID = requireParameter(uid, USER_ID_PARAM)
-        requireIdInteger(safeUserID, USER_ID_PARAM)
-        return userRepository.getUserByID(safeUserID)?.toDTO()
+        val uidInt = requireIdInteger(safeUserID, USER_ID_PARAM)
+        return userRepository.getUserByID(uidInt)?.toDTO()
             ?: throw ResourceNotFound(RESOURCE_NAME, "$uid")
     }
 

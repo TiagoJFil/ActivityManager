@@ -66,10 +66,10 @@ class ActivityServices(
      */
     fun createActivity(
         token: UserToken?,
-        sportID: SportID?,
-        duration: String?,
-        date: String?,
-        rid: RouteID?
+        sportID: Param,
+        duration: Param,
+        date: Param,
+        rid: Param
     ): ActivityID {
         try {
             logger.traceFunction(::createActivity.name) {
@@ -89,19 +89,20 @@ class ActivityServices(
 
             val parsedDate: Date = Duration.format.parse(duration)
             val millis: Long = parsedDate.time
-            requireIdInteger(sid, SPORT_ID_PARAM)
+            val sidInt = requireIdInteger(sid, SPORT_ID_PARAM)
 
-            sportRepository.requireSport(sid)
+            sportRepository.requireSport(sidInt)
             userRepository.requireUser(userID)
-            rid?.let {
-                requireIdInteger(it, ROUTE_ID_PARAM)
-                routeRepository.requireRoute(rid)
+            val ridInt = rid?.let {
+                val ridInt = requireIdInteger(it, ROUTE_ID_PARAM)
+                routeRepository.requireRoute(ridInt)
+                ridInt
             }
             return activityRepository.addActivity(
                 date = safeDate.toLocalDate(),
                 duration = Duration(millis),
-                sportID = sid,
-                routeID = rid,
+                sportID = sidInt,
+                routeID = ridInt,
                 userID = userID
             )
         } catch (e: ParseException) {
@@ -117,12 +118,12 @@ class ActivityServices(
      * @param activityID the unique identifier of the activity
      * @return [ActivityDTO] with the activity that matches the given id
      */
-    fun getActivity(activityID: ActivityID?): ActivityDTO {
+    fun getActivity(activityID: Param): ActivityDTO {
         logger.traceFunction(::getActivity.name) { listOf(ACTIVITY_ID_PARAM to activityID) }
         val safeActivityID = requireParameter(activityID, ACTIVITY_ID_PARAM)
-        requireIdInteger(safeActivityID, ACTIVITY_ID_PARAM)
+        val aidInt = requireIdInteger(safeActivityID, ACTIVITY_ID_PARAM)
 
-        return activityRepository.getActivity(safeActivityID)?.toDTO()
+        return activityRepository.getActivity(aidInt)?.toDTO()
             ?: throw ResourceNotFound(RESOURCE_NAME, safeActivityID)
     }
 
@@ -132,14 +133,14 @@ class ActivityServices(
      * @param uid the unique identifier of the user that created the activity
      * @return [List] of [ActivityDTO] with all the activities created by the user that matches the given id
      */
-    fun getActivitiesByUser(uid: UserID?): List<ActivityDTO> {
+    fun getActivitiesByUser(uid: Param): List<ActivityDTO> {
         logger.traceFunction(::getActivitiesByUser.name) { listOf("userID" to uid) }
         val safeUID = requireParameter(uid, USER_ID_PARAM)
 
-        requireIdInteger(safeUID, USER_ID_PARAM)
-        userRepository.requireUser(safeUID)
+        val uidInt = requireIdInteger(safeUID, USER_ID_PARAM)
+        userRepository.requireUser(uidInt)
 
-        return activityRepository.getActivitiesByUser(safeUID)
+        return activityRepository.getActivitiesByUser(uidInt)
             .map(Activity::toDTO)
     }
 
@@ -154,7 +155,7 @@ class ActivityServices(
      *
      * @return [List] of [ActivityDTO]
      */
-    fun getActivities(sid: SportID?, orderBy: Param, date: Param, rid: RouteID?): List<ActivityDTO> {
+    fun getActivities(sid: Param, orderBy: Param, date: Param, rid: Param): List<ActivityDTO> {
         logger.traceFunction(::getActivities.name) {
             listOf(
                 SPORT_ID_PARAM to sid,
@@ -164,7 +165,8 @@ class ActivityServices(
             )
         }
         val safeSID = requireParameter(sid, SPORT_ID_PARAM)
-        sportRepository.requireSport(safeSID)
+        val sidInt: SportID = requireIdInteger(safeSID, SPORT_ID_PARAM)
+        sportRepository.requireSport(sidInt)
 
         val orderByToSend = when (orderBy?.lowercase()) {
             "ascending", null -> Order.ASCENDING
@@ -174,9 +176,8 @@ class ActivityServices(
 
         requireNotBlankParameter(date, DATE_PARAM)
         requireNotBlankParameter(rid, ROUTE_ID_PARAM)
-        rid?.let { requireIdInteger(it, ROUTE_ID_PARAM) }
-        requireIdInteger(safeSID, SPORT_ID_PARAM)
-        rid?.let { routeRepository.requireRoute(rid) }
+        val ridInt: RouteID? = rid?.let { requireIdInteger(it, ROUTE_ID_PARAM) }
+        ridInt?.let { routeRepository.requireRoute(ridInt) }
 
         try {
             if (date != null) LocalDate.parse(date)
@@ -184,7 +185,7 @@ class ActivityServices(
             throw InvalidParameter(DATE_PARAM)
         }
 
-        return activityRepository.getActivities(safeSID, orderByToSend, date?.toLocalDate(), rid)
+        return activityRepository.getActivities(sidInt, orderByToSend, date?.toLocalDate(), ridInt)
             .map(Activity::toDTO)
     }
 
@@ -195,7 +196,7 @@ class ActivityServices(
      * @param sid The sport id of the activity to be deleted.
      * @return true if the activity was deleted, false otherwise.
      */
-    fun deleteActivity(token: UserToken?, aid: ActivityID?, sid: SportID?): Boolean {
+    fun deleteActivity(token: UserToken?, aid: Param, sid: Param): Boolean {
         logger.traceFunction(::deleteActivity.name) {
             listOf(
                 ACTIVITY_ID_PARAM to aid,
@@ -205,14 +206,14 @@ class ActivityServices(
         val userID = userRepository.requireAuthenticated(token)
         val safeSID = requireParameter(sid, SPORT_ID_PARAM)
         val safeAID = requireParameter(aid, ACTIVITY_ID_PARAM)
-        requireIdInteger(safeSID, SPORT_ID_PARAM)
-        sportRepository.requireSport(safeSID)
-        requireIdInteger(safeAID, ACTIVITY_ID_PARAM)
-        activityRepository.requireActivity(safeAID)
+        val sidInt = requireIdInteger(safeSID, SPORT_ID_PARAM)
+        sportRepository.requireSport(sidInt)
+        val aidInt = requireIdInteger(safeAID, ACTIVITY_ID_PARAM)
+        activityRepository.requireActivity(aidInt)
 
-        if (!ownsActivity(userID, safeAID)) throw UnauthenticatedError(USER_NOT_OWNER)
+        if (!ownsActivity(userID, aidInt)) throw UnauthenticatedError(USER_NOT_OWNER)
 
-        return activityRepository.deleteActivity(safeAID)
+        return activityRepository.deleteActivity(aidInt)
     }
 
     /**

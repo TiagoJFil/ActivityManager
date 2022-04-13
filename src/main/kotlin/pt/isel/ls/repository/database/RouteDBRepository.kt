@@ -5,7 +5,12 @@ import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.service.entities.Route
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
-import pt.isel.ls.utils.repository.*
+import pt.isel.ls.utils.repository.generatedKey
+import pt.isel.ls.utils.repository.ifNext
+import pt.isel.ls.utils.repository.setRoute
+import pt.isel.ls.utils.repository.toListOf
+import pt.isel.ls.utils.repository.toRoute
+import pt.isel.ls.utils.repository.transaction
 import java.sql.ResultSet
 import java.sql.Statement
 
@@ -41,7 +46,7 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
             val query = """INSERT INTO  $routeTable(startlocation,endlocation,distance,"user") VALUES (?, ?, ?, ?)"""
             prepareStatement(query, Statement.RETURN_GENERATED_KEYS).use { stmt ->
                 stmt.apply {
-                    setRoute(startLocation, endLocation, distance, userID.toInt())
+                    setRoute(startLocation, endLocation, distance, userID)
                     executeUpdate()
                 }.generatedKey()
             }
@@ -79,7 +84,7 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
             val query = """SELECT * FROM $routeTable WHERE id = ?"""
             val pstmt = prepareStatement(query)
             pstmt.use { ps ->
-                ps.setInt(1, routeID.toInt())
+                ps.setInt(1, routeID)
                 val resultSet: ResultSet = ps.executeQuery()
                 resultSet.use { block(it) }
             }

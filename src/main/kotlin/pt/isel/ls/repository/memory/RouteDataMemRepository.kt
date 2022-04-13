@@ -12,7 +12,7 @@ class RouteDataMemRepository(testRoute: Route) : RouteRepository {
     /**
      * Mapping between the [RouteID] and [Route]
      */
-    private val routesMap = mutableMapOf<Int, Route>(testRoute.id.toInt() to testRoute)
+    private val routesMap = mutableMapOf<Int, Route>(testRoute.id to testRoute)
 
     /**
      * Gets all the existing routes.
@@ -35,9 +35,9 @@ class RouteDataMemRepository(testRoute: Route) : RouteRepository {
         userID: UserID
     ): RouteID {
         val routeID = ++currentID
-        val route = Route(routeID.toString(), startLocation, endLocation, distance, userID)
+        val route = Route(routeID, startLocation, endLocation, distance, userID)
         routesMap[routeID] = route
-        return routeID.toString()
+        return routeID
     }
 
     /**
@@ -46,7 +46,7 @@ class RouteDataMemRepository(testRoute: Route) : RouteRepository {
      * @param routeID the unique identifier of the route to get
      * @return [Route] the route object or null if the id doesn't exist
      */
-    override fun getRoute(routeID: RouteID): Route? = routesMap[routeID.toInt()]
+    override fun getRoute(routeID: RouteID): Route? = routesMap[routeID]
 
     /**
      * Verifies if a route with the given id exists in the repository.
@@ -54,5 +54,5 @@ class RouteDataMemRepository(testRoute: Route) : RouteRepository {
      * @return [Boolean] True if the route exists, false otherwise.
      */
     override fun hasRoute(routeID: RouteID): Boolean =
-        routesMap[routeID.toInt()] != null
+        routesMap[routeID] != null
 }

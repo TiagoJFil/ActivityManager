@@ -4,6 +4,7 @@ import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.RouteDTO
 import pt.isel.ls.service.entities.Route
+import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.getLoggerFor
@@ -65,13 +66,13 @@ class RouteServices(
      * @param rid the unique id that identifies the route
      * @return [RouteDTO] the route identified by the given id
      */
-    fun getRoute(rid: RouteID?): RouteDTO {
+    fun getRoute(rid: Param): RouteDTO {
         logger.traceFunction(::getRoute.name) { listOf(ROUTE_ID_PARAM to rid) }
 
         val safeRouteID = requireParameter(rid, ROUTE_ID_PARAM)
-        requireIdInteger(safeRouteID, ROUTE_ID_PARAM)
+        val ridInt: RouteID = requireIdInteger(safeRouteID, ROUTE_ID_PARAM)
 
-        return routeRepository.getRoute(safeRouteID)?.toDTO()
+        return routeRepository.getRoute(ridInt)?.toDTO()
             ?: throw ResourceNotFound(RESOURCE_NAME, "$rid")
     }
 }

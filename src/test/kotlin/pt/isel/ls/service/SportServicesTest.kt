@@ -28,7 +28,7 @@ class SportServicesTest {
     @Test
     fun `get a sport`() {
         val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", "A game played with feet")
-        val sport = sportsServices.getSport(sportID)
+        val sport = sportsServices.getSport(sportID.toString())
         val expected = SportDTO(sportID, "Football", "A game played with feet", guestUser.id)
         assertEquals(expected, sport)
     }
@@ -52,7 +52,7 @@ class SportServicesTest {
     @Test
     fun `create a sport without description is allowed`() {
         val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", null)
-        val sport = sportsServices.getSport(sportID)
+        val sport = sportsServices.getSport(sportID.toString())
         val expected = SportDTO(sportID, "Football", null, guestUser.id)
         assertEquals(expected, sport)
     }
@@ -60,7 +60,7 @@ class SportServicesTest {
     @Test
     fun `create a sport with blank description is allowed`() {
         val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", "")
-        val sport = sportsServices.getSport(sportID)
+        val sport = sportsServices.getSport(sportID.toString())
         val expected = SportDTO(sportID, "Football", null, guestUser.id)
         assertEquals(expected, sport)
     }
@@ -69,8 +69,8 @@ class SportServicesTest {
     fun `create multiple sports with same name is allowed`() {
         val sportID1 = sportsServices.createSport(GUEST_TOKEN, "Football", "A game played with feet")
         val sportID2 = sportsServices.createSport(GUEST_TOKEN, "Football", "A game played with feet")
-        val sport1 = sportsServices.getSport(sportID1)
-        val sport2 = sportsServices.getSport(sportID2)
+        val sport1 = sportsServices.getSport(sportID1.toString())
+        val sport2 = sportsServices.getSport(sportID2.toString())
         val expected1 = SportDTO(sportID1, "Football", "A game played with feet", guestUser.id)
         val expected2 = SportDTO(sportID2, "Football", "A game played with feet", guestUser.id)
         assertEquals(expected1, sport1)
@@ -83,7 +83,7 @@ class SportServicesTest {
 
         val sports = (1..1000).map { i ->
             val sportID = sportsServices.createSport(GUEST_TOKEN, "Football$i", "A game played with feet")
-            sportsServices.getSport(sportID)
+            sportsServices.getSport(sportID.toString())
         }
         val allSports = listOf(testSport.toDTO()) + sports
         assertEquals(1001, sportsServices.getSports().size)

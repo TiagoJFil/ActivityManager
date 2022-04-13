@@ -19,6 +19,7 @@ import pt.isel.ls.config.guestUser
 import pt.isel.ls.config.testRoute
 import pt.isel.ls.service.dto.HttpError
 import pt.isel.ls.service.dto.RouteDTO
+import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -104,7 +105,7 @@ class RouteApiTests {
         val distance = 127.8
 
         val creationBodies = List(1000) { RouteCreationInput("Lisboa", "Fátima", 127.8) }
-        val routeIds: List<String> = creationBodies.map { testClient.createRoute(it).routeID }
+        val routeIds: List<RouteID> = creationBodies.map { testClient.createRoute(it).routeID }
 
         val expected = routeIds.map { RouteDTO(id = it, start, end, distance, guestUser.id) }
         val routeList = getRequest<RouteListOutput>(testClient, ROUTE_PATH, Response::expectOK).routes

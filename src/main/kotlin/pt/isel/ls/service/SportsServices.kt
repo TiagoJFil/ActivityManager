@@ -4,6 +4,7 @@ import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.SportDTO
 import pt.isel.ls.service.entities.Sport
+import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.getLoggerFor
@@ -31,12 +32,12 @@ class SportsServices(
      * @param sid the id that identifies the [Sport] to get
      * @return [Sport] the sport identified by the given id
      */
-    fun getSport(sid: SportID?): SportDTO {
+    fun getSport(sid: Param): SportDTO {
         logger.traceFunction(::getSport.name) { listOf(SPORT_ID_PARAM to sid) }
 
         val safeSportID = requireParameter(sid, SPORT_ID_PARAM)
-        requireIdInteger(safeSportID, SPORT_ID_PARAM)
-        return sportsRepository.getSportByID(safeSportID)?.toDTO()
+        val sidInt: SportID = requireIdInteger(safeSportID, SPORT_ID_PARAM)
+        return sportsRepository.getSportByID(sidInt)?.toDTO()
             ?: throw ResourceNotFound(RESOURCE_NAME, safeSportID)
     }
 

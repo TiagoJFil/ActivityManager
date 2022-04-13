@@ -13,7 +13,7 @@ class SportDataMemRepository(testSport: Sport) : SportRepository {
     /**
      * Mapping between [SportID] and [Sport]
      */
-    private val sportsMap = mutableMapOf<Int, Sport>(testSport.id.toInt() to testSport)
+    private val sportsMap = mutableMapOf<Int, Sport>(testSport.id to testSport)
 
     /**
      * Adds a new sport to the repository.
@@ -24,9 +24,9 @@ class SportDataMemRepository(testSport: Sport) : SportRepository {
      */
     override fun addSport(name: String, description: String?, userID: UserID): SportID {
         val sportID = ++currentID
-        val sport = Sport(sportID.toString(), name, description, userID)
+        val sport = Sport(sportID, name, description, userID)
         sportsMap[sportID] = sport
-        return sportID.toString()
+        return sportID
     }
 
     /**
@@ -40,10 +40,10 @@ class SportDataMemRepository(testSport: Sport) : SportRepository {
      * @param sportID the unique number that identifies the sport
      * @return A [SportDTO] object or null if there is no sport identified by the [sportID]
      */
-    override fun getSportByID(sportID: SportID): Sport? = sportsMap[sportID.toInt()]
+    override fun getSportByID(sportID: SportID): Sport? = sportsMap[sportID]
 
     /**
      * Checks if a sport identified by [sportID] exists.
      */
-    override fun hasSport(sportID: SportID): Boolean = sportsMap.containsKey(sportID.toInt())
+    override fun hasSport(sportID: SportID): Boolean = sportsMap.containsKey(sportID)
 }

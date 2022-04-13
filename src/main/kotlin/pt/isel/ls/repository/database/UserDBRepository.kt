@@ -6,7 +6,11 @@ import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
-import pt.isel.ls.utils.repository.*
+import pt.isel.ls.utils.repository.generatedKey
+import pt.isel.ls.utils.repository.ifNext
+import pt.isel.ls.utils.repository.toListOf
+import pt.isel.ls.utils.repository.toUser
+import pt.isel.ls.utils.repository.transaction
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.Statement
@@ -22,17 +26,17 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
      * @param userID the id of the user to be returned.
      * @return the user with the given id.
      */
-    override fun getUserByID(userID: String): User? =
+    override fun getUserByID(userID: UserID): User? =
         dataSource.connection.transaction {
             val email: String = prepareStatement("""SELECT email FROM $emailTable WHERE "user" = ?""").use { statement ->
-                statement.setInt(1, userID.toInt())
+                statement.setInt(1, userID)
                 statement.executeQuery().use { emailResultSet ->
                     emailResultSet.ifNext { emailResultSet.getString("email") } ?: return null
                 }
             }
 
             val user: User? = prepareStatement("""SELECT * FROM $userTable WHERE id = ?""").use { statement ->
-                statement.setInt(1, userID.toInt())
+                statement.setInt(1, userID)
                 statement.executeQuery().use { userResultSet ->
                     userResultSet.ifNext {
                         userResultSet.toUser(Email(email))
@@ -85,7 +89,7 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
                 statement.executeQuery("""SELECT * FROM $userTable """).use { resultSet ->
                     emails.map { email ->
                         resultSet.ifNext {
-                            val userID = resultSet.getInt("id").toString()
+                            val userID = resultSet.getInt("id")
                             val name = resultSet.getString("name")
                             User(name, email, userID)
                         } ?: throw IllegalStateException("Database has inconsistent data on emails and users")
@@ -136,7 +140,7 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
                 stmt.setString(1, token)
                 stmt.executeQuery().use { resultSet ->
                     resultSet.ifNext {
-                        resultSet.getInt("user").toString()
+                        resultSet.getInt("user")
                     }
                 }
             }
@@ -152,7 +156,7 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
         dataSource.connection.transaction {
             val statement = prepareStatement("""SELECT * FROM $userTable WHERE id = ?""")
             statement.use { stmt ->
-                stmt.setInt(1, userID.toInt())
+                stmt.setInt(1, userID)
                 stmt.executeQuery().use { resultSet ->
                     return resultSet.next()
                 }

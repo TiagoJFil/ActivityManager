@@ -1,5 +1,6 @@
 package pt.isel.ls.utils.repository
 
+import pt.isel.ls.utils.ID
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
@@ -14,7 +15,7 @@ inline fun <T> tryDataBaseOperation(operation: () -> T): T {
     return try {
         operation()
     } catch (e: Exception) {
-        throw DataBaseAccessException("Error while accessing the database: ${e.message}")
+        throw DataBaseAccessException("Error while accessing the database: ${e.stackTraceToString()}")
     }
 }
 
@@ -48,9 +49,9 @@ inline fun <R> Connection.transaction(block: Connection.() -> R): R = tryDataBas
  * Gets the last generated key from the given [PreparedStatement].
  * Called after a successful insertion.
  */
-fun PreparedStatement.generatedKey(): String {
+fun PreparedStatement.generatedKey(): ID {
     generatedKeys.use {
         if (!it.next()) throw IllegalStateException("No generated key")
-        return it.getInt(1).toString()
+        return it.getInt(1)
     }
 }

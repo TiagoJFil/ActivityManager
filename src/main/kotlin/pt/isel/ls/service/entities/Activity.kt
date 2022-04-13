@@ -7,7 +7,8 @@ import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.TimeZone
 
 /**
  * Represent an activity

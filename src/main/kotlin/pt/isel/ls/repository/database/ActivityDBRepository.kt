@@ -2,17 +2,26 @@ package pt.isel.ls.repository.database
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
-import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.service.entities.Activity.Duration
-import pt.isel.ls.utils.*
-import pt.isel.ls.utils.repository.*
+import pt.isel.ls.utils.ActivityID
+import pt.isel.ls.utils.Order
+import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.SportID
+import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.repository.generatedKey
+import pt.isel.ls.utils.repository.ifNext
+import pt.isel.ls.utils.repository.setActivity
+import pt.isel.ls.utils.repository.toActivity
+import pt.isel.ls.utils.repository.toListOf
+import pt.isel.ls.utils.repository.transaction
 import java.sql.Date
 import java.sql.ResultSet
 import java.sql.Statement
+import javax.sql.DataSource
 
-class ActivityDBRepository(private val dataSource: PGSimpleDataSource, suffix: String) : ActivityRepository {
+class ActivityDBRepository(private val dataSource: DataSource, suffix: String) : ActivityRepository {
 
     private val activityTable = "activity$suffix"
 
@@ -54,7 +63,7 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource, suffix: S
             val pstmt = prepareStatement(query)
             pstmt.use { ps ->
                 ps.apply {
-                    setInt(1, userID.toInt())
+                    setInt(1, userID)
                 }
                 val rs = ps.executeQuery()
                 return rs.toListOf(ResultSet::toActivity)
@@ -82,13 +91,13 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource, suffix: S
             pstmt.use { ps ->
                 ps.apply {
 
-                    setInt(1, sid.toInt())
+                    setInt(1, sid)
 
                     date?.let {
                         setDate(2, Date.valueOf(it.toJavaLocalDate()))
                     }
 
-                    rid?.toIntOrNull()?.let { rid ->
+                    rid?.let { rid ->
                         setInt(ridIdx, rid)
                     }
                 }
@@ -121,15 +130,14 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource, suffix: S
      * @param activityID the id of the activity to delete
      * @return [Boolean] true if it deleted successfully
      */
-    override fun deleteActivity(activityID: ActivityID): Boolean {
-        dataSource.connection.transaction {
+    override fun deleteActivity(activityID: ActivityID): Boolean =
+        dataSource.connection.transaction<Boolean> {
             val query = """DELETE FROM $activityTable WHERE id = ?"""
             prepareStatement(query).use { ps ->
-                ps.setInt(1, activityID.toInt())
+                ps.setInt(1, activityID)
                 return ps.executeUpdate() == 1
             }
         }
-    }
 
     /**
      * Gets the activity that matches the given unique activity identifier.
@@ -164,7 +172,7 @@ class ActivityDBRepository(private val dataSource: PGSimpleDataSource, suffix: S
             val query = """SELECT * FROM $activityTable WHERE id = ?"""
             val pstmt = prepareStatement(query)
             pstmt.use { ps ->
-                ps.setInt(1, activityID.toInt())
+                ps.setInt(1, activityID)
                 val resultSet: ResultSet = ps.executeQuery()
                 resultSet.use { block(it) }
             }

@@ -3,7 +3,11 @@ package pt.isel.ls.repository.memory
 import kotlinx.datetime.LocalDate
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.service.entities.Activity
-import pt.isel.ls.utils.*
+import pt.isel.ls.utils.ActivityID
+import pt.isel.ls.utils.Order
+import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.SportID
+import pt.isel.ls.utils.UserID
 
 class ActivityDataMemRepository(testActivity: Activity) : ActivityRepository {
 
@@ -31,9 +35,9 @@ class ActivityDataMemRepository(testActivity: Activity) : ActivityRepository {
         userID: UserID
     ): ActivityID {
         val activityID = ++currentID
-        val activity = Activity(activityID.toString(), date, duration, sportID, routeID, userID)
+        val activity = Activity(activityID, date, duration, sportID, routeID, userID)
         activitiesMap[activity.id] = activity
-        return activityID.toString()
+        return activityID
     }
 
     /**

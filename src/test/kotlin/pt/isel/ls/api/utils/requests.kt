@@ -3,7 +3,11 @@ package pt.isel.ls.api.utils
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.http4k.core.*
+import org.http4k.core.Headers
+import org.http4k.core.HttpHandler
+import org.http4k.core.Method
+import org.http4k.core.Request
+import org.http4k.core.Response
 
 /**
  * Makes a get request from [backend] handler

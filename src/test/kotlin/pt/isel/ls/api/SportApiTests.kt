@@ -18,6 +18,7 @@ import pt.isel.ls.config.guestUser
 import pt.isel.ls.config.testSport
 import pt.isel.ls.service.dto.HttpError
 import pt.isel.ls.service.dto.SportDTO
+import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.Test
 import kotlin.test.assertContains
@@ -89,7 +90,7 @@ class SportApiTests {
         val description = "Played with a cue"
 
         val creationBodies = List(1000) { SportCreationInput(name, description) }
-        val sportsIds: List<String> = creationBodies.map { testClient.createSport(it).sportID }
+        val sportsIds: List<SportID> = creationBodies.map { testClient.createSport(it).sportID }
 
         val expected = sportsIds.map { SportDTO(id = it, name, description, guestUser.id) }
         val sportList = getRequest<SportListOutput>(testClient, SPORT_PATH, Response::expectOK).sports

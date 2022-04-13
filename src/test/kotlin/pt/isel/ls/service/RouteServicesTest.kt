@@ -46,7 +46,7 @@ class RouteServicesTest {
         val routeID: RouteID =
             routeServices.createRoute(token = GUEST_TOKEN, startLocation = "a", endLocation = "b", distance = 10.0)
 
-        val routeCreated = routeServices.getRoute(routeID)
+        val routeCreated = routeServices.getRoute(routeID.toString())
         val routeExpected = RouteDTO(id = routeID, user = guestUser.id, startLocation = "a", endLocation = "b", distance = 10.0)
         assertEquals(routeExpected, routeCreated)
     }

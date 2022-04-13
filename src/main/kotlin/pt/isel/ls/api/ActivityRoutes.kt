@@ -14,7 +14,7 @@ import org.http4k.routing.routes
 import pt.isel.ls.service.ActivityServices
 import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.utils.ActivityID
-import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
@@ -23,9 +23,9 @@ class ActivityRoutes(
     private val activityServices: ActivityServices
 ) {
     @Serializable data class ActivityCreationInput(
-        val duration: String? = null,
-        val date: String? = null,
-        val rid: RouteID? = null,
+        val duration: Param = null,
+        val date: Param = null,
+        val rid: Param = null,
     )
     @Serializable data class ActivityIDOutput(val activityID: ActivityID)
     @Serializable data class ActivityListOutput(val activities: List<ActivityDTO>)
@@ -45,7 +45,13 @@ class ActivityRoutes(
         val activityBody = Json.decodeFromString<ActivityCreationInput>(request.bodyString())
         val token: UserToken? = getToken(request)
 
-        val activityId = activityServices.createActivity(token, sportID, activityBody.duration, activityBody.date, activityBody.rid)
+        val activityId = activityServices.createActivity(
+            token,
+            sportID,
+            activityBody.duration,
+            activityBody.date,
+            activityBody.rid
+        )
         return Response(Status.CREATED)
             .header("content-type", "application/json")
             .body(Json.encodeToString(ActivityIDOutput(activityId)))

@@ -8,12 +8,12 @@ import pt.isel.ls.service.entities.User
 
 val guestUser = User(
     name = "guest",
-    id = 0.toString(),
+    id = 0,
     email = User.Email("guest@gmail.com")
 )
 
 val testRoute = Route(
-    id = 0.toString(),
+    id = 0,
     startLocation = "testStartLocation",
     endLocation = "testEndLocation",
     distance = 23.0,
@@ -21,14 +21,14 @@ val testRoute = Route(
 )
 
 val testSport = Sport(
-    id = 0.toString(),
+    id = 0,
     name = "testSport",
     description = "testDescription",
     user = guestUser.id
 )
 
 val testActivity = Activity(
-    id = 0.toString(),
+    id = 0,
     sport = testSport.id,
     route = testRoute.id,
     user = guestUser.id,

@@ -38,9 +38,9 @@ fun requireParameter(parameter: String?, parameterName: String): String {
     return parameter
 }
 
-fun requireIdInteger(id: String, parameterName: String) {
-    if (id.toIntOrNull() == null) throw InvalidParameter("$parameterName must be an integer")
-}
+fun requireIdInteger(id: String, parameterName: String): Int =
+    id.toIntOrNull()
+        ?: throw InvalidParameter("$parameterName must be an integer")
 
 /**
  * Ensures that there is a token associated with the user.
@@ -61,7 +61,7 @@ fun UserRepository.requireAuthenticated(token: UserToken?): UserID {
  * @throws ResourceNotFound if the sport does not exist.
  */
 fun SportRepository.requireSport(sportID: SportID) {
-    if (!hasSport(sportID)) throw ResourceNotFound("Sport", sportID)
+    if (!hasSport(sportID)) throw ResourceNotFound("Sport", sportID.toString())
 }
 
 /**
@@ -71,7 +71,7 @@ fun SportRepository.requireSport(sportID: SportID) {
  * @throws ResourceNotFound if the user does not exist.
  */
 fun UserRepository.requireUser(userID: UserID) {
-    if (!hasUser(userID)) throw ResourceNotFound("User", userID)
+    if (!hasUser(userID)) throw ResourceNotFound("User", userID.toString())
 }
 
 /**
@@ -81,7 +81,7 @@ fun UserRepository.requireUser(userID: UserID) {
  * @throws ResourceNotFound if the user does not exist.
  */
 fun ActivityRepository.requireActivity(activityID: ActivityID) {
-    if (!hasActivity(activityID)) throw ResourceNotFound("Activity", activityID)
+    if (!hasActivity(activityID)) throw ResourceNotFound("Activity", activityID.toString())
 }
 
 /**
@@ -91,7 +91,7 @@ fun ActivityRepository.requireActivity(activityID: ActivityID) {
  * @throws ResourceNotFound if the route does not exist.
  */
 fun RouteRepository.requireRoute(routeID: RouteID) {
-    if (!hasRoute(routeID)) throw ResourceNotFound("Route", routeID)
+    if (!hasRoute(routeID)) throw ResourceNotFound("Route", routeID.toString())
 }
 
 /**

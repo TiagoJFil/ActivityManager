@@ -13,28 +13,28 @@ import java.sql.ResultSet
  * Convert a [ResultSet] to a [Route]
  */
 fun ResultSet.toRoute(): Route = Route(
-    id = getString("id"),
+    id = getInt("id"),
     startLocation = getString("startlocation"),
     endLocation = getString("endlocation"),
     distance = getDouble("distance"),
-    user = getString("user")
+    user = getInt("user")
 )
 
 /**
  * Convert a [ResultSet] to a [Sport]
  */
 fun ResultSet.toSport() = Sport(
-    id = getInt("id").toString(),
+    id = getInt("id"),
     name = getString("name"),
     description = getString("description"),
-    user = getInt("user").toString()
+    user = getInt("user")
 )
 
 /**
  * Convert a [ResultSet] to a [User]
  */
 fun ResultSet.toUser(email: Email) = User(
-    id = getInt("id").toString(),
+    id = getInt("id"),
     name = getString("name"),
     email = email,
 )
@@ -43,12 +43,12 @@ fun ResultSet.toUser(email: Email) = User(
  * Convert a [ResultSet] to an [Activity]
  */
 fun ResultSet.toActivity() = Activity(
-    id = getString("id"),
+    id = getInt("id"),
     date = getString("date").toLocalDate(),
     duration = Duration(getLong("duration")),
-    sport = getInt("sport").toString(),
-    route = getInt("route").let { if (it == 0) null else it.toString() },
-    user = getInt("user").toString()
+    sport = getInt("sport"),
+    route = getInt("route").let { if (it == 0) null else it },
+    user = getInt("user")
 )
 
 /**

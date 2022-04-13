@@ -12,7 +12,7 @@ interface UserRepository {
      * @param userID the id of the user to be returned.
      * @return the user with the given id.
      */
-    fun getUserByID(userID: String): User?
+    fun getUserByID(userID: UserID): User?
 
     /**
      * Adds a new user to the repository.

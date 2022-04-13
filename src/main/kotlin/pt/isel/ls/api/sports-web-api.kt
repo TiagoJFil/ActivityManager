@@ -94,7 +94,7 @@ private val onErrorFilter = Filter { handler ->
                     baseResponse
                 }
                 is InternalError -> {
-                    eLogger.warnStatus(INTERNAL_SERVER_ERROR, appError.message ?: "Internal error")
+                    eLogger.warnStatus(INTERNAL_SERVER_ERROR, appError.message)
                     baseResponse.status(INTERNAL_SERVER_ERROR)
                 }
             }
