@@ -3,13 +3,13 @@ package pt.isel.ls.service
 import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.SportDTO
-import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireParameter
+import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.traceFunction
 
 class SportsServices(

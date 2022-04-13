@@ -3,13 +3,13 @@ package pt.isel.ls.service
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.RouteDTO
-import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.service.entities.Route
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireParameter
+import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.traceFunction
 
 class RouteServices(

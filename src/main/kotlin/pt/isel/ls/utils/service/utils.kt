@@ -90,4 +90,3 @@ fun RouteRepository.requireRoute(routeID: RouteID) {
  * Generates a random UUID.
  */
 fun generateUUId() = UUID.randomUUID().toString()
-

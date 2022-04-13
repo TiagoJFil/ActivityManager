@@ -3,7 +3,11 @@ package pt.isel.ls.repository
 import kotlinx.datetime.LocalDate
 import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.service.entities.Activity
-import pt.isel.ls.utils.*
+import pt.isel.ls.utils.ActivityID
+import pt.isel.ls.utils.Order
+import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.SportID
+import pt.isel.ls.utils.UserID
 
 interface ActivityRepository {
 

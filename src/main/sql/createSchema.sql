@@ -9,7 +9,7 @@ create table email_prod(
     foreign key ("user") references user_prod(id)
 );
 
-create table tokens_prod(
+create table token_prod(
     token char(36) primary key,
     "user" int not null,
     foreign key ("user") references user_prod(id)

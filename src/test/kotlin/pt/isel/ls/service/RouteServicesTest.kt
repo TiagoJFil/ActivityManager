@@ -7,8 +7,8 @@ import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.config.testRoute
 import pt.isel.ls.service.dto.RouteDTO
-import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 

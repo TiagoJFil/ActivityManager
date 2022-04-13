@@ -9,8 +9,6 @@ import pt.isel.ls.api.getAppRoutes
 import pt.isel.ls.config.EnvironmentType
 import pt.isel.ls.config.getEnv
 
-
-
 fun main() {
 
     val env = EnvironmentType.PROD.getEnv()

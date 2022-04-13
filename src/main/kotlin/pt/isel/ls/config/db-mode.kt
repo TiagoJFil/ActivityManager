@@ -34,7 +34,7 @@ fun DBMODE.source(): DbSource =
 
 private data class DbInfo(val url: String, val user: String, val password: String, val dataBase: String)
 
-private fun getDbConnectionInfo(): DbInfo{
+private fun getDbConnectionInfo(): DbInfo {
     val requireEnvVariable = { name: String ->
         System.getenv(name) ?: error("Please specify JDBC_DATABASE_URL environment variable")
     }

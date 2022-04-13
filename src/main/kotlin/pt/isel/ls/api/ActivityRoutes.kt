@@ -13,7 +13,11 @@ import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.service.ActivityServices
 import pt.isel.ls.service.dto.ActivityDTO
-import pt.isel.ls.utils.*
+import pt.isel.ls.utils.ActivityID
+import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.getLoggerFor
+import pt.isel.ls.utils.infoLogRequest
 
 class ActivityRoutes(
     private val activityServices: ActivityServices
