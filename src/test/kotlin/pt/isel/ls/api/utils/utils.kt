@@ -11,9 +11,9 @@ import pt.isel.ls.api.SportRoutes.SportCreationInput
 import pt.isel.ls.api.SportRoutes.SportIDOutput
 import pt.isel.ls.api.UserRoutes.UserCreationInput
 import pt.isel.ls.api.UserRoutes.UserIDOutput
+import pt.isel.ls.config.Environment
 import pt.isel.ls.config.EnvironmentType
 import pt.isel.ls.config.GUEST_TOKEN
-import pt.isel.ls.config.Environment
 import pt.isel.ls.config.getEnv
 import pt.isel.ls.utils.SportID
 
@@ -56,9 +56,9 @@ fun HttpHandler.createUser(userCreationBody: UserCreationInput): UserIDOutput =
  * @param activityCreationBody the body of the activity to be created. Must be valid.
  */
 fun HttpHandler.createActivity(
-        activityCreationBody: ActivityCreationInput,
-        sportID: SportID,
-        token: String = GUEST_TOKEN
+    activityCreationBody: ActivityCreationInput,
+    sportID: SportID,
+    token: String = GUEST_TOKEN
 ): ActivityIDOutput =
     postRequest<ActivityCreationInput, ActivityIDOutput>(
         this,

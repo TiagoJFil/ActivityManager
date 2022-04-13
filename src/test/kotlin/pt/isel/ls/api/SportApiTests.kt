@@ -2,8 +2,17 @@ package pt.isel.ls.api
 
 import org.http4k.core.Response
 import org.junit.After
-import pt.isel.ls.api.SportRoutes.*
-import pt.isel.ls.api.utils.*
+import pt.isel.ls.api.SportRoutes.SportCreationInput
+import pt.isel.ls.api.SportRoutes.SportListOutput
+import pt.isel.ls.api.utils.SPORT_PATH
+import pt.isel.ls.api.utils.TEST_ENV
+import pt.isel.ls.api.utils.authHeader
+import pt.isel.ls.api.utils.createSport
+import pt.isel.ls.api.utils.expectBadRequest
+import pt.isel.ls.api.utils.expectNotFound
+import pt.isel.ls.api.utils.expectOK
+import pt.isel.ls.api.utils.getRequest
+import pt.isel.ls.api.utils.postRequest
 import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.config.testSport

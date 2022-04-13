@@ -14,6 +14,7 @@ import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.service.entities.Activity.Duration
 import pt.isel.ls.utils.*
 import pt.isel.ls.utils.service.*
+import pt.isel.ls.utils.service.toDTO
 import java.text.ParseException
 import java.util.*
 

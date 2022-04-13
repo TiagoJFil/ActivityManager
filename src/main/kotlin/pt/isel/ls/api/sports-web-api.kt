@@ -3,7 +3,12 @@ package pt.isel.ls.api
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.http4k.core.*
+import org.http4k.core.Filter
+import org.http4k.core.HttpHandler
+import org.http4k.core.Method
+import org.http4k.core.Request
+import org.http4k.core.Response
+import org.http4k.core.Status
 import org.http4k.core.Status.Companion.BAD_REQUEST
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.NOT_FOUND
@@ -15,7 +20,12 @@ import org.http4k.routing.routes
 import org.http4k.routing.static
 import org.slf4j.LoggerFactory
 import pt.isel.ls.config.Environment
-import pt.isel.ls.service.*
+import pt.isel.ls.service.AppError
+import pt.isel.ls.service.InternalError
+import pt.isel.ls.service.InvalidParameter
+import pt.isel.ls.service.MissingParameter
+import pt.isel.ls.service.ResourceNotFound
+import pt.isel.ls.service.UnauthenticatedError
 import pt.isel.ls.service.dto.HttpError
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.repository.DataBaseAccessException
