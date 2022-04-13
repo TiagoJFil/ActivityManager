@@ -19,7 +19,7 @@ import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.service.dto.HttpError
 import pt.isel.ls.service.dto.UserDTO
-import pt.isel.ls.utils.repository.generateRandomId
+import pt.isel.ls.utils.service.generateUUId
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.Test
 import kotlin.test.assertContains

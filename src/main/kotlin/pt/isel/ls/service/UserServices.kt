@@ -63,13 +63,10 @@ class UserServices(
     fun getUserByID(uid: UserID?): UserDTO {
         logger.traceFunction(::getUserByID.name) { listOf(USER_ID_PARAM to uid) }
 
-
-
         val safeUserID = requireParameter(uid, USER_ID_PARAM)
         requireIdInteger(safeUserID, USER_ID_PARAM)
         return userRepository.getUserByID(safeUserID)?.toDTO()
             ?: throw ResourceNotFound(RESOURCE_NAME, "$uid")
-
     }
 
     /**

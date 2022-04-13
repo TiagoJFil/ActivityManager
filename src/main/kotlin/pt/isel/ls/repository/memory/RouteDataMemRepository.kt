@@ -5,7 +5,7 @@ import pt.isel.ls.service.entities.Route
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
 
-class RouteDataMemRepository(testRoute: Route): RouteRepository {
+class RouteDataMemRepository(testRoute: Route) : RouteRepository {
 
     private var currentID = 0
 
@@ -29,11 +29,11 @@ class RouteDataMemRepository(testRoute: Route): RouteRepository {
      * @param userID The id of the user that created the route.
      */
     override fun addRoute(
-            startLocation: String,
-            endLocation: String,
-            distance: Double,
-            userID: UserID
-    ): RouteID{
+        startLocation: String,
+        endLocation: String,
+        distance: Double,
+        userID: UserID
+    ): RouteID {
         val routeID = ++currentID
         val route = Route(routeID.toString(), startLocation, endLocation, distance, userID)
         routesMap[routeID] = route
@@ -54,7 +54,5 @@ class RouteDataMemRepository(testRoute: Route): RouteRepository {
      * @return [Boolean] True if the route exists, false otherwise.
      */
     override fun hasRoute(routeID: RouteID): Boolean =
-            routesMap[routeID.toInt()] != null
-
+        routesMap[routeID.toInt()] != null
 }
-

@@ -3,7 +3,11 @@ package pt.isel.ls.service
 import org.junit.After
 import org.junit.Test
 import pt.isel.ls.api.utils.TEST_ENV
-import pt.isel.ls.config.*
+import pt.isel.ls.config.GUEST_TOKEN
+import pt.isel.ls.config.guestUser
+import pt.isel.ls.config.testActivity
+import pt.isel.ls.config.testRoute
+import pt.isel.ls.config.testSport
 import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertEquals

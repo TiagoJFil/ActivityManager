@@ -12,11 +12,26 @@ import pt.isel.ls.service.UserServices.Companion.USER_ID_PARAM
 import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.service.entities.Activity.Duration
-import pt.isel.ls.utils.*
-import pt.isel.ls.utils.service.*
+import pt.isel.ls.utils.ActivityID
+import pt.isel.ls.utils.Order
+import pt.isel.ls.utils.Param
+import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.SportID
+import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.getLoggerFor
+import pt.isel.ls.utils.service.requireActivity
+import pt.isel.ls.utils.service.requireAuthenticated
+import pt.isel.ls.utils.service.requireIdInteger
+import pt.isel.ls.utils.service.requireNotBlankParameter
+import pt.isel.ls.utils.service.requireParameter
+import pt.isel.ls.utils.service.requireRoute
+import pt.isel.ls.utils.service.requireSport
+import pt.isel.ls.utils.service.requireUser
 import pt.isel.ls.utils.service.toDTO
+import pt.isel.ls.utils.traceFunction
 import java.text.ParseException
-import java.util.*
+import java.util.Date
 
 class ActivityServices(
     private val activityRepository: ActivityRepository,
@@ -78,17 +93,17 @@ class ActivityServices(
 
             sportRepository.requireSport(sid)
             userRepository.requireUser(userID)
-            rid?.let{
+            rid?.let {
                 requireIdInteger(it, ROUTE_ID_PARAM)
                 routeRepository.requireRoute(rid)
             }
-                return activityRepository.addActivity(
-                    date = safeDate.toLocalDate(),
-                    duration = Duration(millis),
-                    sportID = sid,
-                    routeID = rid,
-                    userID = userID
-                )
+            return activityRepository.addActivity(
+                date = safeDate.toLocalDate(),
+                duration = Duration(millis),
+                sportID = sid,
+                routeID = rid,
+                userID = userID
+            )
         } catch (e: ParseException) {
             throw InvalidParameter(DURATION_INVALID_FORMAT)
         } catch (e: IllegalArgumentException) {
@@ -151,7 +166,6 @@ class ActivityServices(
         val safeSID = requireParameter(sid, SPORT_ID_PARAM)
         sportRepository.requireSport(safeSID)
 
-
         val orderByToSend = when (orderBy?.lowercase()) {
             "ascending", null -> Order.ASCENDING
             "descending" -> Order.DESCENDING
@@ -162,7 +176,7 @@ class ActivityServices(
         requireNotBlankParameter(rid, ROUTE_ID_PARAM)
         rid?.let { requireIdInteger(it, ROUTE_ID_PARAM) }
         requireIdInteger(safeSID, SPORT_ID_PARAM)
-        rid?.let {  routeRepository.requireRoute(rid) }
+        rid?.let { routeRepository.requireRoute(rid) }
 
         try {
             if (date != null) LocalDate.parse(date)

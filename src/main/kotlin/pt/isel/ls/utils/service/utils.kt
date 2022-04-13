@@ -8,8 +8,12 @@ import pt.isel.ls.service.InvalidParameter
 import pt.isel.ls.service.MissingParameter
 import pt.isel.ls.service.ResourceNotFound
 import pt.isel.ls.service.UnauthenticatedError
-import pt.isel.ls.utils.*
-import java.util.*
+import pt.isel.ls.utils.ActivityID
+import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.SportID
+import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.UserToken
+import java.util.UUID
 
 /**
  * @param parameter the parameter to check.
@@ -34,8 +38,8 @@ fun requireParameter(parameter: String?, parameterName: String): String {
     return parameter
 }
 
-fun requireIdInteger(id:String, parameterName: String) {
-    if(id.toIntOrNull() == null) throw InvalidParameter("$parameterName must be an integer")
+fun requireIdInteger(id: String, parameterName: String) {
+    if (id.toIntOrNull() == null) throw InvalidParameter("$parameterName must be an integer")
 }
 
 /**

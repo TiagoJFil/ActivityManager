@@ -29,7 +29,6 @@ class DbSource(
     val activityRepository: ActivityRepository
 )
 
-
 private fun postgreSQL(suffix: String): DbSource {
 
     val dbInfo = dbConnectionInfo()

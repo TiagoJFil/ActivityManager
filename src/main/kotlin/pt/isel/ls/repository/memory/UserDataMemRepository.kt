@@ -11,7 +11,6 @@ import pt.isel.ls.utils.UserToken
 
 class UserDataMemRepository(guest: User) : UserRepository {
 
-
     private var currentID = 0
 
     /**
