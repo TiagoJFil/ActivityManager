@@ -1,0 +1,1653 @@
+{
+	"info": {
+		"_postman_id": "37ef200e-5096-4177-a9d9-03235140b65f",
+		"name": "Swagger Sports",
+		"description": "Api reference for Sports",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "{uid}",
+					"item": [
+						{
+							"name": "Get user by user ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:uid",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":uid"
+									],
+									"variable": [
+										{
+											"key": "uid",
+											"value": "20",
+											"description": "(Required) User's identifier."
+										}
+									]
+								},
+								"description": "Gets a user by it's identifier"
+							},
+							"response": [
+								{
+									"name": "successful operation",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/users/:uid",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"users",
+												":uid"
+											],
+											"variable": [
+												{
+													"key": "uid",
+													"value": "20",
+													"description": "(Required) User's identifier."
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"name\": \"guest\",\n  \"email\": \"guest@gmail.com\",\n  \"id\": 14\n}"
+								},
+								{
+									"name": "User not found",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/users/:uid",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"users",
+												":uid"
+											],
+											"variable": [
+												{
+													"key": "uid",
+													"value": "20",
+													"description": "(Required) User's identifier."
+												}
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"code\": 2000,\n  \"message\": \"Invalid parameter: email\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Get a list of activities from a user",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:uid/activities",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":uid",
+										"activities"
+									],
+									"variable": [
+										{
+											"key": "uid",
+											"value": "14",
+											"description": "(Required) User's identifier."
+										}
+									]
+								},
+								"description": "Gets the activities that the user match the given id"
+							},
+							"response": [
+								{
+									"name": "sucessfull operation",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/users/:uid/activities",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"users",
+												":uid",
+												"activities"
+											],
+											"variable": [
+												{
+													"key": "uid",
+													"value": "14",
+													"description": "(Required) User's identifier."
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"activities\": [\n    {\n      \"id\": 240,\n      \"date\": \"2002-05-20\",\n      \"duration\": \"02:10:32.123\",\n      \"sport\": 56,\n      \"user\": 24,\n      \"route\": 25\n    },\n    {\n      \"id\": 240,\n      \"date\": \"2002-05-20\",\n      \"duration\": \"02:10:32.123\",\n      \"sport\": 56,\n      \"user\": 24,\n      \"route\": 25\n    }\n  ]\n}"
+								},
+								{
+									"name": "User not found",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/users/:uid/activities",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"users",
+												":uid",
+												"activities"
+											],
+											"variable": [
+												{
+													"key": "uid",
+													"value": "14",
+													"description": "(Required) User's identifier."
+												}
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"code\": 2000,\n  \"message\": \"Invalid parameter: email\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Get all the users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": "Gets all the users"
+					},
+					"response": [
+						{
+							"name": "successful operation",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"users\": [\n    {\n      \"name\": \"guest\",\n      \"email\": \"guest@gmail.com\",\n      \"id\": 14\n    },\n    {\n      \"name\": \"guest\",\n      \"email\": \"guest@gmail.com\",\n      \"id\": 14\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Add a new user",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"testUser\",\n  \"email\": \"email@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": "Adds a new user with the given name and email and returns its identifier and auth token"
+					},
+					"response": [
+						{
+							"name": "A user has been sucessfully created!",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"testUser\",\n  \"email\": \"email@gmail.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"authToken\": \"10a3fa15-6c12-43d0-9112-caa7eddf3249\",\n  \"id\": 45\n}"
+						},
+						{
+							"name": "A parameter is missing or is incorrect",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"testUser\",\n  \"email\": \"email@gmail.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/users",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"code\": 2000,\n  \"message\": \"Invalid parameter: email\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "routes",
+			"item": [
+				{
+					"name": "Get all routes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/routes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"routes"
+							]
+						},
+						"description": "Gets all the routes."
+					},
+					"response": [
+						{
+							"name": "sucessfull operation",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/routes",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"routes"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"routes\": [\n    {\n      \"id\": 78,\n      \"startLocation\": \"Lisboa\",\n      \"endLocation\": \"Fátima\",\n      \"distance\": 20,\n      \"user\": 45\n    },\n    {\n      \"id\": 78,\n      \"startLocation\": \"Lisboa\",\n      \"endLocation\": \"Fátima\",\n      \"distance\": 20,\n      \"user\": 45\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Add a new route",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "<Bearer Token>",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"startLocation\": \"Lisboa\",\n  \"endLocation\": \"Fátima\",\n  \"distance\": 128.7\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/routes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"routes"
+							]
+						},
+						"description": "Adds a route"
+					},
+					"response": [
+						{
+							"name": "A route has been sucessfully created!",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"startLocation\": \"Lisboa\",\n  \"endLocation\": \"Fátima\",\n  \"distance\": 128.7\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/routes",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"routes"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"routeID\": 123\n}"
+						},
+						{
+							"name": "A parameter is missing or is incorrect",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"startLocation\": \"Lisboa\",\n  \"endLocation\": \"Fátima\",\n  \"distance\": 128.7\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/routes",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"routes"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"code\": 2000,\n  \"message\": \"Invalid parameter: email\"\n}"
+						},
+						{
+							"name": "Unauthenticated",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"startLocation\": \"Lisboa\",\n  \"endLocation\": \"Fátima\",\n  \"distance\": 128.7\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/routes",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"routes"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"code\": 2000,\n  \"message\": \"Invalid parameter: email\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get route by route ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/routes/:rid",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"routes",
+								":rid"
+							],
+							"variable": [
+								{
+									"key": "rid",
+									"value": "-39900180",
+									"description": "(Required) Route's identifier."
+								}
+							]
+						},
+						"description": "Gets a route by it's identifier"
+					},
+					"response": [
+						{
+							"name": "successful operation",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/routes/:rid",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"routes",
+										":rid"
+									],
+									"variable": [
+										{
+											"key": "rid",
+											"value": "-39900180",
+											"description": "(Required) Route's identifier."
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": 78,\n  \"startLocation\": \"Lisboa\",\n  \"endLocation\": \"Fátima\",\n  \"distance\": 20,\n  \"user\": 45\n}"
+						},
+						{
+							"name": "Route not found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/routes/:rid",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"routes",
+										":rid"
+									],
+									"variable": [
+										{
+											"key": "rid",
+											"value": "-39900180",
+											"description": "(Required) Route's identifier."
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"code\": 2000,\n  \"message\": \"Invalid parameter: email\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "sports",
+			"item": [
+				{
+					"name": "{sid}",
+					"item": [
+						{
+							"name": "activities",
+							"item": [
+								{
+									"name": "{aid}",
+									"item": [
+										{
+											"name": "Get an activity",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/sports/:sid/activities/:aid",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"sports",
+														":sid",
+														"activities",
+														":aid"
+													],
+													"variable": [
+														{
+															"key": "aid",
+															"value": "17662429",
+															"description": "(Required) Activity's identifier."
+														},
+														{
+															"key": "sid",
+															"value": "17662429",
+															"description": "(Required) Sport's identifier."
+														}
+													]
+												},
+												"description": "Gets an activity associated to the given id"
+											},
+											"response": [
+												{
+													"name": "Successful operation",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/sports/:sid/activities/:aid",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"sports",
+																":sid",
+																"activities",
+																":aid"
+															],
+															"variable": [
+																{
+																	"key": "aid",
+																	"value": "17662429",
+																	"description": "(Required) Activity's identifier."
+																},
+																{
+																	"key": "sid",
+																	"value": "17662429",
+																	"description": "(Required) Sport's identifier."
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"id\": 240,\n  \"date\": \"2002-05-20\",\n  \"duration\": \"02:10:32.123\",\n  \"sport\": 56,\n  \"user\": 24,\n  \"route\": 25\n}"
+												},
+												{
+													"name": "Activity not found",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/sports/:sid/activities/:aid",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"sports",
+																":sid",
+																"activities",
+																":aid"
+															],
+															"variable": [
+																{
+																	"key": "aid",
+																	"value": "17662429",
+																	"description": "(Required) Activity's identifier."
+																},
+																{
+																	"key": "sid",
+																	"value": "17662429",
+																	"description": "(Required) Sport's identifier."
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"code\": 2000,\n  \"message\": \"Invalid parameter: email\"\n}"
+												}
+											]
+										},
+										{
+											"name": "Delete an activity",
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "<Bearer Token>",
+															"type": "string"
+														}
+													]
+												},
+												"method": "DELETE",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/sports/:sid/activities/:aid",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"sports",
+														":sid",
+														"activities",
+														":aid"
+													],
+													"variable": [
+														{
+															"key": "sid",
+															"value": "2165278",
+															"description": "(Required) Sport's identifier."
+														},
+														{
+															"key": "aid",
+															"value": "89",
+															"description": "(Required) Activity's identifier."
+														}
+													]
+												},
+												"description": "Deletes an activity by id"
+											},
+											"response": [
+												{
+													"name": "Activity deleted successfully",
+													"originalRequest": {
+														"method": "DELETE",
+														"header": [
+															{
+																"description": "Added as a part of security scheme: bearer",
+																"key": "Authorization",
+																"value": "Bearer <token>"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/sports/:sid/activities/:aid",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"sports",
+																":sid",
+																"activities",
+																":aid"
+															],
+															"variable": [
+																{
+																	"key": "sid",
+																	"value": "2165278",
+																	"description": "(Required) Sport's identifier."
+																},
+																{
+																	"key": "aid",
+																	"value": "89",
+																	"description": "(Required) Activity's identifier."
+																}
+															]
+														}
+													},
+													"status": "No Content",
+													"code": 204,
+													"_postman_previewlanguage": "text",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "text/plain"
+														}
+													],
+													"cookie": [],
+													"body": ""
+												},
+												{
+													"name": "Invalid, missing token or token not belonging to the user that created the activity",
+													"originalRequest": {
+														"method": "DELETE",
+														"header": [
+															{
+																"description": "Added as a part of security scheme: bearer",
+																"key": "Authorization",
+																"value": "Bearer <token>"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/sports/:sid/activities/:aid",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"sports",
+																":sid",
+																"activities",
+																":aid"
+															],
+															"variable": [
+																{
+																	"key": "sid",
+																	"value": "2165278",
+																	"description": "(Required) Sport's identifier."
+																},
+																{
+																	"key": "aid",
+																	"value": "89",
+																	"description": "(Required) Activity's identifier."
+																}
+															]
+														}
+													},
+													"status": "Unauthorized",
+													"code": 401,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"code\": 2000,\n  \"message\": \"Invalid parameter: email\"\n}"
+												},
+												{
+													"name": "Sport or Activity not found",
+													"originalRequest": {
+														"method": "DELETE",
+														"header": [
+															{
+																"description": "Added as a part of security scheme: bearer",
+																"key": "Authorization",
+																"value": "Bearer <token>"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/sports/:sid/activities/:aid",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"sports",
+																":sid",
+																"activities",
+																":aid"
+															],
+															"variable": [
+																{
+																	"key": "sid",
+																	"value": "2165278",
+																	"description": "(Required) Sport's identifier."
+																},
+																{
+																	"key": "aid",
+																	"value": "89",
+																	"description": "(Required) Activity's identifier."
+																}
+															]
+														}
+													},
+													"status": "Not Found",
+													"code": 404,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "Content-Type",
+															"value": "application/json"
+														}
+													],
+													"cookie": [],
+													"body": "{\n  \"code\": 2000,\n  \"message\": \"Invalid parameter: email\"\n}"
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "Create an activity",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "<Bearer Token>",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"duration\": \"10:10:10.555\",\n  \"date\": \"2000-12-31\",\n  \"rid\": 123\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/sports/:sid/activities",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"sports",
+												":sid",
+												"activities"
+											],
+											"variable": [
+												{
+													"key": "sid",
+													"value": "34",
+													"description": "(Required) Sport's identifier."
+												}
+											]
+										},
+										"description": "Creates a new activity associated to a sport"
+									},
+									"response": [
+										{
+											"name": "Created",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: bearer",
+														"key": "Authorization",
+														"value": "Bearer <token>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"duration\": \"10:10:10.555\",\n  \"date\": \"2000-12-31\",\n  \"rid\": 123\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/sports/:sid/activities",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"sports",
+														":sid",
+														"activities"
+													],
+													"variable": [
+														{
+															"key": "sid",
+															"value": "34",
+															"description": "(Required) Sport's identifier."
+														}
+													]
+												}
+											},
+											"status": "Created",
+											"code": 201,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"activityID\": 123141245\n}"
+										},
+										{
+											"name": "A required parameter is missing or is incorrect",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"description": "Added as a part of security scheme: bearer",
+														"key": "Authorization",
+														"value": "Bearer <token>"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"duration\": \"10:10:10.555\",\n  \"date\": \"2000-12-31\",\n  \"rid\": 123\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/sports/:sid/activities",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"sports",
+														":sid",
+														"activities"
+													],
+													"variable": [
+														{
+															"key": "sid",
+															"value": "34",
+															"description": "(Required) Sport's identifier."
+														}
+													]
+												}
+											},
+											"status": "Bad Request",
+											"code": 400,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"code\": 2000,\n  \"message\": \"Invalid parameter: email\"\n}"
+										}
+									]
+								},
+								{
+									"name": "Get a list of activities",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/sports/:sid/activities?rid=45&date=2002-12-31&orderBy=ascending or descending",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"sports",
+												":sid",
+												"activities"
+											],
+											"query": [
+												{
+													"key": "rid",
+													"value": "45",
+													"description": "Route's identifier."
+												},
+												{
+													"key": "date",
+													"value": "2002-12-31",
+													"description": "Date."
+												},
+												{
+													"key": "orderBy",
+													"value": "ascending or descending",
+													"description": "(Required) order method."
+												}
+											],
+											"variable": [
+												{
+													"key": "sid",
+													"value": "67",
+													"description": "(Required) Sport's identifier."
+												}
+											]
+										},
+										"description": "Gets the activities that the sports match the given id"
+									},
+									"response": [
+										{
+											"name": "sucessfull operation",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/sports/:sid/activities?rid=45&date=2002-12-31&orderBy=ascending or descending",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"sports",
+														":sid",
+														"activities"
+													],
+													"query": [
+														{
+															"key": "rid",
+															"value": "45"
+														},
+														{
+															"key": "date",
+															"value": "2002-12-31"
+														},
+														{
+															"key": "orderBy",
+															"value": "ascending or descending"
+														}
+													],
+													"variable": [
+														{
+															"key": "sid",
+															"value": "67",
+															"description": "(Required) Sport's identifier."
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"activities\": [\n    {\n      \"id\": 240,\n      \"date\": \"2002-05-20\",\n      \"duration\": \"02:10:32.123\",\n      \"sport\": 56,\n      \"user\": 24,\n      \"route\": 25\n    },\n    {\n      \"id\": 240,\n      \"date\": \"2002-05-20\",\n      \"duration\": \"02:10:32.123\",\n      \"sport\": 56,\n      \"user\": 24,\n      \"route\": 25\n    }\n  ]\n}"
+										},
+										{
+											"name": "A required parameter is missing or is incorrect",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/sports/:sid/activities?rid=45&date=2002-12-31&orderBy=ascending or descending",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"sports",
+														":sid",
+														"activities"
+													],
+													"query": [
+														{
+															"key": "rid",
+															"value": "45"
+														},
+														{
+															"key": "date",
+															"value": "2002-12-31"
+														},
+														{
+															"key": "orderBy",
+															"value": "ascending or descending"
+														}
+													],
+													"variable": [
+														{
+															"key": "sid",
+															"value": "67",
+															"description": "(Required) Sport's identifier."
+														}
+													]
+												}
+											},
+											"status": "Bad Request",
+											"code": 400,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"code\": 2000,\n  \"message\": \"Invalid parameter: email\"\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "Get a sport",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/sports/:sid",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"sports",
+										":sid"
+									],
+									"variable": [
+										{
+											"key": "sid",
+											"value": "123",
+											"description": "(Required) Sport's identifier."
+										}
+									]
+								},
+								"description": "Gets a sport by id"
+							},
+							"response": [
+								{
+									"name": "sucessfull operation",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/sports/:sid",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"sports",
+												":sid"
+											],
+											"variable": [
+												{
+													"key": "sid",
+													"value": "123",
+													"description": "(Required) Sport's identifier."
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"id\": 380,\n  \"name\": \"Football\",\n  \"user\": 14,\n  \"description\": \"Game played with feet.\"\n}"
+								},
+								{
+									"name": "Sport not found",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/sports/:sid",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"sports",
+												":sid"
+											],
+											"variable": [
+												{
+													"key": "sid",
+													"value": "123",
+													"description": "(Required) Sport's identifier."
+												}
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"code\": 2000,\n  \"message\": \"Invalid parameter: email\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Get all sports",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/sports",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"sports"
+							]
+						},
+						"description": "Gets all the sports."
+					},
+					"response": [
+						{
+							"name": "sucessfull operation",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/sports",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"sports"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"sports\": [\n    {\n      \"id\": 380,\n      \"name\": \"Football\",\n      \"user\": 14,\n      \"description\": \"Game played with feet.\"\n    },\n    {\n      \"id\": 380,\n      \"name\": \"Football\",\n      \"user\": 14,\n      \"description\": \"Game played with feet.\"\n    }\n  ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Create a sport",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "<Bearer Token>",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Football\",\n  \"description\": \"Game played with feet.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/sports",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"sports"
+							]
+						},
+						"description": "Create a sport with a name and description"
+					},
+					"response": [
+						{
+							"name": "Sport created successfully",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Football\",\n  \"description\": \"Game played with feet.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/sports",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"sports"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"sportID\": 12314\n}"
+						},
+						{
+							"name": "A required parameter is missing or is incorrect",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"description": "Added as a part of security scheme: bearer",
+										"key": "Authorization",
+										"value": "Bearer <token>"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Football\",\n  \"description\": \"Game played with feet.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/sports",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"sports"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"code\": 2000,\n  \"message\": \"Invalid parameter: email\"\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:9000/api",
+			"type": "string"
+		}
+	]
+}
