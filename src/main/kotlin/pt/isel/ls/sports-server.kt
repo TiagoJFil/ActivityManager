@@ -11,7 +11,7 @@ import pt.isel.ls.config.getEnv
 
 fun main() {
 
-    val env = EnvironmentType.PROD.getEnv()
+    val env = EnvironmentType.TEST.getEnv()
 
     val api = getApiRoutes(
         getAppRoutes(env)

@@ -13,10 +13,12 @@ import org.http4k.core.Status.Companion.BAD_REQUEST
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.NOT_FOUND
 import org.http4k.core.Status.Companion.UNAUTHORIZED
+import org.http4k.routing.ResourceLoader
 import org.http4k.routing.ResourceLoader.Companion.Classpath
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
+import org.http4k.routing.singlePageApp
 import org.http4k.routing.static
 import org.slf4j.LoggerFactory
 import pt.isel.ls.config.Environment
@@ -40,7 +42,8 @@ import kotlin.system.measureTimeMillis
 fun getApiRoutes(routes: RoutingHttpHandler) = routes(
 
     "/api" bind routes.withFilter(timeFilter).withFilter(onErrorFilter),
-    static(Classpath("public"))
+    static(Classpath("public")),
+    singlePageApp(ResourceLoader.Directory("public"))
 )
 
 fun swaggerUi(htmlPath: String) = routes(
