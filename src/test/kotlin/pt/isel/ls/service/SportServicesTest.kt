@@ -7,6 +7,7 @@ import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.config.testSport
 import pt.isel.ls.service.dto.SportDTO
+import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -22,7 +23,7 @@ class SportServicesTest {
 
     @Test
     fun `get all the sports list`() {
-        assertEquals(listOf(testSport.toDTO()), sportsServices.getSports())
+        assertEquals(listOf(testSport.toDTO()), sportsServices.getSports(PaginationInfo(10, 0)))
     }
 
     @Test
@@ -86,7 +87,7 @@ class SportServicesTest {
             sportsServices.getSport(sportID.toString())
         }
         val allSports = listOf(testSport.toDTO()) + sports
-        assertEquals(1001, sportsServices.getSports().size)
-        assertEquals(allSports, sportsServices.getSports())
+        assertEquals(1001, sportsServices.getSports(PaginationInfo(10, 0)).size)
+        assertEquals(allSports, sportsServices.getSports(PaginationInfo(10, 0)))
     }
 }

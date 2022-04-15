@@ -21,15 +21,6 @@ inline fun <T> tryDataBaseOperation(operation: () -> T): T {
 }
 
 /**
- * Sets the pagination information on the given [PreparedStatement].
- */
-fun PreparedStatement.applyPagination(paginationInfo: PaginationInfo, indexes: Pair<Int, Int>) {
-    setInt(indexes.first, paginationInfo.limit)
-    setInt(indexes.second, paginationInfo.offset)
-}
-
-
-/**
  * Creates a transaction on the given connection properly allocating and disposing connection resources.
  * Resource management for [Statement]s and [ResultSet]s have to be done by the caller in [block].
  *

@@ -7,6 +7,7 @@ import pt.isel.ls.service.entities.Route
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireIdInteger
@@ -30,8 +31,8 @@ class RouteServices(
     /**
      * Returns a list of all routes in the repository.
      */
-    fun getRoutes() = routeRepository
-        .getRoutes()
+    fun getRoutes(paginationInfo: PaginationInfo) = routeRepository
+        .getRoutes(paginationInfo)
         .map(Route::toDTO)
 
     /**

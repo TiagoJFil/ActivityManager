@@ -8,6 +8,7 @@ import pt.isel.ls.config.guestUser
 import pt.isel.ls.config.testRoute
 import pt.isel.ls.service.dto.RouteDTO
 import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -23,7 +24,7 @@ class RouteServicesTest {
 
     @Test
     fun `get routes without creating returns a list with the testRoute`() {
-        assertEquals(listOf(testRoute.toDTO()), routeServices.getRoutes())
+        assertEquals(listOf(testRoute.toDTO()), routeServices.getRoutes(PaginationInfo(10, 0)))
     }
 
     @Test

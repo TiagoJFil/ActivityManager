@@ -9,6 +9,7 @@ import pt.isel.ls.config.testActivity
 import pt.isel.ls.config.testRoute
 import pt.isel.ls.config.testSport
 import pt.isel.ls.service.dto.ActivityDTO
+import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -137,7 +138,13 @@ class ActivitiesServicesTest {
             ActivityDTO(activityID, "2002-05-20", "02:10:32.123", sportID, testRoute.id, guestUser.id)
         )
 
-        val activities = activitiesServices.getActivities(sportID.toString(), "ascending", null, null)
+        val activities = activitiesServices.getActivities(
+            sportID.toString(),
+            "ascending",
+            null,
+            null,
+            PaginationInfo(10, 0)
+        )
 
         assertEquals(activitiesExpected, activities)
     }
@@ -146,7 +153,7 @@ class ActivitiesServicesTest {
     fun `get activities of a sport with a blank date throws invalid parameter`() {
         assertFailsWith<InvalidParameter> {
             val sportID = testSport.id.toString()
-            activitiesServices.getActivities(sportID, "ascending", "", null)
+            activitiesServices.getActivities(sportID, "ascending", "", null, PaginationInfo(10, 0))
         }
     }
 
@@ -154,7 +161,7 @@ class ActivitiesServicesTest {
     fun `get activities of a sport with a blank route id throws invalid parameter`() {
         assertFailsWith<InvalidParameter> {
             val sportID = testSport.id.toString()
-            activitiesServices.getActivities(sportID, "ascending", null, "")
+            activitiesServices.getActivities(sportID, "ascending", null, "", PaginationInfo(10, 0))
         }
     }
 
@@ -164,7 +171,7 @@ class ActivitiesServicesTest {
 
         activitiesServices.deleteActivity(GUEST_TOKEN, testActivity.id.toString(), sportID)
 
-        val activities = activitiesServices.getActivities(sportID, "ascending", null, null)
+        val activities = activitiesServices.getActivities(sportID, "ascending", null, null, PaginationInfo(10, 0))
 
         assertEquals(emptyList(), activities)
     }
@@ -204,7 +211,7 @@ class ActivitiesServicesTest {
         val sportID = testSport.id.toString()
         val routeId = testRoute.id.toString()
         activitiesServices.createActivity(GUEST_TOKEN, sportID, "02:10:32.123", "2002-05-20", routeId)
-        val users = activitiesServices.getUsersByActivity(sportID, routeId)
+        val users = activitiesServices.getUsersByActivity(sportID, routeId, PaginationInfo(10, 0))
         assertEquals(listOf(guestUser.toDTO()), users)
     }
 }

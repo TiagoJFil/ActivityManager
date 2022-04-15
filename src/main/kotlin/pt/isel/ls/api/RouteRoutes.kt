@@ -14,6 +14,7 @@ import org.http4k.routing.routes
 import pt.isel.ls.service.RouteServices
 import pt.isel.ls.service.dto.RouteDTO
 import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
 
@@ -38,7 +39,7 @@ class RouteRoutes(
     private fun getRoutes(request: Request): Response {
         logger.infoLogRequest(request)
 
-        val routes = routeServices.getRoutes()
+        val routes = routeServices.getRoutes(PaginationInfo.fromRequest(request))
         val bodyString = Json.encodeToString(RouteListOutput(routes))
         return Response(Status.OK).header("content-type", "application/json").body(bodyString)
     }

@@ -42,11 +42,14 @@ import kotlin.system.measureTimeMillis
 fun getApiRoutes(routes: RoutingHttpHandler) = routes(
 
     "/api" bind routes.withFilter(timeFilter).withFilter(onErrorFilter),
-    static(Classpath("public")),
-    singlePageApp(ResourceLoader.Directory("public"))
+    static(Classpath("public")), // For swagger-ui
+    singlePageApp(ResourceLoader.Directory("static")) // For SPA
 )
 
-fun swaggerUi(htmlPath: String) = routes(
+/**
+ * Serves swagger ui to a /docs route by redirecting to the swagger ui index.html public resource
+ */
+private fun swaggerUi(htmlPath: String) = routes(
     "/docs" bind Method.GET to {
         Response(Status.FOUND).header("Location", htmlPath)
     }

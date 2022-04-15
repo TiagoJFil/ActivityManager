@@ -137,7 +137,7 @@ class ActivityServices(
      * @param uid the unique identifier of the user that created the activity
      * @return [List] of [ActivityDTO] with all the activities created by the user that matches the given id
      */
-    fun getActivitiesByUser(uid: Param, paginationInfo: PaginationInfo): List<ActivityDTO> {
+    fun getActivitiesByUser(uid: Param, paginationInfo: PaginationInfo=PaginationInfo(10, 0)): List<ActivityDTO> {
         logger.traceFunction(::getActivitiesByUser.name) { listOf("userID" to uid) }
         val safeUID = requireParameter(uid, USER_ID_PARAM)
 
