@@ -5,6 +5,7 @@ import kotlinx.datetime.toJavaLocalDate
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.service.entities.Activity.Duration
+import pt.isel.ls.service.entities.User
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.Order
 import pt.isel.ls.utils.RouteID
@@ -15,6 +16,7 @@ import pt.isel.ls.utils.repository.ifNext
 import pt.isel.ls.utils.repository.setActivity
 import pt.isel.ls.utils.repository.toActivity
 import pt.isel.ls.utils.repository.toListOf
+import pt.isel.ls.utils.repository.toUser
 import pt.isel.ls.utils.repository.transaction
 import java.sql.Date
 import java.sql.ResultSet
@@ -24,7 +26,8 @@ import javax.sql.DataSource
 class ActivityDBRepository(private val dataSource: DataSource, suffix: String) : ActivityRepository {
 
     private val activityTable = "activity$suffix"
-
+    private val userTable = "user$suffix"
+    private val emailTable = "email$suffix"
     /**
      * Creates a new activity using the parameters received
      *
@@ -159,6 +162,29 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
         queryActivityByID(activityID) { rs: ResultSet ->
             rs.next()
         }
+
+    /**
+     * Gets the users that have an activity matching the given sport id and route id.
+     * @param sportID sport identifier
+     * @param routeID route identifier
+     * @return [List] of [User]
+     */
+    override fun getUsersBy(sportID: SportID, routeID: RouteID): List<User> {
+        dataSource.connection.transaction {
+            val query = "SELECT $userTable.id ,$userTable.name, $emailTable.email " +
+                "FROM $activityTable " +
+                "JOIN $userTable ON ($activityTable.user = $userTable.id) " +
+                "JOIN $emailTable ON ($emailTable.user = $userTable.id) " +
+                "WHERE $activityTable.sport = ? AND $activityTable.route = ? "
+            "ORDER BY $activityTable.duration DESC"
+            prepareStatement(query).use {
+                it.setInt(1, sportID)
+                it.setInt(2, routeID)
+                val rs = it.executeQuery()
+                return rs.toListOf(ResultSet::toUser)
+            }
+        }
+    }
 
     /**
      * Makes a query to get an activity by its identifier.

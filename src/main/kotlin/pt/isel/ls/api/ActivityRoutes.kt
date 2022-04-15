@@ -106,6 +106,37 @@ class ActivityRoutes(
     }
 
     /**
+     * Handler for deleting [ActivityDTO]s using the information received in the path of the request.
+     */
+    private fun deleteActivities(request: Request): Response {
+        logger.infoLogRequest(request)
+        TODO()
+        val activityIds = request.path("aids")
+
+        val token: UserToken? = getToken(request)
+
+        activityServices.deleteActivities(token, activityIds)
+        return Response(Status.NO_CONTENT)
+    }
+
+    /**
+     * Get the list of [User] that have an activity with the given sport and rid.
+     */
+    private fun getUsersByActivity(request: Request): Response {
+        logger.infoLogRequest(request)
+        val sportID = request.path("sid")
+        val routeID = request.query("rid")
+
+        val users = activityServices.getUsersByActivity(sportID, routeID)
+
+        val bodyString = Json.encodeToString(users)
+
+        return Response(Status.OK)
+            .header("content-type", "application/json")
+            .body(bodyString)
+    }
+
+    /**
      * Gets all the activities of the sport identified by the id given in the params of the uri's path.
      */
     private fun getActivitiesBySport(request: Request): Response {
@@ -131,7 +162,8 @@ class ActivityRoutes(
             "/{aid}" bind Method.GET to ::getActivity,
             "/" bind Method.GET to ::getActivitiesBySport
         ),
-        "/users/{uid}/activities" bind Method.GET to ::getActivitiesByUser
+        "/users/{uid}/activities" bind Method.GET to ::getActivitiesByUser,
+        "/sports/{sid}/users" bind Method.GET to ::getUsersByActivity
     )
 }
 

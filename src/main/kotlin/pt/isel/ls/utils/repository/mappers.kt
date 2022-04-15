@@ -40,6 +40,15 @@ fun ResultSet.toUser(email: Email) = User(
 )
 
 /**
+ * Convert a [ResultSet] to a [User]
+ */
+fun ResultSet.toUser() = User(
+    id = getInt("id"),
+    name = getString("name"),
+    email = Email(getString("email"))
+)
+
+/**
  * Convert a [ResultSet] to an [Activity]
  */
 fun ResultSet.toActivity() = Activity(

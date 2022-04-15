@@ -47,8 +47,7 @@ fun HttpHandler.createUser(userCreationBody: UserCreationInput): UserIDOutput =
         this,
         USER_PATH,
         userCreationBody,
-        authHeader(GUEST_TOKEN),
-        Response::expectCreated
+        expectedStatus = Response::expectCreated
     )
 
 /**

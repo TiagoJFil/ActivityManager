@@ -51,7 +51,7 @@ fun requireIdInteger(id: String, parameterName: String): Int =
  */
 fun UserRepository.requireAuthenticated(token: UserToken?): UserID {
     if (token == null) throw UnauthenticatedError()
-    return getUserIDByToken(token) ?: throw UnauthenticatedError()
+    return getUserIDBy(token) ?: throw UnauthenticatedError()
 }
 
 /**

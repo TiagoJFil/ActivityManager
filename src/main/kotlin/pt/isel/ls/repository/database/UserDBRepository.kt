@@ -26,7 +26,7 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
      * @param userID the id of the user to be returned.
      * @return the user with the given id.
      */
-    override fun getUserByID(userID: UserID): User? =
+    override fun getUserBy(userID: UserID): User? =
         dataSource.connection.transaction {
             val email: String = prepareStatement("""SELECT email FROM $emailTable WHERE "user" = ?""").use { statement ->
                 statement.setInt(1, userID)
@@ -133,7 +133,7 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
      * @param token the token of the user.
      * @return [UserID] the user id of the user with the given token.
      */
-    override fun getUserIDByToken(token: UserToken): UserID? =
+    override fun getUserIDBy(token: UserToken): UserID? =
         dataSource.connection.transaction {
             val query = "SELECT * FROM $tokenTable WHERE token = ?"
             prepareStatement(query).use { stmt ->

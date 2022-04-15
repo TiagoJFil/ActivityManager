@@ -3,13 +3,14 @@ package pt.isel.ls.repository.memory
 import kotlinx.datetime.LocalDate
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.service.entities.Activity
+import pt.isel.ls.service.entities.User
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.Order
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 
-class ActivityDataMemRepository(testActivity: Activity) : ActivityRepository {
+class ActivityDataMemRepository(testActivity: Activity, private val userRepo: UserDataMemRepository) : ActivityRepository {
 
     private var currentID = 0
 
@@ -100,4 +101,17 @@ class ActivityDataMemRepository(testActivity: Activity) : ActivityRepository {
      * @return [Boolean] true if it exists
      */
     override fun hasActivity(activityID: ActivityID): Boolean = activitiesMap.containsKey(activityID)
+
+    /**
+     * Gets the users that have an activity matching the given sport id and route id.
+     * @param sportID sport identifier
+     * @param routeID route identifier
+     * @return [List] of [User] sorted by activity duration ASCENDING
+     */
+    override fun getUsersBy(sportID: SportID, routeID: RouteID): List<User> =
+        activitiesMap.values
+            .filter { it.route == routeID && it.sport == sportID }
+            .sortedBy { it.duration.millis }
+            .mapNotNull { userRepo.map[it.user] }
+            .distinct()
 }

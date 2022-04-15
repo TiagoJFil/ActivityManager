@@ -198,4 +198,13 @@ class ActivitiesServicesTest {
             activitiesServices.deleteActivity(GUEST_TOKEN, "12343124", sportID)
         }
     }
+
+    @Test
+    fun `get users of an activity with a valid rid and sid`() {
+        val sportID = testSport.id.toString()
+        val routeId = testRoute.id.toString()
+        activitiesServices.createActivity(GUEST_TOKEN, sportID, "02:10:32.123", "2002-05-20", routeId)
+        val users = activitiesServices.getUsersByActivity(sportID, routeId)
+        assertEquals(listOf(guestUser.toDTO()), users)
+    }
 }
