@@ -13,6 +13,7 @@ import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.api.PaginationInfo
 import java.util.UUID
 
 /**
@@ -98,3 +99,8 @@ fun RouteRepository.requireRoute(routeID: RouteID) {
  * Generates a random UUID.
  */
 fun generateUUId() = UUID.randomUUID().toString()
+
+/**
+ *
+ */
+fun <T> List<T>.applyPagination(paginationInfo: PaginationInfo) = drop(paginationInfo.offset).take(paginationInfo.limit)

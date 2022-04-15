@@ -5,6 +5,8 @@ import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.service.entities.Route
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.repository.applyPagination
 import pt.isel.ls.utils.repository.generatedKey
 import pt.isel.ls.utils.repository.ifNext
 import pt.isel.ls.utils.repository.setRoute
@@ -21,10 +23,12 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
     /**
      * Returns all the routes stored in the repository.
      */
-    override fun getRoutes(): List<Route> =
+    override fun getRoutes(paginationInfo: PaginationInfo): List<Route> =
         dataSource.connection.transaction {
-            createStatement().use { stmt ->
-                val rs = stmt.executeQuery("SELECT * FROM $routeTable")
+            val query = "SELECT * FROM $routeTable"
+            prepareStatement(query).use { stmt ->
+                stmt.applyPagination(paginationInfo)
+                val rs = stmt.executeQuery()
                 rs.toListOf<Route>(ResultSet::toRoute)
             }
         }

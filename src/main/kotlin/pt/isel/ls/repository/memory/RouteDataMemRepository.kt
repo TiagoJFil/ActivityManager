@@ -4,6 +4,8 @@ import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.service.entities.Route
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.service.applyPagination
 
 class RouteDataMemRepository(testRoute: Route) : RouteRepository {
 
@@ -19,7 +21,8 @@ class RouteDataMemRepository(testRoute: Route) : RouteRepository {
      *
      * @return [List] of [Route]
      */
-    override fun getRoutes(): List<Route> = routesMap.values.toList()
+    override fun getRoutes(paginationInfo: PaginationInfo): List<Route>
+        = routesMap.values.toList().applyPagination(paginationInfo)
 
     /**
      * Adds a new route to the repository.
