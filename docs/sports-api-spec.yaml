@@ -48,6 +48,45 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HttpError"
+  /sports/{sid}/users:
+    get:
+      tags:
+        - "User"
+      summary: "Get users by an Activity"
+      description: "Gets a list of users by Activity with the given sportID and routeID, the list is ordered by Activity duration ascending"
+      operationId: "getUsersByActivity"
+      parameters:
+        - name: "sid"
+          in: "path"
+          description: "Sport's identifier."
+          required: true
+          schema:
+            type: "integer"
+          example: 0
+        - name: "rid"
+          in: "query"
+          description: "Route's identifier."
+          required: true
+          schema:
+            type: "integer"
+          example: 0
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/User"
+        "404":
+          description: "Users not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+
+
   /users:
     get:
       tags:

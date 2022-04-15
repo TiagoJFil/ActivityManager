@@ -91,7 +91,7 @@ Another configurable environment variable is **SERVER_PORT** that defines the po
 
 ### Open-API Specification ###
 
-https://github.com/isel-leic-ls/2122-2-LEIC42D-G04/docs/sports-api-spec.yaml
+https://github.com/isel-leic-ls/2122-2-LEIC42D-G04/blob/main/docs/sports-api-spec.yaml
 
 Swagger-UI is available at `/api/docs` with the server running.
 

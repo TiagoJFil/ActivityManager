@@ -6,12 +6,13 @@ import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.repository.UserRepository
-import pt.isel.ls.service.RouteServices.Companion.ROUTE_ID_PARAM
 import pt.isel.ls.service.SportsServices.Companion.SPORT_ID_PARAM
 import pt.isel.ls.service.UserServices.Companion.USER_ID_PARAM
 import pt.isel.ls.service.dto.ActivityDTO
+import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.service.entities.Activity.Duration
+import pt.isel.ls.service.entities.User
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.Order
 import pt.isel.ls.utils.Param
@@ -44,6 +45,8 @@ class ActivityServices(
 
         const val USER_NOT_OWNER = "User is not the owner of the activity"
         const val ACTIVITY_ID_PARAM = "activityID"
+        const val ROUTE_ID_PARAM = "routeID"
+        const val ACTIVITIES_ID_PARAM = "activityIDs"
         const val RESOURCE_NAME = "Activity"
         const val DURATION_PARAM = "duration"
         const val DATE_PARAM = "date"
@@ -217,8 +220,50 @@ class ActivityServices(
     }
 
     /**
+     * Gets the users that match activities with the given sport id and route id.
+     * @param sportID The sport id of the activity.
+     * @param routeID The route id of the activity.
+     */
+    fun getUsersByActivity(sportID: Param, routeID: Param): List<UserDTO> {
+        logger.traceFunction(::getUsersByActivity.name) {
+            listOf(
+                SPORT_ID_PARAM to sportID,
+                ROUTE_ID_PARAM to routeID
+            )
+        }
+        val safeSID = requireParameter(sportID, "SportID")
+        val safeRID = requireParameter(routeID, "RouteID")
+        val sidInt = requireIdInteger(safeSID, SPORT_ID_PARAM)
+        sportRepository.requireSport(sidInt)
+        val ridInt = requireIdInteger(safeRID, ROUTE_ID_PARAM)
+        routeRepository.requireRoute(ridInt)
+
+        val users: List<User> = activityRepository.getUsersBy(sidInt, ridInt)
+        return users.map(User::toDTO)
+    }
+
+    /**
      * Checks if the user identified by [userId] owns the activity identified by [activityId].
      */
     private fun ownsActivity(userId: UserID, activityId: ActivityID): Boolean =
         activityRepository.getActivity(activityId)?.user == userId
+
+    fun deleteActivities(token: UserToken?, activityIds: Param) {
+        TODO("Not yet implemented")
+        logger.traceFunction(::deleteActivities.name) {
+            listOf(
+                ACTIVITIES_ID_PARAM to activityIds
+            )
+        }
+        val userID = userRepository.requireAuthenticated(token)
+        val safeAIDS = requireParameter(activityIds, "SportID")
+        val aids: List<ActivityID> = safeAIDS.split(",").map {
+            val id = requireIdInteger(it, "ActivityID")
+            activityRepository.requireActivity(id)
+            // activityRepository.requireActivityOwnership(userID, id)
+            if (!ownsActivity(userID, id)) throw UnauthenticatedError(USER_NOT_OWNER)
+            activityRepository.deleteActivity(id)
+            id
+        }
+    }
 }

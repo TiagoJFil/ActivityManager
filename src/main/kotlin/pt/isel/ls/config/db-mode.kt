@@ -47,9 +47,12 @@ private fun postgreSQL(suffix: String): DbSource {
     )
 }
 
-private fun memory() = DbSource(
-    UserDataMemRepository(guestUser),
-    RouteDataMemRepository(testRoute),
-    SportDataMemRepository(testSport),
-    ActivityDataMemRepository(testActivity)
-)
+private fun memory(): DbSource {
+    val userRepository = UserDataMemRepository(guestUser)
+    return DbSource(
+        userRepository,
+        RouteDataMemRepository(testRoute),
+        SportDataMemRepository(testSport),
+        ActivityDataMemRepository(testActivity, userRepository)
+    )
+}

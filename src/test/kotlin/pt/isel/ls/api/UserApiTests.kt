@@ -8,14 +8,12 @@ import pt.isel.ls.api.UserRoutes.UserCreationInput
 import pt.isel.ls.api.UserRoutes.UserListOutput
 import pt.isel.ls.api.utils.TEST_ENV
 import pt.isel.ls.api.utils.USER_PATH
-import pt.isel.ls.api.utils.authHeader
 import pt.isel.ls.api.utils.createUser
 import pt.isel.ls.api.utils.expectBadRequest
 import pt.isel.ls.api.utils.expectNotFound
 import pt.isel.ls.api.utils.expectOK
 import pt.isel.ls.api.utils.getRequest
 import pt.isel.ls.api.utils.postRequest
-import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.service.dto.HttpError
 import pt.isel.ls.service.dto.UserDTO
@@ -81,8 +79,7 @@ class UserApiTests {
             testClient,
             USER_PATH,
             body,
-            authHeader(GUEST_TOKEN),
-            Response::expectBadRequest
+            expectedStatus = Response::expectBadRequest
         )
     }
 
@@ -93,8 +90,7 @@ class UserApiTests {
             testClient,
             USER_PATH,
             body,
-            authHeader(GUEST_TOKEN),
-            Response::expectBadRequest
+            expectedStatus = Response::expectBadRequest
         )
     }
 
@@ -105,8 +101,7 @@ class UserApiTests {
             testClient,
             USER_PATH,
             body,
-            authHeader(GUEST_TOKEN),
-            Response::expectBadRequest
+            expectedStatus = Response::expectBadRequest
         )
     }
 
@@ -120,8 +115,7 @@ class UserApiTests {
             testClient,
             USER_PATH,
             body,
-            authHeader(GUEST_TOKEN),
-            Response::expectBadRequest
+            expectedStatus = Response::expectBadRequest
         )
     }
 
@@ -132,8 +126,7 @@ class UserApiTests {
             testClient,
             USER_PATH,
             body,
-            authHeader(GUEST_TOKEN),
-            Response::expectBadRequest
+            expectedStatus = Response::expectBadRequest
         )
     }
 
@@ -144,8 +137,7 @@ class UserApiTests {
             testClient,
             USER_PATH,
             body,
-            authHeader(GUEST_TOKEN),
-            Response::expectBadRequest
+            expectedStatus = Response::expectBadRequest
         )
     }
 
@@ -156,8 +148,7 @@ class UserApiTests {
             testClient,
             USER_PATH,
             body,
-            authHeader(GUEST_TOKEN),
-            Response::expectBadRequest
+            expectedStatus = Response::expectBadRequest
         )
     }
 
