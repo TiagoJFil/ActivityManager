@@ -12,7 +12,14 @@ import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.api.PaginationInfo
-import pt.isel.ls.utils.repository.*
+import pt.isel.ls.utils.repository.applyPagination
+import pt.isel.ls.utils.repository.generatedKey
+import pt.isel.ls.utils.repository.ifNext
+import pt.isel.ls.utils.repository.setActivity
+import pt.isel.ls.utils.repository.toActivity
+import pt.isel.ls.utils.repository.toListOf
+import pt.isel.ls.utils.repository.toUser
+import pt.isel.ls.utils.repository.transaction
 import java.sql.Date
 import java.sql.ResultSet
 import java.sql.Statement
@@ -102,8 +109,6 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
                         setInt(ridIdx, rid)
                     }
                     applyPagination(paginationInfo, Pair(pagIdx,pagIdx + 1))
-                    setInt(pagIdx, paginationInfo.limit)
-                    setInt(pagIdx + 1, paginationInfo.offset)
                 }
                 val rs = ps.executeQuery()
                 return rs.toListOf(ResultSet::toActivity)
@@ -170,15 +175,18 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
      * @param routeID route identifier
      * @return [List] of [User]
      */
-    override fun getUsersBy(sportID: SportID, routeID: RouteID): List<User> {
+    override fun getUsersBy(sportID: SportID, routeID: RouteID, paginationInfo: PaginationInfo): List<User> {
         dataSource.connection.transaction {
-            val query = "SELECT $userTable.id ,$userTable.name, $emailTable.email " +
+            val query =
+                "SELECT $userTable.id ,$userTable.name, $emailTable.email " +
                 "FROM $activityTable " +
                 "JOIN $userTable ON ($activityTable.user = $userTable.id) " +
                 "JOIN $emailTable ON ($emailTable.user = $userTable.id) " +
-                "WHERE $activityTable.sport = ? AND $activityTable.route = ? "
-            "ORDER BY $activityTable.duration DESC"
+                "WHERE $activityTable.sport = ? AND $activityTable.route = ? " +
+                "ORDER BY $activityTable.duration DESC" +
+                "LIMIT ? OFFSET ?"
             prepareStatement(query).use {
+                it.applyPagination(paginationInfo, indexes=Pair(3, 4))
                 it.setInt(1, sportID)
                 it.setInt(2, routeID)
                 val rs = it.executeQuery()

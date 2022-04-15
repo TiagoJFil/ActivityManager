@@ -5,6 +5,8 @@ import pt.isel.ls.service.dto.SportDTO
 import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.service.applyPagination
 
 class SportDataMemRepository(testSport: Sport) : SportRepository {
 
@@ -34,7 +36,10 @@ class SportDataMemRepository(testSport: Sport) : SportRepository {
      *
      * @return [List] of [SportDTO]
      */
-    override fun getSports(): List<Sport> = sportsMap.values.toList()
+    override fun getSports(paginationInfo: PaginationInfo): List<Sport>
+    = sportsMap.values
+        .toList()
+        .applyPagination(paginationInfo)
 
     /**
      * @param sportID the unique number that identifies the sport

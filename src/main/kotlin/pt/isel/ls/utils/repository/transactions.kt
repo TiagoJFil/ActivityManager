@@ -58,10 +58,18 @@ inline fun <R> Connection.transaction(block: Connection.() -> R): R = tryDataBas
 /**
  * Gets the last generated key from the given [PreparedStatement].
  * Called after a successful insertion.
- */
+ */ // TODO : TROCAR PARA Ficheiro statements.kt
 fun PreparedStatement.generatedKey(): ID {
     generatedKeys.use {
         if (!it.next()) throw IllegalStateException("No generated key")
         return it.getInt(1)
     }
+}
+
+/**
+ * Sets the pagination information on the given [PreparedStatement].
+ */
+fun PreparedStatement.applyPagination(paginationInfo: PaginationInfo, indexes: Pair<Int, Int>) {
+    setInt(indexes.first, paginationInfo.limit)
+    setInt(indexes.second, paginationInfo.offset)
 }

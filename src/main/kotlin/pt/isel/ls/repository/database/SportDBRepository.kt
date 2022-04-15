@@ -5,6 +5,8 @@ import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.repository.applyPagination
 import pt.isel.ls.utils.repository.generatedKey
 import pt.isel.ls.utils.repository.ifNext
 import pt.isel.ls.utils.repository.setSport
@@ -39,10 +41,12 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
     /**
      * Gets all the sports in the repository.
      */
-    override fun getSports(): List<Sport> =
+    override fun getSports(paginationInfo: PaginationInfo): List<Sport> =
         dataSource.connection.transaction {
-            createStatement().use { stmt ->
-                stmt.executeQuery("""SELECT * FROM $sportTable""").use { rs ->
+            val query = """SELECT * FROM $sportTable LIMIT ? OFFSET ?"""
+            prepareStatement(query).use { stmt ->
+                stmt.applyPagination(paginationInfo, indexes = Pair(1, 2))
+                stmt.executeQuery().use { rs ->
                     rs.toListOf<Sport>(ResultSet::toSport)
                 }
             }
