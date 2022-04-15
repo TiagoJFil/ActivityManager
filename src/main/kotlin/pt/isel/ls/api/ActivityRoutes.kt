@@ -16,6 +16,7 @@ import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
 
@@ -82,7 +83,7 @@ class ActivityRoutes(
 
         val userId = request.path("uid")
 
-        val activities = activityServices.getActivitiesByUser(userId)
+        val activities = activityServices.getActivitiesByUser(userId, PaginationInfo.fromRequest(request))
         val activitiesJson = Json.encodeToString(ActivityListOutput(activities))
 
         return Response(Status.OK)
@@ -127,7 +128,7 @@ class ActivityRoutes(
         val sportID = request.path("sid")
         val routeID = request.query("rid")
 
-        val users = activityServices.getUsersByActivity(sportID, routeID)
+        val users = activityServices.getUsersByActivity(sportID, routeID, PaginationInfo.fromRequest(request))
 
         val bodyString = Json.encodeToString(users)
 
@@ -147,7 +148,13 @@ class ActivityRoutes(
         val routeID = request.query("rid")
         val sportID = request.path("sid")
 
-        val activities = activityServices.getActivities(sportID, order, date, routeID)
+        val activities = activityServices.getActivities(
+            sportID,
+            order,
+            date,
+            routeID,
+            PaginationInfo.fromRequest(request)
+        )
         val activitiesJson = Json.encodeToString(ActivityListOutput(activities))
 
         return Response(Status.OK)

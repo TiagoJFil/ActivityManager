@@ -3,13 +3,14 @@ package pt.isel.ls.repository
 import pt.isel.ls.service.entities.Route
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.api.PaginationInfo
 
 interface RouteRepository {
 
     /**
      * Returns all the routes stored in the repository.
      */
-    fun getRoutes(): List<Route>
+    fun getRoutes(paginationInfo: PaginationInfo): List<Route>
 
     /**
      * Adds a new route to the repository.

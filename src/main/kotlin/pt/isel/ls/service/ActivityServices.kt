@@ -20,6 +20,7 @@ import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.service.requireActivity
 import pt.isel.ls.utils.service.requireAuthenticated
@@ -32,7 +33,7 @@ import pt.isel.ls.utils.service.requireUser
 import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.traceFunction
 import java.text.ParseException
-import java.util.Date
+import java.util.*
 
 class ActivityServices(
     private val activityRepository: ActivityRepository,
@@ -136,14 +137,14 @@ class ActivityServices(
      * @param uid the unique identifier of the user that created the activity
      * @return [List] of [ActivityDTO] with all the activities created by the user that matches the given id
      */
-    fun getActivitiesByUser(uid: Param): List<ActivityDTO> {
+    fun getActivitiesByUser(uid: Param, paginationInfo: PaginationInfo): List<ActivityDTO> {
         logger.traceFunction(::getActivitiesByUser.name) { listOf("userID" to uid) }
         val safeUID = requireParameter(uid, USER_ID_PARAM)
 
         val uidInt = requireIdInteger(safeUID, USER_ID_PARAM)
         userRepository.requireUser(uidInt)
 
-        return activityRepository.getActivitiesByUser(uidInt)
+        return activityRepository.getActivitiesByUser(uidInt, paginationInfo)
             .map(Activity::toDTO)
     }
 
@@ -158,7 +159,7 @@ class ActivityServices(
      *
      * @return [List] of [ActivityDTO]
      */
-    fun getActivities(sid: Param, orderBy: Param, date: Param, rid: Param): List<ActivityDTO> {
+    fun getActivities(sid: Param, orderBy: Param, date: Param, rid: Param, paginationInfo: PaginationInfo): List<ActivityDTO> {
         logger.traceFunction(::getActivities.name) {
             listOf(
                 SPORT_ID_PARAM to sid,
@@ -188,7 +189,7 @@ class ActivityServices(
             throw InvalidParameter(DATE_PARAM)
         }
 
-        return activityRepository.getActivities(sidInt, orderByToSend, date?.toLocalDate(), ridInt)
+        return activityRepository.getActivities(sidInt, orderByToSend, date?.toLocalDate(), ridInt, paginationInfo)
             .map(Activity::toDTO)
     }
 
@@ -224,7 +225,7 @@ class ActivityServices(
      * @param sportID The sport id of the activity.
      * @param routeID The route id of the activity.
      */
-    fun getUsersByActivity(sportID: Param, routeID: Param): List<UserDTO> {
+    fun getUsersByActivity(sportID: Param, routeID: Param, paginationInfo: PaginationInfo): List<UserDTO> {
         logger.traceFunction(::getUsersByActivity.name) {
             listOf(
                 SPORT_ID_PARAM to sportID,
@@ -238,7 +239,7 @@ class ActivityServices(
         val ridInt = requireIdInteger(safeRID, ROUTE_ID_PARAM)
         routeRepository.requireRoute(ridInt)
 
-        val users: List<User> = activityRepository.getUsersBy(sidInt, ridInt)
+        val users: List<User> = activityRepository.getUsersBy(sidInt, ridInt, paginationInfo)
         return users.map(User::toDTO)
     }
 
@@ -249,7 +250,7 @@ class ActivityServices(
         activityRepository.getActivity(activityId)?.user == userId
 
     fun deleteActivities(token: UserToken?, activityIds: Param) {
-        TODO("Not yet implemented")
+        // TODO("Not yet implemented")
         logger.traceFunction(::deleteActivities.name) {
             listOf(
                 ACTIVITIES_ID_PARAM to activityIds

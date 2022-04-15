@@ -9,6 +9,7 @@ import pt.isel.ls.utils.Order
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.api.PaginationInfo
 
 interface ActivityRepository {
 
@@ -34,7 +35,7 @@ interface ActivityRepository {
      * @param userID the user unique identifier that the activity must have
      * @return [List] of [ActivityDTO] that were created by the given user
      */
-    fun getActivitiesByUser(userID: UserID): List<Activity>
+    fun getActivitiesByUser(userID: UserID, paginationInfo: PaginationInfo): List<Activity>
 
     /**
      * Gets the activity that matches the given unique activity identifier.
@@ -56,7 +57,13 @@ interface ActivityRepository {
      *
      * @return [List] of [ActivityDTO]
      */
-    fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?): List<Activity>
+    fun getActivities(
+        sid: SportID,
+        orderBy: Order,
+        date: LocalDate?,
+        rid: RouteID?,
+        paginationInfo: PaginationInfo
+    ): List<Activity>
 
     /**
      * Deletes the activity identified by the given identifier.
@@ -79,5 +86,5 @@ interface ActivityRepository {
      * @param routeID route identifier
      * @return [List] of [User]
      */
-    fun getUsersBy(sportID: SportID, routeID: RouteID): List<User>
+    fun getUsersBy(sportID: SportID, routeID: RouteID, paginationInfo: PaginationInfo): List<User>
 }

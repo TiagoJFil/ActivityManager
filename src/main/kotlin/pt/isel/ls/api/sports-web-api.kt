@@ -107,8 +107,12 @@ private val onErrorFilter = Filter { handler ->
             eLogger.warnStatus(BAD_REQUEST, "Invalid body.")
             Response(BAD_REQUEST).header("content-type", "application/json").body(body)
         } catch (dbError: DataBaseAccessException) {
+            val body = Json.encodeToString(HttpError(2004, "Internal Error."))
+            eLogger.warnStatus(BAD_REQUEST, dbError.message ?: "Database Error")
+            Response(INTERNAL_SERVER_ERROR).header("content-type", "application/json").body(body)
+        } catch (e: Exception) {
+            eLogger.error(e.stackTraceToString())
             val body = Json.encodeToString(HttpError(0, "Internal Error."))
-            eLogger.error(dbError.message)
             Response(INTERNAL_SERVER_ERROR).header("content-type", "application/json").body(body)
         }
     }

@@ -7,6 +7,7 @@ import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireIdInteger
@@ -62,11 +63,10 @@ class SportsServices(
      *
      * @return [List] of [SportDTO]
      */
-    fun getSports(): List<SportDTO> {
+    fun getSports(paginationInfo: PaginationInfo): List<SportDTO> {
         logger.traceFunction(::getSports.name) { emptyList() }
-
         return sportsRepository
-            .getSports()
+            .getSports(paginationInfo)
             .map(Sport::toDTO)
     }
 }

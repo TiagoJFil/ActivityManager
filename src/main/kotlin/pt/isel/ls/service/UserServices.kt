@@ -7,6 +7,7 @@ import pt.isel.ls.service.entities.User.Email
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.service.generateUUId
 import pt.isel.ls.utils.service.requireIdInteger
@@ -75,11 +76,11 @@ class UserServices(
      *
      * @return [List] of [User
      */
-    fun getUsers(): List<UserDTO> {
+    fun getUsers(paginationInfo: PaginationInfo): List<UserDTO> {
         logger.traceFunction(::getUsers.name)
 
         return userRepository
-            .getUsers()
+            .getUsers(paginationInfo)
             .map(User::toDTO)
     }
 }

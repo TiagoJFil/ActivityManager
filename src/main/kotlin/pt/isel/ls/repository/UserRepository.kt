@@ -4,6 +4,7 @@ import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.api.PaginationInfo
 
 interface UserRepository {
 
@@ -19,7 +20,7 @@ interface UserRepository {
     /**
      * Gets all the users in the repository.
      */
-    fun getUsers(): List<User>
+    fun getUsers(paginationInfo: PaginationInfo): List<User>
 
     /**
      * Checks if the specified user has a repeated email

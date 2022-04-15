@@ -16,6 +16,7 @@ import pt.isel.ls.service.SportsServices
 import pt.isel.ls.service.dto.SportDTO
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
 
@@ -67,8 +68,7 @@ class SportRoutes(
      */
     private fun getSports(request: Request): Response {
         logger.infoLogRequest(request)
-
-        val sports = sportsServices.getSports()
+        val sports = sportsServices.getSports(PaginationInfo.fromRequest(request))
         val bodyString = Json.encodeToString(SportListOutput(sports))
         return Response(Status.OK)
             .header("content-type", "application/json")
