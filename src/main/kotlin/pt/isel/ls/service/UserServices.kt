@@ -66,7 +66,7 @@ class UserServices(
 
         val safeUserID = requireParameter(uid, USER_ID_PARAM)
         val uidInt = requireIdInteger(safeUserID, USER_ID_PARAM)
-        return userRepository.getUserByID(uidInt)?.toDTO()
+        return userRepository.getUserBy(uidInt)?.toDTO()
             ?: throw ResourceNotFound(RESOURCE_NAME, "$uid")
     }
 

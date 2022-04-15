@@ -3,6 +3,7 @@ package pt.isel.ls.repository
 import kotlinx.datetime.LocalDate
 import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.service.entities.Activity
+import pt.isel.ls.service.entities.User
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.Order
 import pt.isel.ls.utils.RouteID
@@ -71,4 +72,12 @@ interface ActivityRepository {
      * @return [Boolean] true if it exists
      */
     fun hasActivity(activityID: ActivityID): Boolean
+
+    /**
+     * Gets the users that have an activity matching the given sport id and route id.
+     * @param sportID sport identifier
+     * @param routeID route identifier
+     * @return [List] of [User]
+     */
+    fun getUsersBy(sportID: SportID, routeID: RouteID): List<User>
 }

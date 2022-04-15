@@ -28,6 +28,9 @@ class UserDataMemRepository(guest: User) : UserRepository {
      */
     private val usersMap: MutableMap<Int, User> = mutableMapOf(guest.id to guest)
 
+    val map: Map<Int, User>
+        get() = usersMap.toMap()
+
     /**
      * Checks if the specified user has a repeated email
      *
@@ -55,24 +58,24 @@ class UserDataMemRepository(guest: User) : UserRepository {
     }
 
     /**
-     * @param userID user's unique identifier
-     * @return A [UserDTO] object or null if there is no user identified by [userID]
-     */
-    override fun getUserByID(userID: UserID): User? = usersMap[userID]
-
-    /**
      * Gets all the users stored
      */
     override fun getUsers(): List<User> = usersMap.values.toList()
 
     /**
-     * @param token user's unique token
-     * @return the [UserID] identified by the [UserToken]
-     */
-    override fun getUserIDByToken(token: UserToken): UserID? = tokenTable[token]
-
-    /**
      * Checks if the user with the given id exists
      */
     override fun hasUser(userID: UserID): Boolean = usersMap.containsKey(userID)
+
+    /**
+     * @param token user's unique token
+     * @return the [UserID] identified by the [UserToken]
+     */
+    override fun getUserIDBy(token: UserToken): UserID? = tokenTable[token]
+
+    /**
+     * @param userID user's unique identifier
+     * @return A [UserDTO] object or null if there is no user identified by [userID]
+     */
+    override fun getUserBy(userID: UserID): User? = usersMap[userID]
 }
