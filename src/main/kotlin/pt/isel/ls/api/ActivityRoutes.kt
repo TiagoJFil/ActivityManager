@@ -111,9 +111,9 @@ class ActivityRoutes(
      */
     private fun deleteActivities(request: Request): Response {
         logger.infoLogRequest(request)
-        TODO()
-        val activityIds = request.path("aids")
-
+       //     TODO() change from path to body
+        val activityIds = request.path("activities")
+        //val activityIds =
         val token: UserToken? = getToken(request)
 
         activityServices.deleteActivities(token, activityIds)
@@ -170,7 +170,8 @@ class ActivityRoutes(
             "/" bind Method.GET to ::getActivitiesBySport
         ),
         "/users/{uid}/activities" bind Method.GET to ::getActivitiesByUser,
-        "/sports/{sid}/users" bind Method.GET to ::getUsersByActivity
+        "/sports/{sid}/users" bind Method.GET to ::getUsersByActivity,
+        "/activities" bind Method.DELETE to ::deleteActivities
     )
 }
 

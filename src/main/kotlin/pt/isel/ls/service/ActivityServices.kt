@@ -258,7 +258,7 @@ class ActivityServices(
         }
         val userID = userRepository.requireAuthenticated(token)
         val safeAIDS = requireParameter(activityIds, "SportID")
-        val aids: List<ActivityID> = safeAIDS.split(",").map {
+        safeAIDS.split(",").map {
             val id = requireIdInteger(it, "ActivityID")
             activityRepository.requireActivity(id)
             // activityRepository.requireActivityOwnership(userID, id)

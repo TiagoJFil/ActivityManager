@@ -9,6 +9,8 @@ import pt.isel.ls.utils.Order
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.service.applyPagination
 
 class ActivityDataMemRepository(testActivity: Activity, private val userRepo: UserDataMemRepository) : ActivityRepository {
 
@@ -46,7 +48,7 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
      * @param userID the user unique identifier that the activity must have
      * @return [List] of [Activity] that were created by the given user
      */
-    override fun getActivitiesByUser(userID: UserID): List<Activity> = activitiesMap.values.filter { it.user == userID }
+    override fun getActivitiesByUser(userID: UserID, paginationInfo : PaginationInfo): List<Activity> = activitiesMap.values.filter { it.user == userID }.applyPagination( paginationInfo )
 
     /**
      * Gets the activity that matches the given unique activity identifier.
@@ -67,7 +69,7 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
      *
      * @return [List] of [Activity]
      */
-    override fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?): List<Activity> {
+    override fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?,paginationInfo : PaginationInfo ): List<Activity> {
 
         val activities = activitiesMap.values.filter {
             when {
@@ -80,10 +82,11 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
 
         if (activities.isEmpty()) return activities
 
-        return if (orderBy == Order.ASCENDING)
+        val activitiesList = if (orderBy == Order.ASCENDING)
             activities.sortedBy { it.duration.millis }
         else
             activities.sortedByDescending { it.duration.millis }
+        return activitiesList.applyPagination(paginationInfo)
     }
 
     /**
@@ -108,10 +111,11 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
      * @param routeID route identifier
      * @return [List] of [User] sorted by activity duration ASCENDING
      */
-    override fun getUsersBy(sportID: SportID, routeID: RouteID): List<User> =
+    override fun getUsersBy(sportID: SportID, routeID: RouteID,paginationInfo: PaginationInfo): List<User> =
         activitiesMap.values
             .filter { it.route == routeID && it.sport == sportID }
             .sortedBy { it.duration.millis }
             .mapNotNull { userRepo.map[it.user] }
             .distinct()
+            .applyPagination(paginationInfo)
 }

@@ -11,13 +11,8 @@ import pt.isel.ls.utils.Order
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
-import pt.isel.ls.utils.repository.generatedKey
-import pt.isel.ls.utils.repository.ifNext
-import pt.isel.ls.utils.repository.setActivity
-import pt.isel.ls.utils.repository.toActivity
-import pt.isel.ls.utils.repository.toListOf
-import pt.isel.ls.utils.repository.toUser
-import pt.isel.ls.utils.repository.transaction
+import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.repository.*
 import java.sql.Date
 import java.sql.ResultSet
 import java.sql.Statement
@@ -60,13 +55,14 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
      * @param userID the user unique identifier that the activity must have
      * @return [List] of [Activity] that were created by the given user
      */
-    override fun getActivitiesByUser(userID: UserID): List<Activity> {
+    override fun getActivitiesByUser(userID: UserID, paginationInfo: PaginationInfo): List<Activity> {
         dataSource.connection.transaction {
-            val query = """SELECT * FROM $activityTable WHERE "user" = ?"""
+            val query = """SELECT * FROM $activityTable WHERE "user" = ? LIMIT ? OFFSET ?"""
             val pstmt = prepareStatement(query)
             pstmt.use { ps ->
                 ps.apply {
                     setInt(1, userID)
+                    applyPagination(paginationInfo,Pair(2,3))
                 }
                 val rs = ps.executeQuery()
                 return rs.toListOf(ResultSet::toActivity)
@@ -86,11 +82,13 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
      *
      * @return [List] of [Activity]
      */
-    override fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?): List<Activity> {
+    override fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?,paginationInfo: PaginationInfo): List<Activity> {
         dataSource.connection.transaction {
             val (query, hasDate) = getActivitiesQueryBuilder(date, rid, orderBy)
-            val pstmt = prepareStatement(query)
+            val queryWithPaginationInfo = "$query LIMIT ? OFFSET ?"
+            val pstmt = prepareStatement(queryWithPaginationInfo)
             val ridIdx = if (hasDate) 3 else 2
+            val pagIdx = if(rid != null) ridIdx +1 else ridIdx -1
             pstmt.use { ps ->
                 ps.apply {
 
@@ -103,6 +101,9 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
                     rid?.let { rid ->
                         setInt(ridIdx, rid)
                     }
+                    applyPagination(paginationInfo, Pair(pagIdx,pagIdx + 1))
+                    setInt(pagIdx, paginationInfo.limit)
+                    setInt(pagIdx + 1, paginationInfo.offset)
                 }
                 val rs = ps.executeQuery()
                 return rs.toListOf(ResultSet::toActivity)

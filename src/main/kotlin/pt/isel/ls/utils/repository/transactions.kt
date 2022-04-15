@@ -1,6 +1,7 @@
 package pt.isel.ls.utils.repository
 
 import pt.isel.ls.utils.ID
+import pt.isel.ls.utils.api.PaginationInfo
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
@@ -18,6 +19,15 @@ inline fun <T> tryDataBaseOperation(operation: () -> T): T {
         throw DataBaseAccessException("Error while accessing the database: ${e.stackTraceToString()}")
     }
 }
+
+/**
+ * Sets the pagination information on the given [PreparedStatement].
+ */
+fun PreparedStatement.applyPagination(paginationInfo: PaginationInfo, indexes: Pair<Int, Int>) {
+    setInt(indexes.first, paginationInfo.limit)
+    setInt(indexes.second, paginationInfo.offset)
+}
+
 
 /**
  * Creates a transaction on the given connection properly allocating and disposing connection resources.
