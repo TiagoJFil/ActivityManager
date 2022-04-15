@@ -11,6 +11,8 @@ import pt.isel.ls.utils.Order
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.repository.applyPagination
 import pt.isel.ls.utils.repository.generatedKey
 import pt.isel.ls.utils.repository.ifNext
 import pt.isel.ls.utils.repository.setActivity
@@ -169,15 +171,17 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
      * @param routeID route identifier
      * @return [List] of [User]
      */
-    override fun getUsersBy(sportID: SportID, routeID: RouteID): List<User> {
+    override fun getUsersBy(sportID: SportID, routeID: RouteID, paginationInfo: PaginationInfo): List<User> {
         dataSource.connection.transaction {
-            val query = "SELECT $userTable.id ,$userTable.name, $emailTable.email " +
+            val query =
+                "SELECT $userTable.id ,$userTable.name, $emailTable.email " +
                 "FROM $activityTable " +
                 "JOIN $userTable ON ($activityTable.user = $userTable.id) " +
                 "JOIN $emailTable ON ($emailTable.user = $userTable.id) " +
-                "WHERE $activityTable.sport = ? AND $activityTable.route = ? "
-            "ORDER BY $activityTable.duration DESC"
+                "WHERE $activityTable.sport = ? AND $activityTable.route = ? " +
+                "LIMIT ? OFFSET ?"
             prepareStatement(query).use {
+                it.applyPagination(paginationInfo, indexes=Pair(3, 4))
                 it.setInt(1, sportID)
                 it.setInt(2, routeID)
                 val rs = it.executeQuery()

@@ -9,6 +9,7 @@ import pt.isel.ls.service.entities.User.Email
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.service.applyPagination
 
 class UserDataMemRepository(guest: User) : UserRepository {
 
@@ -61,7 +62,10 @@ class UserDataMemRepository(guest: User) : UserRepository {
     /**
      * Gets all the users stored
      */
-    override fun getUsers(paginationInfo: PaginationInfo): List<User> = usersMap.values.toList()
+    override fun getUsers(paginationInfo: PaginationInfo): List<User>
+    = usersMap.values
+        .toList()
+        .applyPagination(paginationInfo)
 
     /**
      * Checks if the user with the given id exists

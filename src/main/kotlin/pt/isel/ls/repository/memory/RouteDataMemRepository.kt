@@ -14,7 +14,7 @@ class RouteDataMemRepository(testRoute: Route) : RouteRepository {
     /**
      * Mapping between the [RouteID] and [Route]
      */
-    private val routesMap = mutableMapOf<Int, Route>(testRoute.id to testRoute)
+    private val routesMap = mutableMapOf<RouteID, Route>(testRoute.id to testRoute)
 
     /**
      * Gets all the existing routes.
@@ -22,7 +22,9 @@ class RouteDataMemRepository(testRoute: Route) : RouteRepository {
      * @return [List] of [Route]
      */
     override fun getRoutes(paginationInfo: PaginationInfo): List<Route>
-        = routesMap.values.toList().applyPagination(paginationInfo)
+    = routesMap.values
+        .toList()
+        .applyPagination(paginationInfo)
 
     /**
      * Adds a new route to the repository.

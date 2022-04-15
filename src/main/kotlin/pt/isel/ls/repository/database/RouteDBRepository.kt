@@ -27,7 +27,7 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
         dataSource.connection.transaction {
             val query = "SELECT * FROM $routeTable"
             prepareStatement(query).use { stmt ->
-                stmt.applyPagination(paginationInfo)
+                stmt.applyPagination(paginationInfo, indexes = Pair(1, 2))
                 val rs = stmt.executeQuery()
                 rs.toListOf<Route>(ResultSet::toRoute)
             }

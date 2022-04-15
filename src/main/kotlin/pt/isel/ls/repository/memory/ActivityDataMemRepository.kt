@@ -9,6 +9,8 @@ import pt.isel.ls.utils.Order
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.service.applyPagination
 
 class ActivityDataMemRepository(testActivity: Activity, private val userRepo: UserDataMemRepository) : ActivityRepository {
 
@@ -108,10 +110,11 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
      * @param routeID route identifier
      * @return [List] of [User] sorted by activity duration ASCENDING
      */
-    override fun getUsersBy(sportID: SportID, routeID: RouteID): List<User> =
+    override fun getUsersBy(sportID: SportID, routeID: RouteID, paginationInfo: PaginationInfo): List<User> =
         activitiesMap.values
             .filter { it.route == routeID && it.sport == sportID }
             .sortedBy { it.duration.millis }
             .mapNotNull { userRepo.map[it.user] }
             .distinct()
+            .applyPagination(paginationInfo)
 }
