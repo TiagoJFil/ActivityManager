@@ -3,6 +3,7 @@ package pt.isel.ls.repository
 import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.api.PaginationInfo
 
 interface SportRepository {
 
@@ -18,7 +19,7 @@ interface SportRepository {
     /**
      * Gets all the sports in the repository.
      */
-    fun getSports(): List<Sport>
+    fun getSports(paginationInfo: PaginationInfo): List<Sport>
 
     /**
      * Gets a sport by its id.

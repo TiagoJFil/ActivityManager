@@ -6,6 +6,7 @@ import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.repository.generatedKey
 import pt.isel.ls.utils.repository.ifNext
 import pt.isel.ls.utils.repository.toListOf
@@ -82,7 +83,7 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
     /**
      * Gets all the users in the repository.
      */
-    override fun getUsers(): List<User> =
+    override fun getUsers(paginationInfo: PaginationInfo): List<User> =
         dataSource.connection.transaction {
             val emails = getEmails(connection = this)
             createStatement().use { statement ->

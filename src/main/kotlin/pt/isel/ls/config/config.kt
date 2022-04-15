@@ -20,9 +20,9 @@ enum class EnvironmentType(val dbMode: DBMODE) {
     TEST(DBMODE.MEMORY),
 }
 
-fun EnvironmentType.getEnv(): Environment {
+fun EnvironmentType.getEnv(): Environment? {
 
-    val dbInfo = dbMode.source()
+    val dbInfo = dbMode.source() ?: return null
     val userRepo = dbInfo.userRepository
     val routeRepo = dbInfo.routeRepository
     val sportsRepo = dbInfo.sportRepository
