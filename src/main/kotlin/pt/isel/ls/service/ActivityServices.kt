@@ -181,7 +181,7 @@ class ActivityServices(
         requireNotBlankParameter(date, DATE_PARAM)
         requireNotBlankParameter(rid, ROUTE_ID_PARAM)
         val ridInt: RouteID? = rid?.let { requireIdInteger(it, ROUTE_ID_PARAM) }
-        ridInt?.let { routeRepository.requireRoute(ridInt) }
+
 
         try {
             if (date != null) LocalDate.parse(date)
@@ -250,7 +250,6 @@ class ActivityServices(
         activityRepository.getActivity(activityId)?.user == userId
 
     fun deleteActivities(token: UserToken?, activityIds: Param) {
-        // TODO("Not yet implemented")
         logger.traceFunction(::deleteActivities.name) {
             listOf(
                 ACTIVITIES_ID_PARAM to activityIds

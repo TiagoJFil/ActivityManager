@@ -4,7 +4,7 @@ data class DbConnectionInfo(val url: String, val user: String, val password: Str
 
 fun dbConnectionInfo(): DbConnectionInfo {
     val requireEnvVariable = { name: String ->
-        System.getenv(name) ?: error("Please specify JDBC_DATABASE_URL environment variable")
+        System.getenv(name) ?: error("Please specify $name environment variable")
     }
 
     return DbConnectionInfo(

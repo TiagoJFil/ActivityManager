@@ -8,7 +8,9 @@ let notFoundRouteHandler = mainContent => console.log("Not Found")
 function addRouteHandler(path, handler){
 
     const pathRegex = new RegExp(path.replace(/:[^/]+/g, "([^/]+)").replace(/\//g, "\\/") + "\/?$")
-    const placeholderNames = path.split("/").filter(p => p.startsWith(":")).map(p => p.replace(":", ""))
+    const placeholderNames = path.split("/")
+    .filter(p => p.startsWith(":"))
+    .map(p => p.replace(":", ""))
     // [sid, aid]
     routes.push({pathRegex, handler, placeholderNames})
 }

@@ -48,9 +48,10 @@ function loadHandler(){
     router.addRouteHandler('sports', handlers.getSports) 
     router.addRouteHandler('sports/:sid', handlers.getSport) 
     router.addRouteHandler('users', handlers.getUsers)  
-    router.addRouteHandler('users/:uid', handlers.getUsers) //TODO
+    router.addRouteHandler('users/:uid', handlers.getUser) 
     router.addRouteHandler('routes', handlers.getRoutes)  
-    router.addRouteHandler('routes/:rid', handlers.getRoutes) //TODO
+    router.addRouteHandler('routes/:rid', handlers.getRoute)
+    
     router.addRouteHandler('sports/:sid/users', handlers.getUsers)  //TODO
     router.addRouteHandler('sports/:sid/activities', handlers.getActivities)  //TODO
     router.addRouteHandler('users/:uid/activities', handlers.getActivitesFromUser)  //TODO

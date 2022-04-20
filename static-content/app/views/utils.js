@@ -20,8 +20,42 @@ export function Item(className, ...children){
     return createElement('li', className, ...children)
 }
 
-export function Anchor(className, ...children){ 
-    return createElement('a', className, ...children)
+/**
+ * Creates an anchor element with the given class name and children
+ */
+export function Anchor(className, href, ...children){ 
+    const anchor = createElement('a', className, ...children)
+    anchor.href = href
+    return anchor
+}
+
+export function Div(className, ...children){
+    return createElement('div', className, ...children)
+}
+
+export function Text(className, text){
+    return createElement('span', className, document.createTextNode(text))
+}
+
+export function Icon(...classNames){
+    const i = createElement('i')
+    i.classList.add(...classNames)
+    return i
+}
+
+
+
+export function UserLink(ownershipText,linkText,uid){
+    return Div('userlink',
+        Text('user-text', ownershipText),
+        Anchor('link',`#users/${uid}`,
+            Text('text',
+            linkText
+            )
+        ),
+        Icon('bx','bx-user')
+    )
+    
 }
 
 /**

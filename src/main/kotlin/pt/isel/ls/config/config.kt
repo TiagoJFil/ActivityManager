@@ -4,6 +4,7 @@ import pt.isel.ls.service.ActivityServices
 import pt.isel.ls.service.RouteServices
 import pt.isel.ls.service.SportsServices
 import pt.isel.ls.service.UserServices
+import pt.isel.ls.utils.Order
 
 private const val DEFAULT_PORT = 9000
 
@@ -20,9 +21,19 @@ enum class EnvironmentType(val dbMode: DBMODE) {
     TEST(DBMODE.MEMORY),
 }
 
-fun EnvironmentType.getEnv(): Environment? {
+private fun getEnvType() : EnvironmentType{
 
-    val dbInfo = dbMode.source() ?: return null
+    try {
+        val envType = System.getenv("APP_ENV_TYPE")
+        return EnvironmentType.valueOf(envType)
+    }catch (e:IllegalArgumentException){
+      throw IllegalArgumentException("Please specify a valid APP_ENV_TYPE: ${EnvironmentType.values().toList()}")
+    }
+}
+fun getEnv(): Environment? {
+    val envType = getEnvType()
+
+    val dbInfo = envType.dbMode.source() ?: return null
     val userRepo = dbInfo.userRepository
     val routeRepo = dbInfo.routeRepository
     val sportsRepo = dbInfo.sportRepository

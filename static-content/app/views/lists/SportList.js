@@ -1,4 +1,4 @@
-import { List, Item } from './utils.js'
+import { List, Item, Anchor, Text } from '../utils.js'
 
 /**
  * SportList component
@@ -7,11 +7,14 @@ import { List, Item } from './utils.js'
  * @returns An "ul" element containing a list of "li" elements for each sport
  */
 export default function SportList(sports){
-
     return List('sport-list',
         ...sports.map(sport => 
             Item( 'sport', 
-                sport.name.linkTo(`#sports/${sport.id}`)
+                Anchor('link', `#sports/${sport.id}`,
+                    Text("text",
+                        sport.name
+                    )
+                )
             )
         )
     )

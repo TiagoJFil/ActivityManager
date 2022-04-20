@@ -1,4 +1,4 @@
-import { List, Item } from './utils.js'
+import { List, Item, Text ,Anchor} from '../utils.js'
 
 /**
  * RouteList component
@@ -10,7 +10,11 @@ export default function RoutesList(routes){
     return List('route-list',
         ...routes.map(route =>
             Item('route',
-                `${route.startLocation} - ${route.endLocation}`.linkTo(`#routes/${route.id}`)
+                Anchor('link', `#routes/${route.id}`,
+                        Text("text",
+                            `${route.startLocation} - ${route.endLocation}`
+                        )
+                )
             )
         )
     )

@@ -1,4 +1,4 @@
-import { List, Item } from './utils.js'
+import { List, Item , Anchor , Text} from '../utils.js'
 
 /**
  * UserList component
@@ -10,7 +10,11 @@ export default function UserList(users){
     return List('user-list',
         ...users.map(user =>
             Item('user',
-                user.name.linkTo(`#users/${user.id}`)
+                Anchor('link', `#users/${user.id}`,
+                    Text("text",
+                        user.name
+                    )
+                )
             )
         )
     )

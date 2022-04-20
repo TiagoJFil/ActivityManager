@@ -43,7 +43,7 @@ fun getApiRoutes(routes: RoutingHttpHandler) = routes(
 
     "/api" bind routes.withFilter(timeFilter).withFilter(onErrorFilter),
     static(Classpath("public")), // For swagger-ui
-    singlePageApp(ResourceLoader.Directory("static")) // For SPA
+    singlePageApp(ResourceLoader.Directory("static-content")) // For SPA
 )
 
 /**

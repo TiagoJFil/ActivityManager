@@ -19,6 +19,7 @@ import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
+import javax.servlet.http.HttpSessionIdListener
 
 class ActivityRoutes(
     private val activityServices: ActivityServices
@@ -30,7 +31,6 @@ class ActivityRoutes(
     )
     @Serializable data class ActivityIDOutput(val activityID: ActivityID)
     @Serializable data class ActivityListOutput(val activities: List<ActivityDTO>)
-
     companion object {
         val logger = getLoggerFor<ActivityRoutes>()
     }
@@ -111,9 +111,9 @@ class ActivityRoutes(
      */
     private fun deleteActivities(request: Request): Response {
         logger.infoLogRequest(request)
-       //     TODO() change from path to body
-        val activityIds = request.path("activities")
-        //val activityIds =
+
+        val activityIds = request.path("activitiyIDs")
+        //val body = Json.decodeFromString<ActivitiesInput>(request.bodyString())
         val token: UserToken? = getToken(request)
 
         activityServices.deleteActivities(token, activityIds)
@@ -171,7 +171,7 @@ class ActivityRoutes(
         ),
         "/users/{uid}/activities" bind Method.GET to ::getActivitiesByUser,
         "/sports/{sid}/users" bind Method.GET to ::getUsersByActivity,
-        "/activities" bind Method.DELETE to ::deleteActivities
+        "/" bind Method.DELETE to ::deleteActivities
     )
 }
 

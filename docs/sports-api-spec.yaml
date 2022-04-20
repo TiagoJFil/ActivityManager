@@ -400,6 +400,45 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HttpError"
+    delete:
+      tags:
+        - "Activities"
+      summary: "Deletes a list of activities"
+      description: "Deletes a list of activties by their IDs. This operation is atomic."
+      security:
+        - bearerAuth: []
+      operationId: "deleteActivities"
+      parameters:
+        - name: "sid"
+          in: "path"
+          description: "Sport's identifier."
+          required: true
+          schema:
+            type: "integer"
+          example: 67
+        - name: "activityIDs"
+          in: "query"
+          description: "A list of activity IDs split by commas"
+          required: true
+          schema:
+            type: "string"
+          example: "12,31,2,3"
+      responses:
+        "204":
+          description: "Activities deleted successfully"
+        "404":
+          description: "An Activity id was not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+        "401":
+          description: "Invalid, missing token or token not belonging to the user that created the activity"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+
   /sports/{sid}:
     get:
       tags:
