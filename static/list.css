@@ -1,0 +1,27 @@
+
+.sport-list{
+    list-style-type: none;
+    background: rgb(78, 151, 224);
+    padding: 20px;
+}
+
+.sport{
+    background: #cce5ff;
+    margin: 5px;
+}
+
+.sport:hover{
+    background: rgb(142, 166, 245);
+}
+
+.sport:hover .link{
+    color: blue;
+}
+
+main{
+    width: 100%
+}
+
+
+
+

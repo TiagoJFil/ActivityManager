@@ -4,16 +4,34 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Sports Isel LS-G04</title>
+    <link rel='stylesheet' href='main.css'>
+    <link rel='stylesheet' href='list.css'>
     <script src="app/script.js" type="module"></script>
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
-    <h1>Sports Isel LS-G04</h1>
     <nav>
-        <a href="#home">Home</a>
-        <a href="#sports">Sports</a>
-        <a href="#sports/27/activities/39">Sports</a>
+        <a href="#home" class="logo">
+            <img src="img/logo.png" class="logo-img">
+        </a>
+        <ul class="nav-links">
+            <li><a href="#home"><i class='bx bx-home' ></i><p>Home</p></a></li>
+            <li><a href="#users"><i class='bx bx-group'></i><p>Users</p></a></li>
+            <li><a href="#sports"><i class='bx bx-football'></i><p>Sports</p></a></li>
+            <li><a href="#routes"><i class='bx bx-trip'></i><p>Routes</p></a></li>
+            <li><a href="#activities"><i class='bx bx-calendar-event'></i><p>Activities</p></a></li>
+            <div class="active"></div>
+        </ul>
     </nav>
-    <div id="mainContent"> </div>
+    <main>
+        <div id="mainContent"></div> <!-- Children of mainContent are disposable -->
+        <div class="debug-buttons">
+            <button id="add-sport">Add Sport</button>
+            <button id="add-user">Add User</button>
+            <button id="add-route">Add Route</button>
+        </div>
+    </main>
 </body>
 </html>
