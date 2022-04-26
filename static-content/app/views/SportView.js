@@ -1,8 +1,6 @@
 import {List, Item, Text ,UserLink} from "./utils.js"
 
 export default function SportView(sport){
-    console.log(sport)
-    console
     return List('sport',
         Item('name-item',
             Text('name-text',

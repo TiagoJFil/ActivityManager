@@ -2,9 +2,12 @@ import api from './api.js'
 import SportList from './views/lists/SportList.js'
 import UserList from './views/lists/UserList.js'
 import RouteList from './views/lists/RouteList.js'
+import ActivityList from './views/lists/ActivityList.js'
 import SportView from './views/SportView.js'
 import UserView from './views/UserView.js'
 import RouteView from './views/RouteView.js'
+//import ActivityView from './views/ActivityView.js'
+import {Pagination} from "./views/utils.js";
 
 function getHome(mainContent){
     const h1 = document.createElement('h1');
@@ -15,55 +18,76 @@ function getHome(mainContent){
 
 async function getSports(mainContent, params, query){
     const sports = await api.fetchSports(query)
+    const sportCount = await api.fetchSportsCount()
 
     mainContent.replaceChildren(
-        SportList(sports)
+        SportList(sports),
+        Pagination('sports',sportCount)
+    )
+}
+
+async function getSport(mainContent, params, query){
+    const sport = await api.fetchSport(params.sid)
+
+    mainContent.replaceChildren(
+        SportView(sport)
     )
 }
 
 async function getUsers(mainContent, params, query){
     const users = await api.fetchUsers(query)
+    const userCount = await api.fetchUsersCount()
 
     mainContent.replaceChildren(
-        UserList(users)
+        UserList(users),
+        Pagination('users',userCount)
+    )
+}
+
+async function getUser(mainContent, params, query){
+    const user = await api.fetchUser(params.uid)
+
+    mainContent.replaceChildren(
+        UserView(user)
     )
 }
 
 async function getRoutes(mainContent, params, query){
     const routes = await api.fetchRoutes(query)
-
+    const routeCount = await api.fetchRoutesCount()
     mainContent.replaceChildren(
-        RouteList(routes)
+        RouteList(routes),
+        Pagination('routes',routeCount)
     )
 }
 
 async function getRoute(mainContent, params, query){
     const route = await api.fetchRoute(params.rid)
-    
     mainContent.replaceChildren(
         RouteView(route)
     )
 }
 
 
-async function getUser(mainContent, params, query){
+async function getActivities(mainContent, params, query){
 
-    const user = await api.fetchUser(params.uid)
-
+    const activities = await api.fetchActivities(query)
+    const activityCount = await api.fetchResourceCount('activities')
     mainContent.replaceChildren(
-        UserView(user)
+        ActivityList(activities),
+        Pagination('activity',activityCount)
     )
 
 }
 
-async function getSport(mainContent, params, query){
 
-    const sport = await api.fetchSport(params.sid)
+
+async function getActivity(mainContent, params, query){
+    const activity = await api.fetchActivity(params.aid)
 
     mainContent.replaceChildren(
-        SportView(sport)
+        ActivityView(activity)
     )
-
 }
 
 const handlers = { 
@@ -73,7 +97,9 @@ const handlers = {
     getUsers,
     getUser,
     getRoutes,
-    getRoute
+    getRoute,
+    getActivities,
+    getActivity
 }
 
 export default handlers

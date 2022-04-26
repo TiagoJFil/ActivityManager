@@ -21,7 +21,7 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
 
     private val userTable = "user$suffix"
     private val emailTable = "email$suffix"
-    private val tokenTable = "tokens$suffix"
+    private val tokenTable = "token$suffix"
 
     /**
      * Returns the user with the given id.
@@ -89,7 +89,9 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
             val emails = getEmails(connection = this, paginationInfo)
             val query = """SELECT * FROM $userTable ORDER BY id LIMIT ? OFFSET ?"""
             prepareStatement(query).use { statement ->
-                statement.executeQuery("""SELECT * FROM $userTable ORDER BY id""").use { resultSet ->
+                statement.applyPagination(paginationInfo, indexes = Pair(1, 2))
+
+                statement.executeQuery().use { resultSet ->
                     emails.map { email ->
                         resultSet.ifNext {
                             val userID = resultSet.getInt("id")

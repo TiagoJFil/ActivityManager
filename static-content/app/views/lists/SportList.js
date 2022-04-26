@@ -7,7 +7,7 @@ import { List, Item, Anchor, Text } from '../utils.js'
  * @returns An "ul" element containing a list of "li" elements for each sport
  */
 export default function SportList(sports){
-    return List('sport-list',
+    return List('list',
         ...sports.map(sport => 
             Item( 'sport', 
                 Anchor('link', `#sports/${sport.id}`,

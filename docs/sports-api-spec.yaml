@@ -1,4 +1,4 @@
-openapi: 3.0.1
+openapi: 3.0.2
 info:
   description: "Api reference for Sports"
   version: "0.1.3"
@@ -495,6 +495,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HttpError"
+  /activities:
+    get:
+      tags:
+        - "Activities"
+      summary: "Gets all activities"
+      description: "Gets all existing Activities"
+      operationId: "geAllActivities"
+      responses:
+        "200":
+          description: "sucessfull operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityList"
 components:
   securitySchemes:
     bearerAuth:

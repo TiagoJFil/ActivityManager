@@ -2,6 +2,11 @@ package pt.isel.ls.service
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toLocalDate
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import org.http4k.core.Response
+import org.http4k.core.Status
+import pt.isel.ls.api.RouteRoutes
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.repository.SportRepository
@@ -22,7 +27,9 @@ import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
+import pt.isel.ls.utils.infoLogRequest
 import pt.isel.ls.utils.service.requireActivity
+import pt.isel.ls.utils.service.requireActivityWith
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireIdInteger
 import pt.isel.ls.utils.service.requireNotBlankParameter
@@ -93,7 +100,7 @@ class ActivityServices(
 
             val parsedDate: Date = Duration.format.parse(duration)
             val millis: Long = parsedDate.time
-            val sidInt = requireIdInteger(sid, SPORT_ID_PARAM)
+                val sidInt = requireIdInteger(sid, SPORT_ID_PARAM)
 
             sportRepository.requireSport(sidInt)
             userRepository.requireUser(userID)
@@ -200,7 +207,7 @@ class ActivityServices(
      * @param sid The sport id of the activity to be deleted.
      * @return true if the activity was deleted, false otherwise.
      */
-    fun deleteActivity(token: UserToken?, aid: Param, sid: Param): Boolean {
+    fun deleteActivity(token: UserToken?, aid: Param, sid: Param) {
         logger.traceFunction(::deleteActivity.name) {
             listOf(
                 ACTIVITY_ID_PARAM to aid,
@@ -213,11 +220,12 @@ class ActivityServices(
         val sidInt = requireIdInteger(safeSID, SPORT_ID_PARAM)
         sportRepository.requireSport(sidInt)
         val aidInt = requireIdInteger(safeAID, ACTIVITY_ID_PARAM)
-        activityRepository.requireActivity(aidInt)
+        activityRepository.requireActivityWith(aidInt, sidInt)
 
         if (!ownsActivity(userID, aidInt)) throw UnauthenticatedError(USER_NOT_OWNER)
 
-        return activityRepository.deleteActivity(aidInt)
+        activityRepository.deleteActivity(aidInt)
+        return
     }
 
     /**
@@ -249,21 +257,40 @@ class ActivityServices(
     private fun ownsActivity(userId: UserID, activityId: ActivityID): Boolean =
         activityRepository.getActivity(activityId)?.user == userId
 
-    fun deleteActivities(token: UserToken?, activityIds: Param) {
+    /**
+     * Deletes all activities received.
+     * This operation is atomic
+     * @param token The token of the user that created the activities.
+     * @param activityIds The activityIds to be deleted.
+     * @param sportID The sport id of the activities to be deleted.
+     */
+    fun deleteActivities(token: UserToken?, activityIds: Param , sportID: Param) {
         logger.traceFunction(::deleteActivities.name) {
             listOf(
                 ACTIVITIES_ID_PARAM to activityIds
             )
         }
         val userID = userRepository.requireAuthenticated(token)
-        val safeAIDS = requireParameter(activityIds, "SportID")
+        val safeAIDS = requireParameter(activityIds, "ActivityIds")
+        val safeSID = requireParameter(sportID, SPORT_ID_PARAM)
+        val sidInt = requireIdInteger(safeSID, SPORT_ID_PARAM)
+
         safeAIDS.split(",").map {
-            val id = requireIdInteger(it, "ActivityID")
-            activityRepository.requireActivity(id)
+            val aidInt = requireIdInteger(it, "ActivityID")
+            activityRepository.requireActivity(aidInt)
             // activityRepository.requireActivityOwnership(userID, id)
-            if (!ownsActivity(userID, id)) throw UnauthenticatedError(USER_NOT_OWNER)
-            activityRepository.deleteActivity(id)
-            id
+            if (!ownsActivity(userID, aidInt)) throw UnauthenticatedError(USER_NOT_OWNER)
+            activityRepository.requireActivityWith(aidInt, sidInt)
+
+            activityRepository.deleteActivity(aidInt)
+            aidInt
         }
     }
+
+    /**
+     * Gets all existing activities.
+     * @return A [List] of all existing [Activity]s.
+     */
+    fun getAllActivities(fromRequest: PaginationInfo): List<ActivityDTO> =
+        activityRepository.getAllActivities(fromRequest).map(Activity::toDTO)
 }

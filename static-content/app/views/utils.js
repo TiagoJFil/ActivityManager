@@ -57,6 +57,35 @@ export function UserLink(ownershipText,linkText,uid){
     )
     
 }
+const ITEMS_PER_PAGE = 10
+
+function getActualPage(){
+    const path = window.location.hash
+    const page = path.split('=')[1]
+    if(!page){
+        return 0
+    }
+    return page.split('&')[0] / ITEMS_PER_PAGE
+}
+export function Pagination(view,totalElements){
+    let anchorList = []
+
+    const LIMIT = totalElements / ITEMS_PER_PAGE
+
+    for (let i = 0; i < LIMIT; ++i){
+        const skipValue = i * ITEMS_PER_PAGE
+        const anchorClassName = i === getActualPage() ? 'page-link-active' : 'page-link'
+        const anchor =
+            Anchor(anchorClassName,`#${view}?skip=${skipValue}&limit=${ITEMS_PER_PAGE}`,
+                Text(i,i)
+            )
+
+        anchorList.push(anchor)
+    }
+    return Div( 'pagination',
+        ...anchorList
+    )
+}
 
 /**
  * @receiver {String} The text to display on the anchor

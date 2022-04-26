@@ -9,6 +9,7 @@ import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.repository.applyPagination
 import pt.isel.ls.utils.repository.generatedKey
 import pt.isel.ls.utils.repository.ifNext
+import pt.isel.ls.utils.repository.queryTableByID
 import pt.isel.ls.utils.repository.setRoute
 import pt.isel.ls.utils.repository.toListOf
 import pt.isel.ls.utils.repository.toRoute
@@ -25,7 +26,7 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
      */
     override fun getRoutes(paginationInfo: PaginationInfo): List<Route> =
         dataSource.connection.transaction {
-            val query = "SELECT * FROM $routeTable"
+            val query = "SELECT * FROM $routeTable LIMIT ? OFFSET ?"
             prepareStatement(query).use { stmt ->
                 stmt.applyPagination(paginationInfo, indexes = Pair(1, 2))
                 val rs = stmt.executeQuery()
@@ -84,13 +85,5 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
      * @return [T] The result of calling the block function.
      */
     private fun <T> queryRouteByID(routeID: RouteID, block: (ResultSet) -> T): T =
-        dataSource.connection.transaction {
-            val query = """SELECT * FROM $routeTable WHERE id = ?"""
-            val pstmt = prepareStatement(query)
-            pstmt.use { ps ->
-                ps.setInt(1, routeID)
-                val resultSet: ResultSet = ps.executeQuery()
-                resultSet.use { block(it) }
-            }
-        }
+        dataSource.queryTableByID(routeID, routeTable, block)
 }

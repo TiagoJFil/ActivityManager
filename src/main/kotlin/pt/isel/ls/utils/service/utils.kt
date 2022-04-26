@@ -85,6 +85,11 @@ fun ActivityRepository.requireActivity(activityID: ActivityID) {
     if (!hasActivity(activityID)) throw ResourceNotFound("Activity", activityID.toString())
 }
 
+fun ActivityRepository.requireActivityWith(activityID: ActivityID, sportID: SportID) {
+    val activity = getActivity(activityID) ?: throw ResourceNotFound("Activity", activityID.toString())
+    if (activity.sport != sportID) throw InvalidParameter("TODOOOO")//TODO MUDAR O ERRO PORQUE O RESOURCE NOT FOUND N DEIXA SABER Q O ERRO é DO SPORT
+}
+
 /**
  * Ensures that the route identified by the given id exists.
  *

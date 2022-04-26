@@ -3,6 +3,7 @@ import handlers from "../app/handlers";
 
 
 describe('Route Tests', () => {
+    var assert = require('chai').assert;
 
     const routes = [
         'home',
@@ -18,10 +19,11 @@ describe('Route Tests', () => {
         'sports/:sid/activities/:aid',
     ]
 
-    describe('Route to #home should work',() => {
+    it('Route to #home should work',() => {
+
 
     })
-    describe('Route to #home should work',() => {
+    it('Route to #home should work',() => {
 
     })
 

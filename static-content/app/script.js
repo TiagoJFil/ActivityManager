@@ -15,7 +15,7 @@ sportButton.addEventListener('click', () => {
     fetch('/api/sports', { 
         method: 'POST', 
         body: JSON.stringify({ name: sportName, description }), 
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer TOKEN' }
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer 285e3eb5-72c2-4cc7-92d9-586af2aaa885' }
     })
 })
 
@@ -38,7 +38,7 @@ routeButton.addEventListener('click', () => {
     fetch('/api/routes', { 
         method: 'POST', 
         body: JSON.stringify({ startLocation, endLocation, distance }), 
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer TOKEN' }
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer 285e3eb5-72c2-4cc7-92d9-586af2aaa885' }
     })
 })
 
@@ -51,11 +51,12 @@ function loadHandler(){
     router.addRouteHandler('users/:uid', handlers.getUser) 
     router.addRouteHandler('routes', handlers.getRoutes)  
     router.addRouteHandler('routes/:rid', handlers.getRoute)
-    
-    router.addRouteHandler('sports/:sid/users', handlers.getUsers)  //TODO
-    router.addRouteHandler('sports/:sid/activities', handlers.getActivities)  //TODO
-    router.addRouteHandler('users/:uid/activities', handlers.getActivitesFromUser)  //TODO
-    router.addRouteHandler('sports/:sid/activities/:aid', handlers.getSport)
+    router.addRouteHandler('activities', handlers.getActivities)  //TODO
+
+   // router.addRouteHandler('sports/:sid/users', handlers.getUsers)  //TODO
+
+   // router.addRouteHandler('users/:uid/activities', handlers.getActivitesFromUser)  //TODO
+   // router.addRouteHandler('sports/:sid/activities/:aid', handlers.getSport)
 
     router.addDefaultNotFoundRouteHandler(handlers.getHome)
 

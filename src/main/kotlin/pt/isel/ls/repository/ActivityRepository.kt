@@ -87,4 +87,10 @@ interface ActivityRepository {
      * @return [List] of [User]
      */
     fun getUsersBy(sportID: SportID, routeID: RouteID, paginationInfo: PaginationInfo): List<User>
+
+    /**
+     * Gets all existing activities.
+     * @return [List] of [Activity]s
+     */
+    fun getAllActivities(fromRequest: PaginationInfo): List<Activity>
 }

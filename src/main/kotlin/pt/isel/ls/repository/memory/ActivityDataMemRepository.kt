@@ -118,4 +118,11 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
             .mapNotNull { userRepo.map[it.user] }
             .distinct()
             .applyPagination(paginationInfo)
+
+    /**
+     * Gets all existing activities.
+     * @return [List] of [Activity]s
+     */
+    override fun getAllActivities(fromRequest: PaginationInfo): List<Activity> =
+        activitiesMap.values.toList().applyPagination(fromRequest)
 }

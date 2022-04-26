@@ -214,4 +214,10 @@ class ActivitiesServicesTest {
         val users = activitiesServices.getUsersByActivity(sportID, routeId, PaginationInfo(10, 0))
         assertEquals(listOf(guestUser.toDTO()), users)
     }
+
+    @Test
+    fun `get all activities`(){
+        activitiesServices.getAllActivities(PaginationInfo(10, 0))
+    }
+
 }

@@ -58,3 +58,40 @@ main{
 }
 
 
+.list{
+    transform: translateY(25VH);
+}
+
+#mainContent{
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.pagination{
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+
+}
+
+.pagination .page-link,
+.pagination .page-link-active{
+    padding: 4px;
+    margin: 10px;
+    color: #0d74f5;
+    font-size: 20px;
+}
+
+
+.page-link{
+    text-decoration: none;
+}
+
+.page-link-active{
+    color: #0d74f5;
+}
+.page-link-active:hover{
+    color: white;
+}

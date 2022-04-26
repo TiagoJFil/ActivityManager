@@ -63,7 +63,7 @@ class ActivityRoutes(
      */
     private fun getActivity(request: Request): Response {
         logger.infoLogRequest(request)
-
+        //TODO NOT USING SID
         val activityId = request.path("aid")
 
         val activity = activityServices.getActivity(activityId)
@@ -92,6 +92,19 @@ class ActivityRoutes(
     }
 
     /**
+     * Gets all existing activities.
+     */
+    private fun getActivities(request: Request) : Response {
+        logger.infoLogRequest(request)
+        val activities = activityServices.getAllActivities(PaginationInfo.fromRequest(request))
+        val activitiesJson = Json.encodeToString(ActivityListOutput(activities))
+
+        return Response(Status.OK)
+            .header("content-type", "application/json")
+            .body(activitiesJson)
+    }
+
+    /**
      * Handler for deleting an [ActivityDTO] using the information received in the path of the request.
      */
     private fun deleteActivity(request: Request): Response {
@@ -112,11 +125,12 @@ class ActivityRoutes(
     private fun deleteActivities(request: Request): Response {
         logger.infoLogRequest(request)
 
-        val activityIds = request.path("activitiyIDs")
+        val activityIds = request.path("activityIDs")
+        val sportID = request.path("sid")
         //val body = Json.decodeFromString<ActivitiesInput>(request.bodyString())
         val token: UserToken? = getToken(request)
 
-        activityServices.deleteActivities(token, activityIds)
+        activityServices.deleteActivities(token, activityIds,sportID)
         return Response(Status.NO_CONTENT)
     }
 
@@ -167,11 +181,12 @@ class ActivityRoutes(
             "/" bind Method.POST to ::createActivity,
             "/{aid}" bind Method.DELETE to ::deleteActivity,
             "/{aid}" bind Method.GET to ::getActivity,
-            "/" bind Method.GET to ::getActivitiesBySport
+            "/" bind Method.GET to ::getActivitiesBySport,
+            "/" bind Method.DELETE to ::deleteActivities
         ),
         "/users/{uid}/activities" bind Method.GET to ::getActivitiesByUser,
         "/sports/{sid}/users" bind Method.GET to ::getUsersByActivity,
-        "/" bind Method.DELETE to ::deleteActivities
+        "/activities" bind Method.GET to ::getActivities
     )
 }
 

@@ -6,6 +6,7 @@ import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.Statement
+import javax.sql.DataSource
 
 class DataBaseAccessException(message: String) : Exception(message) // TODO: Fazer InternalException do services
 
@@ -64,3 +65,20 @@ fun PreparedStatement.applyPagination(paginationInfo: PaginationInfo, indexes: P
     setInt(indexes.first, paginationInfo.limit)
     setInt(indexes.second, paginationInfo.offset)
 }
+
+/**
+ * Gets a row that is identified by the given id and calls the given [block] with the resultSet of the row.
+ *
+ * @param id an [ID] that identifies the row
+ * @param table the name of the table to query
+ * @param block the block to execute with the resultSet of the row
+ */
+fun <T> DataSource.queryTableByID(id: ID, table : String, block: (ResultSet) -> T,): T =
+    connection.transaction {
+        val query = """SELECT * FROM $table WHERE id = ?"""
+        prepareStatement(query).use { ps ->
+            ps.setInt(1, id)
+            val resultSet: ResultSet = ps.executeQuery()
+            resultSet.use { block(it) }
+        }
+    }

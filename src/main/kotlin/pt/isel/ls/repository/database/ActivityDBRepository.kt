@@ -15,6 +15,7 @@ import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.repository.applyPagination
 import pt.isel.ls.utils.repository.generatedKey
 import pt.isel.ls.utils.repository.ifNext
+import pt.isel.ls.utils.repository.queryTableByID
 import pt.isel.ls.utils.repository.setActivity
 import pt.isel.ls.utils.repository.toActivity
 import pt.isel.ls.utils.repository.toListOf
@@ -196,6 +197,22 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
     }
 
     /**
+     * Gets all existing activities.
+     * @return [List] of [Activity]s
+     */
+    override fun getAllActivities(fromRequest: PaginationInfo): List<Activity> =
+        dataSource.connection.transaction {
+            val query = """SELECT * FROM $activityTable LIMIT ? OFFSET ? """
+            prepareStatement(query).use { ps ->
+                ps.applyPagination(fromRequest,Pair(1,2))
+                val rs: ResultSet = ps.executeQuery()
+                rs.toListOf<Activity>(ResultSet::toActivity)
+            }
+        }
+
+
+
+    /**
      * Makes a query to get an activity by its identifier.
      *
      * @param activityID The id of the activity to be queried.
@@ -203,13 +220,6 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
      * @return [T] The result of calling the block function.
      */
     private fun <T> queryActivityByID(activityID: ActivityID, block: (ResultSet) -> T): T =
-        dataSource.connection.transaction {
-            val query = """SELECT * FROM $activityTable WHERE id = ?"""
-            val pstmt = prepareStatement(query)
-            pstmt.use { ps ->
-                ps.setInt(1, activityID)
-                val resultSet: ResultSet = ps.executeQuery()
-                resultSet.use { block(it) }
-            }
-        }
+        dataSource.queryTableByID(activityID, activityTable, block)
+
 }
