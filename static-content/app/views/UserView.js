@@ -5,11 +5,11 @@ export default function UserView(user){
         H1('header', 'User Details'),
         List('user-details',
             Item('name-item',
-                Text('name-header', 'Name: '),
+                Text('detail-header', 'Name: '),
                 Text('name-text', user.name)
             ),
             Item('email-item',
-                Text('email-header', 'Email: '),
+                Text('detail-header', 'Email: '),
                 Text('email-text',user.email)
             ),
             Button('icon-button',

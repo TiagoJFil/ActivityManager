@@ -1,42 +1,47 @@
-import {List, Item, Text, Anchor, Button} from "./utils.js"
+import {List, Item, Text, Button, Div, H1, Icon} from "./utils.js"
 
 
-export default function ActivityView(activity){
-    const routeText = activity.route ?
-            Anchor('link',`#routes/${activity.route}`,
-                Text('text', 'this route')
-            )
-         :
-            Text('text', 'none')
+export default function ActivityView(activity) {
+     const emptyTest = Text('text', '')
+     const routeButton = activity.route ? Button('icon-button',
+        () => {
+            location.href = `#users/${activity.user}`
+        },
+        Icon('bx', 'bx-trip')
+    ) : emptyTest
 
-    return List('sport',
-        Item('date-item',
-            Text('date-text',
-                `Date : ${activity.date}`
-            )
-        ),
-        Item('duration-item',
-            Text('duration-text',
-                `Duration: ${activity.duration}`
-            )
-        ),
-        Item('sport-link-item',
-            Text('sport-text', 'Sport:'),
-            Anchor('link',`#sports/${activity.sport}`,
-                Text('text',
-                    'this sport'
-                )
+    const usersButton = activity.route ? Button('icon-button',
+        () => {
+            location.href = `#sports/${activity.sport}/users?rid=${activity.route}`
+        },
+        Icon('bx', 'bx-group')
+    ) : emptyTest
+
+    return Div('header-div',
+        H1('header', 'Activity Details'),
+        List('activity-details',
+            Item('date-item',
+                Text('detail-header', 'Date: '),
+                Text('date-text', activity.date)
             ),
-        ),
-        Item('route-item',
-            Text('route-text', `Route: `),
-            routeText
-        ),
-        Button('todo',
-            `#sports/${activity.sport}/users?rid=${activity.route}`,
-            'blalbbla'
-        ),
-        //TODO VERFICAR SE A ROUTE ANTES DE POR ISTO
+            Item('duration-item',
+                Text('detail-header', 'Duration: '),
+                Text('duration-text', activity.duration)
+            ),
+            Button('icon-button',
+                () => {
+                    location.href = `#sports/${activity.sport}`
+                },
+                Icon('bx', 'bx-football')
+            ),
+            Button('icon-button',
+                () => {
+                    location.href = `#users/${activity.user}`
+                },
+                Icon('bx', 'bx-user')
+            ), routeButton, usersButton
 
+
+        )
     )
 }

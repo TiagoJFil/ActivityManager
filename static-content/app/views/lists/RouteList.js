@@ -11,7 +11,7 @@ export default function RoutesList(routes) {
         H1('header', 'Routes'),
         List('list',
             ...routes.map(route =>
-                Item('resource-route-item',
+                Item('resource-item',
                     Button('list-button',
                         () => {
                             location.href = `#routes/${route.id}`
