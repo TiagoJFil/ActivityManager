@@ -43,6 +43,16 @@ export function Icon(...classNames){
     return i
 }
 
+export function Button(className,href,text,){
+    const button = createElement('input',className)
+    button.type = 'button'
+    button.onclick = () => {
+        location.href= href
+    }
+    button.value = text
+    return button
+}
+
 export function H1(className, text){
     return createElement('h1', className , document.createTextNode(text))
 
@@ -67,9 +77,6 @@ export function UserLink(ownershipText,linkText,uid){
     )
     
 }
-
-
-
 const ITEMS_PER_PAGE = 10
 
 function getActualPage(){

@@ -19,7 +19,6 @@ import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
-import javax.servlet.http.HttpSessionIdListener
 
 class ActivityRoutes(
     private val activityServices: ActivityServices
@@ -63,10 +62,11 @@ class ActivityRoutes(
      */
     private fun getActivity(request: Request): Response {
         logger.infoLogRequest(request)
-        //TODO NOT USING SID
-        val activityId = request.path("aid")
 
-        val activity = activityServices.getActivity(activityId)
+        val activityId = request.path("aid")
+        val sportId = request.path("sid")
+
+        val activity = activityServices.getActivity(activityId,sportId)
 
         val activityJson = Json.encodeToString<ActivityDTO>(activity)
 
@@ -94,7 +94,7 @@ class ActivityRoutes(
     /**
      * Gets all existing activities.
      */
-    private fun getActivities(request: Request) : Response {
+    private fun getAllActivities(request: Request) : Response {
         logger.infoLogRequest(request)
         val activities = activityServices.getAllActivities(PaginationInfo.fromRequest(request))
         val activitiesJson = Json.encodeToString(ActivityListOutput(activities))
@@ -186,7 +186,7 @@ class ActivityRoutes(
         ),
         "/users/{uid}/activities" bind Method.GET to ::getActivitiesByUser,
         "/sports/{sid}/users" bind Method.GET to ::getUsersByActivity,
-        "/activities" bind Method.GET to ::getActivities
+        "/activities" bind Method.GET to ::getAllActivities
     )
 }
 

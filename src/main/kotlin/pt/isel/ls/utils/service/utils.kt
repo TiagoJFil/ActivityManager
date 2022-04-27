@@ -87,7 +87,7 @@ fun ActivityRepository.requireActivity(activityID: ActivityID) {
 
 fun ActivityRepository.requireActivityWith(activityID: ActivityID, sportID: SportID) {
     val activity = getActivity(activityID) ?: throw ResourceNotFound("Activity", activityID.toString())
-    if (activity.sport != sportID) throw InvalidParameter("TODOOOO")//TODO MUDAR O ERRO PORQUE O RESOURCE NOT FOUND N DEIXA SABER Q O ERRO é DO SPORT
+    if (activity.sport != sportID) throw InvalidParameter("\"sid\" not associated with given \"aid\"")
 }
 
 /**

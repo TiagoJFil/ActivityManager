@@ -12,9 +12,9 @@ export default function ActivityList(activities){
         List('list',
             ...activities.map(activity =>
                 Item('activity',
-                    Anchor('link', `#activities/${activity.id}`,
+                    Anchor('link', `#sports/${activity.sport}/activities/${activity.id}`,
                         Text("text",
-                            `${activity.id}`
+                            `${activity.sportName} `
                         )
                     )
                 )

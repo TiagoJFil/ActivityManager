@@ -21,6 +21,7 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
      */
     private val activitiesMap = mutableMapOf<ActivityID, Activity>(testActivity.id to testActivity)
 
+
     /**
      * Creates a new activity using the parameters received
      *
@@ -123,6 +124,6 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
      * Gets all existing activities.
      * @return [List] of [Activity]s
      */
-    override fun getAllActivities(fromRequest: PaginationInfo): List<Activity> =
-        activitiesMap.values.toList().applyPagination(fromRequest)
+    override fun getAllActivities(paginationInfo: PaginationInfo): List<Activity> =
+        activitiesMap.values.toList().applyPagination(paginationInfo)
 }

@@ -96,7 +96,7 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
             val queryWithPaginationInfo = "$query LIMIT ? OFFSET ?"
             val pstmt = prepareStatement(queryWithPaginationInfo)
             val ridIdx = if (hasDate) 3 else 2
-            val pagIdx = if(rid != null) ridIdx +1 else ridIdx -1
+            val pagIdx = if(rid != null) ridIdx +1 else ridIdx
             pstmt.use { ps ->
                 ps.apply {
 
@@ -200,11 +200,11 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
      * Gets all existing activities.
      * @return [List] of [Activity]s
      */
-    override fun getAllActivities(fromRequest: PaginationInfo): List<Activity> =
+    override fun getAllActivities(paginationInfo: PaginationInfo): List<Activity> =
         dataSource.connection.transaction {
             val query = """SELECT * FROM $activityTable LIMIT ? OFFSET ? """
             prepareStatement(query).use { ps ->
-                ps.applyPagination(fromRequest,Pair(1,2))
+                ps.applyPagination(paginationInfo,Pair(1,2))
                 val rs: ResultSet = ps.executeQuery()
                 rs.toListOf<Activity>(ResultSet::toActivity)
             }

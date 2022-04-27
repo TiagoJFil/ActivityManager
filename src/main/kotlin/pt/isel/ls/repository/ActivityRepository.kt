@@ -92,5 +92,5 @@ interface ActivityRepository {
      * Gets all existing activities.
      * @return [List] of [Activity]s
      */
-    fun getAllActivities(fromRequest: PaginationInfo): List<Activity>
+    fun getAllActivities(paginationInfo: PaginationInfo): List<Activity>
 }

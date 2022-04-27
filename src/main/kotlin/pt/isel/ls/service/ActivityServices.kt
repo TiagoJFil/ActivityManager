@@ -129,10 +129,15 @@ class ActivityServices(
      * @param activityID the unique identifier of the activity
      * @return [ActivityDTO] with the activity that matches the given id
      */
-    fun getActivity(activityID: Param): ActivityDTO {
+    fun getActivity(activityID: Param,sid: Param): ActivityDTO {
         logger.traceFunction(::getActivity.name) { listOf(ACTIVITY_ID_PARAM to activityID) }
+
+        val safeSID = requireParameter(sid, SPORT_ID_PARAM)
         val safeActivityID = requireParameter(activityID, ACTIVITY_ID_PARAM)
         val aidInt = requireIdInteger(safeActivityID, ACTIVITY_ID_PARAM)
+        val sidInt = requireIdInteger(safeSID, SPORT_ID_PARAM)
+        sportRepository.requireSport(sidInt)
+        activityRepository.requireActivityWith(aidInt, sidInt)
 
         return activityRepository.getActivity(aidInt)?.toDTO()
             ?: throw ResourceNotFound(RESOURCE_NAME, safeActivityID)

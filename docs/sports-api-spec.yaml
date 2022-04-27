@@ -53,7 +53,7 @@ paths:
       tags:
         - "User"
       summary: "Get users by an Activity"
-      description: "Gets a list of users by Activity with the given sportID and routeID, the list is ordered by Activity duration ascending"
+      description: "Gets a list of users having an Activity with the given sportID and routeID, the list is ordered ascendingly by Activity duration"
       operationId: "getUsersByActivity"
       parameters:
         - name: "sid"

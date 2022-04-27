@@ -6,7 +6,7 @@ import ActivityList from './views/lists/ActivityList.js'
 import SportView from './views/SportView.js'
 import UserView from './views/UserView.js'
 import RouteView from './views/RouteView.js'
-//import ActivityView from './views/ActivityView.js'
+import ActivityView from './views/ActivityView.js'
 import {Pagination} from "./views/utils.js";
 
 function getHome(mainContent){
@@ -53,7 +53,6 @@ async function getUser(mainContent, params, query){
 }
 
 async function getRoutes(mainContent, params, query){
-    console.log(query)
     const routes = await api.fetchRoutes(query)
     const routeCount = await api.fetchRoutesCount()
     mainContent.replaceChildren(
@@ -72,31 +71,46 @@ async function getRoute(mainContent, params, query){
 
 async function getActivities(mainContent, params, query){
     const activities = await api.fetchActivities(query)
-    const activityCount = await api.fetchResourceCount('activities')
+    const actvWithSportName = await api.addSportNameToActivities(activities)
+    const activityCount = await api.fetchActivitiesCount()
+
     mainContent.replaceChildren(
-        ActivityList(activities),
-        Pagination('activity',activityCount)
+        ActivityList(actvWithSportName),
+        Pagination('activities',activityCount)
     )
 }
 
 async function getActivitiesBySport(mainContent, params, query){
     const activities = await api.fetchActivitiesBySport(params.sid, query)
-    const activityCount = await api.fetchResourceCount('activities')
+    const actvWithSportName = await api.addSportNameToActivities(activities)
+   // const activityCount = await api.fetchResourceCount('activities')
+//TODO: add pagination count here
     mainContent.replaceChildren(
-        ActivityList(activities),
-        Pagination('activity',activityCount)
+        ActivityList(actvWithSportName),
+        Pagination('activity',9)
     )
 }
 
 async function getActivity(mainContent, params, query){
-    const activity = await api.fetchActivity(params.aid)
+    const activity = await api.fetchActivity(params.sid,params.aid)
 
     mainContent.replaceChildren(
         ActivityView(activity)
     )
 }
 
-const handlers = {
+async function getUsersByActivity(mainContent, params, query){
+    const users = await api.fetchUsersByActivity(query,params.sid)
+
+    mainContent.replaceChildren(
+        UserList(users),
+        Pagination('users',userCount)
+    )
+}
+
+
+
+export default {
     getHome,
     getSports,
     getSport,
@@ -105,8 +119,10 @@ const handlers = {
     getRoutes,
     getRoute,
     getActivities,
+    getActivity,
+    getUsersByActivity,
     getActivitiesBySport,
-    getActivity
+
 }
 
-export default handlers
+

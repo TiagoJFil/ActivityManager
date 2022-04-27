@@ -1,7 +1,6 @@
 import {List, Item, Text, Div, Icon, Anchor,UserLink} from "./utils.js"
 
 export default function RouteView(route){
-    console.log("RouteView", route)
     const locationTextClass = 'location-text'
    
     return List('route',
@@ -24,16 +23,3 @@ export default function RouteView(route){
         )
     )
 }
-
-
-
-
-
-
-/*
-
-.user-link-item link:hover{
-    color: #0d74f5;  //328af5
-
-}
-*/
