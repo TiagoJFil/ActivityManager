@@ -14,7 +14,7 @@ export default function SportView(sport) {
         H1('header', 'Sport Details'),
         List('sport-details',
             Item('name-item',
-                Text('sport-name-header', 'Name: '),
+                Text('detail-header', 'Name: '),
                 Text('sport-name-text',sport.name)
             ),
             Item('description-item',

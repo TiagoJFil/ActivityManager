@@ -143,7 +143,7 @@ main{
     margin-left: 15px;
 }
 
-.user-details, .sport-details{
+.user-details, .sport-details, .activity-details{
     list-style: none;
     margin: 0;
 }
@@ -163,7 +163,7 @@ button:hover {
     transition: all .4s ease-in-out;
 }
 
-.name-header, .email-header, .description-header, .sport-name-header{
+.detail-header{
     font-weight: bold;
 }
 
