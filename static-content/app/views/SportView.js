@@ -1,26 +1,37 @@
-import {List, Item, Text, UserLink, ActivitiesLink, Button} from "./utils.js"
+import {List, Item, Text, Button, Icon, Div, H1} from "./utils.js"
 
 
-export default function SportView(sport){
+export default function SportView(sport) {
     const description = sport.description ?
-        Text('description-text', `Description: ${sport.description}`)
+        Div('sport-description',
+            Text('description-header', 'Description: '),
+            Text('description-text', sport.description)
+        )
         :
         Text('description-text', "No description available")
-    return List('sport',
-        Item('name-item',
-            Text('name-text',
-                `Name : ${sport.name}`
-            )
-        ),
-        Item('description-item',
-            description
-        ),
-        Button('activities-link-item',
-            `#sports/${sport.id}/activities`,
-            'blalbbla'
-        ),
-        Item('user-link-item',
-             UserLink('Created by: ','this user',sport.user)
+
+    return Div('header-div',
+        H1('header', 'Sport Details'),
+        List('sport-details',
+            Item('name-item',
+                Text('sport-name-header', 'Name: '),
+                Text('sport-name-text',sport.name)
+            ),
+            Item('description-item',
+                description
+            ),
+            Button('icon-button',
+                () => {
+                    location.href = `#sports/${sport.id}/activities`
+                },
+                Icon('bx', 'bx-calendar-event')
+            ),
+            Button('icon-button',
+                () => {
+                    location.href = `#users/${sport.user}`
+                },
+                Icon('bx', 'bx-user')
+            ),
         )
     )
 }

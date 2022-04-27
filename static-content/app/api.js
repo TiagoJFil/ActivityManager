@@ -29,6 +29,13 @@ async function fetchActivitiesBySport(sid, query){
     const activities = await response.json()
     return activities['activities']
 }
+
+async function fetchActivitiesByUser(uid, query){
+    const response = await fetch(BASE_API_URL + ACTIVITY_USER_URL(uid) + (query ? '?' + query : ''))
+    const activities = await response.json()
+    return activities['activities']
+}
+
 async function fetchSportsCount(){
     return await fetchResourceCount(SPORTS_URL)
 }
@@ -78,22 +85,6 @@ async function fetchResourceCount(RESOURCE_PATH){
 
 const sportMap = new Map()
 
-async function fetchActivitiesWSportName(query){
-    const activities = await fetchActivities(query)
-    return await Promise.all(activities.map(async activity => {
-        let sport
-        if(sportMap[activity.sport]){
-            sport = sportMap[activity.sport]
-        }else {
-            sport = await fetchSport(activity.sport)
-            sportMap[activity.sport] = sport
-        }
-        activity.sportName = sport.name
-        return activity
-    }))
-}
-
-
 async function addSportNameToActivities(activities){
     return await Promise.all(activities.map(async activity => {
         let sport
@@ -125,13 +116,13 @@ export default {
     fetchUser,
     fetchActivities,
     fetchActivitiesBySport,
+    fetchActivitiesByUser,
     fetchActivity,
     fetchSportsCount,
     fetchRoutesCount,
     fetchUsersCount,
     fetchResourceCount,
     fetchActivitiesCount,
-    fetchActivitiesWSportName,
     fetchUsersByActivity,
     addSportNameToActivities
 }

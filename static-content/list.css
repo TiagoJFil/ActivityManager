@@ -7,7 +7,7 @@ main{
 }
 
 .route{
-    width: 100;
+    width: 100%;
     list-style: none;
     margin: 0;
 }
@@ -59,7 +59,12 @@ main{
 
 
 .list{
+    --items-per-page: 10;
+    flex-direction: row;
+    display: flex;
+    justify-content: center;
     transform: translateY(25VH);
+    width: 100%;
 }
 
 #mainContent{
@@ -94,4 +99,91 @@ main{
 }
 .page-link-active:hover{
     color: white;
+}
+
+.icon-button{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: solid white 2px;
+    font-size: 25px;
+    color: white;
+    background-color: #0d74f5;
+    margin-top: 15px;
+    margin-right: 20px;
+}
+
+.header{
+    padding-bottom: 30px;
+}
+
+.resource-item{
+    list-style: none;
+    overflow: hidden;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.list-button{
+    width: 120px;
+    height: 120px;
+    border-radius: 50px;
+    moz-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+    background-image: linear-gradient(to right, #25aae1, #62b8ff, #04befe, #3f86ed);
+    border: none;
+    margin-right: 20px;
+    font-size: 20px;
+    background-size: 300% 100%;
+    box-shadow: 0 4px 15px 0 rgba(65, 132, 234, 0.75);
+    padding: 20px;
+    margin-left: 15px;
+}
+
+.user-details, .sport-details{
+    list-style: none;
+    margin: 0;
+}
+
+button{
+    cursor: pointer;
+}
+
+button:hover {
+    /*box-shadow: 0 0.5em 0.5em -0.4em black;
+    transition: translateY 0.25s;
+    transform: translateY(-0.10em);*/
+    background-position: 100% 0;
+    moz-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+}
+
+.name-header, .email-header, .description-header, .sport-name-header{
+    font-weight: bold;
+}
+
+.name-item, .email.item{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.text{
+    color: white;
+    z-index: 200;
+}
+
+@media only screen and (max-width: 600px) {
+    .list{
+        --items-per-page: 3;
+        flex-direction: column;
+    }
+}
+
+.resource-route-item{
+    list-style: none;
+    margin: 0;
 }

@@ -1,4 +1,4 @@
-import { List, Item, Text ,Anchor, Div, H1} from '../utils.js'
+import {List, Item, Text, Div, H1, Button} from '../utils.js'
 
 
 /**
@@ -7,14 +7,18 @@ import { List, Item, Text ,Anchor, Div, H1} from '../utils.js'
  * @param {*} activities activities to display
  * @returns An "ul" element containing a list of "li" elements for each Activity
  */
-export default function ActivityList(activities){
-    return Div('header-div', H1('header', 'Activities for:'),
+export default function ActivityList(activities, headerText) {
+    return Div('header-div',
+        H1('header', headerText),
         List('list',
             ...activities.map(activity =>
-                Item('activity',
-                    Anchor('link', `#sports/${activity.sport}/activities/${activity.id}`,
+                Item('resource-item',
+                    Button('list-button',
+                        () => {
+                            location.href = `#sports/${activity.sport}/activities/${activity.id}`
+                        },
                         Text("text",
-                            `${activity.sportName} `
+                            `${activity.id} `
                         )
                     )
                 )

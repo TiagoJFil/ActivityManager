@@ -3,6 +3,7 @@ import handlers from './handlers.js'
 
 window.addEventListener('load', loadHandler)
 window.addEventListener('hashchange', hashChangeHandler)
+window.addEventListener('resize', hashChangeHandler)
 
 const sportButton = document.querySelector('#add-sport')
 const userButton = document.querySelector('#add-user')
@@ -55,9 +56,7 @@ function loadHandler(){
     router.addRouteHandler('sports/:sid/activities/:aid', handlers.getActivity)
     router.addRouteHandler('sports/:sid/users', handlers.getUsersByActivity)
     router.addRouteHandler('sports/:sid/activities', handlers.getActivitiesBySport)
-
-   // router.addRouteHandler('users/:uid/activities', handlers.getActivitesFromUser)  //TODO
-   // router.addRouteHandler('sports/:sid/activities/:aid', handlers.getSport)
+    router.addRouteHandler('users/:uid/activities', handlers.getActivitiesByUser)
 
     router.addDefaultNotFoundRouteHandler(handlers.getHome)
 
@@ -68,6 +67,6 @@ function hashChangeHandler(){
     const mainContent = document.querySelector('#mainContent')
     const path = window.location.hash.replace('#', '')
     const handlerInfo = router.getRouteHandler(path)
-
+    console.log(handlerInfo.handler)
     handlerInfo.handler(mainContent, handlerInfo.params, handlerInfo.query)
 }

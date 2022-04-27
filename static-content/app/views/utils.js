@@ -43,68 +43,16 @@ export function Icon(...classNames){
     return i
 }
 
-export function Button(className,href,text,){
-    const button = createElement('input',className)
+export function Button(className, onClick, ...children){
+    const button = createElement('button',className, ...children)
     button.type = 'button'
-    button.onclick = () => {
-        location.href= href
-    }
-    button.value = text
+    button.onclick = onClick
     return button
 }
 
 export function H1(className, text){
     return createElement('h1', className , document.createTextNode(text))
 
-}
-
-//Todo tirar os links daqui
-export function ActivitiesLink(text,sid){
-    return Anchor('link', `#sports/${sid}/activities`,
-        Text('text', text)
-    )
-}
-
-export function UserLink(ownershipText,linkText,uid){
-    return Div('userlink',
-        Text('user-text', ownershipText),
-        Anchor('link',`#users/${uid}`,
-            Text('text',
-            linkText
-            )
-        ),
-        Icon('bx','bx-user')
-    )
-    
-}
-const ITEMS_PER_PAGE = 10
-
-function getActualPage(){
-    const path = window.location.hash
-    const page = path.split('=')[1]
-    if(!page){
-        return 0
-    }
-    return page.split('&')[0] / ITEMS_PER_PAGE
-}
-export function Pagination(view,totalElements){
-    let anchorList = []
-
-    const LIMIT = totalElements / ITEMS_PER_PAGE
-
-    for (let i = 0; i < LIMIT; ++i){
-        const skipValue = i * ITEMS_PER_PAGE
-        const anchorClassName = i === getActualPage() ? 'page-link-active' : 'page-link'
-        const anchor =
-            Anchor(anchorClassName,`#${view}?skip=${skipValue}&limit=${ITEMS_PER_PAGE}`,
-                Text(i,i)
-            )
-
-        anchorList.push(anchor)
-    }
-    return Div( 'pagination',
-        ...anchorList
-    )
 }
 
 /**

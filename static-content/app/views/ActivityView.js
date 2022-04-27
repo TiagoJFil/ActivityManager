@@ -1,4 +1,4 @@
-import {List, Item, Text, UserLink, Anchor, Button} from "./utils.js"
+import {List, Item, Text, Anchor, Button} from "./utils.js"
 
 
 export default function ActivityView(activity){
@@ -19,9 +19,6 @@ export default function ActivityView(activity){
             Text('duration-text',
                 `Duration: ${activity.duration}`
             )
-        ),
-        Item('user-link-item',
-            UserLink('Created by: ','this user',activity.user)
         ),
         Item('sport-link-item',
             Text('sport-text', 'Sport:'),
