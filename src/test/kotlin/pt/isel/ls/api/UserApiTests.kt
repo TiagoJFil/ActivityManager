@@ -6,6 +6,7 @@ import org.junit.After
 import org.junit.Before
 import pt.isel.ls.api.UserRoutes.UserCreationInput
 import pt.isel.ls.api.UserRoutes.UserListOutput
+import pt.isel.ls.api.utils.ROUTE_PATH
 import pt.isel.ls.api.utils.TEST_ENV
 import pt.isel.ls.api.utils.USER_PATH
 import pt.isel.ls.api.utils.createUser
@@ -39,7 +40,7 @@ class UserApiTests {
             testClient.createUser(it)
         }
 
-        val usersList = getRequest<UserListOutput>(testClient, USER_PATH, Response::expectOK).users
+        val usersList = getRequest<UserListOutput>(testClient, "$USER_PATH?limit=1005", Response::expectOK).users
         val expected = responses.mapIndexed { index, userIDResponse ->
             UserDTO("user$index", randomEmails[index], userIDResponse.id)
         }

@@ -30,7 +30,7 @@ enum class EndPoints(val path: String) {
 }
 
 val TEST_ENV: Environment
-    get() = EnvironmentType.TEST.getEnv()!!
+    get() = getEnv(true)!!
 
 /**
  * Returns a list of headers with the authorization header injected with the given token.

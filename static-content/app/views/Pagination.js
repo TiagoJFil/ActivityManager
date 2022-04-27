@@ -35,7 +35,7 @@ export function Pagination(view, totalElements){
 
 export function getItemsPerPage(){
     const list = document.querySelector('.list')
-    return list ? getComputedStyle(list).getPropertyValue('--items-per-page') : 10
+    return list ? parseInt(getComputedStyle(list).getPropertyValue('--items-per-page')) : 10
 }
 
 

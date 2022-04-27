@@ -30,8 +30,8 @@ private fun getEnvType() : EnvironmentType{
       throw IllegalArgumentException("Please specify a valid APP_ENV_TYPE: ${EnvironmentType.values().toList()}")
     }
 }
-fun getEnv(): Environment? {
-    val envType = getEnvType()
+fun getEnv(testMode: Boolean = false): Environment? {
+    val envType = if(testMode) EnvironmentType.TEST else getEnvType()
 
     val dbInfo = envType.dbMode.source() ?: return null
     val userRepo = dbInfo.userRepository
@@ -45,6 +45,7 @@ fun getEnv(): Environment? {
     val routeServices = RouteServices(routeRepo, userRepo)
     val sportsServices = SportsServices(sportsRepo, userRepo)
     val activityServices = ActivityServices(activityRepo, userRepo, sportsRepo, routeRepo)
+
 
     return Environment(userServices, activityServices, routeServices, sportsServices, port)
 }

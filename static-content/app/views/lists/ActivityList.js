@@ -5,6 +5,7 @@ import {List, Item, Text, Div, H1, Button} from '../utils.js'
  * ActivityList component
  *
  * @param {*} activities activities to display
+ * @param headerText
  * @returns An "ul" element containing a list of "li" elements for each Activity
  */
 export default function ActivityList(activities, headerText) {

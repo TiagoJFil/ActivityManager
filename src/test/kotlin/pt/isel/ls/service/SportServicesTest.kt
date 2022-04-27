@@ -87,7 +87,7 @@ class SportServicesTest {
             sportsServices.getSport(sportID.toString())
         }
         val allSports = listOf(testSport.toDTO()) + sports
-        assertEquals(1001, sportsServices.getSports(PaginationInfo(10, 0)).size)
-        assertEquals(allSports, sportsServices.getSports(PaginationInfo(10, 0)))
+        assertEquals(1001, sportsServices.getSports(PaginationInfo(10000, 0)).size)
+        assertEquals(allSports, sportsServices.getSports(PaginationInfo(1002, 0)))
     }
 }

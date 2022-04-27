@@ -4,6 +4,7 @@ import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
+import pt.isel.ls.service.entities.User.Email.Companion.MAX_NAME_LENGTH
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
@@ -42,6 +43,8 @@ class UserServices(
 
         val safeName = requireParameter(name, NAME_PARAM)
         val safeEmail = requireParameter(email, EMAIL_PARAM)
+        if(safeName.length > MAX_NAME_LENGTH)
+            throw InvalidParameter("$NAME_PARAM is too long, max length is ${MAX_NAME_LENGTH}")
 
         val userAuthToken = generateUUId()
 

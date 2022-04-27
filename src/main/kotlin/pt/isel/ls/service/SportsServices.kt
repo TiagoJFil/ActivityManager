@@ -4,6 +4,7 @@ import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.SportDTO
 import pt.isel.ls.service.entities.Sport
+import pt.isel.ls.service.entities.User
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
@@ -55,6 +56,8 @@ class SportsServices(
         val userID = userRepository.requireAuthenticated(token)
         val safeName = requireParameter(name, NAME_PARAM)
         val handledDescription = description?.ifBlank { null }
+        if(safeName.length > Sport.MAX_NAME_LENGTH)
+            throw InvalidParameter("$NAME_PARAM is too long, max length is ${Sport.MAX_NAME_LENGTH}")
 
         return sportsRepository.addSport(safeName, handledDescription, userID)
     }

@@ -143,8 +143,8 @@ class ActivityRoutes(
         val routeID = request.query("rid")
 
         val users = activityServices.getUsersByActivity(sportID, routeID, PaginationInfo.fromRequest(request))
-
-        val bodyString = Json.encodeToString(users)
+        println(users)
+        val bodyString = Json.encodeToString(UserRoutes.UserListOutput(users))
 
         return Response(Status.OK)
             .header("content-type", "application/json")

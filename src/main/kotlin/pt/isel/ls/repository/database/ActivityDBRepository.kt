@@ -179,13 +179,14 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
     override fun getUsersBy(sportID: SportID, routeID: RouteID, paginationInfo: PaginationInfo): List<User> {
         dataSource.connection.transaction {
             val query =
+                "select distinct * from (" +
                 "SELECT $userTable.id ,$userTable.name, $emailTable.email " +
                 "FROM $activityTable " +
                 "JOIN $userTable ON ($activityTable.user = $userTable.id) " +
                 "JOIN $emailTable ON ($emailTable.user = $userTable.id) " +
                 "WHERE $activityTable.sport = ? AND $activityTable.route = ? " +
-                "ORDER BY $activityTable.duration DESC" +
-                "LIMIT ? OFFSET ?"
+                "ORDER BY $activityTable.duration DESC " +
+                "LIMIT ? OFFSET ?) as t"
             prepareStatement(query).use {
                 it.applyPagination(paginationInfo, indexes=Pair(3, 4))
                 it.setInt(1, sportID)

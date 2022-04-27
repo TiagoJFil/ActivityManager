@@ -33,10 +33,10 @@ export default function ActivityView(activity){
             routeText
         ),
         Button('todo',
-            `#sports/${activity.sport}/users?rid=${activity.route}`,
-            'blalbbla'
+            () => {
+                window.location.href =`#sports/${activity.sport}/users?rid=${activity.route}`
+            },
+            Text('text', 'Users that have the same sport and routes')
         ),
-        //TODO VERFICAR SE A ROUTE ANTES DE POR ISTO
-
     )
 }

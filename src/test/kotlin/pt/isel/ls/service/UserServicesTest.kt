@@ -4,6 +4,7 @@ import org.junit.After
 import org.junit.Test
 import pt.isel.ls.api.utils.TEST_ENV
 import pt.isel.ls.config.guestUser
+import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -76,9 +77,21 @@ class UserServicesTest {
     }
 
     @Test
-    fun `get all the users list`() {
-        val userList = userServices.getUsers()
+    fun `get all the users list returns empty list`() {
+        val userList = userServices.getUsers(PaginationInfo(10, 0))
         val testList = listOf(guestUser.toDTO())
         assertEquals(testList, userList)
     }
+
+    @Test
+    fun `get all users list returns a list with one user`() {
+        val newUserId = userServices.createUser("abc", "abc@gmail.com").second
+        val newUser = userServices.getUserByID(newUserId.toString())
+
+        val userListReceived = userServices.getUsers(PaginationInfo(10, 0))
+        val testListExpected = listOf(guestUser.toDTO(),newUser)
+        assertEquals(testListExpected, userListReceived)
+    }
+
+
 }

@@ -1,6 +1,6 @@
 
 const routes = [
-    // { pathRegex: "", handler: () => {} }
+
 ]
 
 let notFoundRouteHandler = mainContent => console.log("Not Found")

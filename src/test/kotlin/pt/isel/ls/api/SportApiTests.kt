@@ -4,6 +4,7 @@ import org.http4k.core.Response
 import org.junit.After
 import pt.isel.ls.api.SportRoutes.SportCreationInput
 import pt.isel.ls.api.SportRoutes.SportListOutput
+import pt.isel.ls.api.utils.ROUTE_PATH
 import pt.isel.ls.api.utils.SPORT_PATH
 import pt.isel.ls.api.utils.TEST_ENV
 import pt.isel.ls.api.utils.authHeader
@@ -93,7 +94,7 @@ class SportApiTests {
         val sportsIds: List<SportID> = creationBodies.map { testClient.createSport(it).sportID }
 
         val expected = sportsIds.map { SportDTO(id = it, name, description, guestUser.id) }
-        val sportList = getRequest<SportListOutput>(testClient, SPORT_PATH, Response::expectOK).sports
+        val sportList = getRequest<SportListOutput>(testClient, "$SPORT_PATH?limit=1005", Response::expectOK).sports
 
         expected.forEach { assertContains(sportList, it) }
     }

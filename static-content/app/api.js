@@ -36,6 +36,13 @@ async function fetchActivitiesByUser(uid, query){
     return activities['activities']
 }
 
+
+async function fetchActivitiesByUserCount(uid){
+    const response = fetchActivitiesByUser(uid, '&limit=100000')
+    const activities = await response.json()
+    return activities.length
+}
+
 async function fetchSportsCount(){
     return await fetchResourceCount(SPORTS_URL)
 }
@@ -100,11 +107,16 @@ async function addSportNameToActivities(activities){
 }
 
 async function fetchUsersByActivity(query,sid){
-    console.log(query)
-    const response = await fetch(BASE_API_URL + 'users/' + 'sid' + (query ? '?' + query : ''))
-    const object = await response.json()
-    console.log(object)
-    return users
+    const response = await fetch(BASE_API_URL + 'sports/' + sid + '/users' + (query ? '?' + query : ''))
+    return await response.json()
+}
+
+async function fetchUserByActivityCount(query,sid){
+    const ridQuery = query.split('&')[0]
+
+    const response = await fetch(BASE_API_URL + 'sports/' + sid + '/users' + (ridQuery + '&limit=10000000'))
+    const users = await response.json()
+    return users.length
 }
 
 export default {
@@ -124,6 +136,8 @@ export default {
     fetchResourceCount,
     fetchActivitiesCount,
     fetchUsersByActivity,
-    addSportNameToActivities
+    addSportNameToActivities,
+    fetchUserByActivityCount,
+    fetchActivitiesByUserCount
 }
 

@@ -1,7 +1,7 @@
 
 create table user_prod (
     id serial primary key,
-    name varchar(35) not null
+    name varchar(20) not null
 );
 create table email_prod(
     "user" int,
@@ -26,7 +26,7 @@ create table route_prod (
 
 create table sport_prod(
     id serial primary key,
-    name varchar(50) not null,
+    name varchar(20) not null,
     description varchar(200) DEFAULT null,
     "user" int not null,
     foreign key ("user") references user_prod(id)

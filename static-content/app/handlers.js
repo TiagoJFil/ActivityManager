@@ -19,14 +19,14 @@ function getHome(mainContent){
 function getQuery(){
     const limit = getItemsPerPage()
     const pageLinkActive = document.querySelector('.page-link-active')
-    console.log(pageLinkActive)
+
     const skip = pageLinkActive ? parseInt(pageLinkActive.firstChild.textContent) * limit : 0
-    console.log(skip)
+
     return `?skip=${skip}&limit=${limit}`
 }
 
 async function getSports(mainContent, params, query){
-    const sports = await api.fetchSports(getQuery())
+    const sports = await api.fetchSports(query || getQuery())
     const sportCount = await api.fetchSportsCount()
 
     mainContent.replaceChildren(
@@ -34,6 +34,7 @@ async function getSports(mainContent, params, query){
         Pagination('sports',sportCount)
     )
 }
+
 
 async function getSport(mainContent, params, query){
     const sport = await api.fetchSport(params.sid)
@@ -44,7 +45,7 @@ async function getSport(mainContent, params, query){
 }
 
 async function getUsers(mainContent, params, query){
-    const users = await api.fetchUsers(getQuery())
+    const users = await api.fetchUsers(query || getQuery())
     const userCount = await api.fetchUsersCount()
 
     mainContent.replaceChildren(
@@ -62,7 +63,7 @@ async function getUser(mainContent, params, query){
 }
 
 async function getRoutes(mainContent, params, query){
-    const routes = await api.fetchRoutes(getQuery())
+    const routes = await api.fetchRoutes(query || getQuery())
     const routeCount = await api.fetchRoutesCount()
     mainContent.replaceChildren(
         RouteList(routes),
@@ -79,7 +80,7 @@ async function getRoute(mainContent, params, query){
 
 
 async function getActivities(mainContent, params, query){
-    const activities = await api.fetchActivities(getQuery())
+    const activities = await api.fetchActivities(query || getQuery())
     //const actvWithSportName = await api.addSportNameToActivities(activities)
     const activityCount = await api.fetchActivitiesCount()
     mainContent.replaceChildren(
@@ -89,22 +90,24 @@ async function getActivities(mainContent, params, query){
 }
 
 async function getActivitiesBySport(mainContent, params, query){
-    const activities = await api.fetchActivitiesBySport(params.sid, getQuery())
+    const activities = await api.fetchActivitiesBySport(params.sid, query || getQuery())
     const actvWithSportName = await api.addSportNameToActivities(activities)
 
    // const activityCount = await api.fetchResourceCount('activities')
+    console.log(actvWithSportName)
 //TODO: add pagination count here
     mainContent.replaceChildren(
-        ActivityList(actvWithSportName, `Activities for ${actvWithSportName.sportName}`),
+        ActivityList(actvWithSportName, `Activities for ${actvWithSportName[0].sportName}`),
         Pagination('activities',9)
     )
 }
 
 async function getActivitiesByUser(mainContent, params, query){
-    const activities = await api.fetchActivitiesByUser(params.uid, getQuery())
+    const activities = await api.fetchActivitiesByUser(params.uid, query || getQuery())
+    const activityCount = await api.fetchActivitiesByUserCount(params.uid)
     mainContent.replaceChildren(
         ActivityList(activities, `Activities for this USER`),
-        Pagination('activities')
+        Pagination('activities',activityCount)
     )
 }
 
@@ -117,7 +120,8 @@ async function getActivity(mainContent, params, query){
 }
 
 async function getUsersByActivity(mainContent, params, query){
-    const users = await api.fetchUsersByActivity(getQuery(),params.sid)
+    const users = await api.fetchUsersByActivity(query || getQuery(),params.sid)
+    const userCount = await api.fetchUserByActivityCount(query,params.sid)
 
     mainContent.replaceChildren(
         UserList(users),

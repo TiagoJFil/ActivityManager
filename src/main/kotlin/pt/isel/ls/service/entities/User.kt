@@ -20,6 +20,7 @@ data class User(val name: String, val email: Email, val id: UserID) {
      * */
     data class Email(val value: String) {
         companion object {
+            const val MAX_NAME_LENGTH = 20
             private val emailRegex = Regex(
                 "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)" +
                     "*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$"

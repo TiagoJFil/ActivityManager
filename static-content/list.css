@@ -59,12 +59,13 @@ main{
 
 
 .list{
-    --items-per-page: 10;
+    --items-per-page:10;
     flex-direction: row;
     display: flex;
     justify-content: center;
     transform: translateY(25VH);
     width: 100%;
+    flex-wrap: wrap;
 }
 
 #mainContent{
@@ -173,7 +174,8 @@ button:hover {
 
 .text{
     color: white;
-    z-index: 200;
+    word-wrap: break-word;
+    white-space: normal;
 }
 
 @media only screen and (max-width: 600px) {

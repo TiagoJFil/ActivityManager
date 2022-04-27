@@ -108,7 +108,7 @@ class RouteApiTests {
         val routeIds: List<RouteID> = creationBodies.map { testClient.createRoute(it).routeID }
 
         val expected = routeIds.map { RouteDTO(id = it, start, end, distance, guestUser.id) }
-        val routeList = getRequest<RouteListOutput>(testClient, ROUTE_PATH, Response::expectOK).routes
+        val routeList = getRequest<RouteListOutput>(testClient, "$ROUTE_PATH?limit=1005", Response::expectOK).routes
 
         expected.forEach { assertContains(routeList, it) }
     }

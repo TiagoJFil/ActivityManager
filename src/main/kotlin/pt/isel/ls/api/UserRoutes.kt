@@ -25,7 +25,6 @@ import pt.isel.ls.utils.infoLogRequest
 class UserRoutes(
     private val userServices: UserServices
 ) {
-
     @Serializable data class UserCreationInput(val name: Param = null, val email: Param = null)
     @Serializable data class UserIDOutput(val authToken: UserToken, val id: UserID)
     @Serializable data class UserListOutput(val users: List<UserDTO>)

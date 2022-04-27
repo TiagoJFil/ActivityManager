@@ -67,6 +67,5 @@ function hashChangeHandler(){
     const mainContent = document.querySelector('#mainContent')
     const path = window.location.hash.replace('#', '')
     const handlerInfo = router.getRouteHandler(path)
-    console.log(handlerInfo.handler)
     handlerInfo.handler(mainContent, handlerInfo.params, handlerInfo.query)
 }
