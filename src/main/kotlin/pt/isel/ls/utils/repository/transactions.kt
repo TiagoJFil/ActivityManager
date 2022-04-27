@@ -59,6 +59,14 @@ fun PreparedStatement.generatedKey(): ID {
 }
 
 /**
+ *
+ */
+fun PreparedStatement.applyPagination(paginationInfo: PaginationInfo) {
+    setInt(1, paginationInfo.limit)
+    setInt(2, paginationInfo.offset)
+}
+
+/**
  * Sets the pagination information on the given [PreparedStatement].
  */
 fun PreparedStatement.applyPagination(paginationInfo: PaginationInfo, indexes: Pair<Int, Int>) {

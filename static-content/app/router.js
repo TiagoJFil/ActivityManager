@@ -7,7 +7,7 @@ let notFoundRouteHandler = mainContent => console.log("Not Found")
 
 function addRouteHandler(path, handler){
 
-    const pathRegex = new RegExp(path.replace(/:[^/]+/g, "([^/]+)").replace(/\//g, "\\/") + "\/?$")
+    const pathRegex = new RegExp('^' + path.replace(/:[^/]+/g, "([0-9a-z]+)").replace(/\//g, "\\/") + "\??$")
     const placeholderNames = path.split("/")
     .filter(p => p.startsWith(":"))
     .map(p => p.replace(":", ""))
@@ -15,14 +15,12 @@ function addRouteHandler(path, handler){
     routes.push({pathRegex, handler, placeholderNames})
 }
 
-function getRouteHandler(path){
+export function getRouteHandler(path){
     // sports/39/activities/27
     const [pathString, queryString] = path.split("?")
     const route = routes.find(route => route.pathRegex.test(pathString))
-
     if(!route) return notFoundRouteHandler
     const [match, ...values] = route.pathRegex.exec(pathString)
-    
     const params = {}
     route.placeholderNames.forEach((name, idx) => params[name] = values[idx])
     // params: {sid: 39, aid: 27}

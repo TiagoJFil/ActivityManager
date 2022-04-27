@@ -53,6 +53,7 @@ async function getUser(mainContent, params, query){
 }
 
 async function getRoutes(mainContent, params, query){
+    console.log(query)
     const routes = await api.fetchRoutes(query)
     const routeCount = await api.fetchRoutesCount()
     mainContent.replaceChildren(
@@ -70,17 +71,22 @@ async function getRoute(mainContent, params, query){
 
 
 async function getActivities(mainContent, params, query){
-
     const activities = await api.fetchActivities(query)
     const activityCount = await api.fetchResourceCount('activities')
     mainContent.replaceChildren(
         ActivityList(activities),
         Pagination('activity',activityCount)
     )
-
 }
 
-
+async function getActivitiesBySport(mainContent, params, query){
+    const activities = await api.fetchActivitiesBySport(params.sid, query)
+    const activityCount = await api.fetchResourceCount('activities')
+    mainContent.replaceChildren(
+        ActivityList(activities),
+        Pagination('activity',activityCount)
+    )
+}
 
 async function getActivity(mainContent, params, query){
     const activity = await api.fetchActivity(params.aid)
@@ -90,7 +96,7 @@ async function getActivity(mainContent, params, query){
     )
 }
 
-const handlers = { 
+const handlers = {
     getHome,
     getSports,
     getSport,
@@ -99,6 +105,7 @@ const handlers = {
     getRoutes,
     getRoute,
     getActivities,
+    getActivitiesBySport,
     getActivity
 }
 

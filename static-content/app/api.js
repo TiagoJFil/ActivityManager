@@ -3,7 +3,8 @@ const BASE_API_URL = 'http://localhost:9000/api/';
 const SPORTS_URL = 'sports'
 const USERS_URL = 'users'
 const ROUTE_URL = 'routes'
-const ACTIVITY_URL = sid => `sports/${sid}/activities`
+const ACTIVITY_SPORT_URL = sid => `sports/${sid}/activities`
+const ACTIVITY_USER_URL = uid => `users/${uid}/activities`
 
 async function fetchSports(query) {
     return  await fetchResourceList(query, SPORTS_URL)   
@@ -18,10 +19,14 @@ async function fetchUsers(query){
 }
 
 async function fetchActivities(sid, query){
-    //TODO make this
-    TODO
     const sports = await fetchSports(query)
-    return await fetchResourceList(query, ACTIVITY_URL(sid))
+    return await fetchResourceList(query, ACTIVITY_SPORT_URL(sid))
+}
+
+async function fetchActivitiesBySport(sid, query){
+    const response = await fetch(BASE_API_URL + ACTIVITY_SPORT_URL(sid) + (query ? '?' + query : ''))
+    const activities = await response.json()
+    return activities['activities']
 }
 
 async function fetchSportsCount(){
@@ -47,7 +52,7 @@ async function fetchUser(id){
 }
 
 async function fetchActivity(sid, id){
-    return await fetchResource(id, ACTIVITY_URL(sid))
+    return await fetchResource(id, ACTIVITY_SPORT_URL(sid))
 }
 
 async function fetchResourceList(query, RESOURCE_PATH){
@@ -55,6 +60,7 @@ async function fetchResourceList(query, RESOURCE_PATH){
     const object = await response.json()
     return object[RESOURCE_PATH]
 }
+
 
 async function fetchResource(id, RESOURCE_PATH){
     const response = await fetch(BASE_API_URL + RESOURCE_PATH + '/' + id)
@@ -75,10 +81,12 @@ const api = {
     fetchRoute,
     fetchUser,
     fetchActivities,
+    fetchActivitiesBySport,
     fetchActivity,
     fetchSportsCount,
     fetchRoutesCount,
-    fetchUsersCount
+    fetchUsersCount,
+    fetchResourceCount
 }
 
 export default api  

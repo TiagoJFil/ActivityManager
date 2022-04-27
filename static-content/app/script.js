@@ -11,11 +11,11 @@ const routeButton = document.querySelector('#add-route')
 sportButton.addEventListener('click', () => {
     const sportName = prompt('Enter sport name')
     const description = prompt('Enter sport description')
-
+    //285e3eb5-72c2-4cc7-92d9-586af2aaa885
     fetch('/api/sports', { 
         method: 'POST', 
         body: JSON.stringify({ name: sportName, description }), 
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer 285e3eb5-72c2-4cc7-92d9-586af2aaa885' }
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer TOKEN' }
     })
 })
 
@@ -38,7 +38,7 @@ routeButton.addEventListener('click', () => {
     fetch('/api/routes', { 
         method: 'POST', 
         body: JSON.stringify({ startLocation, endLocation, distance }), 
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer 285e3eb5-72c2-4cc7-92d9-586af2aaa885' }
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer TOKEN' }
     })
 })
 
@@ -51,7 +51,8 @@ function loadHandler(){
     router.addRouteHandler('users/:uid', handlers.getUser) 
     router.addRouteHandler('routes', handlers.getRoutes)  
     router.addRouteHandler('routes/:rid', handlers.getRoute)
-    router.addRouteHandler('activities', handlers.getActivities)  //TODO
+    router.addRouteHandler('activities', handlers.getActivities)
+    router.addRouteHandler('sports/:sid/activities', handlers.getActivitiesBySport)
 
    // router.addRouteHandler('sports/:sid/users', handlers.getUsers)  //TODO
 
@@ -67,6 +68,6 @@ function hashChangeHandler(){
     const mainContent = document.querySelector('#mainContent')
     const path = window.location.hash.replace('#', '')
     const handlerInfo = router.getRouteHandler(path)
-
     handlerInfo.handler(mainContent, handlerInfo.params, handlerInfo.query)
+
 }

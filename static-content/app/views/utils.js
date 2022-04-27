@@ -43,7 +43,17 @@ export function Icon(...classNames){
     return i
 }
 
+export function H1(className, text){
+    return createElement('h1', className , document.createTextNode(text))
 
+}
+
+//Todo tirar os links daqui
+export function ActivitiesLink(text,sid){
+    return Anchor('link', `#sports/${sid}/activities`,
+        Text('text', text)
+    )
+}
 
 export function UserLink(ownershipText,linkText,uid){
     return Div('userlink',
@@ -57,6 +67,9 @@ export function UserLink(ownershipText,linkText,uid){
     )
     
 }
+
+
+
 const ITEMS_PER_PAGE = 10
 
 function getActualPage(){
