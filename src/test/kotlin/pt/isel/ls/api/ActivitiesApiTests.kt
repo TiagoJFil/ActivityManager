@@ -382,9 +382,28 @@ class ActivitiesApiTests {
         assertEquals(listOf(user2, guestUser.toDTO(), user3), userListOutput.users)
     }
 
+    @Test
+    fun `Get list of activites returns a list with the test user`() {
+        val activities = getRequest<ActivityListOutput>(testClient, "/api/activities", Response::expectOK)
+        assertEquals(listOf(testActivity.toDTO()), activities.activities)
+    }
+
+    @Test
+    fun `Delete activities sucessfully`() {
+        val body = ActivityCreationInput("02:16:32.993", "2020-01-01", testRoute.id.toString())
+        testClient.createActivity(body, testSport.id)
+
+        deleteActivities(testSport.id, "0,1", GUEST_TOKEN).expectNoContent()
+    }
+
     private fun deleteActivity(sportID: SportID, activityID: ActivityID, token: UserToken) =
         testClient(
             Request(DELETE, activityResourceLocation(sportID, activityID))
+                .header("Authorization", "Bearer $token")
+        )
+    private fun deleteActivities(sportID: SportID, activities: String, token: UserToken) =
+        testClient(
+            Request(DELETE, "/api/sports/$sportID/activities/?activityIDs=$activities")
                 .header("Authorization", "Bearer $token")
         )
 }

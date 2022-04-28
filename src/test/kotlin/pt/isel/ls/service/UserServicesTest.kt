@@ -89,9 +89,14 @@ class UserServicesTest {
         val newUser = userServices.getUserByID(newUserId.toString())
 
         val userListReceived = userServices.getUsers(PaginationInfo(10, 0))
-        val testListExpected = listOf(guestUser.toDTO(),newUser)
+        val testListExpected = listOf(guestUser.toDTO(), newUser)
         assertEquals(testListExpected, userListReceived)
     }
 
-
+    @Test
+    fun `Cant create a user with a name longer than 20 letters`() {
+        assertFailsWith<InvalidParameter> {
+            userServices.createUser("abcdefghijklmnopqrstuvwxyz", "asd@gma.com")
+        }
+    }
 }

@@ -8,9 +8,9 @@ data class PaginationInfo(val limit: Int, val offset: Int) {
         fun fromRequest(request: Request): PaginationInfo {
             val limit = request.query("limit")?.toIntOrNull() ?: 10
             val offset = request.query("skip")?.toIntOrNull() ?: 0
-            if(limit <= 0) throw InvalidParameter("limit must be positive")
-            if(offset < 0) throw InvalidParameter("offset must be non-negative")
-            //TODO() see if we should put a higher or lower limit
+            if (limit <= 0) throw InvalidParameter("limit must be positive")
+            if (offset < 0) throw InvalidParameter("offset must be non-negative")
+            // TODO() see if we should put a higher or lower limit
             return PaginationInfo(limit, offset)
         }
     }

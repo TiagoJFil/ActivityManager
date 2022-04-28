@@ -43,8 +43,8 @@ class UserServices(
 
         val safeName = requireParameter(name, NAME_PARAM)
         val safeEmail = requireParameter(email, EMAIL_PARAM)
-        if(safeName.length > MAX_NAME_LENGTH)
-            throw InvalidParameter("$NAME_PARAM is too long, max length is ${MAX_NAME_LENGTH}")
+        if (safeName.length > MAX_NAME_LENGTH)
+            throw InvalidParameter("$NAME_PARAM is too long, max length is $MAX_NAME_LENGTH")
 
         val userAuthToken = generateUUId()
 

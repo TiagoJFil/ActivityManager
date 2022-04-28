@@ -1,6 +1,6 @@
-import {List, Item, Text, Button, Icon, Div, H1} from "./utils.js"
-import ActivityLinkIcon from "./ActivityLinkIcon.js"
-import UserLinkIcon from "./UserLinkIcon.js";
+import {List, Item, Text, Button, Icon, Div, H1} from "../utils.js"
+import ActivityLinkIcon from "../ActivityLinkIcon.js"
+import UserLinkIcon from "../UserLinkIcon.js";
 
 
 export default function SportView(sport) {

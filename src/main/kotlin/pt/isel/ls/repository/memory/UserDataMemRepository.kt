@@ -62,10 +62,10 @@ class UserDataMemRepository(guest: User) : UserRepository {
     /**
      * Gets all the users stored
      */
-    override fun getUsers(paginationInfo: PaginationInfo): List<User>
-    = usersMap.values
-        .toList()
-        .applyPagination(paginationInfo)
+    override fun getUsers(paginationInfo: PaginationInfo): List<User> =
+        usersMap.values
+            .toList()
+            .applyPagination(paginationInfo)
 
     /**
      * Checks if the user with the given id exists

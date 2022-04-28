@@ -22,7 +22,6 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
      */
     private val activitiesMap = ConcurrentHashMap(mutableMapOf(testActivity.id to testActivity))
 
-
     /**
      * Creates a new activity using the parameters received
      *
@@ -50,8 +49,8 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
      * @param userID the user unique identifier that the activity must have
      * @return [List] of [Activity] that were created by the given user
      */
-    override fun getActivitiesByUser(userID: UserID, paginationInfo : PaginationInfo): List<Activity>
-        = activitiesMap.values.filter { it.user == userID }.applyPagination( paginationInfo )
+    override fun getActivitiesByUser(userID: UserID, paginationInfo: PaginationInfo): List<Activity> =
+        activitiesMap.values.filter { it.user == userID }.applyPagination(paginationInfo)
 
     /**
      * Gets the activity that matches the given unique activity identifier.
@@ -72,7 +71,7 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
      *
      * @return [List] of [Activity]
      */
-    override fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?,paginationInfo : PaginationInfo ): List<Activity> {
+    override fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?, paginationInfo: PaginationInfo): List<Activity> {
 
         val activities = activitiesMap.values.filter {
             when {
@@ -141,8 +140,8 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
     override fun deleteActivities(activities: List<ActivityID>): Boolean {
         val activitiesObjects = activities.toSet().filter { activitiesMap[it] != null }
         val entries = activitiesMap.filter { it.key in activitiesObjects }
-        if(activitiesObjects.size != activities.size) return false
-        for (it in activities){
+        if (activitiesObjects.size != activities.size) return false
+        for (it in activities) {
             activitiesMap.remove(it) // If could not remove add all again
                 ?: run {
                     activitiesMap.putAll(entries)
@@ -151,5 +150,4 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
         }
         return true
     }
-
 }

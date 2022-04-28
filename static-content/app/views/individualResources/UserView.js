@@ -1,5 +1,5 @@
-import {List, Item, Text, Div, H1} from "./utils.js"
-import ActivityLinkIcon from "./ActivityLinkIcon.js";
+import {List, Item, Text, Div, H1} from "../utils.js"
+import ActivityLinkIcon from "../ActivityLinkIcon.js";
 
 export default function UserView(user){
     return Div('header-div',

@@ -4,7 +4,6 @@ import org.http4k.core.Response
 import org.junit.After
 import pt.isel.ls.api.SportRoutes.SportCreationInput
 import pt.isel.ls.api.SportRoutes.SportListOutput
-import pt.isel.ls.api.utils.ROUTE_PATH
 import pt.isel.ls.api.utils.SPORT_PATH
 import pt.isel.ls.api.utils.TEST_ENV
 import pt.isel.ls.api.utils.authHeader
@@ -97,5 +96,19 @@ class SportApiTests {
         val sportList = getRequest<SportListOutput>(testClient, "$SPORT_PATH?limit=1005", Response::expectOK).sports
 
         expected.forEach { assertContains(sportList, it) }
+    }
+
+    @Test
+    fun `Cant create a sport with a name that has more than 20 letters`() {
+        val name = "1234567890123456789012345678901"
+        val description = "Played with a cue"
+
+        postRequest<SportCreationInput, HttpError>(
+            testClient,
+            SPORT_PATH,
+            SportCreationInput(name, description),
+            authHeader(GUEST_TOKEN),
+            Response::expectBadRequest
+        )
     }
 }

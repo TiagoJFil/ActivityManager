@@ -36,10 +36,10 @@ class SportDataMemRepository(testSport: Sport) : SportRepository {
      *
      * @return [List] of [SportDTO]
      */
-    override fun getSports(paginationInfo: PaginationInfo): List<Sport>
-    = sportsMap.values
-        .toList()
-        .applyPagination(paginationInfo)
+    override fun getSports(paginationInfo: PaginationInfo): List<Sport> =
+        sportsMap.values
+            .toList()
+            .applyPagination(paginationInfo)
 
     /**
      * @param sportID the unique number that identifies the sport

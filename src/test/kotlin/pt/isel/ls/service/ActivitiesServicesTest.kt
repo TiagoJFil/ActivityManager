@@ -72,17 +72,17 @@ class ActivitiesServicesTest {
 
     @Test
     fun `get an activity by id that doesnt exist throws an error`() {
-        assertFailsWith<ResourceNotFound> { activitiesServices.getActivity("312","0") }
+        assertFailsWith<ResourceNotFound> { activitiesServices.getActivity("312", "0") }
     }
 
     @Test
     fun `get an activity by id with a blank id throws error `() {
-        assertFailsWith<InvalidParameter> { activitiesServices.getActivity(" ","0") }
+        assertFailsWith<InvalidParameter> { activitiesServices.getActivity(" ", "0") }
     }
 
     @Test
     fun `get an activity by id without an argument throws error `() {
-        assertFailsWith<MissingParameter> { activitiesServices.getActivity(null,"0") }
+        assertFailsWith<MissingParameter> { activitiesServices.getActivity(null, "0") }
     }
 
     @Test
@@ -216,28 +216,29 @@ class ActivitiesServicesTest {
     }
 
     @Test
-    fun `get all activities returns an the test activity when there are no activities`(){
+    fun `get all activities returns an the test activity when there are no activities`() {
         val activities = activitiesServices.getAllActivities(PaginationInfo(10, 0))
         assertEquals(listOf(testActivity.toDTO()), activities)
     }
 
     @Test
-    fun `get all activities returns a list with existing activities`(){
+    fun `get all activities returns a list with existing activities`() {
         val aid = activitiesServices.createActivity(GUEST_TOKEN, testSport.id.toString(), "02:10:32.123", "2002-05-20", testRoute.id.toString())
-        val activity = activitiesServices.getActivity(aid.toString(),"0")
+        val activity = activitiesServices.getActivity(aid.toString(), "0")
         val activities = activitiesServices.getAllActivities(PaginationInfo(10, 0))
-        assertEquals(listOf(testActivity.toDTO(),activity), activities)
+        assertEquals(listOf(testActivity.toDTO(), activity), activities)
     }
 
     @Test
-    fun `try to delete activities that dont exist`(){
+    fun `try to delete activities that dont exist`() {
         assertFailsWith<ResourceNotFound> {
             activitiesServices.deleteActivities(GUEST_TOKEN, "1,4,2,3,6", testSport.id.toString())
         }
     }
-    //this test should not delete the activities if any goes wrong
+
+    // this test should not delete the activities if any goes wrong
     @Test
-    fun `Delete activities doesnt work when deleting the same activity twice`(){
+    fun `Delete activities doesnt work when deleting the same activity twice`() {
         val aid = activitiesServices.createActivity(GUEST_TOKEN, testSport.id.toString(), "02:10:32.123", "2002-05-20", testRoute.id.toString())
         val activities = activitiesServices.getAllActivities(PaginationInfo(10, 0))
         assertFailsWith<InvalidParameter> {
@@ -246,5 +247,4 @@ class ActivitiesServicesTest {
         val activities2 = activitiesServices.getAllActivities(PaginationInfo(10, 0))
         assertEquals(activities, activities2)
     }
-
 }

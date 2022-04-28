@@ -5,7 +5,6 @@ import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.api.PaginationInfo
 
-
 interface RouteRepository {
 
     /**

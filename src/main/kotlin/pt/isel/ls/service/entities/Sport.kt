@@ -17,8 +17,8 @@ data class Sport(
     val name: String,
     val description: String? = null,
     val user: UserID
-){
-    companion object{
+) {
+    companion object {
         const val MAX_NAME_LENGTH = 20
     }
 }

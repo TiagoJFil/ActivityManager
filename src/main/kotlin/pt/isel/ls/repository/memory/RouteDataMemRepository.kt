@@ -21,10 +21,10 @@ class RouteDataMemRepository(testRoute: Route) : RouteRepository {
      *
      * @return [List] of [Route]
      */
-    override fun getRoutes(paginationInfo: PaginationInfo): List<Route>
-    = routesMap.values
-        .toList()
-        .applyPagination(paginationInfo)
+    override fun getRoutes(paginationInfo: PaginationInfo): List<Route> =
+        routesMap.values
+            .toList()
+            .applyPagination(paginationInfo)
 
     /**
      * Adds a new route to the repository.

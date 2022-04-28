@@ -24,10 +24,7 @@ fun main() {
     // val server = server(api, env.serverPort)
     // server.start()
     // server.join()
-
-
 }
 
 fun server(api: RoutingHttpHandler, port: Int): Http4kServer =
     api.asServer(Jetty(port)).start()
-

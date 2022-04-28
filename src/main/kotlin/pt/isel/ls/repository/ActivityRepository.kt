@@ -104,5 +104,4 @@ interface ActivityRepository {
      *
      */
     fun deleteActivities(activities: List<ActivityID>): Boolean
-
 }

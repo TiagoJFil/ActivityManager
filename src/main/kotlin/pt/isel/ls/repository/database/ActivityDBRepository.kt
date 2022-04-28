@@ -71,7 +71,7 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
             pstmt.use { ps ->
                 ps.apply {
                     setInt(1, userID)
-                    applyPagination(paginationInfo,Pair(2,3))
+                    applyPagination(paginationInfo, Pair(2, 3))
                 }
                 val rs = ps.executeQuery()
                 return rs.toListOf(ResultSet::toActivity)
@@ -91,13 +91,13 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
      *
      * @return [List] of [Activity]
      */
-    override fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?,paginationInfo: PaginationInfo): List<Activity> {
+    override fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?, paginationInfo: PaginationInfo): List<Activity> {
         dataSource.connection.transaction {
             val (query, hasDate) = getActivitiesQueryBuilder(date, rid, orderBy)
             val queryWithPaginationInfo = "$query LIMIT ? OFFSET ?"
             val pstmt = prepareStatement(queryWithPaginationInfo)
             val ridIdx = if (hasDate) 3 else 2
-            val pagIdx = if(rid != null) ridIdx +1 else ridIdx
+            val pagIdx = if (rid != null) ridIdx + 1 else ridIdx
             pstmt.use { ps ->
                 ps.apply {
 
@@ -110,7 +110,7 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
                     rid?.let { rid ->
                         setInt(ridIdx, rid)
                     }
-                    applyPagination(paginationInfo, Pair(pagIdx,pagIdx + 1))
+                    applyPagination(paginationInfo, Pair(pagIdx, pagIdx + 1))
                 }
                 val rs = ps.executeQuery()
                 return rs.toListOf(ResultSet::toActivity)
@@ -181,15 +181,15 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
         dataSource.connection.transaction {
             val query =
                 "select distinct * from (" +
-                "SELECT $userTable.id ,$userTable.name, $emailTable.email " +
-                "FROM $activityTable " +
-                "JOIN $userTable ON ($activityTable.user = $userTable.id) " +
-                "JOIN $emailTable ON ($emailTable.user = $userTable.id) " +
-                "WHERE $activityTable.sport = ? AND $activityTable.route = ? " +
-                "ORDER BY $activityTable.duration DESC " +
-                "LIMIT ? OFFSET ?) as t"
+                    "SELECT $userTable.id ,$userTable.name, $emailTable.email " +
+                    "FROM $activityTable " +
+                    "JOIN $userTable ON ($activityTable.user = $userTable.id) " +
+                    "JOIN $emailTable ON ($emailTable.user = $userTable.id) " +
+                    "WHERE $activityTable.sport = ? AND $activityTable.route = ? " +
+                    "ORDER BY $activityTable.duration DESC " +
+                    "LIMIT ? OFFSET ?) as t"
             prepareStatement(query).use {
-                it.applyPagination(paginationInfo, indexes=Pair(3, 4))
+                it.applyPagination(paginationInfo, indexes = Pair(3, 4))
                 it.setInt(1, sportID)
                 it.setInt(2, routeID)
                 val rs = it.executeQuery()
@@ -206,7 +206,7 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
         dataSource.connection.transaction {
             val query = """SELECT * FROM $activityTable LIMIT ? OFFSET ? """
             prepareStatement(query).use { ps ->
-                ps.applyPagination(paginationInfo,Pair(1,2))
+                ps.applyPagination(paginationInfo, Pair(1, 2))
                 val rs: ResultSet = ps.executeQuery()
                 rs.toListOf<Activity>(ResultSet::toActivity)
             }
@@ -221,18 +221,17 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
      * @return [Boolean] true if it deleted successfully
      *
      */
-    override fun deleteActivities(activities: List<ActivityID>): Boolean
-    = dataSource.connection.transaction {
-        val query = "DELETE FROM $activityTable WHERE id = ?"
-        prepareStatement(query).use<PreparedStatement, Boolean> { ps ->
-            activities.forEach {
-                ps.setInt(1, it)
-                ps.addBatch()
+    override fun deleteActivities(activities: List<ActivityID>): Boolean =
+        dataSource.connection.transaction {
+            val query = "DELETE FROM $activityTable WHERE id = ?"
+            prepareStatement(query).use<PreparedStatement, Boolean> { ps ->
+                activities.forEach {
+                    ps.setInt(1, it)
+                    ps.addBatch()
+                }
+                return ps.executeBatch().all { it == 1 }
             }
-            return ps.executeBatch().all { it == 1 }
         }
-    }
-
 
     /**
      * Makes a query to get an activity by its identifier.
@@ -243,5 +242,4 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
      */
     private fun <T> queryActivityByID(activityID: ActivityID, block: (ResultSet) -> T): T =
         dataSource.queryTableByID(activityID, activityTable, block)
-
 }

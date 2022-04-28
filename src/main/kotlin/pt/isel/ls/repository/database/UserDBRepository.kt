@@ -110,7 +110,7 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
      * @param connection the connection to the database.
      * @return a list of emails.
      */
-    private fun getEmails(connection: Connection, paginationInfo: PaginationInfo): List<Email>{
+    private fun getEmails(connection: Connection, paginationInfo: PaginationInfo): List<Email> {
         val query = """SELECT email FROM $emailTable ORDER BY user LIMIT ? OFFSET ?"""
         return connection.prepareStatement(query).use { statement ->
             statement.applyPagination(paginationInfo, indexes = Pair(1, 2))
@@ -120,7 +120,6 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
             }
         }
     }
-
 
     /**
      * Checks if any existing user has the given email.

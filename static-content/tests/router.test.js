@@ -1,9 +1,8 @@
 import router from "../app/router";
 import handlers from "../app/handlers";
 
-
+const assert = chai.assert;
 describe('Route Tests', () => {
-    var assert = require('chai').assert;
 
     const routes = [
         'home',

@@ -1,5 +1,5 @@
-import {List, Item, Text, Button, Div, H1, Icon} from "./utils.js"
-import UserLinkIcon from "./UserLinkIcon.js"
+import {List, Item, Text, Button, Div, H1, Icon} from "../utils.js"
+import UserLinkIcon from "../UserLinkIcon.js"
 
 
 export default function ActivityView(activity) {

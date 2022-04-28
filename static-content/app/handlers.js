@@ -3,10 +3,10 @@ import SportList from './views/lists/SportList.js'
 import UserList from './views/lists/UserList.js'
 import RouteList from './views/lists/RouteList.js'
 import ActivityList from './views/lists/ActivityList.js'
-import SportView from './views/SportView.js'
-import UserView from './views/UserView.js'
-import RouteView from './views/RouteView.js'
-import ActivityView from './views/ActivityView.js'
+import SportView from './views/individualResources/SportView.js'
+import UserView from './views/individualResources/UserView.js'
+import RouteView from './views/individualResources/RouteView.js'
+import ActivityView from './views/individualResources/ActivityView.js'
 import {getItemsPerPage, Pagination} from "./views/Pagination.js";
 
 function getHome(mainContent){

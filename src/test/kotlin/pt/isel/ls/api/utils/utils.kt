@@ -12,7 +12,6 @@ import pt.isel.ls.api.SportRoutes.SportIDOutput
 import pt.isel.ls.api.UserRoutes.UserCreationInput
 import pt.isel.ls.api.UserRoutes.UserIDOutput
 import pt.isel.ls.config.Environment
-import pt.isel.ls.config.EnvironmentType
 import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.config.getEnv
 import pt.isel.ls.utils.SportID

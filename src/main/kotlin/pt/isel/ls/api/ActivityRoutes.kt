@@ -11,6 +11,7 @@ import org.http4k.core.Status
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
+import pt.isel.ls.api.UserRoutes.UserListOutput
 import pt.isel.ls.service.ActivityServices
 import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.utils.ActivityID
@@ -66,7 +67,7 @@ class ActivityRoutes(
         val activityId = request.path("aid")
         val sportId = request.path("sid")
 
-        val activity = activityServices.getActivity(activityId,sportId)
+        val activity = activityServices.getActivity(activityId, sportId)
 
         val activityJson = Json.encodeToString<ActivityDTO>(activity)
 
@@ -94,7 +95,7 @@ class ActivityRoutes(
     /**
      * Gets all existing activities.
      */
-    private fun getAllActivities(request: Request) : Response {
+    private fun getAllActivities(request: Request): Response {
         logger.infoLogRequest(request)
         val activities = activityServices.getAllActivities(PaginationInfo.fromRequest(request))
         val activitiesJson = Json.encodeToString(ActivityListOutput(activities))
@@ -125,12 +126,11 @@ class ActivityRoutes(
     private fun deleteActivities(request: Request): Response {
         logger.infoLogRequest(request)
 
-        val activityIds = request.path("activityIDs")
+        val activityIds = request.query("activityIDs")
         val sportID = request.path("sid")
-        //val body = Json.decodeFromString<ActivitiesInput>(request.bodyString())
         val token: UserToken? = getToken(request)
 
-        activityServices.deleteActivities(token, activityIds,sportID)
+        activityServices.deleteActivities(token, activityIds, sportID)
         return Response(Status.NO_CONTENT)
     }
 
@@ -143,8 +143,7 @@ class ActivityRoutes(
         val routeID = request.query("rid")
 
         val users = activityServices.getUsersByActivity(sportID, routeID, PaginationInfo.fromRequest(request))
-        println(users)
-        val bodyString = Json.encodeToString(UserRoutes.UserListOutput(users))
+        val bodyString = Json.encodeToString(UserListOutput(users))
 
         return Response(Status.OK)
             .header("content-type", "application/json")

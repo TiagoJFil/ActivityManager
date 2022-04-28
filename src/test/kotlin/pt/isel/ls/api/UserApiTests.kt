@@ -3,10 +3,8 @@ package pt.isel.ls.api
 import kotlinx.serialization.Serializable
 import org.http4k.core.Response
 import org.junit.After
-import org.junit.Before
 import pt.isel.ls.api.UserRoutes.UserCreationInput
 import pt.isel.ls.api.UserRoutes.UserListOutput
-import pt.isel.ls.api.utils.ROUTE_PATH
 import pt.isel.ls.api.utils.TEST_ENV
 import pt.isel.ls.api.utils.USER_PATH
 import pt.isel.ls.api.utils.createUser
@@ -153,7 +151,6 @@ class UserApiTests {
         )
     }
 
-    @Before
     @Test
     fun `a get a list without creating gives a list with the test user`() {
         val usersList = getRequest<UserListOutput>(testClient, USER_PATH, Response::expectOK)

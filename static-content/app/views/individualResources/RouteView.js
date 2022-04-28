@@ -1,4 +1,4 @@
-import {List, Item, Text, Div, H1} from "./utils.js"
+import {List, Item, Text, Div, H1} from "../utils.js"
 
 export default function RouteView(route) {
     const locationTextClass = 'location-text'

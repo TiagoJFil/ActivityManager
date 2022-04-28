@@ -40,7 +40,7 @@ class ActivityServices(
     private val activityRepository: ActivityRepository,
     private val userRepository: UserRepository,
     private val sportRepository: SportRepository,
-    private val routeRepository: RouteRepository,
+    private val routeRepository: RouteRepository
 ) {
     companion object {
         val logger = getLoggerFor<ActivityServices>()
@@ -94,7 +94,7 @@ class ActivityServices(
 
             val parsedDate: Date = Duration.format.parse(duration)
             val millis: Long = parsedDate.time
-                val sidInt = requireIdInteger(sid, SPORT_ID_PARAM)
+            val sidInt = requireIdInteger(sid, SPORT_ID_PARAM)
 
             sportRepository.requireSport(sidInt)
             userRepository.requireUser(userID)
@@ -123,7 +123,7 @@ class ActivityServices(
      * @param activityID the unique identifier of the activity
      * @return [ActivityDTO] with the activity that matches the given id
      */
-    fun getActivity(activityID: Param,sid: Param): ActivityDTO {
+    fun getActivity(activityID: Param, sid: Param): ActivityDTO {
         logger.traceFunction(::getActivity.name) { listOf(ACTIVITY_ID_PARAM to activityID) }
 
         val safeSID = requireParameter(sid, SPORT_ID_PARAM)
@@ -143,7 +143,7 @@ class ActivityServices(
      * @param uid the unique identifier of the user that created the activity
      * @return [List] of [ActivityDTO] with all the activities created by the user that matches the given id
      */
-    fun getActivitiesByUser(uid: Param, paginationInfo: PaginationInfo=PaginationInfo(10, 0)): List<ActivityDTO> {
+    fun getActivitiesByUser(uid: Param, paginationInfo: PaginationInfo = PaginationInfo(10, 0)): List<ActivityDTO> {
         logger.traceFunction(::getActivitiesByUser.name) { listOf("userID" to uid) }
         val safeUID = requireParameter(uid, USER_ID_PARAM)
 
@@ -187,7 +187,6 @@ class ActivityServices(
         requireNotBlankParameter(date, DATE_PARAM)
         requireNotBlankParameter(rid, ROUTE_ID_PARAM)
         val ridInt: RouteID? = rid?.let { requireIdInteger(it, ROUTE_ID_PARAM) }
-
 
         try {
             if (date != null) LocalDate.parse(date)
@@ -246,8 +245,9 @@ class ActivityServices(
         val ridInt = requireIdInteger(safeRID, ROUTE_ID_PARAM)
         routeRepository.requireRoute(ridInt)
 
-        val users: List<User> = activityRepository.getUsersBy(sidInt, ridInt, paginationInfo)
-        return users.map(User::toDTO)
+        return activityRepository
+            .getUsersBy(sidInt, ridInt, paginationInfo)
+            .map(User::toDTO)
     }
 
     /**
@@ -263,25 +263,25 @@ class ActivityServices(
      * @param activityIds The activityIds to be deleted.
      * @param sportID The sport id of the activities to be deleted.
      */
-    fun deleteActivities(token: UserToken?, activityIds: Param , sportID: Param): Boolean {
+    fun deleteActivities(token: UserToken?, activityIds: Param, sportID: Param): Boolean {
         logger.traceFunction(::deleteActivities.name) {
             listOf(
                 ACTIVITIES_ID_PARAM to activityIds
             )
         }
         val userID = userRepository.requireAuthenticated(token)
-        val safeAIDS = requireParameter(activityIds, "ActivityIds")
+        val safeAIDS = requireParameter(activityIds, "activityIDs")
         val safeSID = requireParameter(sportID, SPORT_ID_PARAM)
         val sidInt = requireIdInteger(safeSID, SPORT_ID_PARAM)
 
         val checkedAIDS = safeAIDS.split(",").map {
-            val aidInt = requireIdInteger(it, "ActivityID")
+            val aidInt = requireIdInteger(it, "Each activityID")
             activityRepository.requireActivity(aidInt)
             if (!ownsActivity(userID, aidInt)) throw UnauthenticatedError(USER_NOT_OWNER)
             activityRepository.requireActivityWith(aidInt, sidInt)
             aidInt
         }
-        if(!activityRepository.deleteActivities(checkedAIDS))
+        if (!activityRepository.deleteActivities(checkedAIDS))
             throw InvalidParameter("Failed to delete activities.")
         return true
     }
