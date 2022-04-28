@@ -2,11 +2,6 @@ package pt.isel.ls.service
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toLocalDate
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import org.http4k.core.Response
-import org.http4k.core.Status
-import pt.isel.ls.api.RouteRoutes
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.repository.SportRepository
@@ -27,7 +22,6 @@ import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
-import pt.isel.ls.utils.infoLogRequest
 import pt.isel.ls.utils.service.requireActivity
 import pt.isel.ls.utils.service.requireActivityWith
 import pt.isel.ls.utils.service.requireAuthenticated
@@ -46,7 +40,7 @@ class ActivityServices(
     private val activityRepository: ActivityRepository,
     private val userRepository: UserRepository,
     private val sportRepository: SportRepository,
-    private val routeRepository: RouteRepository
+    private val routeRepository: RouteRepository,
 ) {
     companion object {
         val logger = getLoggerFor<ActivityServices>()
@@ -269,7 +263,7 @@ class ActivityServices(
      * @param activityIds The activityIds to be deleted.
      * @param sportID The sport id of the activities to be deleted.
      */
-    fun deleteActivities(token: UserToken?, activityIds: Param , sportID: Param) {
+    fun deleteActivities(token: UserToken?, activityIds: Param , sportID: Param): Boolean {
         logger.traceFunction(::deleteActivities.name) {
             listOf(
                 ACTIVITIES_ID_PARAM to activityIds
@@ -280,16 +274,16 @@ class ActivityServices(
         val safeSID = requireParameter(sportID, SPORT_ID_PARAM)
         val sidInt = requireIdInteger(safeSID, SPORT_ID_PARAM)
 
-        safeAIDS.split(",").map {
+        val checkedAIDS = safeAIDS.split(",").map {
             val aidInt = requireIdInteger(it, "ActivityID")
             activityRepository.requireActivity(aidInt)
-            // activityRepository.requireActivityOwnership(userID, id)
             if (!ownsActivity(userID, aidInt)) throw UnauthenticatedError(USER_NOT_OWNER)
             activityRepository.requireActivityWith(aidInt, sidInt)
-
-            activityRepository.deleteActivity(aidInt)
             aidInt
         }
+        if(!activityRepository.deleteActivities(checkedAIDS))
+            throw InvalidParameter("Failed to delete activities.")
+        return true
     }
 
     /**

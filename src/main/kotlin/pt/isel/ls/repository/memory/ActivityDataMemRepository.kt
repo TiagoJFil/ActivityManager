@@ -11,6 +11,7 @@ import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.service.applyPagination
+import java.util.concurrent.ConcurrentHashMap
 
 class ActivityDataMemRepository(testActivity: Activity, private val userRepo: UserDataMemRepository) : ActivityRepository {
 
@@ -19,7 +20,7 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
     /**
      * Mapping between the [ActivityID] and the [Activity]
      */
-    private val activitiesMap = mutableMapOf<ActivityID, Activity>(testActivity.id to testActivity)
+    private val activitiesMap = ConcurrentHashMap(mutableMapOf(testActivity.id to testActivity))
 
 
     /**
@@ -49,7 +50,8 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
      * @param userID the user unique identifier that the activity must have
      * @return [List] of [Activity] that were created by the given user
      */
-    override fun getActivitiesByUser(userID: UserID, paginationInfo : PaginationInfo): List<Activity> = activitiesMap.values.filter { it.user == userID }.applyPagination( paginationInfo )
+    override fun getActivitiesByUser(userID: UserID, paginationInfo : PaginationInfo): List<Activity>
+        = activitiesMap.values.filter { it.user == userID }.applyPagination( paginationInfo )
 
     /**
      * Gets the activity that matches the given unique activity identifier.
@@ -112,7 +114,7 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
      * @param routeID route identifier
      * @return [List] of [User] sorted by activity duration ASCENDING
      */
-    override fun getUsersBy(sportID: SportID, routeID: RouteID,paginationInfo: PaginationInfo): List<User> =
+    override fun getUsersBy(sportID: SportID, routeID: RouteID, paginationInfo: PaginationInfo): List<User> =
         activitiesMap.values
             .filter { it.route == routeID && it.sport == sportID }
             .sortedBy { it.duration.millis }
@@ -126,4 +128,28 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
      */
     override fun getAllActivities(paginationInfo: PaginationInfo): List<Activity> =
         activitiesMap.values.toList().applyPagination(paginationInfo)
+
+    /**
+     * Deletes all the activities supplied in the list.
+     * Atomic operation.
+     * Either all activities are deleted or none.
+     *
+     * @param activities the list of activities to delete
+     * @return [Boolean] true if it deleted successfully
+     *
+     */
+    override fun deleteActivities(activities: List<ActivityID>): Boolean {
+        val activitiesObjects = activities.toSet().filter { activitiesMap[it] != null }
+        val entries = activitiesMap.filter { it.key in activitiesObjects }
+        if(activitiesObjects.size != activities.size) return false
+        for (it in activities){
+            activitiesMap.remove(it) // If could not remove add all again
+                ?: run {
+                    activitiesMap.putAll(entries)
+                    return false
+                }
+        }
+        return true
+    }
+
 }

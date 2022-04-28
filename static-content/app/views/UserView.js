@@ -1,4 +1,5 @@
-import {List, Item, Text, Button, Icon, Div, H1} from "./utils.js"
+import {List, Item, Text, Div, H1} from "./utils.js"
+import ActivityLinkIcon from "./ActivityLinkIcon.js";
 
 export default function UserView(user){
     return Div('header-div',
@@ -12,12 +13,7 @@ export default function UserView(user){
                 Text('detail-header', 'Email: '),
                 Text('email-text',user.email)
             ),
-            Button('icon-button',
-                () => {
-                    location.href= `#users/${user.id}/activities`
-                },
-                Icon('bx','bx-calendar-event')
-            )
+            ActivityLinkIcon(`#users/${user.id}/activities`)
         )
     )
 }

@@ -10,6 +10,7 @@ import pt.isel.ls.api.ActivityRoutes.ActivityListOutput
 import pt.isel.ls.api.RouteRoutes.RouteCreationInput
 import pt.isel.ls.api.SportRoutes.SportCreationInput
 import pt.isel.ls.api.UserRoutes.UserCreationInput
+import pt.isel.ls.api.UserRoutes.UserListOutput
 import pt.isel.ls.api.utils.ACTIVITY_PATH
 import pt.isel.ls.api.utils.SPORT_PATH
 import pt.isel.ls.api.utils.TEST_ENV
@@ -332,7 +333,6 @@ class ActivitiesApiTests {
 
     @Test
     fun `get users of an activity with a non existing rid and sid`() {
-        val sid = testSport.id.toString()
 
         getRequest<HttpError>(
             testClient,
@@ -356,12 +356,12 @@ class ActivitiesApiTests {
     fun `get users of an activity sucessfully`() {
         val sid = testSport.id.toString()
         val rid = testRoute.id.toString()
-        val users = getRequest<List<UserDTO>>(
+        val userListOutput = getRequest<UserListOutput>(
             testClient,
             "/api/sports/$sid/users?rid=$rid",
             Response::expectOK
         )
-        assertEquals(listOf(guestUser.toDTO()), users)
+        assertEquals(listOf(guestUser.toDTO()), userListOutput.users)
     }
 
     @Test
@@ -377,8 +377,9 @@ class ActivitiesApiTests {
         val user3 = getRequest<UserDTO>(testClient, "$USER_PATH${userInfo3.id}", Response::expectOK)
         testClient.createActivity(ActivityCreationInput("00:15:00.000", "2002-05-20", routeId.toString()), sportID, userInfo3.authToken)
 
-        val users = getRequest<List<UserDTO>>(testClient, "/api/sports/$sportID/users?rid=$routeId", Response::expectOK)
-        assertEquals(listOf(user2, guestUser.toDTO(), user3), users)
+        val userListOutput =
+            getRequest<UserListOutput>(testClient, "/api/sports/$sportID/users?rid=$routeId&limit=100000", Response::expectOK)
+        assertEquals(listOf(user2, guestUser.toDTO(), user3), userListOutput.users)
     }
 
     private fun deleteActivity(sportID: SportID, activityID: ActivityID, token: UserToken) =

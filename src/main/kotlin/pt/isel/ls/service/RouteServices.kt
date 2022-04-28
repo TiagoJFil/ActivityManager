@@ -17,7 +17,7 @@ import pt.isel.ls.utils.traceFunction
 
 class RouteServices(
     private val routeRepository: RouteRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) {
     companion object {
         val logger = getLoggerFor<RouteServices>()
@@ -43,7 +43,7 @@ class RouteServices(
      * @param distance the route's distance
      * @return [RouteID] the unique id that identifies the route
      */
-    fun createRoute(token: UserToken?, startLocation: String?, endLocation: String?, distance: Double?): RouteID {
+    fun createRoute(token: UserToken?, startLocation: String?, endLocation: String?, distance: Double?): RouteID{
         logger.traceFunction(::createRoute.name) {
             listOf(
                 START_LOCATION_PARAM to startLocation,
@@ -67,7 +67,7 @@ class RouteServices(
      * @param rid the unique id that identifies the route
      * @return [RouteDTO] the route identified by the given id
      */
-    fun getRoute(rid: Param): RouteDTO {
+    fun getRoute(rid: Param): RouteDTO{
         logger.traceFunction(::getRoute.name) { listOf(ROUTE_ID_PARAM to rid) }
 
         val safeRouteID = requireParameter(rid, ROUTE_ID_PARAM)

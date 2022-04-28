@@ -6,6 +6,12 @@ main{
     padding: 30px;
 }
 
+/* Create a variable for the primary color #0d74f5 */
+
+:root {
+    --primary: #0d74f5;
+}
+
 .route{
     width: 100%;
     list-style: none;
@@ -26,7 +32,7 @@ main{
 }
 
 .locations .locations-line{
-    background: #0d74f5;
+    background: var(--primary);
     width: 70%;
     height: 5px;
     margin-top: 20px;
@@ -41,7 +47,7 @@ main{
 .headers{
     display: flex;
     justify-content: space-between;
-    background: #0d74f5;
+    background: var(--primary);
     padding: 30px;
     color: white;
     font-size: 20px;
@@ -78,25 +84,22 @@ main{
 .pagination{
     display: flex;
     justify-content: center;
+    align-items: center;
     margin-top: 20px;
-
+    width: 20%;
 }
 
 .pagination .page-link,
 .pagination .page-link-active{
     padding: 4px;
     margin: 10px;
-    color: #0d74f5;
     font-size: 20px;
 }
 
-
-.page-link{
-    text-decoration: none;
-}
-
 .page-link-active{
-    color: #0d74f5;
+    color: #fffceb;
+    background-color: var(--primary);
+    border-radius: 50%;
 }
 .page-link-active:hover{
     color: white;

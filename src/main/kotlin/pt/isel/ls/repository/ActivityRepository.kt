@@ -93,4 +93,16 @@ interface ActivityRepository {
      * @return [List] of [Activity]s
      */
     fun getAllActivities(paginationInfo: PaginationInfo): List<Activity>
+
+    /**
+     * Deletes all the activities supplied in the list.
+     * Atomic operation.
+     * Either all activities are deleted or none.
+     *
+     * @param activities the list of activities to delete
+     * @return [Boolean] true if it deleted successfully
+     *
+     */
+    fun deleteActivities(activities: List<ActivityID>): Boolean
+
 }

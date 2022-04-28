@@ -1,4 +1,6 @@
 import {List, Item, Text, Button, Icon, Div, H1} from "./utils.js"
+import ActivityLinkIcon from "./ActivityLinkIcon.js"
+import UserLinkIcon from "./UserLinkIcon.js";
 
 
 export default function SportView(sport) {
@@ -20,18 +22,8 @@ export default function SportView(sport) {
             Item('description-item',
                 description
             ),
-            Button('icon-button',
-                () => {
-                    location.href = `#sports/${sport.id}/activities`
-                },
-                Icon('bx', 'bx-calendar-event')
-            ),
-            Button('icon-button',
-                () => {
-                    location.href = `#users/${sport.user}`
-                },
-                Icon('bx', 'bx-user')
-            ),
+            ActivityLinkIcon(`#sports/${sport.id}/activities`),
+            UserLinkIcon(sport.user)
         )
     )
 }

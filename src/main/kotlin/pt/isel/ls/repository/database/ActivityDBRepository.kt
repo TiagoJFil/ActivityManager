@@ -22,6 +22,7 @@ import pt.isel.ls.utils.repository.toListOf
 import pt.isel.ls.utils.repository.toUser
 import pt.isel.ls.utils.repository.transaction
 import java.sql.Date
+import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.Statement
 import javax.sql.DataSource
@@ -211,6 +212,26 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
             }
         }
 
+    /**
+     * Deletes all the activities supplied in the list.
+     * Atomic operation.
+     * Either all activities are deleted or none.
+     *
+     * @param activities the list of activities to delete
+     * @return [Boolean] true if it deleted successfully
+     *
+     */
+    override fun deleteActivities(activities: List<ActivityID>): Boolean
+    = dataSource.connection.transaction {
+        val query = "DELETE FROM $activityTable WHERE id = ?"
+        prepareStatement(query).use<PreparedStatement, Boolean> { ps ->
+            activities.forEach {
+                ps.setInt(1, it)
+                ps.addBatch()
+            }
+            return ps.executeBatch().all { it == 1 }
+        }
+    }
 
 
     /**

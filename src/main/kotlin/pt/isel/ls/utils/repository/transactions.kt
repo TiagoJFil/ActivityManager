@@ -36,7 +36,7 @@ inline fun <R> Connection.transaction(block: Connection.() -> R): R = tryDataBas
     use {
         this.autoCommit = false
         try {
-            this.block()
+            block()
                 .also { commit() }
         } catch (e: Exception) {
             this.rollback()

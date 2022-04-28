@@ -85,8 +85,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HttpError"
-
-
   /users:
     get:
       tags:

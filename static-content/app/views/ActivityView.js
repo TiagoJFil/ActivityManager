@@ -1,4 +1,5 @@
 import {List, Item, Text, Button, Div, H1, Icon} from "./utils.js"
+import UserLinkIcon from "./UserLinkIcon.js"
 
 
 export default function ActivityView(activity) {
@@ -34,14 +35,8 @@ export default function ActivityView(activity) {
                 },
                 Icon('bx', 'bx-football')
             ),
-            Button('icon-button',
-                () => {
-                    location.href = `#users/${activity.user}`
-                },
-                Icon('bx', 'bx-user')
-            ), routeButton, usersButton
-
-
+            UserLinkIcon(activity.user),
+            routeButton, usersButton
         )
     )
 }

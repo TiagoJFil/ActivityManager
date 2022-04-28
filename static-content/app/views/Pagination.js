@@ -1,7 +1,5 @@
 import {Anchor, Div, Text} from "./utils.js";
 
-
-
 function getActualPage(itemsPerPage){
     const path = window.location.hash
     const page = path.split('=')[1]

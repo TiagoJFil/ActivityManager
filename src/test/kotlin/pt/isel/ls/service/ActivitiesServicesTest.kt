@@ -240,13 +240,11 @@ class ActivitiesServicesTest {
     fun `Delete activities doesnt work when deleting the same activity twice`(){
         val aid = activitiesServices.createActivity(GUEST_TOKEN, testSport.id.toString(), "02:10:32.123", "2002-05-20", testRoute.id.toString())
         val activities = activitiesServices.getAllActivities(PaginationInfo(10, 0))
-        assertFailsWith<ResourceNotFound> {
+        assertFailsWith<InvalidParameter> {
             activitiesServices.deleteActivities(GUEST_TOKEN, "$aid,$aid", testSport.id.toString())
         }
         val activities2 = activitiesServices.getAllActivities(PaginationInfo(10, 0))
         assertEquals(activities, activities2)
     }
-
-
 
 }
