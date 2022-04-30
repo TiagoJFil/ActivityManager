@@ -11,7 +11,6 @@ import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.service.applyPagination
-import java.util.concurrent.ConcurrentHashMap
 
 class ActivityDataMemRepository(testActivity: Activity, private val userRepo: UserDataMemRepository) : ActivityRepository {
 
@@ -20,7 +19,7 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
     /**
      * Mapping between the [ActivityID] and the [Activity]
      */
-    private val activitiesMap = ConcurrentHashMap(mutableMapOf(testActivity.id to testActivity))
+    private val activitiesMap = mutableMapOf(testActivity.id to testActivity)
 
     /**
      * Creates a new activity using the parameters received

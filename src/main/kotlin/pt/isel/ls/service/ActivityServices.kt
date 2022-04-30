@@ -133,8 +133,7 @@ class ActivityServices(
         sportRepository.requireSport(sidInt)
         activityRepository.requireActivityWith(aidInt, sidInt)
 
-        return activityRepository.getActivity(aidInt)?.toDTO()
-            ?: throw ResourceNotFound(RESOURCE_NAME, safeActivityID)
+        return activityRepository.getActivity(aidInt)?.toDTO() ?: throw ResourceNotFound(RESOURCE_NAME, safeActivityID)
     }
 
     /**
