@@ -6,6 +6,10 @@ import {queryBuilder, onPaginationChange} from './app-handlers.js'
 import styles from '../styles.js'
 import { H1, Div } from '../components/dsl.js'
 
+
+/**
+ * Displays a route list with the given query
+ */
 async function displayRouteList(mainContent, _, query) {
 
     const routes = await routeApi.fetchRoutes(queryBuilder(query) || getPaginationQuery())
@@ -18,6 +22,9 @@ async function displayRouteList(mainContent, _, query) {
     )
 }
 
+/**
+ * Displays a route details with the given id
+ */
 async function displayRouteDetails(mainContent, params, _) {
 
     const route = await routeApi.fetchRoute(params.rid)

@@ -1,6 +1,6 @@
 
 /**
- * 
+ * Contains the styles names for the css.
  */
 const styles = {
     LIST: 'list',
@@ -30,6 +30,7 @@ const styles = {
     DETAILS: 'details',
     PAGINATION_ICONS: "pagination-icons",
     NO_RESULTS_TEXT: "text-no-results",
+    LIST_PARENT: 'list-parent'
 }
 
 export default styles

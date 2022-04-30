@@ -14,7 +14,7 @@ import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
-import java.util.*
+import java.util.UUID
 
 /**
  * @param parameter the parameter to check.

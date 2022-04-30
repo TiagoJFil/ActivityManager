@@ -5,6 +5,9 @@ const routes = [
 
 let notFoundRouteHandler = (mainContent,params) => getNotFoundPage(mainContent,params)
 
+/**
+ * Associates the uri with the given function
+ */
 function addRouteHandler(path, handler){
 
     const pathRegex = new RegExp('^' + path.replace(/:[^/]+/g, "([0-9a-z]+)").replace(/\//g, "\\/") + "\??$")
@@ -15,6 +18,9 @@ function addRouteHandler(path, handler){
     routes.push({pathRegex, handler, placeholderNames})
 }
 
+/**
+ * Returns the route handler for the given uri
+ */
 export function getRouteHandler(path){
     // sports/39/activities/27
     const [pathString, queryString] = path.split("?")
@@ -34,6 +40,9 @@ function addDefaultNotFoundRouteHandler(notFoundRH) {
     notFoundRouteHandler = notFoundRH
 }
 
+/**
+ * Transforms the given query string into an object 
+ */
 function parseQuery(queryString){
     const query = {}
     const queryParts = queryString.split("&")

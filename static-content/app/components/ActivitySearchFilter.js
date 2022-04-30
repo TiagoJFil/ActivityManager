@@ -1,6 +1,14 @@
 import { Div, Input, Select, Option, Text, Button } from "./dsl.js";
 import styles from "../styles.js";
 
+/**
+ * Creates a div with the filter components.
+ * 
+ * @param {Function} onFilterSubmit 
+ * @param {array<*>} routes 
+ * @param {Object} query 
+ * @returns a {Div} component with the filter components.
+ */
 export default function ActivitySearchFilter(onFilterSubmit, routes, query) {
 
     const onSubmit = () =>{
@@ -19,6 +27,12 @@ export default function ActivitySearchFilter(onFilterSubmit, routes, query) {
 
 }
 
+/**
+ * Creates a Select component with options for sorting the list of activities.
+ * Selects the option that matches the query.orderBy value.
+ * @param {Object} query 
+ * @returns {Select} the Select component created.
+ */
 function OrderBySelector(query){
     const initialOrder = query.orderBy ;
 
@@ -46,7 +60,13 @@ function OrderBySelector(query){
     return orderBySelector   
 }
 
-
+/**
+ * Creates a Select component with options for selecting a route.
+ * Selects the option that matches the query.route value.
+ * @param {array<*>} routes 
+ * @param {Object} query 
+ * @returns {Select} the Select component created.
+ */
 function RouteSelector(routes, query){
     const initialRouteID = query.rid;
 
@@ -65,6 +85,12 @@ function RouteSelector(routes, query){
     return ridSelector
 }
 
+/**
+ * Creates a DatePicker component.
+ * Inserts the value of the query.date property into the input field.
+ * @param {Object} query 
+ * @returns {Input} the DatePicker component created.
+ */
 function DatePicker(query){
     const initialDate = query.date;
 

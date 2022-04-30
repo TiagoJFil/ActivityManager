@@ -27,7 +27,3 @@ fun main() {
 }
 
 fun server(api: RoutingHttpHandler, port: Int): Http4kServer = api.asServer(Jetty(port))
-
-
-
-

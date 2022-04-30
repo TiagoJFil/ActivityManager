@@ -7,7 +7,10 @@ import {queryBuilder, onPaginationChange} from './app-handlers.js'
 import ActivitySearchFilter from '../components/ActivitySearchFilter.js'
 import styles from '../styles.js'
 
-async function displayActivityList(mainContent, params, query) {
+/**
+ * Displays an activity list with the given query
+ */
+async function displayActivityList(mainContent, _, query) {
     const activities = await activityApi.fetchActivities(queryBuilder(query) || getPaginationQuery())
     const activityCount = await activityApi.fetchActivitiesCount()
 
@@ -17,7 +20,9 @@ async function displayActivityList(mainContent, params, query) {
         Pagination(activityCount, (skip, limit) => onPaginationChange("activities", query, skip, limit))
     )
 }
-
+/**
+ * Displays a list of activities for the given sport with the given query
+ */
 async function displayActivitiesBySport(mainContent, params, query) {
     const activities = await activityApi.fetchActivitiesBySport(params.sid, queryBuilder(query) || getPaginationQuery())
     const queryForCount = {...query}
@@ -54,6 +59,9 @@ async function displayActivitiesBySport(mainContent, params, query) {
     )
 }
 
+/**
+ * Displays the activities from the given user with the given query
+ */
 async function displayActivitiesByUser(mainContent, params, query) {
     const activities = await activityApi.fetchActivitiesByUser(params.uid, queryBuilder(query) || getPaginationQuery())
     const activityCount = await activityApi.fetchActivitiesByUserCount(params.uid)
@@ -65,7 +73,10 @@ async function displayActivitiesByUser(mainContent, params, query) {
     )
 }
 
-async function displayActivityDetails(mainContent, params, query) {
+/**
+ * Displays the activity details for the given activity id
+ */
+async function displayActivityDetails(mainContent, params, _) {
     const activity = await activityApi.fetchActivity(params.sid, params.aid)
 
     mainContent.replaceChildren(

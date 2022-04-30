@@ -29,7 +29,7 @@ private fun getEnvType(): EnvironmentType {
         throw IllegalArgumentException("Please specify a valid APP_ENV_TYPE: ${EnvironmentType.values().toList()}")
     }
 }
-fun getEnv(testMode: Boolean = false): Environment{
+fun getEnv(testMode: Boolean = false): Environment {
     val envType = if (testMode) EnvironmentType.TEST else getEnvType()
 
     val dbInfo = envType.dbMode.source()

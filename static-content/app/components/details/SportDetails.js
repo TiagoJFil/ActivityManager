@@ -3,9 +3,11 @@ import  {LinkIcon} from "../LinkIcon.js"
 import styles from "../../styles.js";
 
 /**
- * 
+ * SportDetails component
+ *
  * @param {Sport} sport the sport to display
- * 
+ *
+ * @returns {Div} the sport details component
  */
 export default function SportDetails(sport) {
     const description = sport.description ?

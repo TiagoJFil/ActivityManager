@@ -48,7 +48,9 @@
     .route{
         font-size: 48px;
     }
-
+    .start-location-item, .end-location-item{
+        width: 45%;
+    }
     .location{
         display: flex;
         flex-direction: column;
@@ -56,6 +58,6 @@
 
     .locations-line{
         width: 5px;
-        height: 70%;
+        height: 30vh;
     }
 }

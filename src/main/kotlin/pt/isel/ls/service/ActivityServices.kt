@@ -34,7 +34,7 @@ import pt.isel.ls.utils.service.requireUser
 import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.traceFunction
 import java.text.ParseException
-import java.util.*
+import java.util.Date
 
 class ActivityServices(
     private val activityRepository: ActivityRepository,

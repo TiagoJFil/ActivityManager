@@ -1,10 +1,15 @@
 import router from './router.js'
 import handlers from './handlers/app-handlers.js'
+import {getItemsPerPage} from "./components/Pagination.js";
 
 window.addEventListener('load', loadHandler)
 window.addEventListener('hashchange', hashChangeHandler)
 window.addEventListener('resize', hashChangeHandler)
 
+
+/**
+ * Loads the default routes
+ */
 function loadHandler(){
     if(!location.hash) location.hash = "#home" 
 
@@ -25,6 +30,10 @@ function loadHandler(){
     hashChangeHandler()
 }
 
+/**
+ * Its called everytime the hash changes.
+ * Gets the route handler associated to the path after the hash.
+ */
 async function hashChangeHandler(){
     const mainContent = document.querySelector('#mainContent')
     const path = window.location.hash.replace('#', '')

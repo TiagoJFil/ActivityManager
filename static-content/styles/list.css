@@ -10,12 +10,6 @@
     flex-wrap: wrap;
 }
 
-.resource-item{
-    list-style: none;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
 .list-button{
     width: 120px;
     height: 120px;
@@ -34,13 +28,26 @@
     margin-left: 15px;
 }
 
+.button{
+    background-color: #106466;
+    color:#ffffff;
+    font-size: 15px;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    width: 70px;
+}
+
+.resource-item{
+    list-style: none;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+
 .resource-route-item{
     list-style: none;
     margin: 0;
-}
-
-.date-filter{
-    margin-right: 10px;
 }
 
 .filter-selector{
@@ -56,6 +63,10 @@
 .selector-option{
     background-color: #ffffff;
     color: #000000;
+}
+
+.date-filter{
+    margin-right: 10px;
 }
 
 input[type="date"] {
@@ -84,6 +95,12 @@ input[type="date"] {
     margin-top: 30px;
 }
 
+.route-user{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
 #rid{
     min-height:58px; 
     overflow-y :auto; 
@@ -92,25 +109,15 @@ input[type="date"] {
     overflow: scroll;
  }
 
-.button{
-    background-color: #106466;
-    color:#ffffff;
-    font-size: 15px;
-    border: none;
-    outline: none;
-    border-radius: 5px;
-    width: 70px;
-}
-
-.route-user{
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
 
 
 @media only screen and (max-width: 600px) {
+
+    .list-parent {
+        align-self: center;
+    }
     .list{
+        display: grid ;
         --items-per-page:3;
         flex-direction: column;
         justify-content: space-between;

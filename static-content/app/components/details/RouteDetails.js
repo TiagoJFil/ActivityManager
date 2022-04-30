@@ -4,9 +4,10 @@ import {LinkIcon, OuterLinkIcon} from "../LinkIcon.js"
 
 /**
  * RouteDetails component
+ * Contains the details of a route and its links in form of buttons
  *
- * @param {*} route route to display
- * @returns An "ul" element containing a list of "li" route properties.
+ * @param {Route} route route to display
+ * @returns {List} the route details component
  */
 export default function RouteDetails(route) {
 

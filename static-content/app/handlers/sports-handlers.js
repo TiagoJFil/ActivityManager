@@ -6,6 +6,9 @@ import {queryBuilder, onPaginationChange} from './app-handlers.js'
 import styles from '../styles.js'
 import { H1 } from '../components/dsl.js'
 
+/**
+ * Displays a sport list with the given query
+ */
 async function displaySportList(mainContent, _, query) {
     const paginationQuery = queryBuilder(query)
     const sports = await sportApi.fetchSports(paginationQuery)
@@ -19,6 +22,9 @@ async function displaySportList(mainContent, _, query) {
     )
 }
 
+/**
+ * Displays a sport details with the given id
+ */
 async function displaySportDetails(mainContent, params, _) {
 
     const sport = await sportApi.fetchSport(params.sid)

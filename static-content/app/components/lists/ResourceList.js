@@ -1,4 +1,4 @@
-import {Button, List, Item, Text}  from "../dsl.js"
+import {Button, List, Item, Text, Div} from "../dsl.js"
 import styles from "../../styles.js"
 
 /**
@@ -6,7 +6,7 @@ import styles from "../../styles.js"
  * @param {Array<*>} resources  the resources to display
  * @param {Function} hrefSupplier a function that returns the href for a resource details. Receives the resource as parameter.
  * @param {Function} displayTextSupplier a function that returns the text to display for a resource. Receives the resource as parameter.
- * @returns 
+ * @returns a list of given resources
  */
 export default function ResourceList(resources, hrefSupplier,  displayTextSupplier) {
 
@@ -15,7 +15,7 @@ export default function ResourceList(resources, hrefSupplier,  displayTextSuppli
     }
         
 
-    return List(styles.LIST,
+    return Div(styles.LIST_PARENT,List(styles.LIST,
         ...resources.map(resource =>
             Item(styles.LIST_ELEMENT,
                 Button(styles.LIST_BUTTON, () => {location.href = hrefSupplier(resource)},
@@ -23,5 +23,5 @@ export default function ResourceList(resources, hrefSupplier,  displayTextSuppli
                 )
             )
         )
-    )
+    ))
 }

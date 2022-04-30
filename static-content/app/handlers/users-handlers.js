@@ -6,6 +6,9 @@ import {queryBuilder, onPaginationChange} from './app-handlers.js'
 import { H1 , Div } from '../components/dsl.js'
 import styles from '../styles.js'
 
+/**
+ * Displays an user list with the given query
+ */
 async function displayUserList(mainContent, _, query) {
     const users = await userApi.fetchUsers(queryBuilder(query) || getPaginationQuery())
     const userCount = await userApi.fetchUsersCount()
@@ -16,7 +19,9 @@ async function displayUserList(mainContent, _, query) {
         Pagination(userCount, (skip, limit) => onPaginationChange("users", query, skip, limit))
     )
 }
-
+/**
+ * Displays the details of the user with the id from the params.
+ */
 async function displayUserDetails(mainContent, params, _) {
     const user = await userApi.fetchUser(params.uid)
 
@@ -25,6 +30,9 @@ async function displayUserDetails(mainContent, params, _) {
     )
 }
 
+/**
+ * Displays a list of users that have the given SportID and RouteID
+ */
 async function displayUsersByActivity(mainContent, params, query) {
     const users = await userApi.fetchUsersByActivity(queryBuilder(query) || getPaginationQuery(), params.sid)
     const userCount = await userApi.fetchUserByActivityCount(queryBuilder(query), params.sid)

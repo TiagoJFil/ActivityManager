@@ -1,7 +1,14 @@
-import {List, Item, Text, Button, Div, H1, Icon} from "../dsl.js"
+import {List, Item, Text, Div, H1} from "../dsl.js"
 import  {LinkIcon} from "../LinkIcon.js"
 import styles from "../../styles.js";
 
+/**
+ * ActivityDetails component
+ * Contains the details of an activity and its links in form of buttons
+ *
+ * @param {Activity} activity the activity to display
+ * @returns {Div} the activity details component
+ */
 export default function ActivityDetails(activity) {
     const emptyText = Text(styles.TEXT, '')
 

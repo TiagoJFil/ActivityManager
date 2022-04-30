@@ -1,13 +1,20 @@
 import {Text, Button, Div, Icon} from "./dsl.js";
 import styles from "../styles.js";
 
+/**
+ * @param {Number} itemsPerPage
+ * @returns {Number} The current page.
+ */
 function getActualPage(itemsPerPage){
-    // Get skip from the query string in windows location hash
     const skipString = window.location.hash.split("?").find(x => x.includes("skip="))   
     const skip = skipString ? parseInt(skipString.split("=")[1]) : 0
     const actualPage = Math.floor(skip / itemsPerPage);
     return actualPage 
 }
+
+/**
+ * Gets the skip and limit from the pagination.
+ */
 export function getPaginationQuery() {
     const limit = getItemsPerPage()
     const pageLinkActive = document.querySelector('.page-link-active')
@@ -19,15 +26,19 @@ export function getPaginationQuery() {
     }
 }
 
-
+/**
+ * Creates a pagination component 
+ * @param {Number} totalElements The total number of elements in the list.
+ * @param {Function} onPageChange receives the skipValue and timesPerPage as parameters.
+ * @returns the pagination component
+ */
 export function Pagination(totalElements, onPageChange){
     const MAX_PAGES_PER_VIEW = 7
 
     const itemsPerPage = getItemsPerPage()
     const actualPage = getActualPage(itemsPerPage)
 
-
-    const isComplete = totalElements % 10 === 0 && totalElements !== 0
+    const isComplete = totalElements % itemsPerPage === 0 && totalElements !== 0
     
     const maxPages = Math.floor(totalElements / itemsPerPage)
     let totalPages = isComplete ? maxPages : maxPages + 1
@@ -62,7 +73,7 @@ export function Pagination(totalElements, onPageChange){
         Icon(styles.BX_CLASS, 'bx-chevron-right', styles.PAGINATION_ICONS)
     )
 
-   
+  
     if(totalPages <= MAX_PAGES_PER_VIEW){
        startButton.disabled = true
        endButton.disabled = true
@@ -90,11 +101,20 @@ export function Pagination(totalElements, onPageChange){
     return Div(styles.PAGINATION, ...items)
 }
 
+/**
+ * @returns {Number} The number of items per page.
+ */
 export function getItemsPerPage(){
     const list = document.querySelector('.list')
     return list ? parseInt(getComputedStyle(list).getPropertyValue('--items-per-page')) : 10
 }
 
+/**
+ * @param {Number} totalPages
+ * @param {Number} actualPage
+ * @param {Number} pagesPerView
+ * @returns {Number[]} The pages that are visible in the pagination.
+ */
 function getVisiblePages(totalPages, actualPage, pagesPerView){
     const pages = []
     const sidePages = Math.floor(pagesPerView / 2)

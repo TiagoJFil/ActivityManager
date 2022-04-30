@@ -2,6 +2,13 @@ import {List, Item, Text, Div, H1} from "../dsl.js"
 import {LinkIcon} from "../LinkIcon.js"
 import styles from "../../styles.js";
 
+/**
+ * UserDetails component
+ * Contains the details of a user and its links in form of buttons
+ * 
+ * @param {User} user 
+ * @returns {Div} the user details component
+ */
 export default function UserDetails(user){
     return Div(styles.HEADER_DIV,
         H1(styles.HEADER, 'User Details'),

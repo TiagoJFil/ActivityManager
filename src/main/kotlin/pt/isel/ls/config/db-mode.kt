@@ -2,7 +2,6 @@ package pt.isel.ls.config
 
 import org.postgresql.ds.PGSimpleDataSource
 import org.postgresql.util.PSQLException
-import org.slf4j.LoggerFactory
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.repository.SportRepository
@@ -46,7 +45,7 @@ private fun postgreSQL(suffix: String): DbSource {
     } catch (e: PSQLException) {
         throw IllegalArgumentException(
             "Could not start database with the information given. " +
-            "Please check your JDBC environment variables or the connectivity to the database."
+                "Please check your JDBC environment variables or the connectivity to the database."
         )
     }
 

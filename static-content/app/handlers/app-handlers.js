@@ -7,7 +7,9 @@ import styles from "../styles.js";
 
 const NOT_FOUND_MESSAGE = 'Sorry, the page you are looking for does not exist. Try heading to the home page.'
 
-
+/**
+ * Displays the home page 
+ */
 function getHome(mainContent) {
     const h1 = H1(styles.HEADER, 'Home')
     mainContent.replaceChildren(
@@ -16,26 +18,10 @@ function getHome(mainContent) {
     )
 }
 
-export function onPaginationChange(path, currentQuery, skip, limit){
 
-    const query = currentQuery ? currentQuery : {}
-
-    query.skip = skip
-    query.limit = limit
-    
-    window.location.hash = `#${path}?${queryBuilder(query)}`
-}
-
-export function queryBuilder(queryValues){
-
-    if(queryValues === undefined) return ''
-
-    return Object
-        .keys(queryValues)
-        .map(key => `${key}=${queryValues[key]}`)
-        .join('&')
-}
-
+/**
+ * Displays a page to indicate that nothing was found
+ */
 function getNotFoundPage(mainContent) {
 
     mainContent.replaceChildren(
@@ -44,6 +30,9 @@ function getNotFoundPage(mainContent) {
     )
 }
 
+/**
+ * Displays the error page with the given error message
+ */
 function getErrorPage(mainContent, error) {
     let message;
     let header;
@@ -65,6 +54,38 @@ function getErrorPage(mainContent, error) {
     )
 }
 
+/**
+ * The function to be called when the pagination is changed
+ * 
+ * @param {Text} path  the path of the page to be loaded
+ * @param {Text} currentQuery the current query
+ * @param {Number} skip  the skip to be used in the query
+ * @param {Number} limit   the limit to be used in the query
+ */
+ export function onPaginationChange(path, currentQuery, skip, limit){
+
+    const query = currentQuery ? currentQuery : {}
+
+    query.skip = skip
+    query.limit = limit
+    
+    window.location.hash = `#${path}?${queryBuilder(query)}`
+}
+
+/**
+ * Builds the query string from the given query object
+ * @param {Object} queryValues 
+ * @returns {String} the query as String
+ */
+export function queryBuilder(queryValues){
+
+    if(queryValues === undefined) return ''
+
+    return Object
+        .keys(queryValues)
+        .map(key => `${key}=${queryValues[key]}`)
+        .join('&')
+}
 
 export default {
     getHome,
