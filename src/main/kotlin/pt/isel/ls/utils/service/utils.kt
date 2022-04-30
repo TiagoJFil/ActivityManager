@@ -14,7 +14,7 @@ import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
-import java.util.UUID
+import java.util.*
 
 /**
  * @param parameter the parameter to check.
@@ -41,7 +41,7 @@ fun requireParameter(parameter: String?, parameterName: String): String {
 
 fun requireIdInteger(id: String, parameterName: String): Int =
     id.toIntOrNull()
-        ?: throw InvalidParameter("$parameterName must be an integer")
+        ?: throw ResourceNotFound(parameterName, id)
 
 /**
  * Ensures that there is a token associated with the user.

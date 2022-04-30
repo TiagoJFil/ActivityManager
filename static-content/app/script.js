@@ -1,14 +1,14 @@
 import router from './router.js'
-import handlers from './handlers.js'
+import handlers from './handlers/app-handlers.js'
 
 window.addEventListener('load', loadHandler)
 window.addEventListener('hashchange', hashChangeHandler)
 window.addEventListener('resize', hashChangeHandler)
 
 function loadHandler(){
+    if(!location.hash) location.hash = "#home" 
 
     router.addDefaultNotFoundRouteHandler(handlers.getNotFoundPage)
-
     router.addRouteHandler('home', handlers.getHome)
     router.addRouteHandler('sports', handlers.getSports) 
     router.addRouteHandler('sports/:sid', handlers.getSport) 
@@ -25,10 +25,15 @@ function loadHandler(){
     hashChangeHandler()
 }
 
-function hashChangeHandler(){
+async function hashChangeHandler(){
     const mainContent = document.querySelector('#mainContent')
     const path = window.location.hash.replace('#', '')
     const handlerInfo = router.getRouteHandler(path)
 
-    handlerInfo.handler(mainContent, handlerInfo.params, handlerInfo.query)
+    try{
+        await handlerInfo.handler(mainContent, handlerInfo.params, handlerInfo.query)
+    }catch(e){
+        handlers.getErrorPage(mainContent, e)
+    }
+    
 }

@@ -41,7 +41,6 @@ async function fetchActivitiesByUser(uid, query){
     return activities['activities']
 }
 
-
 async function fetchActivitiesByUserCount(uid){
     const response = await fetchActivitiesByUser(uid, `limit=1000000`)
     return response.length
@@ -91,9 +90,14 @@ async function fetchResourceCount(RESOURCE_PATH){
 
 async function fetchResource(id, RESOURCE_PATH){
     const response = await fetch(BASE_API_URL + RESOURCE_PATH + '/' + id)
-    return await response.json()
-}
+    const object = await response.json()
 
+    if(Math.floor(response.status / 100) === 2) 
+        return object
+    else{
+        throw object
+    }
+}
 
 async function fetchUsersByActivity(query,sid){
     const response = await fetch(BASE_API_URL + 'sports/' + sid + '/users' + (query ? '?' + query : ''))
@@ -107,25 +111,34 @@ async function fetchUserByActivityCount(query, sid){
     return users.length
 }
 
-export default {
-    fetchSports,
-    fetchRoutes,
+
+export const userApi = {
     fetchUsers,
-    fetchSport,
-    fetchRoute,
-    fetchUser,
-    fetchActivities,
-    fetchActivitiesBySport,
-    fetchActivitiesByUser,
-    fetchActivity,
-    fetchSportsCount,
-    fetchRoutesCount,
     fetchUsersCount,
-    fetchResourceCount,
-    fetchActivitiesCount,
+    fetchUser,
     fetchUsersByActivity,
-    fetchUserByActivityCount,
+    fetchUserByActivityCount
+}
+
+export const sportApi = {
+    fetchSport,
+    fetchSports,
+    fetchSportsCount,
+}
+
+export const activityApi = {
+    fetchActivities,
+    fetchActivitiesCount,
+    fetchActivitiesBySport,
+    fetchActivitiesBySportCount,
+    fetchActivitiesByUser,
     fetchActivitiesByUserCount,
-    fetchActivitiesBySportCount
+    fetchActivity
+}
+
+export const routeApi = {
+    fetchRoute,
+    fetchRoutes,
+    fetchRoutesCount
 }
 

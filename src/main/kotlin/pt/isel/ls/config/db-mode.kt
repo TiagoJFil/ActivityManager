@@ -16,11 +16,9 @@ import pt.isel.ls.repository.memory.RouteDataMemRepository
 import pt.isel.ls.repository.memory.SportDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
 
-private val logger = LoggerFactory.getLogger("pt.isel.ls.config.db-mode")
-
 enum class DBMODE { MEMORY, POSTGRESQL }
 
-fun DBMODE.source(): DbSource? =
+fun DBMODE.source(): DbSource =
     when (this) {
         DBMODE.MEMORY -> memory()
         DBMODE.POSTGRESQL -> postgreSQL("_prod")
@@ -33,7 +31,7 @@ class DbSource(
     val activityRepository: ActivityRepository
 )
 
-private fun postgreSQL(suffix: String): DbSource? {
+private fun postgreSQL(suffix: String): DbSource {
 
     val dbInfo = dbConnectionInfo()
 
@@ -46,8 +44,10 @@ private fun postgreSQL(suffix: String): DbSource? {
     try {
         dataSource.connection
     } catch (e: PSQLException) {
-        logger.error("Could not start database with the information given. Please check your JDBC environment variables.")
-        return null
+        throw IllegalArgumentException(
+            "Could not start database with the information given. " +
+            "Please check your JDBC environment variables or the connectivity to the database."
+        )
     }
 
     return DbSource(

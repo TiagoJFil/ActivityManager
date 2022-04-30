@@ -10,7 +10,7 @@ import pt.isel.ls.config.getEnv
 
 fun main() {
 
-    val env = getEnv() ?: throw IllegalStateException("Illegal Environment.")
+    val env = getEnv()
 
     val api = getApiRoutes(
         getAppRoutes(env)
@@ -26,5 +26,8 @@ fun main() {
     // server.join()
 }
 
-fun server(api: RoutingHttpHandler, port: Int): Http4kServer =
-    api.asServer(Jetty(port)).start()
+fun server(api: RoutingHttpHandler, port: Int): Http4kServer = api.asServer(Jetty(port))
+
+
+
+
