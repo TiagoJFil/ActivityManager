@@ -7,36 +7,51 @@ import SportView from './views/individualResources/SportView.js'
 import UserView from './views/individualResources/UserView.js'
 import RouteView from './views/individualResources/RouteView.js'
 import ActivityView from './views/individualResources/ActivityView.js'
-import {getItemsPerPage, Pagination} from "./views/Pagination.js";
+import {getItemsPerPage, Pagination, getPaginationQuery} from "./views/Pagination.js"
+import {Div, H1, Text} from "./views/utils.js"
+import ActivitySearchFilter from "./views/ActivitySearchFilter.js"
+import styles from "./styles.js";
 
-function getHome(mainContent){
-    const h1 = document.createElement('h1');
-    const text = document.createTextNode("Home")
-    h1.append(text)
+function getHome(mainContent) {
+    const h1 = H1(styles.HEADER, 'Home')
     mainContent.replaceChildren(h1)
 }
 
-function getQuery(){
-    const limit = getItemsPerPage()
-    const pageLinkActive = document.querySelector('.page-link-active')
 
-    const skip = pageLinkActive ? parseInt(pageLinkActive.firstChild.textContent) * limit : 0
+function queryBuilder(queryValues){
+    if(queryValues === undefined) return ''
 
-    return `?skip=${skip}&limit=${limit}`
+    return Object
+        .keys(queryValues)
+        .map(key => `${key}=${queryValues[key]}`)
+        .join('&')
 }
 
-async function getSports(mainContent, params, query){
-    const sports = await api.fetchSports(query || getQuery())
+function onPaginationChange(path, currentQuery, skip,limit){
+
+    const query = currentQuery ? currentQuery : {}
+
+    query.skip = skip
+    query.limit = limit
+    
+    window.location.hash = `#${path}?${queryBuilder(query)}`
+}
+
+async function getSports(mainContent, params, query) {
+    const paginationQuery = queryBuilder(query)
+    const sports = await api.fetchSports(paginationQuery)
     const sportCount = await api.fetchSportsCount()
+    
 
     mainContent.replaceChildren(
+        H1(styles.HEADER, 'Sports'),
         SportList(sports),
-        Pagination('sports',sportCount)
+        Pagination(sportCount, (skip, limit) => onPaginationChange("sports", query, skip, limit))
     )
 }
 
 
-async function getSport(mainContent, params, query){
+async function getSport(mainContent, params, query) {
     const sport = await api.fetchSport(params.sid)
 
     mainContent.replaceChildren(
@@ -44,17 +59,18 @@ async function getSport(mainContent, params, query){
     )
 }
 
-async function getUsers(mainContent, params, query){
-    const users = await api.fetchUsers(query || getQuery())
+async function getUsers(mainContent, params, query) {
+    const users = await api.fetchUsers(queryBuilder(query) || getPaginationQuery())
     const userCount = await api.fetchUsersCount()
 
     mainContent.replaceChildren(
+        H1(styles.HEADER, 'Users'),
         UserList(users),
-        Pagination('users', userCount)
+        Pagination(userCount, (skip, limit) => onPaginationChange("users", query, skip, limit))
     )
 }
 
-async function getUser(mainContent, params, query){
+async function getUser(mainContent, params, query) {
     const user = await api.fetchUser(params.uid)
 
     mainContent.replaceChildren(
@@ -62,70 +78,112 @@ async function getUser(mainContent, params, query){
     )
 }
 
-async function getRoutes(mainContent, params, query){
-    const routes = await api.fetchRoutes(query || getQuery())
+async function getRoutes(mainContent, params, query) {
+    const routes = await api.fetchRoutes(queryBuilder(query) || getPaginationQuery())
     const routeCount = await api.fetchRoutesCount()
+    
     mainContent.replaceChildren(
+        H1(styles.HEADER, 'Routes'),
         RouteList(routes),
-        Pagination('routes', routeCount)
+        Pagination(routeCount, (skip, limit) => onPaginationChange("routes", query, skip, limit))
     )
 }
 
-async function getRoute(mainContent, params, query){
+async function getRoute(mainContent, params, query) {
     const route = await api.fetchRoute(params.rid)
     mainContent.replaceChildren(
-        RouteView(route)
+        H1(styles.HEADER, 'Route Details'),
+        RouteView(route),
+        Div('spacer', '')
     )
 }
 
 
-async function getActivities(mainContent, params, query){
-    const activities = await api.fetchActivities(query || getQuery())
-    //const actvWithSportName = await api.addSportNameToActivities(activities)
+async function getActivities(mainContent, params, query) {
+    const activities = await api.fetchActivities(queryBuilder(query) || getPaginationQuery())
     const activityCount = await api.fetchActivitiesCount()
+
     mainContent.replaceChildren(
-        ActivityList(activities, 'All Activities'),
-        Pagination('activities', activityCount)
+        H1(styles.HEADER, 'All Activities'),
+        ActivityList(activities),
+        Pagination(activityCount, (skip, limit) => onPaginationChange("activities", query, skip, limit))
     )
 }
 
-async function getActivitiesBySport(mainContent, params, query){
-    const activities = await api.fetchActivitiesBySport(params.sid, query || getQuery())
-    const actvWithSportName = await api.addSportNameToActivities(activities)
-
-   // const activityCount = await api.fetchResourceCount('activities')
-    console.log(actvWithSportName)
-//TODO: add pagination count here
+async function getActivitiesBySport(mainContent, params, query) {
+    const activities = await api.fetchActivitiesBySport(params.sid, queryBuilder(query) || getPaginationQuery())
+    const queryForCount = {...query}
+    if(queryForCount){
+        queryForCount.skip = 0
+        queryForCount.limit = 1000000
+    }
+    
+    const activitiesCount = await api.fetchActivitiesBySportCount(params.sid, queryBuilder(queryForCount)) // TODO: Passar a query para a request
+    console.log(activitiesCount)
+    const routes = await api.fetchRoutes(`limit=1000000`)
+    const sport = await api.fetchSport(params.sid)
+  
+    const onFilterSubmit =  (date, route, sortOrder) => {
+        const newQuery = query ? query : {}
+        if(date) newQuery.date = date
+        if(route && newQuery.rid != route){
+            newQuery.rid = route
+            newQuery.limit = 10
+            newQuery.skip = 0
+        }
+        if(sortOrder) newQuery.orderBy = sortOrder
+        
+        window.location.hash = `#sports/${params.sid}/activities?${queryBuilder(newQuery)}`
+    }
+    console.log(activitiesCount)
     mainContent.replaceChildren(
-        ActivityList(actvWithSportName, `Activities for ${actvWithSportName[0].sportName}`),
-        Pagination('activities',9)
+        Div('activity-header-filter',
+            H1(styles.HEADER, `Activities for ${sport.name}`),
+            ActivitySearchFilter(onFilterSubmit, routes),
+        ),
+        ActivityList(activities),
+        Pagination(activitiesCount, (skip, limit) => onPaginationChange(`sports/${params.sid}/activities`, query, skip, limit))
     )
 }
 
-async function getActivitiesByUser(mainContent, params, query){
-    const activities = await api.fetchActivitiesByUser(params.uid, query || getQuery())
+async function getActivitiesByUser(mainContent, params, query) {
+    const activities = await api.fetchActivitiesByUser(params.uid, queryBuilder(query) || getPaginationQuery())
     const activityCount = await api.fetchActivitiesByUserCount(params.uid)
+    const user = await api.fetchUser(params.uid)
     mainContent.replaceChildren(
-        ActivityList(activities, `Activities for this USER`),
-        Pagination('activities',activityCount)
+        H1(styles.HEADER, `Activities for ${user.name}`),
+        ActivityList(activities),
+        Pagination(activityCount, (skip, limit) => onPaginationChange(`users/${params.uid}/activities`, query, skip, limit))
     )
 }
 
-async function getActivity(mainContent, params, query){
-    const activity = await api.fetchActivity(params.sid,params.aid)
+async function getActivity(mainContent, params, query) {
+    const activity = await api.fetchActivity(params.sid, params.aid)
 
     mainContent.replaceChildren(
         ActivityView(activity)
     )
 }
 
-async function getUsersByActivity(mainContent, params, query){
-    const users = await api.fetchUsersByActivity(query || getQuery(),params.sid)
-    const userCount = await api.fetchUserByActivityCount(query,params.sid)
+async function getUsersByActivity(mainContent, params, query) {
+    const users = await api.fetchUsersByActivity(queryBuilder(query) || getPaginationQuery(), params.sid)
+    const userCount = await api.fetchUserByActivityCount(queryBuilder(query), params.sid)
+    mainContent.replaceChildren(
+        H1(styles.HEADER, 'Users'),
+        UserList(users),
+        Pagination(userCount, (skip, limit) => onPaginationChange(`sports/${activities.sports}/users`, query, skip, limit))
+    )
+}
+
+
+function getNotFoundPage(mainContent, params, query) {
 
     mainContent.replaceChildren(
-        UserList(users),
-        Pagination('users', userCount)
+        Div('not-found',
+            H1(styles.HEADER, '404-Not Found'),
+            Text(styles.TEXT,'Sorry, the page you are looking for does not exist.\n'),
+            Text(styles.TEXT,'Try heading to the home page.')
+        )
     )
 }
 
@@ -143,7 +201,8 @@ export default {
     getActivity,
     getUsersByActivity,
     getActivitiesByUser,
-    getActivitiesBySport
+    getActivitiesBySport,
+    getNotFoundPage
 }
 
 

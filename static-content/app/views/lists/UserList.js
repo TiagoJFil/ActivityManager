@@ -1,4 +1,5 @@
 import {List, Item, Text, Div, H1, Button} from '../utils.js'
+import styles from "../../styles.js";
 
 /**
  * UserList component
@@ -7,21 +8,18 @@ import {List, Item, Text, Div, H1, Button} from '../utils.js'
  * @returns An "ul" element containing a list of "li" elements for each user
  */
 export default function UserList(users){
-    return Div('header-div',
-        H1('header', 'Users'),
-        List('list',
+    return List(styles.LIST,
             ...users.map(user =>
-                Item('resource-item',
-                    Button('list-button',
+                Item(styles.LIST_ELEMENT,
+                    Button(styles.LIST_BUTTON,
                         () => {
                             location.href= `#users/${user.id}`
                         },
-                        Text("text",
+                        Text(styles.TEXT,
                             user.name
                         )
                     )
                 )
             )
-        )
     )
 }

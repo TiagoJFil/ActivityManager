@@ -9,7 +9,7 @@ const ACTIVITY_SPORT_URL = sid => `sports/${sid}/activities`
 const ACTIVITY_USER_URL = uid => `users/${uid}/activities`
 
 async function fetchSports(query) {
-    return  await fetchResourceList(query, SPORTS_URL)   
+    return await fetchResourceList(query, SPORTS_URL)   
 }
 
 async function fetchRoutes(query){
@@ -30,6 +30,11 @@ async function fetchActivitiesBySport(sid, query){
     return activities['activities']
 }
 
+async function fetchActivitiesBySportCount(sid,query){
+    const response = await fetchActivitiesBySport(sid,query)
+    return response.length
+}
+
 async function fetchActivitiesByUser(uid, query){
     const response = await fetch(BASE_API_URL + ACTIVITY_USER_URL(uid) + (query ? '?' + query : ''))
     const activities = await response.json()
@@ -38,9 +43,8 @@ async function fetchActivitiesByUser(uid, query){
 
 
 async function fetchActivitiesByUserCount(uid){
-    const response = fetchActivitiesByUser(uid, '&limit=100000')
-    const activities = await response.json()
-    return activities.length
+    const response = await fetchActivitiesByUser(uid, `limit=1000000`)
+    return response.length
 }
 
 async function fetchSportsCount(){
@@ -79,43 +83,27 @@ async function fetchResourceList(query, RESOURCE_PATH){
     return object[RESOURCE_PATH]
 }
 
+async function fetchResourceCount(RESOURCE_PATH){
+    const resources = await fetchResourceList(`limit=1000000`,RESOURCE_PATH)
+
+    return resources.length
+}
+
 async function fetchResource(id, RESOURCE_PATH){
     const response = await fetch(BASE_API_URL + RESOURCE_PATH + '/' + id)
     return await response.json()
 }
 
-async function fetchResourceCount(RESOURCE_PATH){
-    const resources = await fetchResourceList('limit=10000000',RESOURCE_PATH)
-    return resources.length
-}
-
-
-const sportMap = new Map()
-
-async function addSportNameToActivities(activities){
-    return await Promise.all(activities.map(async activity => {
-        let sport
-        if(sportMap[activity.sport]){
-            sport = sportMap[activity.sport]
-        }else {
-            sport = await fetchSport(activity.sport)
-            sportMap[activity.sport] = sport
-        }
-        activity.sportName = sport.name
-        return activity
-    }))
-}
 
 async function fetchUsersByActivity(query,sid){
     const response = await fetch(BASE_API_URL + 'sports/' + sid + '/users' + (query ? '?' + query : ''))
-    return await response.json()
+    const userList = await response.json()
+    return userList['users']
 }
 
-async function fetchUserByActivityCount(query,sid){
-    const ridQuery = query.split('&')[0]
-
-    const response = await fetch(BASE_API_URL + 'sports/' + sid + '/users' + (ridQuery + '&limit=10000000'))
-    const users = await response.json()
+async function fetchUserByActivityCount(query, sid){
+    const ridQuery = query.split('&').find(element => element.includes('rid')) 
+    const users = await fetchUsersByActivity(ridQuery + `&limit=1000000`, sid)
     return users.length
 }
 
@@ -136,8 +124,8 @@ export default {
     fetchResourceCount,
     fetchActivitiesCount,
     fetchUsersByActivity,
-    addSportNameToActivities,
     fetchUserByActivityCount,
-    fetchActivitiesByUserCount
+    fetchActivitiesByUserCount,
+    fetchActivitiesBySportCount
 }
 

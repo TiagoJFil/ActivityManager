@@ -1,4 +1,5 @@
-import {List, Item, Text, Div, H1, Button} from '../utils.js'
+import {List, Item, Text, Button} from '../utils.js'
+import styles from "../../styles.js";
 
 /**
  * RouteList component
@@ -7,21 +8,19 @@ import {List, Item, Text, Div, H1, Button} from '../utils.js'
  * @returns An "ul" element containing a list of "li" elements for each route
  */
 export default function RoutesList(routes) {
-    return Div('header-div',
-        H1('header', 'Routes'),
-        List('list',
+    return List(styles.LIST,
             ...routes.map(route =>
-                Item('resource-item',
-                    Button('list-button',
+                Item(styles.LIST_ELEMENT,
+                    Button(styles.LIST_BUTTON,
                         () => {
                             location.href = `#routes/${route.id}`
                         },
-                        Text("text",
+                        Text(styles.TEXT,
                             `${route.startLocation} - ${route.endLocation}`
                         )
                     )
                 )
             )
         )
-    )
+
 }

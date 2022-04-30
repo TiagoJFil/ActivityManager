@@ -1,17 +1,18 @@
 import {List, Item, Text, Div, H1} from "../utils.js"
 import ActivityLinkIcon from "../ActivityLinkIcon.js";
+import styles from "../../styles.js";
 
 export default function UserView(user){
-    return Div('header-div',
-        H1('header', 'User Details'),
-        List('user-details',
+    return Div(styles.HEADER_DIV,
+        H1(styles.HEADER, 'User Details'),
+        List(styles.DETAILS,
             Item('name-item',
-                Text('detail-header', 'Name: '),
-                Text('name-text', user.name)
+                Text(styles.DETAIL_HEADER, 'Name: '),
+                Text(styles.TEXT, user.name)
             ),
             Item('email-item',
-                Text('detail-header', 'Email: '),
-                Text('email-text',user.email)
+                Text(styles.DETAIL_HEADER, 'Email: '),
+                Text(styles.TEXT,user.email)
             ),
             ActivityLinkIcon(`#users/${user.id}/activities`)
         )

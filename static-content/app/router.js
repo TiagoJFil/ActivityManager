@@ -3,7 +3,7 @@ const routes = [
 
 ]
 
-let notFoundRouteHandler = mainContent => console.log("Not Found")
+let notFoundRouteHandler = (mainContent,params) => getNotFoundPage(mainContent,params)
 
 function addRouteHandler(path, handler){
 
@@ -18,17 +18,31 @@ function addRouteHandler(path, handler){
 export function getRouteHandler(path){
     // sports/39/activities/27
     const [pathString, queryString] = path.split("?")
+
     const route = routes.find(route => route.pathRegex.test(pathString))
-    if(!route) return notFoundRouteHandler
+    if(!route) return { handler: notFoundRouteHandler , params: []}
+
     const [match, ...values] = route.pathRegex.exec(pathString)
     const params = {}
     route.placeholderNames.forEach((name, idx) => params[name] = values[idx])
+
     // params: {sid: 39, aid: 27}
-    return {handler: route.handler, params, query: queryString}
+    return {handler:route.handler , params, query: queryString ? parseQuery(queryString) : undefined}
 }
 
 function addDefaultNotFoundRouteHandler(notFoundRH) {
     notFoundRouteHandler = notFoundRH
+}
+
+function parseQuery(queryString){
+    const query = {}
+    const queryParts = queryString.split("&")
+    queryParts.forEach(part => {
+        const [key, value] = part.split("=")
+        query[key] = value
+    })
+
+    return query
 }
 
 const router = {

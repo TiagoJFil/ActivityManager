@@ -1,4 +1,5 @@
-import {List, Item, Text, Button, Div, H1} from '../utils.js'
+import {List, Item, Text, Button} from '../utils.js'
+import styles from "../../styles.js";
 
 /**
  * SportList component
@@ -7,21 +8,19 @@ import {List, Item, Text, Button, Div, H1} from '../utils.js'
  * @returns An "ul" element containing a list of "li" elements for each sport
  */
 export default function SportList(sports) {
-    return Div('header-div',
-        H1('header', 'Sports'),
-        List('list',
-            ...sports.map(sport =>
-                Item('resource-item',
-                    Button('list-button',
-                        () => {
-                            location.href = `#sports/${sport.id}`
-                        },
-                        Text("text",
-                            sport.name
-                        )
+    return List(styles.LIST,
+        ...sports.map(sport =>
+            Item(styles.LIST_ELEMENT,
+                Button(styles.LIST_BUTTON,
+                    () => {
+                        location.href = `#sports/${sport.id}`
+                    },
+                    Text(styles.TEXT,
+                        sport.name
                     )
                 )
             )
         )
     )
+    
 }
