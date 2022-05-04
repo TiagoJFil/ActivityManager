@@ -62,7 +62,7 @@ fun getAppRoutes(env: Environment) = routes(
     Route(env.routeServices),
     Sport(env.sportsServices),
     Activity(env.activityServices),
-   //swaggerUi("/swagger-ui/index.html")
+    // swaggerUi("/swagger-ui/index.html")
 )
 
 private val eLogger = LoggerFactory.getLogger("pt.isel.ls.api.ERRORS")
