@@ -44,7 +44,7 @@ private fun postgreSQL(suffix: String): DbSource {
         dataSource.connection
     } catch (e: PSQLException) {
         throw IllegalArgumentException(
-            "Could not start database with the information given. " +
+            "Could not connect to database with the information given. " +
                 "Please check your JDBC environment variables or the connectivity to the database."
         )
     }

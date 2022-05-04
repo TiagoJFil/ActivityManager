@@ -23,14 +23,14 @@ enum class EnvironmentType(val dbMode: DBMODE) {
 private fun getEnvType(): EnvironmentType {
 
     try {
-        val envType = System.getenv("APP_ENV_TYPE")
+        val envType = System.getenv("APP_ENV_TYPE") ?: error("Please specify APP_ENV_TYPE environment variable")
         return EnvironmentType.valueOf(envType)
     } catch (e: IllegalArgumentException) {
         throw IllegalArgumentException("Please specify a valid APP_ENV_TYPE: ${EnvironmentType.values().toList()}")
     }
 }
-fun getEnv(testMode: Boolean = false): Environment {
-    val envType = if (testMode) EnvironmentType.TEST else getEnvType()
+fun getEnv(): Environment {
+    val envType = getEnvType()
 
     val dbInfo = envType.dbMode.source()
     val userRepo = dbInfo.userRepository

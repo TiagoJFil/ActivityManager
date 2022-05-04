@@ -14,12 +14,10 @@ import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.NOT_FOUND
 import org.http4k.core.Status.Companion.UNAUTHORIZED
 import org.http4k.routing.ResourceLoader
-import org.http4k.routing.ResourceLoader.Companion.Classpath
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 import org.http4k.routing.singlePageApp
-import org.http4k.routing.static
 import org.slf4j.LoggerFactory
 import pt.isel.ls.config.Environment
 import pt.isel.ls.service.AppError
@@ -42,8 +40,8 @@ import kotlin.system.measureTimeMillis
 fun getApiRoutes(routes: RoutingHttpHandler) = routes(
 
     "/api" bind routes.withFilter(timeFilter).withFilter(onErrorFilter),
-    static(Classpath("public")), // For swagger-ui
     singlePageApp(ResourceLoader.Directory("static-content")) // For SPA
+
 )
 
 /**
@@ -64,7 +62,7 @@ fun getAppRoutes(env: Environment) = routes(
     Route(env.routeServices),
     Sport(env.sportsServices),
     Activity(env.activityServices),
-    swaggerUi("/swagger-ui/index.html")
+   //swaggerUi("/swagger-ui/index.html")
 )
 
 private val eLogger = LoggerFactory.getLogger("pt.isel.ls.api.ERRORS")

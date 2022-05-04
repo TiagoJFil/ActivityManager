@@ -32,7 +32,7 @@ async function displayRouteDetails(mainContent, params, _) {
     mainContent.replaceChildren(
         H1(styles.HEADER, 'Route Details'),
         RouteDetails(route),
-        Div('spacer', '')
+        Div('spacer')
     )
 }
 

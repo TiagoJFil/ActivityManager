@@ -1,4 +1,4 @@
-import {Div, H1, Text, Button} from "../components/dsl.js"
+import {Div, H1, Text} from "../components/dsl.js"
 import { sportHandlers } from "./sports-handlers.js";
 import { userHandlers } from "./users-handlers.js";
 import { routeHandlers } from "./routes-handlers.js";
@@ -44,7 +44,7 @@ function getErrorPage(mainContent, error) {
             break
         default:
             header = 'Error'
-            message = 'An error has occurred. Please try again later.' 
+            message = 'An error has occurred. Please try again later.'
             break
     }
     mainContent.replaceChildren(
@@ -57,7 +57,7 @@ function getErrorPage(mainContent, error) {
 /**
  * The function to be called when the pagination is changed
  * 
- * @param {Text} path  the path of the page to be loaded
+ * @param {string} path  the path of the page to be loaded
  * @param {Text} currentQuery the current query
  * @param {Number} skip  the skip to be used in the query
  * @param {Number} limit   the limit to be used in the query

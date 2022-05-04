@@ -2,6 +2,14 @@ plugins {
     kotlin("jvm") version "1.6.10"
     kotlin("plugin.serialization") version "1.6.10"
     id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
+    id("application")
+}
+ext {
+    set("projectMainClass", "pt.isel.ls.Sports_serverKt")
+}
+
+application {
+    mainClass.set(project.ext.get("projectMainClass") as String)
 }
 
 repositories {
@@ -22,15 +30,20 @@ dependencies {
 tasks.named<Jar>("jar") {
     dependsOn("copyRuntimeDependencies")
     manifest {
-        attributes["Main-Class"] = "pt.isel.ls.http.HTTPServerKt"
+        attributes["Main-Class"] = project.ext.get("projectMainClass") as String
         attributes["Class-Path"] = configurations.runtimeClasspath.get().joinToString(" ") { it.name }
     }
 }
+
 tasks.register<Copy>("copyRuntimeDependencies") {
     from(configurations.runtimeClasspath)
     into("$buildDir/libs")
 }
 
-configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-    ignoreFailures.set(true)
+tasks.test {
+    environment(
+        mapOf(
+            "APP_ENV_TYPE" to "TEST"
+        )
+    )
 }

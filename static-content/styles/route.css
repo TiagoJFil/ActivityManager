@@ -46,14 +46,18 @@
 
 @media only screen and (max-width: 600px) {
     .route{
-        font-size: 48px;
+        font-size: 20px;
     }
+
     .start-location-item, .end-location-item{
-        width: 45%;
+        width: 100%;
     }
-    .location{
+
+    .locations{
+        width: 100%;
         display: flex;
         flex-direction: column;
+        align-items: center;
     }
 
     .locations-line{
