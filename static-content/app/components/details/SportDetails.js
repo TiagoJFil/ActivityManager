@@ -28,8 +28,8 @@ export default function SportDetails(sport) {
             Item('description-item',
                 description
             ),
-            LinkIcon(styles.CALENDAR_ICON,`#sports/${sport.id}/activities`),
-            LinkIcon(styles.USER_ICON, `#users/${sport.user}`)
+            LinkIcon(styles.CALENDAR_ICON,`#sports/${sport.id}/activities`, "Get activities for this sport"),
+            LinkIcon(styles.USER_ICON, `#users/${sport.user}`, "Get user details")
         )
     )
 }

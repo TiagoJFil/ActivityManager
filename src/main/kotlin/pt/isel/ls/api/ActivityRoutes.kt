@@ -150,6 +150,11 @@ class ActivityRoutes(
             .body(bodyString)
     }
 
+    private fun updateActivity(request: Request): Response {
+        logger.infoLogRequest(request)
+        TODO("Not yet implemented")
+    }
+
     /**
      * Gets all the activities of the sport identified by the id given in the params of the uri's path.
      */
@@ -181,11 +186,13 @@ class ActivityRoutes(
             "/{aid}" bind Method.DELETE to ::deleteActivity,
             "/{aid}" bind Method.GET to ::getActivity,
             "/" bind Method.GET to ::getActivitiesBySport,
-            "/" bind Method.DELETE to ::deleteActivities
+            "/" bind Method.DELETE to ::deleteActivities,
+            "/" bind Method.PUT to ::updateActivity
         ),
         "/users/{uid}/activities" bind Method.GET to ::getActivitiesByUser,
         "/sports/{sid}/users" bind Method.GET to ::getUsersByActivity,
         "/activities" bind Method.GET to ::getAllActivities
+
     )
 }
 

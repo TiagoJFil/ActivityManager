@@ -28,7 +28,7 @@ export default function RouteDetails(route) {
                 )
             ),
             Div('route-user',
-                LinkIcon(styles.USER_ICON, `#users/${route.user}`),
+                LinkIcon(styles.USER_ICON, `#users/${route.user}`, "Get users details"),
                 OuterLinkIcon(styles.MAP_ICON, `https://www.google.com/maps/dir/${route.startLocation}/${route.endLocation}/`)
             )
         

@@ -78,12 +78,20 @@ class RouteRoutes(
             .body(Json.encodeToString(RouteIDOutput(routeId)))
     }
 
+    private fun updateRoute(request: Request): Response {
+        logger.infoLogRequest(request)
+
+        val routeID = request.path("rid")
+        TODO("Not yet implemented")
+    }
+
     val handler =
         "/routes" bind
             routes(
                 "/" bind Method.POST to ::createRoute,
                 "/" bind Method.GET to ::getRoutes,
                 "/{rid}" bind Method.GET to ::getRoute,
+                "/" bind Method.PUT to ::updateRoute,
             )
 }
 

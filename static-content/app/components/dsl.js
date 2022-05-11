@@ -41,10 +41,22 @@ export function Text(className, text) {
     return createElement('span', className, document.createTextNode(text))
 }
 
+
+/**
+ * Represents a form element as a component
+ *
+ * @param className
+ * @param children
+ * @returns {HTMLElement}
+ */
+export function Form(className, ...children) {
+    return createElement('form', className, ...children)
+}
+
 /**
  * Represents an icon item element as a component
  * 
- * @param {String} className The class name of the list item element
+ * @param {String} classNames The class names of the list item element
  * @returns {HTMLElement} an icon element
  */
 export function Icon(...classNames) {
