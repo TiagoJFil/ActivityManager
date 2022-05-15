@@ -15,6 +15,8 @@ import pt.isel.ls.service.RouteServices
 import pt.isel.ls.service.dto.RouteDTO
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.api.fromRequest
+import pt.isel.ls.utils.api.getBearerToken
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
 
@@ -68,7 +70,7 @@ class RouteRoutes(
         logger.infoLogRequest(request)
 
         val routeInfo = Json.decodeFromString<RouteCreationInput>(request.bodyString())
-        val token = getToken(request)
+        val token = getBearerToken(request)
 
         val routeId: RouteID =
             routeServices.createRoute(token, routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)
@@ -79,10 +81,7 @@ class RouteRoutes(
     }
 
     private fun updateRoute(request: Request): Response {
-        logger.infoLogRequest(request)
-
-        val routeID = request.path("rid")
-        TODO("Not yet implemented")
+        TODO()
     }
 
     val handler =

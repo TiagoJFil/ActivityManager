@@ -19,6 +19,7 @@ import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.api.fromRequest
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
 
@@ -82,6 +83,10 @@ class UserRoutes(
             "/" bind Method.POST to ::createUser,
             "/" bind Method.GET to ::getUsers,
             "/{uid}" bind Method.GET to ::getUserDetails,
+            // TODO: UserRankings, UserByActivity, the first one is the one that has the least duration on the activity.
+            // TODO: Search without a filter button.
+            // TODO: Ter uma vista que se passa o nome do utilizador e dá o token para usar nos pedidos.
+            // TODO: Trocar o display da activity com o nome do sport e a data da mesma.
         )
 }
 

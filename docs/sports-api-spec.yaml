@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   description: "Api reference for Sports"
-  version: "0.1.3"
+  version: "0.2.1"
   title: "Swagger Sports"
   termsOfService: "https://swagger.io/terms/"
   license:
@@ -547,6 +547,34 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Sport"
+        "404":
+          description: "Sport not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+    put:
+      tags:
+        - "Sports"
+      summary: "Updates a sport"
+      description: "Updates a sport by id"
+      operationId: "updatesport"
+      parameters:
+        - name: "sid"
+          in: "path"
+          description: "Sport's identifier."
+          required: true
+          schema:
+            type: "integer"
+          example: 123
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SportCreationBody"
+      responses:
+        "204":
+          description: "sucessfull operation"
         "404":
           description: "Sport not found"
           content:

@@ -73,6 +73,34 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
         }
 
     /**
+     * Updates a sport in the repository.
+     * @param sid The id of the sport to be updated.
+     * @param newName The sport's name. or null if it should not be updated.
+     * @param newDescription The sport's description or null if it should not be updated.
+     */
+    override fun updateSport(sid: SportID, newName: String?, newDescription: String?): Boolean {
+        val queryBuilder = StringBuilder("UPDATE $sportTable SET ")
+        if (newName != null)
+            queryBuilder.append("name = ?, ")
+        if (newDescription != null)
+            queryBuilder.append("description = ?")
+
+        queryBuilder.append("WHERE id = ?")
+        val nameIndex = if (newName != null) 1 else 0
+
+        return dataSource.connection.transaction {
+            prepareStatement(queryBuilder.toString()).use { stmt ->
+                if (newName != null)
+                    stmt.setString(nameIndex, newName)
+                if (newDescription != null)
+                    stmt.setString(nameIndex + 1, newDescription)
+                stmt.setInt(nameIndex + 2, sid)
+                stmt.executeUpdate() == 1
+            }
+        }
+    }
+
+    /**
      * Makes a query to get a sport by its identifier.
      *
      * @param sportID The id of the sport to be queried.

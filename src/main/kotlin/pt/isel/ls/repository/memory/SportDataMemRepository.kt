@@ -51,4 +51,18 @@ class SportDataMemRepository(testSport: Sport) : SportRepository {
      * Checks if a sport identified by [sportID] exists.
      */
     override fun hasSport(sportID: SportID): Boolean = sportsMap.containsKey(sportID)
+
+    /**
+     * Updates a sport in the repository.
+     * @param sid The id of the sport to be updated.
+     * @param newName The sport's name. or null if it should not be updated.
+     * @param newDescription The sport's description or null if it should not be updated.
+     */
+    override fun updateSport(sid: SportID, newName: String?, newDescription: String?): Boolean {
+        val sport = sportsMap[sid] ?: return false
+        val name = newName ?: sport.name
+        val description = newDescription ?: sport.description
+        sportsMap[sid] = sport.copy(name = name, description = description)
+        return true
+    }
 }

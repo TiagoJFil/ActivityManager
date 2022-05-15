@@ -7,8 +7,8 @@ import pt.isel.ls.api.ActivityRoutes.ActivityCreationInput
 import pt.isel.ls.api.ActivityRoutes.ActivityIDOutput
 import pt.isel.ls.api.RouteRoutes.RouteCreationInput
 import pt.isel.ls.api.RouteRoutes.RouteIDOutput
-import pt.isel.ls.api.SportRoutes.SportCreationInput
 import pt.isel.ls.api.SportRoutes.SportIDOutput
+import pt.isel.ls.api.SportRoutes.SportInput
 import pt.isel.ls.api.UserRoutes.UserCreationInput
 import pt.isel.ls.api.UserRoutes.UserIDOutput
 import pt.isel.ls.config.Environment
@@ -70,8 +70,8 @@ fun HttpHandler.createActivity(
  * Helper function to create a sport, ensures it is created and returns the respective [SportIDOutput]
  * @param sportCreationBody the body of the sport to be created. Must be valid.
  */
-fun HttpHandler.createSport(sportCreationBody: SportCreationInput): SportIDOutput =
-    postRequest<SportCreationInput, SportIDOutput>(
+fun HttpHandler.createSport(sportCreationBody: SportInput): SportIDOutput =
+    postRequest<SportInput, SportIDOutput>(
         this,
         SPORT_PATH,
         sportCreationBody,

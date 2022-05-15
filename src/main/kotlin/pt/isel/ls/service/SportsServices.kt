@@ -71,4 +71,36 @@ class SportsServices(
             .getSports(paginationInfo)
             .map(Sport::toDTO)
     }
+
+    /**
+     * Updates the [Sport] identified by the given id with the given parameters
+     * @param token token the user token to be used to verify the user.
+     * @param sid the id that identifies the [Sport] to update
+     * @param name the name of the [Sport] to be updated.
+     * @param description the description of the [Sport] to be updated.
+     *
+     */
+    fun updateSport(token: UserToken?, sid: Param, name: Param, description: Param) {
+        logger.traceFunction(::updateSport.name) {
+            listOf(
+                SPORT_ID_PARAM to sid,
+                NAME_PARAM to name,
+                DESCRIPTION_PARAM to description
+            )
+        }
+
+        val safeSportID = requireParameter(sid, SPORT_ID_PARAM)
+        val sidInt: SportID = requireIdInteger(safeSportID, SPORT_ID_PARAM)
+        val userId = userRepository.requireAuthenticated(token)
+
+        if (userId != getSport(sid).user)
+            throw UnauthenticatedError("You must be the owner of the sport to update it")
+
+        val handledDescription = description?.ifBlank { null }
+        if (name != null && name.length > Sport.MAX_NAME_LENGTH)
+            throw InvalidParameter("$NAME_PARAM is too long, max length is ${Sport.MAX_NAME_LENGTH}")
+
+        if (!sportsRepository.updateSport(sidInt, name, handledDescription))
+            throw ResourceNotFound(RESOURCE_NAME, safeSportID)
+    }
 }

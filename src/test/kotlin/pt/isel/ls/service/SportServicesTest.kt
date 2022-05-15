@@ -7,6 +7,7 @@ import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.config.testSport
 import pt.isel.ls.service.dto.SportDTO
+import pt.isel.ls.service.entities.Sport.Companion.MAX_NAME_LENGTH
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertEquals
@@ -15,6 +16,7 @@ import kotlin.test.assertFailsWith
 class SportServicesTest {
 
     private var sportsServices = TEST_ENV.sportsServices
+    private var userServices = TEST_ENV.userServices
 
     @After
     fun tearDown() {
@@ -89,5 +91,83 @@ class SportServicesTest {
         val allSports = listOf(testSport.toDTO()) + sports
         assertEquals(1001, sportsServices.getSports(PaginationInfo(10000, 0)).size)
         assertEquals(allSports, sportsServices.getSports(PaginationInfo(1002, 0)))
+    }
+
+    @Test
+    fun `update sport's name and description`() {
+        val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", null)
+        sportsServices.updateSport(GUEST_TOKEN, sportID.toString(), "Basketball", "A game played with hands")
+
+        val sport = sportsServices.getSport(sportID.toString())
+        val expected = SportDTO(sportID, "Basketball", "A game played with hands", guestUser.id)
+        assertEquals(expected, sport)
+    }
+
+    @Test
+    fun `update sport's description`() {
+        val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", null)
+        sportsServices.updateSport(GUEST_TOKEN, sportID.toString(), "Football", "A game played with feet")
+
+        val sport = sportsServices.getSport(sportID.toString())
+        val expected = SportDTO(sportID, "Football", "A game played with feet", guestUser.id)
+        assertEquals(expected, sport)
+    }
+
+    @Test
+    fun `update sport's name without description keeps the previous description`() {
+        val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", "A game played with feet")
+        sportsServices.updateSport(GUEST_TOKEN, sportID.toString(), "Basketball", null)
+
+        val sport = sportsServices.getSport(sportID.toString())
+        val expected = SportDTO(sportID, "Basketball", "A game played with feet", guestUser.id)
+        assertEquals(expected, sport)
+    }
+
+    @Test
+    fun `update sport's description without name keeps the previous name`() {
+        val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", "A game played with feet")
+        sportsServices.updateSport(GUEST_TOKEN, sportID.toString(), null, "A game played with hands")
+
+        val sport = sportsServices.getSport(sportID.toString())
+        val expected = SportDTO(sportID, "Football", "A game played with hands", guestUser.id)
+        assertEquals(expected, sport)
+    }
+
+    @Test
+    fun `not updating anything keeps the previous sport`() {
+        val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", "A game played with feet")
+        sportsServices.updateSport(GUEST_TOKEN, sportID.toString(), null, null)
+
+        val sport = sportsServices.getSport(sportID.toString())
+        val expected = SportDTO(sportID, "Football", "A game played with feet", guestUser.id)
+        assertEquals(expected, sport)
+    }
+
+    @Test
+    fun `update sport with user that didn't create it throws UnauthenticatedError`() {
+        val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", null)
+        val (token, _) = userServices.createUser("John", "john@email.com")
+
+        assertFailsWith<UnauthenticatedError> {
+            sportsServices.updateSport(token, sportID.toString(), "Basketball", "A game played with hands")
+        }
+    }
+
+    @Test
+    fun `update sport that does not exists`() {
+        assertFailsWith<ResourceNotFound> {
+            sportsServices.updateSport(GUEST_TOKEN, "90990", "Basketball", "A game played with hands")
+        }
+    }
+
+    @Test
+    fun `update sport with more than MAX_NAME_LENGTH characters throws InvalidParameter`() {
+
+        val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", null)
+        val name = "".padEnd(MAX_NAME_LENGTH + 1, 'a')
+
+        assertFailsWith<InvalidParameter> {
+            sportsServices.updateSport(GUEST_TOKEN, sportID.toString(), name, null)
+        }
     }
 }

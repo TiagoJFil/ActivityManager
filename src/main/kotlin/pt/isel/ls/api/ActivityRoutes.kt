@@ -18,6 +18,8 @@ import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.api.fromRequest
+import pt.isel.ls.utils.api.getBearerToken
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
 
@@ -44,7 +46,7 @@ class ActivityRoutes(
         val sportID = request.path("sid")
 
         val activityBody = Json.decodeFromString<ActivityCreationInput>(request.bodyString())
-        val token: UserToken? = getToken(request)
+        val token: UserToken? = getBearerToken(request)
 
         val activityId = activityServices.createActivity(
             token,
@@ -114,7 +116,7 @@ class ActivityRoutes(
         val activityId = request.path("aid")
         val sportID = request.path("sid")
 
-        val token: UserToken? = getToken(request)
+        val token: UserToken? = getBearerToken(request)
 
         activityServices.deleteActivity(token, activityId, sportID)
         return Response(Status.NO_CONTENT)
@@ -128,7 +130,7 @@ class ActivityRoutes(
 
         val activityIds = request.query("activityIDs")
         val sportID = request.path("sid")
-        val token: UserToken? = getToken(request)
+        val token: UserToken? = getBearerToken(request)
 
         activityServices.deleteActivities(token, activityIds, sportID)
         return Response(Status.NO_CONTENT)

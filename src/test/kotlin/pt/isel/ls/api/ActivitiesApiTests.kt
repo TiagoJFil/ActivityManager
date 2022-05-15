@@ -8,7 +8,7 @@ import org.junit.Test
 import pt.isel.ls.api.ActivityRoutes.ActivityCreationInput
 import pt.isel.ls.api.ActivityRoutes.ActivityListOutput
 import pt.isel.ls.api.RouteRoutes.RouteCreationInput
-import pt.isel.ls.api.SportRoutes.SportCreationInput
+import pt.isel.ls.api.SportRoutes.SportInput
 import pt.isel.ls.api.UserRoutes.UserCreationInput
 import pt.isel.ls.api.UserRoutes.UserListOutput
 import pt.isel.ls.api.utils.ACTIVITY_PATH
@@ -163,7 +163,7 @@ class ActivitiesApiTests {
 
     @Test
     fun `8get a list of activities by sport ascending and descending`() {
-        val sportID = testClient.createSport(SportCreationInput("Teste", "descricao")).sportID
+        val sportID = testClient.createSport(SportInput("Teste", "descricao")).sportID
 
         val activityID1 = testClient.createActivity(
             ActivityCreationInput("05:10:32.123", "2002-12-31", testRoute.id.toString()),
@@ -401,6 +401,7 @@ class ActivitiesApiTests {
             Request(DELETE, activityResourceLocation(sportID, activityID))
                 .header("Authorization", "Bearer $token")
         )
+
     private fun deleteActivities(sportID: SportID, activities: String, token: UserToken) =
         testClient(
             Request(DELETE, "/api/sports/$sportID/activities/?activityIDs=$activities")
