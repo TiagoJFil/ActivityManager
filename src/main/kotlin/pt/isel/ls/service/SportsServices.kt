@@ -89,6 +89,9 @@ class SportsServices(
             )
         }
 
+        if((name == null || name.isBlank()) && (description == null || description.isBlank())) return
+            // No update needed, don't waste resources
+
         val safeSportID = requireParameter(sid, SPORT_ID_PARAM)
         val sidInt: SportID = requireIdInteger(safeSportID, SPORT_ID_PARAM)
         val userId = userRepository.requireAuthenticated(token)
