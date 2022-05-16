@@ -11,10 +11,10 @@ import pt.isel.ls.api.utils.authHeader
 import pt.isel.ls.api.utils.createSport
 import pt.isel.ls.api.utils.createUser
 import pt.isel.ls.api.utils.expectBadRequest
+import pt.isel.ls.api.utils.expectForbidden
 import pt.isel.ls.api.utils.expectNoContent
 import pt.isel.ls.api.utils.expectNotFound
 import pt.isel.ls.api.utils.expectOK
-import pt.isel.ls.api.utils.expectUnauthorized
 import pt.isel.ls.api.utils.getRequest
 import pt.isel.ls.api.utils.postRequest
 import pt.isel.ls.api.utils.putRequest
@@ -218,7 +218,7 @@ class SportApiTests {
             "$SPORT_PATH$sportID",
             SportInput(),
             authHeader(userToken),
-            expectedStatus = Response::expectUnauthorized
+            expectedStatus = Response::expectForbidden
         )
 
         val sport = getRequest<SportDTO>(testClient, "$SPORT_PATH$sportID", Response::expectOK)

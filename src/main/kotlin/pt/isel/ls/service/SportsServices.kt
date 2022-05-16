@@ -11,9 +11,9 @@ import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireIdInteger
-import pt.isel.ls.utils.service.requireNotBlankParameter
 import pt.isel.ls.utils.service.requireOwnership
 import pt.isel.ls.utils.service.requireParameter
+import pt.isel.ls.utils.service.requireSport
 import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.traceFunction
 
@@ -91,13 +91,13 @@ class SportsServices(
             )
         }
 
-
         val userId = userRepository.requireAuthenticated(token)
 
         val safeSportID = requireParameter(sid, SPORT_ID_PARAM)
         val sidInt: SportID = requireIdInteger(safeSportID, SPORT_ID_PARAM)
 
         sportsRepository.requireOwnership(userId, sidInt)
+        sportsRepository.requireSport(sidInt)
 
         if ((name == null || name.isBlank()) && (description == null)) return
         // No update needed, don't waste resources
