@@ -88,6 +88,8 @@ class SportsServices(
                 DESCRIPTION_PARAM to description
             )
         }
+        if((name == null || name.isBlank()) && (description == null || description.isBlank())) return
+        // No update needed, don't waste resources
 
         val userId = userRepository.requireAuthenticated(token)
         val safeSportID = requireParameter(sid, SPORT_ID_PARAM)
