@@ -57,7 +57,7 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
      * @param sportID The id of the sport to be retrieved.
      * @return [Sport] The sport with the given id or null if it does not exist.
      */
-    override fun getSportByID(sportID: SportID): Sport? =
+    override fun getSport(sportID: SportID): Sport? =
         querySportByID(sportID) { rs: ResultSet ->
             rs.ifNext { rs.toSport() }
         }

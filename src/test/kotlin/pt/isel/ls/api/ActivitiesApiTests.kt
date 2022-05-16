@@ -5,11 +5,11 @@ import org.http4k.core.Request
 import org.http4k.core.Response
 import org.junit.After
 import org.junit.Test
-import pt.isel.ls.api.ActivityRoutes.ActivityCreationInput
+import pt.isel.ls.api.ActivityRoutes.ActivityInput
 import pt.isel.ls.api.ActivityRoutes.ActivityListOutput
-import pt.isel.ls.api.RouteRoutes.RouteCreationInput
+import pt.isel.ls.api.RouteRoutes.RouteInput
 import pt.isel.ls.api.SportRoutes.SportInput
-import pt.isel.ls.api.UserRoutes.UserCreationInput
+import pt.isel.ls.api.UserRoutes.UserInput
 import pt.isel.ls.api.UserRoutes.UserListOutput
 import pt.isel.ls.api.utils.ACTIVITY_PATH
 import pt.isel.ls.api.utils.SPORT_PATH
@@ -21,6 +21,7 @@ import pt.isel.ls.api.utils.createRoute
 import pt.isel.ls.api.utils.createSport
 import pt.isel.ls.api.utils.createUser
 import pt.isel.ls.api.utils.expectBadRequest
+import pt.isel.ls.api.utils.expectForbidden
 import pt.isel.ls.api.utils.expectNoContent
 import pt.isel.ls.api.utils.expectNotFound
 import pt.isel.ls.api.utils.expectOK
@@ -69,7 +70,7 @@ class ActivitiesApiTests {
     fun `get a list of activities by sport filtered by route`() {
         val sportID = testSport.id
         val routeID = testClient.createRoute(
-            RouteCreationInput(
+            RouteInput(
                 "Lisboa",
                 "Loures",
                 20.0
@@ -78,16 +79,16 @@ class ActivitiesApiTests {
         val date = "2002-05-20"
 
         testClient.createActivity(
-            ActivityCreationInput("05:10:32.123", "2002-12-31", routeID.toString()), sportID
+            ActivityInput("05:10:32.123", "2002-12-31", routeID.toString()), sportID
         ).activityID
 
         val activityID2 = testClient.createActivity(
-            ActivityCreationInput("02:10:32.123", date, testRoute.id.toString()),
+            ActivityInput("02:10:32.123", date, testRoute.id.toString()),
             sportID
         ).activityID
 
         val activityID3 = testClient.createActivity(
-            ActivityCreationInput("03:10:32.123", date, testRoute.id.toString()),
+            ActivityInput("03:10:32.123", date, testRoute.id.toString()),
             sportID
         ).activityID
 
@@ -111,8 +112,8 @@ class ActivitiesApiTests {
 
     @Test
     fun `try to create an activity without the date`() {
-        val body = ActivityCreationInput("02:16:32.993", null, testRoute.id.toString())
-        postRequest<ActivityCreationInput, HttpError>(
+        val body = ActivityInput("02:16:32.993", null, testRoute.id.toString())
+        postRequest<ActivityInput, HttpError>(
             testClient,
             SPORT_ACTIVITY_PATH,
             body,
@@ -122,8 +123,8 @@ class ActivitiesApiTests {
     }
     @Test
     fun `try to create an activity without the duration`() {
-        val body = ActivityCreationInput("02:16:32.993", null, testRoute.id.toString())
-        postRequest<ActivityCreationInput, HttpError>(
+        val body = ActivityInput("02:16:32.993", null, testRoute.id.toString())
+        postRequest<ActivityInput, HttpError>(
             testClient,
             SPORT_ACTIVITY_PATH,
             body,
@@ -134,8 +135,8 @@ class ActivitiesApiTests {
     @Test
     fun `try to create an activity with an invalid sportId`() {
         val sportID = "123123"
-        val body = ActivityCreationInput("02:16:32.993", "2020-01-01", testRoute.id.toString())
-        postRequest<ActivityCreationInput, HttpError>(
+        val body = ActivityInput("02:16:32.993", "2020-01-01", testRoute.id.toString())
+        postRequest<ActivityInput, HttpError>(
             testClient,
             "${ACTIVITY_PATH}$sportID/activities",
             body,
@@ -146,13 +147,13 @@ class ActivitiesApiTests {
 
     @Test
     fun `create an activity without the rid`() {
-        val body = ActivityCreationInput("02:16:32.993", "2020-01-01", null)
+        val body = ActivityInput("02:16:32.993", "2020-01-01", null)
         testClient.createActivity(body, testSport.id)
     }
 
     @Test
     fun `create an activity sucessfuly`() {
-        val body = ActivityCreationInput("02:16:32.993", "2020-01-01", testRoute.id.toString())
+        val body = ActivityInput("02:16:32.993", "2020-01-01", testRoute.id.toString())
         testClient.createActivity(body, testSport.id)
     }
 
@@ -166,12 +167,12 @@ class ActivitiesApiTests {
         val sportID = testClient.createSport(SportInput("Teste", "descricao")).sportID
 
         val activityID1 = testClient.createActivity(
-            ActivityCreationInput("05:10:32.123", "2002-12-31", testRoute.id.toString()),
+            ActivityInput("05:10:32.123", "2002-12-31", testRoute.id.toString()),
             sportID
         ).activityID
 
         val activityID2 = testClient.createActivity(
-            ActivityCreationInput("02:10:32.123", "2002-12-30", testRoute.id.toString()),
+            ActivityInput("02:10:32.123", "2002-12-30", testRoute.id.toString()),
             sportID
         ).activityID
 
@@ -206,16 +207,16 @@ class ActivitiesApiTests {
         val date = "2002-05-20"
 
         testClient.createActivity(
-            ActivityCreationInput("05:10:32.123", "2002-12-31", testRoute.id.toString()), sportID
+            ActivityInput("05:10:32.123", "2002-12-31", testRoute.id.toString()), sportID
         ).activityID
 
         val activityID2 = testClient.createActivity(
-            ActivityCreationInput("02:10:32.123", date, testRoute.id.toString()),
+            ActivityInput("02:10:32.123", date, testRoute.id.toString()),
             sportID
         ).activityID
 
         val activityID3 = testClient.createActivity(
-            ActivityCreationInput("03:10:32.123", date, testRoute.id.toString()),
+            ActivityInput("03:10:32.123", date, testRoute.id.toString()),
             sportID
         ).activityID
 
@@ -241,11 +242,11 @@ class ActivitiesApiTests {
         val sportID = testSport.id
         val date = testActivity.date.toString()
         testClient.createActivity(
-            ActivityCreationInput("05:10:32.123", "2002-12-31", testRoute.id.toString()), sportID
+            ActivityInput("05:10:32.123", "2002-12-31", testRoute.id.toString()), sportID
         ).activityID
 
         val activityID2 = testClient.createActivity(
-            ActivityCreationInput("02:10:32.123", date, testRoute.id.toString()),
+            ActivityInput("02:10:32.123", date, testRoute.id.toString()),
             sportID
         ).activityID
 
@@ -297,8 +298,8 @@ class ActivitiesApiTests {
 
     @Test
     fun `try to delete an activity through a user that didn't create the activity gives 401`() {
-        val notOwner = testClient.createUser(UserCreationInput("Joao", "joaosousa@gmail.com"))
-        deleteActivity(testSport.id, testActivity.id, notOwner.authToken).expectUnauthorized()
+        val notOwner = testClient.createUser(UserInput("Joao", "joaosousa@gmail.com"))
+        deleteActivity(testSport.id, testActivity.id, notOwner.authToken).expectForbidden()
     }
 
     @Test
@@ -369,13 +370,13 @@ class ActivitiesApiTests {
         val sportID = testSport.id
         val routeId = testRoute.id
 
-        val userInfo2 = testClient.createUser(UserCreationInput("Joao", "joao@email.com"))
+        val userInfo2 = testClient.createUser(UserInput("Joao", "joao@email.com"))
         val user2 = getRequest<UserDTO>(testClient, "$USER_PATH${userInfo2.id}", Response::expectOK)
-        testClient.createActivity(ActivityCreationInput("00:04:00.000", "2002-05-20", routeId.toString()), sportID, userInfo2.authToken)
+        testClient.createActivity(ActivityInput("00:04:00.000", "2002-05-20", routeId.toString()), sportID, userInfo2.authToken)
 
-        val userInfo3 = testClient.createUser(UserCreationInput("Miguel", "miguel@email.com"))
+        val userInfo3 = testClient.createUser(UserInput("Miguel", "miguel@email.com"))
         val user3 = getRequest<UserDTO>(testClient, "$USER_PATH${userInfo3.id}", Response::expectOK)
-        testClient.createActivity(ActivityCreationInput("00:15:00.000", "2002-05-20", routeId.toString()), sportID, userInfo3.authToken)
+        testClient.createActivity(ActivityInput("00:15:00.000", "2002-05-20", routeId.toString()), sportID, userInfo3.authToken)
 
         val userListOutput =
             getRequest<UserListOutput>(testClient, "/api/sports/$sportID/users?rid=$routeId&limit=100000", Response::expectOK)
@@ -390,7 +391,7 @@ class ActivitiesApiTests {
 
     @Test
     fun `Delete activities sucessfully`() {
-        val body = ActivityCreationInput("02:16:32.993", "2020-01-01", testRoute.id.toString())
+        val body = ActivityInput("02:16:32.993", "2020-01-01", testRoute.id.toString())
         testClient.createActivity(body, testSport.id)
 
         deleteActivities(testSport.id, "0,1", GUEST_TOKEN).expectNoContent()

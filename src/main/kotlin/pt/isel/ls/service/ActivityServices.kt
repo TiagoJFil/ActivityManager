@@ -27,6 +27,7 @@ import pt.isel.ls.utils.service.requireActivityWith
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireIdInteger
 import pt.isel.ls.utils.service.requireNotBlankParameter
+import pt.isel.ls.utils.service.requireOwnership
 import pt.isel.ls.utils.service.requireParameter
 import pt.isel.ls.utils.service.requireRoute
 import pt.isel.ls.utils.service.requireSport
@@ -43,9 +44,8 @@ class ActivityServices(
     private val routeRepository: RouteRepository
 ) {
     companion object {
-        val logger = getLoggerFor<ActivityServices>()
+        private val logger = getLoggerFor<ActivityServices>()
 
-        const val USER_NOT_OWNER = "User is not the owner of the activity"
         const val ACTIVITY_ID_PARAM = "activityID"
         const val ROUTE_ID_PARAM = "routeID"
         const val ACTIVITIES_ID_PARAM = "activityIDs"
@@ -219,7 +219,7 @@ class ActivityServices(
         val aidInt = requireIdInteger(safeAID, ACTIVITY_ID_PARAM)
         activityRepository.requireActivityWith(aidInt, sidInt)
 
-        if (!ownsActivity(userID, aidInt)) throw UnauthenticatedError(USER_NOT_OWNER)
+        activityRepository.requireOwnership(userID,aidInt)
 
         activityRepository.deleteActivity(aidInt)
         return
@@ -250,12 +250,6 @@ class ActivityServices(
     }
 
     /**
-     * Checks if the user identified by [userId] owns the activity identified by [activityId].
-     */
-    private fun ownsActivity(userId: UserID, activityId: ActivityID): Boolean =
-        activityRepository.getActivity(activityId)?.user == userId
-
-    /**
      * Deletes all activities received.
      * This operation is atomic
      * @param token The token of the user that created the activities.
@@ -276,7 +270,7 @@ class ActivityServices(
         val checkedAIDS = safeAIDS.split(",").map {
             val aidInt = requireIdInteger(it, "Each activityID")
             activityRepository.requireActivity(aidInt)
-            if (!ownsActivity(userID, aidInt)) throw UnauthenticatedError(USER_NOT_OWNER)
+            activityRepository.requireOwnership(userID,aidInt)
             activityRepository.requireActivityWith(aidInt, sidInt)
             aidInt
         }

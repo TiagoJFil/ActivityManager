@@ -19,6 +19,7 @@ import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.api.contentJson
 import pt.isel.ls.utils.api.fromRequest
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
@@ -26,12 +27,12 @@ import pt.isel.ls.utils.infoLogRequest
 class UserRoutes(
     private val userServices: UserServices
 ) {
-    @Serializable data class UserCreationInput(val name: Param = null, val email: Param = null)
+    @Serializable data class UserInput(val name: Param = null, val email: Param = null)
     @Serializable data class UserIDOutput(val authToken: UserToken, val id: UserID)
     @Serializable data class UserListOutput(val users: List<UserDTO>)
 
     companion object {
-        val logger = getLoggerFor<UserRoutes>()
+        private val logger = getLoggerFor<UserRoutes>()
     }
 
     /**
@@ -41,12 +42,12 @@ class UserRoutes(
         logger.infoLogRequest(request)
 
         val bodyString = request.bodyString()
-        val body = Json.decodeFromString<UserCreationInput>(bodyString)
+        val body = Json.decodeFromString<UserInput>(bodyString)
 
         val res = userServices.createUser(body.name, body.email)
 
         return Response(CREATED)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(Json.encodeToString(UserIDOutput(res.first, res.second)))
     }
 
@@ -60,7 +61,7 @@ class UserRoutes(
         val userResponse = userServices.getUserByID(userId)
         val userEncoded = Json.encodeToString(userResponse)
         return Response(Status.OK)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(userEncoded)
     }
 
@@ -74,7 +75,7 @@ class UserRoutes(
         val usersJsonString = Json.encodeToString(UserListOutput(users))
 
         return Response(Status.OK)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(usersJsonString)
     }
 

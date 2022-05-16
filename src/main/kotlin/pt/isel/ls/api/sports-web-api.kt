@@ -10,6 +10,7 @@ import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.core.Status.Companion.BAD_REQUEST
+import org.http4k.core.Status.Companion.FORBIDDEN
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.NOT_FOUND
 import org.http4k.core.Status.Companion.UNAUTHORIZED
@@ -23,6 +24,7 @@ import org.http4k.routing.static
 import org.slf4j.LoggerFactory
 import pt.isel.ls.config.Environment
 import pt.isel.ls.service.AppError
+import pt.isel.ls.service.AuthorizationError
 import pt.isel.ls.service.InternalError
 import pt.isel.ls.service.InvalidParameter
 import pt.isel.ls.service.MissingParameter
@@ -94,6 +96,10 @@ private val onErrorFilter = Filter { handler ->
                 is UnauthenticatedError -> {
                     eLogger.warnStatus(UNAUTHORIZED, appError.message ?: "Unauthenticated")
                     baseResponse.status(UNAUTHORIZED)
+                }
+                is AuthorizationError -> {
+                    eLogger.warnStatus(FORBIDDEN, appError.message ?: "Forbidden")
+                    baseResponse.status(FORBIDDEN)
                 }
                 is MissingParameter, is InvalidParameter -> {
                     eLogger.warnStatus(BAD_REQUEST, appError.message ?: "Invalid parameter")

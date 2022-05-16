@@ -10,7 +10,10 @@ import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.service.requireAuthenticated
+import pt.isel.ls.utils.service.requireDoublePositive
 import pt.isel.ls.utils.service.requireIdInteger
+import pt.isel.ls.utils.service.requireNotBlankParameter
+import pt.isel.ls.utils.service.requireOwnership
 import pt.isel.ls.utils.service.requireParameter
 import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.traceFunction
@@ -20,7 +23,7 @@ class RouteServices(
     private val userRepository: UserRepository,
 ) {
     companion object {
-        val logger = getLoggerFor<RouteServices>()
+        private val logger = getLoggerFor<RouteServices>()
         const val ROUTE_ID_PARAM = "routeID"
         const val START_LOCATION_PARAM = "startLocation"
         const val END_LOCATION_PARAM = "endLocation"
@@ -57,6 +60,7 @@ class RouteServices(
         val safeStartLocation = requireParameter(startLocation, START_LOCATION_PARAM)
         val safeEndLocation = requireParameter(endLocation, END_LOCATION_PARAM)
         if (distance == null) throw MissingParameter(DISTANCE_PARAM)
+        requireDoublePositive(distance, DISTANCE_PARAM)
 
         return routeRepository.addRoute(safeStartLocation, safeEndLocation, distance, userID)
     }
@@ -75,5 +79,29 @@ class RouteServices(
 
         return routeRepository.getRoute(ridInt)?.toDTO()
             ?: throw ResourceNotFound(RESOURCE_NAME, "$rid")
+    }
+
+    fun updateRoute(token: UserToken?, routeID: Param, startLocation: Param, endLocation: Param, distance: Double?) {
+        logger.traceFunction(::updateRoute.name) {
+            listOf(
+                ROUTE_ID_PARAM to routeID,
+                START_LOCATION_PARAM to startLocation,
+                END_LOCATION_PARAM to endLocation,
+                DISTANCE_PARAM to distance.toString()
+            )
+        }
+
+        val userID = userRepository.requireAuthenticated(token)
+        val safeRouteID = requireParameter(routeID, ROUTE_ID_PARAM)
+        val ridInt: RouteID = requireIdInteger(safeRouteID, ROUTE_ID_PARAM)
+
+        routeRepository.requireOwnership(userID, ridInt)
+
+        requireNotBlankParameter(startLocation, START_LOCATION_PARAM)
+        requireNotBlankParameter(endLocation, END_LOCATION_PARAM)
+        requireDoublePositive(distance, DISTANCE_PARAM)
+
+        if (!routeRepository.updateRoute(ridInt, startLocation, endLocation, distance))
+            throw ResourceNotFound(RESOURCE_NAME, safeRouteID)
     }
 }

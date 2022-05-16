@@ -7,6 +7,7 @@ import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.config.testRoute
 import pt.isel.ls.service.dto.RouteDTO
+import pt.isel.ls.service.entities.Route.Companion.MAX_LOCATION_LENGTH
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.service.toDTO
@@ -71,5 +72,46 @@ class RouteServicesTest {
         assertFailsWith<MissingParameter> {
             routeServices.createRoute(token = GUEST_TOKEN, startLocation = "a", endLocation = "b", distance = null)
         }
+    }
+
+    @Test
+    fun `update a route with more than MAX_LOCATION_LENGTH characters throws InvalidParameter`(){
+        val name = "".padEnd(MAX_LOCATION_LENGTH + 1, 'a')
+
+        assertFailsWith<InvalidParameter>{
+            routeServices.updateRoute(token = GUEST_TOKEN, routeID = testRoute.id.toString(), startLocation = name, endLocation = "b", distance = 10.0)
+        }
+    }
+
+    @Test
+    fun `update a route with an invalid distance throws InvalidParameter`(){
+        assertFailsWith<InvalidParameter>{
+            routeServices.updateRoute(token = GUEST_TOKEN, routeID = testRoute.id.toString(), startLocation = "a", endLocation = "b", distance = -10.0)
+        }
+    }
+
+    @Test
+    fun `update a route without any parameters does not update anything`(){
+
+        routeServices.updateRoute(token = GUEST_TOKEN, routeID = testRoute.id.toString(), startLocation = null, endLocation = null, distance = null)
+
+        assertEquals(testRoute.toDTO(), routeServices.getRoute(testRoute.id.toString()))
+    }
+
+    @Test
+    fun `update a route's distance only`() {
+        val newDistance = 20.0
+
+        routeServices.updateRoute(
+            token = GUEST_TOKEN,
+            routeID = testRoute.id.toString(),
+            startLocation = null,
+            endLocation = null,
+            distance = newDistance
+        )
+        val updatedRoute = routeServices.getRoute(testRoute.id.toString())
+        assertEquals(newDistance, updatedRoute.distance)
+        assertEquals(testRoute.startLocation, updatedRoute.startLocation)
+        assertEquals(testRoute.endLocation, updatedRoute.endLocation)
     }
 }

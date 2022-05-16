@@ -33,7 +33,7 @@ class SportRoutes(
     @Serializable data class SportListOutput(val sports: List<SportDTO>)
 
     companion object {
-        val logger = getLoggerFor<SportRoutes>()
+       private val logger = getLoggerFor<SportRoutes>()
     }
 
     /**

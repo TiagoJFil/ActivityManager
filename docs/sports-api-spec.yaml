@@ -155,34 +155,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HttpError"
-  /routes/{rid}:
-    get:
-      tags:
-        - "Routes"
-      summary: "Get route by route ID"
-      description: "Gets a route by it's identifier"
-      operationId: "getRouteByID"
-      parameters:
-        - name: "rid"
-          in: "path"
-          description: "Route's identifier."
-          required: true
-          schema:
-            type: "integer"
-          example: "10"
-      responses:
-        "200":
-          description: "successful operation"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Route"
-        "404":
-          description: "Route not found"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/HttpError"
   /routes:
     get:
       tags:
@@ -242,6 +214,68 @@ paths:
                 $ref: "#/components/schemas/HttpError"
         "401":
           description: "Unauthenticated"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+  /routes/{rid}:
+    get:
+      tags:
+        - "Routes"
+      summary: "Get route by route ID"
+      description: "Gets a route by it's identifier"
+      operationId: "getRouteByID"
+      parameters:
+        - name: "rid"
+          in: "path"
+          description: "Route's identifier."
+          required: true
+          schema:
+            type: "integer"
+          example: "10"
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        "404":
+          description: "Route not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+    put:
+      tags:
+        - "Routes"
+      summary: "Update route by route ID"
+      description: "Updates a route by it's identifier"
+      operationId: "updateRouteByID"
+      parameters:
+        - name: "rid"
+          in: "path"
+          description: "Route's identifier."
+          required: true
+          schema:
+            type: "integer"
+          example: "10"
+      requestBody:
+        description: "Route's new information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Route"
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Route"
+        "404":
+          description: "Route not found"
           content:
             application/json:
               schema:

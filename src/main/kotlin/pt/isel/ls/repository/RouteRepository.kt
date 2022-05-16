@@ -34,4 +34,13 @@ interface RouteRepository {
      * @return [Boolean] True if the route exists, false otherwise.
      */
     fun hasRoute(routeID: RouteID): Boolean
+
+    /**
+     * Updates the route with the given id.
+     * @param routeID The id of the route to be updated.
+     * @param startLocation The new start location of the route.
+     * @param endLocation The new end location of the route.
+     * @param distance The new distance of the route.
+     */
+    fun updateRoute(routeID: RouteID, startLocation: String?, endLocation: String?, distance: Double?): Boolean
 }
