@@ -172,7 +172,7 @@ class SportServicesTest {
     }
 
     @Test
-    fun `update sport with a blank description erases it`(){
+    fun `update sport with a blank description erases it`() {
         val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", "A game played with feet")
         sportsServices.updateSport(GUEST_TOKEN, sportID.toString(), "Basketball", "")
 

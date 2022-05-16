@@ -208,7 +208,7 @@ class SportApiTests {
     }
 
     @Test
-    fun `update sport with user that didn't create it throws UnauthenticatedError`() {
+    fun `update sport with user that didn't create it gives 401`() {
         val sportInput = SportInput("Football", "Game played with hands.")
         val sportID = testClient.createSport(sportInput).sportID
         val userToken = testClient.createUser(UserCreationInput(name = "user", email = "random@okay.com")).authToken

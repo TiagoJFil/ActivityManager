@@ -89,15 +89,15 @@ class SportsServices(
             )
         }
 
-        if((name == null || name.isBlank()) && (description == null)) return
-            // No update needed, don't waste resources
-
         val safeSportID = requireParameter(sid, SPORT_ID_PARAM)
         val sidInt: SportID = requireIdInteger(safeSportID, SPORT_ID_PARAM)
         val userId = userRepository.requireAuthenticated(token)
 
         if (userId != getSport(sid).user)
             throw UnauthenticatedError("You must be the owner of the sport to update it")
+
+        if ((name == null || name.isBlank()) && (description == null)) return
+        // No update needed, don't waste resources
 
         if (name != null && name.length > Sport.MAX_NAME_LENGTH)
             throw InvalidParameter("$NAME_PARAM is too long, max length is ${Sport.MAX_NAME_LENGTH}")
