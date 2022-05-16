@@ -106,6 +106,7 @@ private val onErrorFilter = Filter { handler ->
             }
         } catch (serializerException: SerializationException) {
 
+            eLogger.error(serializerException.stackTraceToString())
             val body = Json.encodeToString(HttpError(0, "Invalid body."))
             eLogger.warnStatus(BAD_REQUEST, "Invalid body.")
             Response(BAD_REQUEST).header("content-type", "application/json").body(body)

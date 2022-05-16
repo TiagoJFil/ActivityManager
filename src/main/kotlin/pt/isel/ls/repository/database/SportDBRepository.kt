@@ -90,7 +90,7 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
 
         queryBuilder.append("WHERE id = ?")
         val nameIndex = if (newName != null) 1 else 0
-        val sidIndex = when {
+        val sidIndex = when { // TODO(Refactor so it's possible to add an attribute without having to change index numbers)
             newName != null && newDescription != null -> 3
             newName != null || newDescription != null -> 2
             else -> 1
@@ -101,7 +101,7 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
                 if (newName != null)
                     stmt.setString(nameIndex, newName)
                 if (newDescription != null)
-                    stmt.setString(nameIndex + 1, newDescription)
+                    stmt.setString(nameIndex + 1, newDescription.ifBlank { null })
                 stmt.setInt(sidIndex, sid)
                 stmt.executeUpdate() == 1
             }
