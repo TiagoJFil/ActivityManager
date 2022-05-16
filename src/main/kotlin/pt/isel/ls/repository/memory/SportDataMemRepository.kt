@@ -62,7 +62,7 @@ class SportDataMemRepository(testSport: Sport) : SportRepository {
         val sport = sportsMap[sid] ?: return false
         val name = newName ?: sport.name
         val description = newDescription ?: sport.description
-        sportsMap[sid] = sport.copy(name = name, description = description)
+        sportsMap[sid] = sport.copy(name = name, description = description?.ifBlank { null })
         return true
     }
 }
