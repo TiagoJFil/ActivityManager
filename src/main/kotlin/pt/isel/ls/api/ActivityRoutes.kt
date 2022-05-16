@@ -18,6 +18,9 @@ import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.api.contentJson
+import pt.isel.ls.utils.api.fromRequest
+import pt.isel.ls.utils.api.getBearerToken
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
 
@@ -32,7 +35,7 @@ class ActivityRoutes(
     @Serializable data class ActivityIDOutput(val activityID: ActivityID)
     @Serializable data class ActivityListOutput(val activities: List<ActivityDTO>)
     companion object {
-        val logger = getLoggerFor<ActivityRoutes>()
+         private val logger = getLoggerFor<ActivityRoutes>()
     }
 
     /**
@@ -44,7 +47,7 @@ class ActivityRoutes(
         val sportID = request.path("sid")
 
         val activityBody = Json.decodeFromString<ActivityInput>(request.bodyString())
-        val token: UserToken? = getToken(request)
+        val token: UserToken? = getBearerToken(request)
 
         val activityId = activityServices.createActivity(
             token,
@@ -54,7 +57,7 @@ class ActivityRoutes(
             activityBody.rid
         )
         return Response(Status.CREATED)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(Json.encodeToString(ActivityIDOutput(activityId)))
     }
 
@@ -72,7 +75,7 @@ class ActivityRoutes(
         val activityJson = Json.encodeToString<ActivityDTO>(activity)
 
         return Response(Status.OK)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(activityJson)
     }
 
@@ -88,7 +91,7 @@ class ActivityRoutes(
         val activitiesJson = Json.encodeToString(ActivityListOutput(activities))
 
         return Response(Status.OK)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(activitiesJson)
     }
 
@@ -101,7 +104,7 @@ class ActivityRoutes(
         val activitiesJson = Json.encodeToString(ActivityListOutput(activities))
 
         return Response(Status.OK)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(activitiesJson)
     }
 
@@ -114,7 +117,7 @@ class ActivityRoutes(
         val activityId = request.path("aid")
         val sportID = request.path("sid")
 
-        val token: UserToken? = getToken(request)
+        val token: UserToken? = getBearerToken(request)
 
         activityServices.deleteActivity(token, activityId, sportID)
         return Response(Status.NO_CONTENT)
@@ -128,7 +131,7 @@ class ActivityRoutes(
 
         val activityIds = request.query("activityIDs")
         val sportID = request.path("sid")
-        val token: UserToken? = getToken(request)
+        val token: UserToken? = getBearerToken(request)
 
         activityServices.deleteActivities(token, activityIds, sportID)
         return Response(Status.NO_CONTENT)
@@ -146,7 +149,7 @@ class ActivityRoutes(
         val bodyString = Json.encodeToString(UserListOutput(users))
 
         return Response(Status.OK)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(bodyString)
     }
 
@@ -159,7 +162,7 @@ class ActivityRoutes(
         val activityBody = Json.decodeFromString<ActivityInput>(request.bodyString())
         val activityId = request.path("aid")
         val sportId = request.path("sid")
-        val token: UserToken? = getToken(request)
+        val token: UserToken? = getBearerToken(request)
 
         activityServices.updateActivity(token, sportId, activityId, activityBody.duration, activityBody.date, activityBody.rid)
 
@@ -187,7 +190,7 @@ class ActivityRoutes(
         val activitiesJson = Json.encodeToString(ActivityListOutput(activities))
 
         return Response(Status.OK)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(activitiesJson)
     }
 
@@ -203,7 +206,6 @@ class ActivityRoutes(
         "/users/{uid}/activities" bind Method.GET to ::getActivitiesByUser,
         "/sports/{sid}/users" bind Method.GET to ::getUsersByActivity,
         "/activities" bind Method.GET to ::getAllActivities
-
     )
 }
 

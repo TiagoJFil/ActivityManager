@@ -26,7 +26,7 @@ interface SportRepository {
      * @param sportID The id of the sport to be retrieved.
      * @return [Sport] The sport with the given id or null if it does not exist.
      */
-    fun getSportByID(sportID: SportID): Sport?
+    fun getSport(sportID: SportID): Sport?
 
     /**
      * Checks if a sport with the given id exists.
@@ -34,4 +34,12 @@ interface SportRepository {
      * @return [Boolean] True if the sport exists, false otherwise.
      */
     fun hasSport(sportID: SportID): Boolean
+
+    /**
+     * Updates a sport in the repository.
+     * @param sid The id of the sport to be updated.
+     * @param newName The sport's name. or null if it should not be updated.
+     * @param newDescription The sport's description or null if it should not be updated.
+     */
+    fun updateSport(sid: SportID, newName: String?, newDescription: String?): Boolean
 }

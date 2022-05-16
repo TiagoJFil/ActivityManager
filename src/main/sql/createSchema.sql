@@ -17,8 +17,8 @@ create table token_prod(
 
 create table route_prod (
     id serial primary key,
-    startLocation varchar(200) not null,
-    endLocation varchar(200) not null,
+    startLocation varchar(150) not null,
+    endLocation varchar(150) not null,
     distance real not null check(distance > 0),
     "user" int not null,
     foreign key ("user") references user_prod(id)

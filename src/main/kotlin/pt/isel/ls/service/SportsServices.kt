@@ -11,6 +11,8 @@ import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireIdInteger
+import pt.isel.ls.utils.service.requireNotBlankParameter
+import pt.isel.ls.utils.service.requireOwnership
 import pt.isel.ls.utils.service.requireParameter
 import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.traceFunction
@@ -21,8 +23,8 @@ class SportsServices(
 ) {
 
     companion object {
-        val logger = getLoggerFor<UserServices>()
-        const val NAME_PARAM = "name"
+        private val logger = getLoggerFor<UserServices>()
+        const val NAME_PARAM = "Sport name"
         const val DESCRIPTION_PARAM = "description"
         const val SPORT_ID_PARAM = "sportID"
         const val RESOURCE_NAME = "Sport"
@@ -38,7 +40,7 @@ class SportsServices(
 
         val safeSportID = requireParameter(sid, SPORT_ID_PARAM)
         val sidInt: SportID = requireIdInteger(safeSportID, SPORT_ID_PARAM)
-        return sportsRepository.getSportByID(sidInt)?.toDTO()
+        return sportsRepository.getSport(sidInt)?.toDTO()
             ?: throw ResourceNotFound(RESOURCE_NAME, safeSportID)
     }
 
@@ -55,8 +57,6 @@ class SportsServices(
         val userID = userRepository.requireAuthenticated(token)
         val safeName = requireParameter(name, NAME_PARAM)
         val handledDescription = description?.ifBlank { null }
-        if (safeName.length > Sport.MAX_NAME_LENGTH)
-            throw InvalidParameter("$NAME_PARAM is too long, max length is ${Sport.MAX_NAME_LENGTH}")
 
         return sportsRepository.addSport(safeName, handledDescription, userID)
     }
@@ -70,5 +70,37 @@ class SportsServices(
         return sportsRepository
             .getSports(paginationInfo)
             .map(Sport::toDTO)
+    }
+
+    /**
+     * Updates the [Sport] identified by the given id with the given parameters
+     * @param token token the user token to be used to verify the user.
+     * @param sid the id that identifies the [Sport] to update
+     * @param name the name of the [Sport] to be updated.
+     * @param description the description of the [Sport] to be updated.
+     *
+     */
+    fun updateSport(token: UserToken?, sid: Param, name: Param, description: Param) {
+        logger.traceFunction(::updateSport.name) {
+            listOf(
+                SPORT_ID_PARAM to sid,
+                NAME_PARAM to name,
+                DESCRIPTION_PARAM to description
+            )
+        }
+        if((name == null || name.isBlank()) && (description == null || description.isBlank())) return
+        // No update needed, don't waste resources
+
+        val userId = userRepository.requireAuthenticated(token)
+        val safeSportID = requireParameter(sid, SPORT_ID_PARAM)
+        val sidInt: SportID = requireIdInteger(safeSportID, SPORT_ID_PARAM)
+
+        sportsRepository.requireOwnership(userId, sidInt)
+
+        val handledDescription = description?.ifBlank { null }
+        requireNotBlankParameter(name, NAME_PARAM)
+
+        if (!sportsRepository.updateSport(sidInt, name, handledDescription))
+            throw ResourceNotFound(RESOURCE_NAME, safeSportID)
     }
 }

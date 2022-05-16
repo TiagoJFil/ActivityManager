@@ -3,7 +3,7 @@ package pt.isel.ls.api
 import kotlinx.serialization.Serializable
 import org.http4k.core.Response
 import org.junit.After
-import pt.isel.ls.api.UserRoutes.UserCreationInput
+import pt.isel.ls.api.UserRoutes.UserInput
 import pt.isel.ls.api.UserRoutes.UserListOutput
 import pt.isel.ls.api.utils.TEST_ENV
 import pt.isel.ls.api.utils.USER_PATH
@@ -33,7 +33,7 @@ class UserApiTests {
     fun `create multiple Users`() {
         val userCount = 1000
         val randomEmails = (0 until userCount).map { "${generateUUId()}@gmail.com" }
-        val usersCreationBody = List(userCount) { idx -> UserCreationInput("user$idx", randomEmails[idx]) }
+        val usersCreationBody = List(userCount) { idx -> UserInput("user$idx", randomEmails[idx]) }
         val responses = usersCreationBody.map {
             testClient.createUser(it)
         }
@@ -68,13 +68,13 @@ class UserApiTests {
     // USER CREATE
     @Test
     fun `create a correct user gives 201`() {
-        testClient.createUser(UserCreationInput("abc", "abc@gmail.com"))
+        testClient.createUser(UserInput("abc", "abc@gmail.com"))
     }
 
     @Test
     fun `try to create a user without the name gives 400`() {
-        val body = UserCreationInput(email = "abc@gmail.com")
-        postRequest<UserCreationInput, HttpError>(
+        val body = UserInput(email = "abc@gmail.com")
+        postRequest<UserInput, HttpError>(
             testClient,
             USER_PATH,
             body,
@@ -84,8 +84,8 @@ class UserApiTests {
 
     @Test
     fun `try to create a user without the email gives 400`() {
-        val body = UserCreationInput(name = "Maria")
-        postRequest<UserCreationInput, HttpError>(
+        val body = UserInput(name = "Maria")
+        postRequest<UserInput, HttpError>(
             testClient,
             USER_PATH,
             body,
@@ -95,8 +95,8 @@ class UserApiTests {
 
     @Test
     fun `create a user with a repeated email gives 400`() {
-        val body = UserCreationInput("Maria", guestUser.email.value)
-        postRequest<UserCreationInput, HttpError>(
+        val body = UserInput("Maria", guestUser.email.value)
+        postRequest<UserInput, HttpError>(
             testClient,
             USER_PATH,
             body,
@@ -120,8 +120,8 @@ class UserApiTests {
 
     @Test
     fun `create a user with a wrong email gives 400`() {
-        val body = UserCreationInput("Maria", "tes@t123@gmail.com")
-        postRequest<UserCreationInput, HttpError>(
+        val body = UserInput("Maria", "tes@t123@gmail.com")
+        postRequest<UserInput, HttpError>(
             testClient,
             USER_PATH,
             body,
@@ -131,8 +131,8 @@ class UserApiTests {
 
     @Test
     fun `create a user with a blank name parameter gives 400`() {
-        val body = UserCreationInput("", "test1234@gmail.com")
-        postRequest<UserCreationInput, HttpError>(
+        val body = UserInput("", "test1234@gmail.com")
+        postRequest<UserInput, HttpError>(
             testClient,
             USER_PATH,
             body,
@@ -142,8 +142,8 @@ class UserApiTests {
 
     @Test
     fun `create a user with a blank email parameter gives 400`() {
-        val body = UserCreationInput("Mario", "")
-        postRequest<UserCreationInput, HttpError>(
+        val body = UserInput("Mario", "")
+        postRequest<UserInput, HttpError>(
             testClient,
             USER_PATH,
             body,

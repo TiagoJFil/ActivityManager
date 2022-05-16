@@ -60,4 +60,23 @@ class RouteDataMemRepository(testRoute: Route) : RouteRepository {
      */
     override fun hasRoute(routeID: RouteID): Boolean =
         routesMap[routeID] != null
+
+    /**
+     * Updates the route with the given id.
+     * @param routeID The id of the route to be updated.
+     * @param startLocation The new start location of the route.
+     * @param endLocation The new end location of the route.
+     * @param distance The new distance of the route.
+     */
+    override fun updateRoute(
+        routeID: RouteID,
+        startLocation: String?,
+        endLocation: String?,
+        distance: Double?
+    ): Boolean {
+        val route = routesMap[routeID] ?: return false
+        val newRoute = Route(routeID, startLocation ?: route.startLocation, endLocation ?: route.endLocation, distance ?: route.distance, route.user)
+        routesMap[routeID] = newRoute
+        return true
+    }
 }

@@ -10,7 +10,6 @@ import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.core.Status.Companion.BAD_REQUEST
-import org.http4k.core.Status.Companion.FORBIDDEN
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.NOT_FOUND
 import org.http4k.core.Status.Companion.UNAUTHORIZED
@@ -24,14 +23,13 @@ import org.http4k.routing.static
 import org.slf4j.LoggerFactory
 import pt.isel.ls.config.Environment
 import pt.isel.ls.service.AppError
-import pt.isel.ls.service.ForbiddenError
+import pt.isel.ls.service.AuthorizationError
 import pt.isel.ls.service.InternalError
 import pt.isel.ls.service.InvalidParameter
 import pt.isel.ls.service.MissingParameter
 import pt.isel.ls.service.ResourceNotFound
 import pt.isel.ls.service.UnauthenticatedError
 import pt.isel.ls.service.dto.HttpError
-import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.repository.DataBaseAccessException
 import pt.isel.ls.utils.warnStatus
 import kotlin.system.measureTimeMillis
@@ -98,6 +96,10 @@ private val onErrorFilter = Filter { handler ->
                     eLogger.warnStatus(UNAUTHORIZED, appError.message ?: "Unauthenticated")
                     baseResponse.status(UNAUTHORIZED)
                 }
+                is AuthorizationError -> {
+                    eLogger.warnStatus(FORBIDDEN, appError.message ?: "Forbidden")
+                    baseResponse.status(FORBIDDEN)
+                }
                 is MissingParameter, is InvalidParameter -> {
                     eLogger.warnStatus(BAD_REQUEST, appError.message ?: "Invalid parameter")
                     baseResponse
@@ -105,10 +107,6 @@ private val onErrorFilter = Filter { handler ->
                 is InternalError -> {
                     eLogger.warnStatus(INTERNAL_SERVER_ERROR, appError.message)
                     baseResponse.status(INTERNAL_SERVER_ERROR)
-                }
-                is ForbiddenError -> {
-                    eLogger.warnStatus(FORBIDDEN, appError.message ?: "Forbidden")
-                    baseResponse.status(FORBIDDEN)
                 }
             }
         } catch (serializerException: SerializationException) {
@@ -140,15 +138,3 @@ private val timeFilter = Filter { handler ->
     }
     handlerWrapper
 }
-
-/**
- * Gets the user token from the request
- *
- * @param request request to get the token from
- * @return the user token or null if not found or in invalid format
- */
-fun getToken(request: Request): UserToken? =
-    request
-        .header("Authorization")
-        ?.substringAfter("Bearer ", missingDelimiterValue = "")
-        ?.ifBlank { null }

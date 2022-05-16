@@ -7,9 +7,9 @@ import org.junit.After
 import org.junit.Test
 import pt.isel.ls.api.ActivityRoutes.ActivityInput
 import pt.isel.ls.api.ActivityRoutes.ActivityListOutput
-import pt.isel.ls.api.RouteRoutes.RouteCreationInput
-import pt.isel.ls.api.SportRoutes.SportCreationInput
-import pt.isel.ls.api.UserRoutes.UserCreationInput
+import pt.isel.ls.api.RouteRoutes.RouteInput
+import pt.isel.ls.api.SportRoutes.SportInput
+import pt.isel.ls.api.UserRoutes.UserInput
 import pt.isel.ls.api.UserRoutes.UserListOutput
 import pt.isel.ls.api.utils.ACTIVITY_PATH
 import pt.isel.ls.api.utils.SPORT_PATH
@@ -72,7 +72,7 @@ class ActivitiesApiTests {
     fun `get a list of activities by sport filtered by route`() {
         val sportID = testSport.id
         val routeID = testClient.createRoute(
-            RouteCreationInput(
+            RouteInput(
                 "Lisboa",
                 "Loures",
                 20.0
@@ -166,7 +166,7 @@ class ActivitiesApiTests {
 
     @Test
     fun `8get a list of activities by sport ascending and descending`() {
-        val sportID = testClient.createSport(SportCreationInput("Teste", "descricao")).sportID
+        val sportID = testClient.createSport(SportInput("Teste", "descricao")).sportID
 
         val activityID1 = testClient.createActivity(
             ActivityInput("05:10:32.123", "2002-12-31", testRoute.id.toString()),
@@ -300,8 +300,8 @@ class ActivitiesApiTests {
 
     @Test
     fun `try to delete an activity through a user that didn't create the activity gives 401`() {
-        val notOwner = testClient.createUser(UserCreationInput("Joao", "joaosousa@gmail.com"))
-        deleteActivity(testSport.id, testActivity.id, notOwner.authToken).expectUnauthorized()
+        val notOwner = testClient.createUser(UserInput("Joao", "joaosousa@gmail.com"))
+        deleteActivity(testSport.id, testActivity.id, notOwner.authToken).expectForbidden()
     }
 
     @Test
@@ -372,11 +372,11 @@ class ActivitiesApiTests {
         val sportID = testSport.id
         val routeId = testRoute.id
 
-        val userInfo2 = testClient.createUser(UserCreationInput("Joao", "joao@email.com"))
+        val userInfo2 = testClient.createUser(UserInput("Joao", "joao@email.com"))
         val user2 = getRequest<UserDTO>(testClient, "$USER_PATH${userInfo2.id}", Response::expectOK)
         testClient.createActivity(ActivityInput("00:04:00.000", "2002-05-20", routeId.toString()), sportID, userInfo2.authToken)
 
-        val userInfo3 = testClient.createUser(UserCreationInput("Miguel", "miguel@email.com"))
+        val userInfo3 = testClient.createUser(UserInput("Miguel", "miguel@email.com"))
         val user3 = getRequest<UserDTO>(testClient, "$USER_PATH${userInfo3.id}", Response::expectOK)
         testClient.createActivity(ActivityInput("00:15:00.000", "2002-05-20", routeId.toString()), sportID, userInfo3.authToken)
 
@@ -674,6 +674,7 @@ class ActivitiesApiTests {
             Request(DELETE, activityResourceLocation(sportID, activityID))
                 .header("Authorization", "Bearer $token")
         )
+
     private fun deleteActivities(sportID: SportID, activities: String, token: UserToken) =
         testClient(
             Request(DELETE, "/api/sports/$sportID/activities/?activityIDs=$activities")

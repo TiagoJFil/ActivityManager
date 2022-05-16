@@ -57,7 +57,7 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
      * @param sportID The id of the sport to be retrieved.
      * @return [Sport] The sport with the given id or null if it does not exist.
      */
-    override fun getSportByID(sportID: SportID): Sport? =
+    override fun getSport(sportID: SportID): Sport? =
         querySportByID(sportID) { rs: ResultSet ->
             rs.ifNext { rs.toSport() }
         }
@@ -71,6 +71,42 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
         querySportByID(sportID) { rs: ResultSet ->
             rs.next()
         }
+
+    /**
+     * Updates a sport in the repository.
+     * @param sid The id of the sport to be updated.
+     * @param newName The sport's name. or null if it should not be updated.
+     * @param newDescription The sport's description or null if it should not be updated.
+     */
+    override fun updateSport(sid: SportID, newName: String?, newDescription: String?): Boolean {
+        val queryBuilder = StringBuilder("UPDATE $sportTable SET ")
+        if (newName != null) {
+            queryBuilder.append("name = ?")
+            if(newDescription != null)
+                queryBuilder.append(", ")
+        }
+        if (newDescription != null)
+            queryBuilder.append("description = ?")
+
+        queryBuilder.append("WHERE id = ?")
+        val nameIndex = if (newName != null) 1 else 0
+        val sidIndex = when {
+            newName != null && newDescription != null -> 3
+            newName != null || newDescription != null -> 2
+            else -> 1
+        }
+
+        return dataSource.connection.transaction {
+            prepareStatement(queryBuilder.toString()).use { stmt ->
+                if (newName != null)
+                    stmt.setString(nameIndex, newName)
+                if (newDescription != null)
+                    stmt.setString(nameIndex + 1, newDescription)
+                stmt.setInt(sidIndex, sid)
+                stmt.executeUpdate() == 1
+            }
+        }
+    }
 
     /**
      * Makes a query to get a sport by its identifier.

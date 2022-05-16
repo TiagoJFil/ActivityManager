@@ -4,7 +4,6 @@ import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
-import pt.isel.ls.service.entities.User.Email.Companion.MAX_NAME_LENGTH
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
@@ -21,8 +20,8 @@ class UserServices(
 ) {
 
     companion object {
-        val logger = getLoggerFor<UserServices>()
-        const val NAME_PARAM = "name"
+        private val logger = getLoggerFor<UserServices>()
+        const val NAME_PARAM = "User name"
         const val EMAIL_PARAM = "email"
         const val EMAIL_TAKEN = "Email already taken"
         const val USER_ID_PARAM = "userID"
@@ -43,8 +42,6 @@ class UserServices(
 
         val safeName = requireParameter(name, NAME_PARAM)
         val safeEmail = requireParameter(email, EMAIL_PARAM)
-        if (safeName.length > MAX_NAME_LENGTH)
-            throw InvalidParameter("$NAME_PARAM is too long, max length is $MAX_NAME_LENGTH")
 
         val userAuthToken = generateUUId()
 

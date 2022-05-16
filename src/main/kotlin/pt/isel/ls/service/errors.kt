@@ -35,6 +35,12 @@ data class ResourceNotFound(val resourceName: String, val resourceID: String) :
 class UnauthenticatedError(message: String = "Invalid or missing token") : AppError(2003, message)
 
 /**
+ * Error thrown when a user is not authorized to perform an action.
+ * @property message The error message.
+ */
+class AuthorizationError(message: String = "You are not authorized to perform this action") : AppError(2004, message)
+
+/**
  * Error thrown when an internal error occurs.
  * @property message The error message.
  */
