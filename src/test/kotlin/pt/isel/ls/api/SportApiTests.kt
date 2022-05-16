@@ -11,14 +11,13 @@ import pt.isel.ls.api.utils.authHeader
 import pt.isel.ls.api.utils.createSport
 import pt.isel.ls.api.utils.createUser
 import pt.isel.ls.api.utils.expectBadRequest
-import pt.isel.ls.api.utils.expectForbidden
+import pt.isel.ls.api.utils.expectNoContent
 import pt.isel.ls.api.utils.expectNotFound
 import pt.isel.ls.api.utils.expectOK
 import pt.isel.ls.api.utils.expectUnauthorized
 import pt.isel.ls.api.utils.getRequest
 import pt.isel.ls.api.utils.postRequest
 import pt.isel.ls.api.utils.putRequest
-import pt.isel.ls.api.utils.updateResource
 import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.config.testSport
@@ -123,7 +122,13 @@ class SportApiTests {
         val sportInput = SportInput("Football", "Game played with feet.")
         val sportID = testClient.createSport(sportInput).sportID
 
-        testClient.updateResource<SportInput,SportID>(SportInput("Basketball", "Game played with hands."),sportID)
+        putRequest<SportInput>(
+            testClient,
+            "$SPORT_PATH$sportID",
+            SportInput("Basketball", "Game played with hands."),
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectNoContent
+        )
 
         val sport = getRequest<SportDTO>(testClient, "$SPORT_PATH$sportID", Response::expectOK)
         val expected = SportDTO(sportID, "Basketball", "Game played with hands.", guestUser.id)
@@ -135,7 +140,13 @@ class SportApiTests {
         val sportInput = SportInput("Football", null)
         val sportID = testClient.createSport(sportInput).sportID
 
-        testClient.updateResource<SportInput,SportID>(SportInput(name = "Football", description = "Game played with hands."),sportID)
+        putRequest<SportInput>(
+            testClient,
+            "$SPORT_PATH$sportID",
+            SportInput(name = "Football", description = "Game played with hands."),
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectNoContent
+        )
 
         val sport = getRequest<SportDTO>(testClient, "$SPORT_PATH$sportID", Response::expectOK)
         val expected = SportDTO(sportID, "Football", "Game played with hands.", guestUser.id)
@@ -147,7 +158,13 @@ class SportApiTests {
         val sportInput = SportInput("Football", "Game played with hands.")
         val sportID = testClient.createSport(sportInput).sportID
 
-        testClient.updateResource<SportInput,SportID>(SportInput(name = "Basketball"),sportID)
+        putRequest<SportInput>(
+            testClient,
+            "$SPORT_PATH$sportID",
+            SportInput(name = "Basketball"),
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectNoContent
+        )
 
         val sport = getRequest<SportDTO>(testClient, "$SPORT_PATH$sportID", Response::expectOK)
         val expected = SportDTO(sportID, "Basketball", "Game played with hands.", guestUser.id)
@@ -159,7 +176,13 @@ class SportApiTests {
         val sportInput = SportInput("Football", "Game played with hands.")
         val sportID = testClient.createSport(sportInput).sportID
 
-        testClient.updateResource<SportInput,SportID>(SportInput(description = "A game played with feet."),sportID)
+        putRequest<SportInput>(
+            testClient,
+            "$SPORT_PATH$sportID",
+            SportInput(description = "A game played with feet."),
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectNoContent
+        )
 
         val sport = getRequest<SportDTO>(testClient, "$SPORT_PATH$sportID", Response::expectOK)
         val expected = SportDTO(sportID, "Football", "A game played with feet.", guestUser.id)
@@ -171,7 +194,13 @@ class SportApiTests {
         val sportInput = SportInput("Football", "Game played with hands.")
         val sportID = testClient.createSport(sportInput).sportID
 
-        testClient.updateResource<SportInput,SportID>(sportInput,sportID)
+        putRequest<SportInput>(
+            testClient,
+            "$SPORT_PATH$sportID",
+            SportInput(),
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectNoContent
+        )
 
         val sport = getRequest<SportDTO>(testClient, "$SPORT_PATH$sportID", Response::expectOK)
         val expected = SportDTO(sportID, "Football", "Game played with hands.", guestUser.id)
@@ -179,7 +208,7 @@ class SportApiTests {
     }
 
     @Test
-    fun `update sport with a user that didn't create it throws AuthorizationError`() {
+    fun `update sport with user that didn't create it gives 401`() {
         val sportInput = SportInput("Football", "Game played with hands.")
         val sportID = testClient.createSport(sportInput).sportID
         val userToken = testClient.createUser(UserInput(name = "user", email = "random@okay.com")).authToken
@@ -189,7 +218,7 @@ class SportApiTests {
             "$SPORT_PATH$sportID",
             SportInput(),
             authHeader(userToken),
-            expectedStatus = Response::expectForbidden
+            expectedStatus = Response::expectUnauthorized
         )
 
         val sport = getRequest<SportDTO>(testClient, "$SPORT_PATH$sportID", Response::expectOK)

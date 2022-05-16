@@ -401,7 +401,7 @@ class ActivitiesApiTests {
 
     @Test
     fun `Update all the parameters of the activity successfully`() {
-        val rid = testClient.createRoute(RouteCreationInput("a", "b", 20.0)).routeID
+        val rid = testClient.createRoute(RouteInput("a", "b", 20.0)).routeID
         val body = ActivityInput("03:16:32.993", "2022-01-01", rid.toString())
         val aid = testClient.createActivity(body, testSport.id).activityID
         val updateBody = ActivityInput("05:16:32.993", "2015-01-02", testRoute.id.toString())
@@ -474,7 +474,7 @@ class ActivitiesApiTests {
 
     @Test
     fun `Update route of the activity successfully`() {
-        val rid = testClient.createRoute(RouteCreationInput("a", "b", 20.0)).routeID
+        val rid = testClient.createRoute(RouteInput("a", "b", 20.0)).routeID
         val updateBody = ActivityInput(null, null, rid.toString())
         putRequest<ActivityInput>(
             testClient,
@@ -499,7 +499,7 @@ class ActivitiesApiTests {
 
     @Test
     fun `Update route and duration of the activity successfully`() {
-        val rid = testClient.createRoute(RouteCreationInput("a", "b", 20.0)).routeID
+        val rid = testClient.createRoute(RouteInput("a", "b", 20.0)).routeID
         val updateBody = ActivityInput("05:16:32.893", null, rid.toString())
         putRequest<ActivityInput>(
             testClient,
@@ -524,7 +524,7 @@ class ActivitiesApiTests {
 
     @Test
     fun `Update route and date of the activity successfully`() {
-        val rid = testClient.createRoute(RouteCreationInput("a", "b", 20.0)).routeID
+        val rid = testClient.createRoute(RouteInput("a", "b", 20.0)).routeID
         val updateBody = ActivityInput(null, "2007-05-11", rid.toString())
         putRequest<ActivityInput>(
             testClient,
@@ -615,7 +615,7 @@ class ActivitiesApiTests {
     @Test
     fun `Update activity of another user fails`() {
         val updateBody = ActivityInput(null, null, null)
-        val user = testClient.createUser(UserCreationInput("x", "n@gmail.com"))
+        val user = testClient.createUser(UserInput("x", "n@gmail.com"))
         putRequest<ActivityInput>(
             testClient,
             "$SPORT_ACTIVITY_PATH/${testActivity.id}",

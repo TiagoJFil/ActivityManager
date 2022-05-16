@@ -16,7 +16,6 @@ import pt.isel.ls.service.entities.Route
 import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.service.entities.User
 import pt.isel.ls.utils.ActivityID
-import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID

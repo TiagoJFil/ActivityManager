@@ -75,23 +75,23 @@ class RouteServicesTest {
     }
 
     @Test
-    fun `update a route with more than MAX_LOCATION_LENGTH characters throws InvalidParameter`(){
+    fun `update a route with more than MAX_LOCATION_LENGTH characters throws InvalidParameter`() {
         val name = "".padEnd(MAX_LOCATION_LENGTH + 1, 'a')
 
-        assertFailsWith<InvalidParameter>{
+        assertFailsWith<InvalidParameter> {
             routeServices.updateRoute(token = GUEST_TOKEN, routeID = testRoute.id.toString(), startLocation = name, endLocation = "b", distance = 10.0)
         }
     }
 
     @Test
-    fun `update a route with an invalid distance throws InvalidParameter`(){
-        assertFailsWith<InvalidParameter>{
+    fun `update a route with an invalid distance throws InvalidParameter`() {
+        assertFailsWith<InvalidParameter> {
             routeServices.updateRoute(token = GUEST_TOKEN, routeID = testRoute.id.toString(), startLocation = "a", endLocation = "b", distance = -10.0)
         }
     }
 
     @Test
-    fun `update a route without any parameters does not update anything`(){
+    fun `update a route without any parameters does not update anything`() {
 
         routeServices.updateRoute(token = GUEST_TOKEN, routeID = testRoute.id.toString(), startLocation = null, endLocation = null, distance = null)
 

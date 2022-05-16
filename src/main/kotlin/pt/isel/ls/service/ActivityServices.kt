@@ -18,7 +18,6 @@ import pt.isel.ls.utils.Order
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
-import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
@@ -33,7 +32,6 @@ import pt.isel.ls.utils.service.requireRoute
 import pt.isel.ls.utils.service.requireSport
 import pt.isel.ls.utils.service.requireUser
 import pt.isel.ls.utils.service.toDTO
-import pt.isel.ls.utils.service.toNullIfBlank
 import pt.isel.ls.utils.traceFunction
 import java.text.ParseException
 import java.util.Date
@@ -218,15 +216,21 @@ class ActivityServices(
 
             val userID = userRepository.requireAuthenticated(token)
             userRepository.requireUser(userID)
-            if (userID != getActivity(activityID, sportID).user)
-                throw ForbiddenError()
+
+            val safeActivityID = requireParameter(activityID, ACTIVITY_ID_PARAM)
+
+            val aidInt = requireIdInteger(safeActivityID, ACTIVITY_ID_PARAM)
+            activityRepository.requireOwnership(userID, aidInt)
+
+            sportID?.let {
+                val sidInt = requireIdInteger(sportID, SPORT_ID_PARAM)
+                sportRepository.requireSport(sidInt)
+                activityRepository.requireActivityWith(aidInt, sidInt)
+            }
 
             if (duration == null && date == null && rid == null) return
 
-            val safeActivityID = requireParameter(activityID, ACTIVITY_ID_PARAM)
-            val aidInt = requireIdInteger(safeActivityID, ACTIVITY_ID_PARAM)
-
-            val handledDuration = duration.toNullIfBlank()
+            val handledDuration = duration?.ifBlank { null }
             val durationValue = handledDuration?.let {
                 val parsedDate: Date = Duration.format.parse(duration)
                 val millis: Long = parsedDate.time
@@ -234,7 +238,7 @@ class ActivityServices(
             }
 
             val removeRoute = rid?.isBlank() == true
-            val handledRoute = rid?.toNullIfBlank()
+            val handledRoute = rid?.ifBlank { null }
             val ridInt = handledRoute?.let {
                 val ridInt = requireIdInteger(it, ROUTE_ID_PARAM)
                 routeRepository.requireRoute(ridInt)
@@ -279,7 +283,7 @@ class ActivityServices(
         val aidInt = requireIdInteger(safeAID, ACTIVITY_ID_PARAM)
         activityRepository.requireActivityWith(aidInt, sidInt)
 
-        activityRepository.requireOwnership(userID,aidInt)
+        activityRepository.requireOwnership(userID, aidInt)
 
         activityRepository.deleteActivity(aidInt)
         return
@@ -330,7 +334,7 @@ class ActivityServices(
         val checkedAIDS = safeAIDS.split(",").map {
             val aidInt = requireIdInteger(it, "Each activityID")
             activityRepository.requireActivity(aidInt)
-            activityRepository.requireOwnership(userID,aidInt)
+            activityRepository.requireOwnership(userID, aidInt)
             activityRepository.requireActivityWith(aidInt, sidInt)
             aidInt
         }

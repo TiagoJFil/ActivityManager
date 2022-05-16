@@ -3,14 +3,14 @@ package pt.isel.ls.api.utils
 import org.http4k.core.Headers
 import org.http4k.core.HttpHandler
 import org.http4k.core.Response
-import pt.isel.ls.api.ActivityRoutes.ActivityInput
 import pt.isel.ls.api.ActivityRoutes.ActivityIDOutput
+import pt.isel.ls.api.ActivityRoutes.ActivityInput
 import pt.isel.ls.api.RouteRoutes.RouteIDOutput
 import pt.isel.ls.api.RouteRoutes.RouteInput
 import pt.isel.ls.api.SportRoutes.SportIDOutput
 import pt.isel.ls.api.SportRoutes.SportInput
-import pt.isel.ls.api.UserRoutes.UserInput
 import pt.isel.ls.api.UserRoutes.UserIDOutput
+import pt.isel.ls.api.UserRoutes.UserInput
 import pt.isel.ls.config.Environment
 import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.config.getEnv
@@ -98,8 +98,8 @@ fun HttpHandler.createRoute(routeCreation: RouteInput): RouteIDOutput =
  * @param input the update body. Must be valid type.
  * @param resourceID the resource id to updated.
  */
-inline fun <reified T,Tid> HttpHandler.updateResource(input: T, resourceID: Tid, token: UserToken = GUEST_TOKEN){
-    val path = when(input){
+inline fun <reified T, Tid> HttpHandler.updateResource(input: T, resourceID: Tid, token: UserToken = GUEST_TOKEN) {
+    val path = when (input) {
         is ActivityInput -> "$ACTIVITY_PATH$resourceID"
         is RouteInput -> "$ROUTE_PATH$resourceID"
         is SportInput -> "$SPORT_PATH$resourceID"

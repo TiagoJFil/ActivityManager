@@ -126,7 +126,7 @@ class RouteApiTests {
         val routeId = routeResponse.routeID
         val updatedBody = RouteInput(startLocation = "c", endLocation = "d", distance = 20.0)
 
-        testClient.updateResource<RouteInput,RouteID>(updatedBody,routeId, GUEST_TOKEN)
+        testClient.updateResource<RouteInput, RouteID>(updatedBody, routeId, GUEST_TOKEN)
         val updatedRoute = getRequest<RouteDTO>(testClient, "$ROUTE_PATH$routeId", Response::expectOK)
 
         assertEquals(updatedRoute.startLocation, updatedBody.startLocation)
@@ -136,12 +136,14 @@ class RouteApiTests {
 
     @Test fun `update a route with a blank parameter gives 400`() {
         val body = RouteInput(startLocation = "", endLocation = "b", distance = 10.0)
-      //  testClient.updateResource<RouteInput,RouteID>(body, testRoute.id)
-        putRequest<RouteInput>(testClient,
+        //  testClient.updateResource<RouteInput,RouteID>(body, testRoute.id)
+        putRequest<RouteInput>(
+            testClient,
             "$ROUTE_PATH${testRoute.id}",
             body,
             authHeader(GUEST_TOKEN),
-            Response::expectBadRequest)
+            Response::expectBadRequest
+        )
 
         val updatedRoute = getRequest<RouteDTO>(testClient, "$ROUTE_PATH${testRoute.id}", Response::expectOK)
         assertEquals(updatedRoute.startLocation, testRoute.startLocation)
@@ -151,43 +153,50 @@ class RouteApiTests {
 
     @Test fun `update a route that doesnt exist gives 404`() {
         val body = RouteInput(startLocation = "a", endLocation = "b", distance = 10.0)
-        putRequest<RouteInput>(testClient,
+        putRequest<RouteInput>(
+            testClient,
             "${ROUTE_PATH}231",
             body,
             authHeader(GUEST_TOKEN),
-            Response::expectNotFound)
+            Response::expectNotFound
+        )
     }
 
     @Test fun `update a route with an not known token gives 401`() {
         val body = RouteInput(startLocation = "a", endLocation = "b", distance = 10.0)
-        putRequest<RouteInput>(testClient,
+        putRequest<RouteInput>(
+            testClient,
             "$ROUTE_PATH${testRoute.id}",
             body,
             authHeader("not a token"),
-            Response::expectUnauthorized)
+            Response::expectUnauthorized
+        )
     }
 
     @Test fun `update a route with a user that is not the owner gives 403`() {
         val user = testClient.createUser(UserInput("test", "test@gmail.com"))
 
         val body = RouteInput(startLocation = "a", endLocation = "b", distance = 10.0)
-        putRequest<RouteInput>(testClient,
+        putRequest<RouteInput>(
+            testClient,
             "${ROUTE_PATH}${testRoute.id}",
             body,
             authHeader(user.authToken),
-            Response::expectForbidden)
+            Response::expectForbidden
+        )
     }
 
-    @Test fun `update route without startLocation keeps the old one`(){
+    @Test fun `update route without startLocation keeps the old one`() {
         val body = RouteInput(endLocation = "b", distance = 10.0)
-        putRequest<RouteInput>(testClient,
+        putRequest<RouteInput>(
+            testClient,
             "$ROUTE_PATH${testRoute.id}",
             body,
             authHeader(GUEST_TOKEN),
-            Response::expectNoContent)
+            Response::expectNoContent
+        )
 
         val updatedRoute = getRequest<RouteDTO>(testClient, "$ROUTE_PATH${testRoute.id}", Response::expectOK)
         assertEquals(updatedRoute.startLocation, testRoute.startLocation)
     }
-
 }

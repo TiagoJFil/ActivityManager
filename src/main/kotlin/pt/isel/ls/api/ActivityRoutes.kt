@@ -35,7 +35,7 @@ class ActivityRoutes(
     @Serializable data class ActivityIDOutput(val activityID: ActivityID)
     @Serializable data class ActivityListOutput(val activities: List<ActivityDTO>)
     companion object {
-         private val logger = getLoggerFor<ActivityRoutes>()
+        private val logger = getLoggerFor<ActivityRoutes>()
     }
 
     /**

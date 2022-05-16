@@ -82,7 +82,7 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
         val queryBuilder = StringBuilder("UPDATE $sportTable SET ")
         if (newName != null) {
             queryBuilder.append("name = ?")
-            if(newDescription != null)
+            if (newDescription != null)
                 queryBuilder.append(", ")
         }
         if (newDescription != null)
