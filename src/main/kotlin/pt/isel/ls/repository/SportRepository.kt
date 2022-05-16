@@ -26,7 +26,7 @@ interface SportRepository {
      * @param sportID The id of the sport to be retrieved.
      * @return [Sport] The sport with the given id or null if it does not exist.
      */
-    fun getSportByID(sportID: SportID): Sport?
+    fun getSport(sportID: SportID): Sport?
 
     /**
      * Checks if a sport with the given id exists.

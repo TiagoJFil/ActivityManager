@@ -78,6 +78,40 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
         }
 
     /**
+     * Updates the route with the given id.
+     * @param routeID The id of the route to be updated.
+     * @param startLocation The new start location of the route.
+     * @param endLocation The new end location of the route.
+     * @param distance The new distance of the route.
+     */
+    override fun updateRoute(
+        routeID: RouteID,
+        startLocation: String?,
+        endLocation: String?,
+        distance: Double?
+    ): Boolean {
+        val queryBuilder = StringBuilder("UPDATE $routeTable SET ")
+        if (startLocation != null) queryBuilder.append("startlocation = ?, ")
+        if (endLocation != null) queryBuilder.append("endlocation = ?, ")
+        if (distance != null) queryBuilder.append("distance = ?, ")
+        queryBuilder.append("WHERE id = ?")
+
+        val startLocationIdx = if (startLocation != null) 1 else 0
+        val endLocationIdx = if (endLocation != null) startLocationIdx + 1 else startLocationIdx
+        val distanceIdx = if (distance != null) endLocationIdx + 1 else endLocationIdx
+
+        dataSource.connection.transaction {
+            prepareStatement(queryBuilder.toString()).use { stmt ->
+                if (startLocation != null) stmt.setString(startLocationIdx, startLocation)
+                if (endLocation != null) stmt.setString(endLocationIdx, endLocation)
+                if (distance != null) stmt.setDouble(distanceIdx, distance)
+                stmt.setInt(distanceIdx + 1, routeID)
+                return stmt.executeUpdate() == 1
+            }
+        }
+    }
+
+    /**
      * Makes a query to get a route by its identifier.
      *
      * @param routeID The id of the route to be queried.

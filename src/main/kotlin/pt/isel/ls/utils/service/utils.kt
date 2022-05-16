@@ -4,10 +4,17 @@ import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.repository.UserRepository
+import pt.isel.ls.service.AuthorizationError
 import pt.isel.ls.service.InvalidParameter
 import pt.isel.ls.service.MissingParameter
 import pt.isel.ls.service.ResourceNotFound
+import pt.isel.ls.service.RouteServices
+import pt.isel.ls.service.SportsServices
 import pt.isel.ls.service.UnauthenticatedError
+import pt.isel.ls.service.UserServices
+import pt.isel.ls.service.entities.Route
+import pt.isel.ls.service.entities.Sport
+import pt.isel.ls.service.entities.User
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
@@ -20,10 +27,25 @@ import java.util.UUID
  * @param parameter the parameter to check.
  * @param parameterName the name of the parameter to show on the Exception.
  *
+ * @return the parameter if it is not null, otherwise throw an exception.
  * @throws [InvalidParameter] if the parameter is blank.
  */
-fun requireNotBlankParameter(parameter: String?, parameterName: String) {
+fun requireNotBlankParameter(parameter: String?, parameterName: String): String? {
     if (parameter != null && parameter.isBlank()) throw InvalidParameter(parameterName)
+    if (parameter != null) requireLengths(parameter, parameterName)
+    return parameter
+}
+
+/**
+ * @param parameter the parameter to check.
+ * @param parameterName the name of the parameter to show on the Exception.
+ *
+ * @return the parameter if it is not null, otherwise throw an exception.
+ * @throws [MissingParameter] if the parameter is null or is lower than 0.
+ */
+fun requireDoublePositive(parameter: Double?, parameterName: String): Double? {
+    if (parameter != null && parameter < 0) throw InvalidParameter(parameterName)
+    return parameter
 }
 
 /**
@@ -39,6 +61,40 @@ fun requireParameter(parameter: String?, parameterName: String): String {
     return parameter
 }
 
+/**
+ * @param parameter the parameter to check.
+ * @param parameterName the name of the parameter to show on the Exception.
+ *
+ * Requires the parameter to be less than its respective MAX_LENGTH.
+ */
+private fun requireLengths(parameter: String, parameterName: String) {
+    when (parameterName) {
+        SportsServices.NAME_PARAM -> {
+            if (parameter.length > Sport.MAX_NAME_LENGTH)
+                throw InvalidParameter("${SportsServices.NAME_PARAM} is too long, max length is ${Sport.MAX_NAME_LENGTH}")
+        }
+        UserServices.NAME_PARAM -> {
+            if (parameter.length > User.MAX_NAME_LENGTH)
+                throw InvalidParameter("${UserServices.NAME_PARAM} is too long, max length is ${User.MAX_NAME_LENGTH}")
+        }
+        RouteServices.END_LOCATION_PARAM -> {
+            if (parameter.length > Route.MAX_LOCATION_LENGTH)
+                throw InvalidParameter("${RouteServices.END_LOCATION_PARAM} is too long, max length is ${Route.MAX_LOCATION_LENGTH}")
+        }
+        RouteServices.START_LOCATION_PARAM -> {
+            if (parameter.length > Route.MAX_LOCATION_LENGTH)
+                throw InvalidParameter("${RouteServices.START_LOCATION_PARAM} is too long, max length is ${Route.MAX_LOCATION_LENGTH}")
+        }
+        else -> {}
+    }
+}
+
+/**
+ * @param id the id to check.
+ * @param parameterName the name of the parameter to show on the Exception.
+ *
+ * @return the id if it is not null, otherwise throw an exception.
+ */
 fun requireIdInteger(id: String, parameterName: String): Int =
     id.toIntOrNull()
         ?: throw InvalidParameter("$parameterName must be an integer")
@@ -74,6 +130,27 @@ fun SportRepository.requireSport(sportID: SportID) {
 fun UserRepository.requireUser(userID: UserID) {
     if (!hasUser(userID)) throw ResourceNotFound("User", userID.toString())
 }
+
+/**
+ * Ensures that the user owns the received sport.
+ */
+fun SportRepository.requireOwnership(userID: UserID, sportID: SportID) =
+    this.getSport(sportID)
+        ?.let { if (userID != it.user) throw AuthorizationError("You are not the owner of this sport") }
+
+/**
+ * Ensures that the user owns the received route.
+ */
+fun RouteRepository.requireOwnership(userID: UserID, routeID: RouteID) =
+    this.getRoute(routeID)
+        ?.let { if (userID != it.user) throw AuthorizationError("You are not the owner of this route") }
+
+/**
+ * Ensures that the user owns the received activity.
+ */
+fun ActivityRepository.requireOwnership(userID: UserID, activityID: ActivityID) =
+    this.getActivity(activityID)
+        ?.let { if (userID != it.user) throw AuthorizationError("You are not the owner of this activity") }
 
 /**
  * Ensures that the activity identified by the given id exists.

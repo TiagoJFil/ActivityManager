@@ -45,7 +45,7 @@ class SportDataMemRepository(testSport: Sport) : SportRepository {
      * @param sportID the unique number that identifies the sport
      * @return A [SportDTO] object or null if there is no sport identified by the [sportID]
      */
-    override fun getSportByID(sportID: SportID): Sport? = sportsMap[sportID]
+    override fun getSport(sportID: SportID): Sport? = sportsMap[sportID]
 
     /**
      * Checks if a sport identified by [sportID] exists.

@@ -18,6 +18,7 @@ import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.api.contentJson
 import pt.isel.ls.utils.api.fromRequest
 import pt.isel.ls.utils.api.getBearerToken
 import pt.isel.ls.utils.getLoggerFor
@@ -26,7 +27,7 @@ import pt.isel.ls.utils.infoLogRequest
 class ActivityRoutes(
     private val activityServices: ActivityServices
 ) {
-    @Serializable data class ActivityCreationInput(
+    @Serializable data class ActivityInput(
         val duration: Param = null,
         val date: Param = null,
         val rid: Param = null,
@@ -34,7 +35,7 @@ class ActivityRoutes(
     @Serializable data class ActivityIDOutput(val activityID: ActivityID)
     @Serializable data class ActivityListOutput(val activities: List<ActivityDTO>)
     companion object {
-        val logger = getLoggerFor<ActivityRoutes>()
+         private val logger = getLoggerFor<ActivityRoutes>()
     }
 
     /**
@@ -45,7 +46,7 @@ class ActivityRoutes(
 
         val sportID = request.path("sid")
 
-        val activityBody = Json.decodeFromString<ActivityCreationInput>(request.bodyString())
+        val activityBody = Json.decodeFromString<ActivityInput>(request.bodyString())
         val token: UserToken? = getBearerToken(request)
 
         val activityId = activityServices.createActivity(
@@ -56,7 +57,7 @@ class ActivityRoutes(
             activityBody.rid
         )
         return Response(Status.CREATED)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(Json.encodeToString(ActivityIDOutput(activityId)))
     }
 
@@ -74,7 +75,7 @@ class ActivityRoutes(
         val activityJson = Json.encodeToString<ActivityDTO>(activity)
 
         return Response(Status.OK)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(activityJson)
     }
 
@@ -90,7 +91,7 @@ class ActivityRoutes(
         val activitiesJson = Json.encodeToString(ActivityListOutput(activities))
 
         return Response(Status.OK)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(activitiesJson)
     }
 
@@ -103,7 +104,7 @@ class ActivityRoutes(
         val activitiesJson = Json.encodeToString(ActivityListOutput(activities))
 
         return Response(Status.OK)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(activitiesJson)
     }
 
@@ -148,7 +149,7 @@ class ActivityRoutes(
         val bodyString = Json.encodeToString(UserListOutput(users))
 
         return Response(Status.OK)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(bodyString)
     }
 
@@ -178,7 +179,7 @@ class ActivityRoutes(
         val activitiesJson = Json.encodeToString(ActivityListOutput(activities))
 
         return Response(Status.OK)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(activitiesJson)
     }
 
@@ -194,7 +195,6 @@ class ActivityRoutes(
         "/users/{uid}/activities" bind Method.GET to ::getActivitiesByUser,
         "/sports/{sid}/users" bind Method.GET to ::getUsersByActivity,
         "/activities" bind Method.GET to ::getAllActivities
-
     )
 }
 
