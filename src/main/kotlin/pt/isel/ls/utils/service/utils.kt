@@ -9,6 +9,7 @@ import pt.isel.ls.service.MissingParameter
 import pt.isel.ls.service.ResourceNotFound
 import pt.isel.ls.service.UnauthenticatedError
 import pt.isel.ls.utils.ActivityID
+import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
@@ -39,9 +40,20 @@ fun requireParameter(parameter: String?, parameterName: String): String {
     return parameter
 }
 
+/**
+ *  Requires the id to be an integer
+ *  @param id the id to check.
+ *  @param parameterName the name of the parameter to show on the Exception.
+ */
 fun requireIdInteger(id: String, parameterName: String): Int =
     id.toIntOrNull()
         ?: throw InvalidParameter("$parameterName must be an integer")
+
+/**
+ *
+ */
+fun Param.toNullIfBlank(): String? =
+    this?.ifBlank { null }
 
 /**
  * Ensures that there is a token associated with the user.

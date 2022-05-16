@@ -17,7 +17,7 @@ data class Environment(
 
 enum class EnvironmentType(val dbMode: DBMODE) {
     PROD(DBMODE.POSTGRESQL),
-    TEST(DBMODE.MEMORY),
+    TEST(DBMODE.MEMORY)
 }
 
 private fun getEnvType(): EnvironmentType {

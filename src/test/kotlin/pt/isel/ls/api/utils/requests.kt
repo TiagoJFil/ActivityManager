@@ -52,3 +52,23 @@ inline fun <reified RequestBody, reified ResponseBody> postRequest(
             .expectedStatus()
             .bodyString()
     )
+
+/**
+ * Makes a put request from [backend] handler sending [body] calling an expect function
+ * which ensures that the response has a determined status code.
+ *
+ * Generic parameters are respectively the request body type and the response body expected type.
+ * Both of these types must be serializable.
+ */
+inline fun <reified RequestBody> putRequest(
+    backend: HttpHandler,
+    uri: String,
+    body: RequestBody,
+    headers: Headers = emptyList(),
+    expectedStatus: Response.() -> Response,
+) =
+    backend(
+        Request(Method.PUT, uri)
+            .body(Json.encodeToString(body))
+            .headers(headers)
+    ).expectedStatus()

@@ -60,6 +60,84 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
         }
 
     /**
+     * Updates the activity with the parameters received
+     * The query must be build with the same order as the attributes in the attribute list.
+     *
+     * @param newDate the new activity date
+     * @param newDuration the new activity duration
+     * @param newRouteID the new activity route ID
+     * @param activityID the activity ID
+     *
+     * @return [Boolean] indicating if the activity was updated
+     */
+    override fun updateActivity(
+        newDate: LocalDate?,
+        newDuration: Duration?,
+        newRouteID: RouteID?,
+        activityID: ActivityID,
+        removeRoute: Boolean
+    ): Boolean {
+
+        val queryBuilder = StringBuilder("UPDATE $activityTable SET ")
+
+        val attributes = listOf(newDate, newDuration, newRouteID)
+
+        if (newDate != null)
+            queryBuilder.append("date = ? ")
+        if (newDuration != null) {
+            if (newDate != null || newRouteID != null) queryBuilder.append(", ")
+            queryBuilder.append("duration = ?::bigint ")
+        }
+        if (newRouteID != null || removeRoute) {
+            if (newDate != null) queryBuilder.append(", ")
+            queryBuilder.append("route = ? ")
+        }
+
+        queryBuilder.append("WHERE id = ?")
+
+        val notNullAttributesCount = attributes.count { it != null }
+
+        val activityIndex = if (removeRoute) notNullAttributesCount + 2 else notNullAttributesCount + 1
+
+        return dataSource.connection.transaction {
+            prepareStatement(queryBuilder.toString()).use { stmt ->
+                if (newDate != null)
+                    stmt.setDate(calculateIndex(attributes, 1), Date.valueOf(newDate.toJavaLocalDate()))
+                if (newDuration != null)
+                    stmt.setString(calculateIndex(attributes, 2), newDuration.millis.toString())
+                if (newRouteID != null) {
+                    stmt.setInt(calculateIndex(attributes, 3), newRouteID)
+                } else {
+                    if (removeRoute)
+                        stmt.setObject(calculateIndex(attributes, 3), null)
+                }
+                stmt.setInt(activityIndex, activityID)
+                stmt.executeUpdate() == 1
+            }
+        }
+    }
+
+    /**
+     * Calculates the index to use in the prepared statement value set.
+     * The attribute to check must be at least 1.
+     *
+     * @param attributes The list with the attributes
+     * @param attributeToCheck number that represents the attribute's position in the list. Starts at 1.
+     */
+    private fun calculateIndex(attributes: List<Any?>, attributeToCheck: Int): Int {
+        if (attributeToCheck == 1) return 1
+        val startingIndex = 0
+        val previousAttributes = attributes.subList(startingIndex, attributeToCheck - 1)
+
+        return if (previousAttributes.all { it == null })
+            1
+        else {
+            val notNullAttributes = previousAttributes.count { it != null }
+            return notNullAttributes + 1
+        }
+    }
+
+    /**
      * Gets all the activities that were created by the given user.
      * @param userID the user unique identifier that the activity must have
      * @return [List] of [Activity] that were created by the given user

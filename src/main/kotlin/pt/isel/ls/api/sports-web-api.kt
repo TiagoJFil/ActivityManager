@@ -10,17 +10,21 @@ import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.core.Status.Companion.BAD_REQUEST
+import org.http4k.core.Status.Companion.FORBIDDEN
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.NOT_FOUND
 import org.http4k.core.Status.Companion.UNAUTHORIZED
 import org.http4k.routing.ResourceLoader
+import org.http4k.routing.ResourceLoader.Companion.Classpath
 import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 import org.http4k.routing.singlePageApp
+import org.http4k.routing.static
 import org.slf4j.LoggerFactory
 import pt.isel.ls.config.Environment
 import pt.isel.ls.service.AppError
+import pt.isel.ls.service.ForbiddenError
 import pt.isel.ls.service.InternalError
 import pt.isel.ls.service.InvalidParameter
 import pt.isel.ls.service.MissingParameter
@@ -40,6 +44,7 @@ import kotlin.system.measureTimeMillis
 fun getApiRoutes(routes: RoutingHttpHandler) = routes(
 
     "/api" bind routes.withFilter(timeFilter).withFilter(onErrorFilter),
+    static(Classpath("public")),
     singlePageApp(ResourceLoader.Directory("static-content")) // For SPA
 
 )
@@ -47,9 +52,9 @@ fun getApiRoutes(routes: RoutingHttpHandler) = routes(
 /**
  * Serves swagger ui to a /docs route by redirecting to the swagger ui index.html public resource
  */
-private fun swaggerUi(htmlPath: String) = routes(
+private fun swaggerUi() = routes(
     "/docs" bind Method.GET to {
-        Response(Status.FOUND).header("Location", htmlPath)
+        Response(Status.FOUND).header("Location", "/swagger-ui/index.html")
     }
 )
 
@@ -62,7 +67,7 @@ fun getAppRoutes(env: Environment) = routes(
     Route(env.routeServices),
     Sport(env.sportsServices),
     Activity(env.activityServices),
-    // swaggerUi("/swagger-ui/index.html")
+    swaggerUi()
 )
 
 private val eLogger = LoggerFactory.getLogger("pt.isel.ls.api.ERRORS")
@@ -100,6 +105,10 @@ private val onErrorFilter = Filter { handler ->
                 is InternalError -> {
                     eLogger.warnStatus(INTERNAL_SERVER_ERROR, appError.message)
                     baseResponse.status(INTERNAL_SERVER_ERROR)
+                }
+                is ForbiddenError -> {
+                    eLogger.warnStatus(FORBIDDEN, appError.message ?: "Forbidden")
+                    baseResponse.status(FORBIDDEN)
                 }
             }
         } catch (serializerException: SerializationException) {

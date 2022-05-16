@@ -44,6 +44,32 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
     }
 
     /**
+     * Updates an activity.
+     *
+     * @param newDate the activity date
+     * @param newDuration the activity duration
+     * @param newRouteID the activity route ID
+     * @param activityID the activity ID
+     */
+    override fun updateActivity(
+        newDate: LocalDate?,
+        newDuration: Activity.Duration?,
+        newRouteID: RouteID?,
+        activityID: ActivityID,
+        removeRoute: Boolean
+    ): Boolean {
+        val activity = activitiesMap[activityID] ?: return false
+        val duration = newDuration ?: activity.duration
+        val date = newDate ?: activity.date
+        val route = if (removeRoute)
+            null
+        else
+            newRouteID ?: activity.route
+        activitiesMap[activityID] = activity.copy(date = date, duration = duration, route = route)
+        return true
+    }
+
+    /**
      * Gets all the activities that were created by the given user.
      * @param userID the user unique identifier that the activity must have
      * @return [List] of [Activity] that were created by the given user

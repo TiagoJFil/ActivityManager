@@ -5,7 +5,7 @@ import org.http4k.core.Request
 import org.http4k.core.Response
 import org.junit.After
 import org.junit.Test
-import pt.isel.ls.api.ActivityRoutes.ActivityCreationInput
+import pt.isel.ls.api.ActivityRoutes.ActivityInput
 import pt.isel.ls.api.ActivityRoutes.ActivityListOutput
 import pt.isel.ls.api.RouteRoutes.RouteCreationInput
 import pt.isel.ls.api.SportRoutes.SportCreationInput
@@ -21,12 +21,14 @@ import pt.isel.ls.api.utils.createRoute
 import pt.isel.ls.api.utils.createSport
 import pt.isel.ls.api.utils.createUser
 import pt.isel.ls.api.utils.expectBadRequest
+import pt.isel.ls.api.utils.expectForbidden
 import pt.isel.ls.api.utils.expectNoContent
 import pt.isel.ls.api.utils.expectNotFound
 import pt.isel.ls.api.utils.expectOK
 import pt.isel.ls.api.utils.expectUnauthorized
 import pt.isel.ls.api.utils.getRequest
 import pt.isel.ls.api.utils.postRequest
+import pt.isel.ls.api.utils.putRequest
 import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.config.testActivity
@@ -35,6 +37,7 @@ import pt.isel.ls.config.testSport
 import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.service.dto.HttpError
 import pt.isel.ls.service.dto.UserDTO
+import pt.isel.ls.service.entities.Activity.Duration
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
@@ -78,16 +81,16 @@ class ActivitiesApiTests {
         val date = "2002-05-20"
 
         testClient.createActivity(
-            ActivityCreationInput("05:10:32.123", "2002-12-31", routeID.toString()), sportID
+            ActivityInput("05:10:32.123", "2002-12-31", routeID.toString()), sportID
         ).activityID
 
         val activityID2 = testClient.createActivity(
-            ActivityCreationInput("02:10:32.123", date, testRoute.id.toString()),
+            ActivityInput("02:10:32.123", date, testRoute.id.toString()),
             sportID
         ).activityID
 
         val activityID3 = testClient.createActivity(
-            ActivityCreationInput("03:10:32.123", date, testRoute.id.toString()),
+            ActivityInput("03:10:32.123", date, testRoute.id.toString()),
             sportID
         ).activityID
 
@@ -111,8 +114,8 @@ class ActivitiesApiTests {
 
     @Test
     fun `try to create an activity without the date`() {
-        val body = ActivityCreationInput("02:16:32.993", null, testRoute.id.toString())
-        postRequest<ActivityCreationInput, HttpError>(
+        val body = ActivityInput("02:16:32.993", null, testRoute.id.toString())
+        postRequest<ActivityInput, HttpError>(
             testClient,
             SPORT_ACTIVITY_PATH,
             body,
@@ -122,8 +125,8 @@ class ActivitiesApiTests {
     }
     @Test
     fun `try to create an activity without the duration`() {
-        val body = ActivityCreationInput("02:16:32.993", null, testRoute.id.toString())
-        postRequest<ActivityCreationInput, HttpError>(
+        val body = ActivityInput("02:16:32.993", null, testRoute.id.toString())
+        postRequest<ActivityInput, HttpError>(
             testClient,
             SPORT_ACTIVITY_PATH,
             body,
@@ -134,8 +137,8 @@ class ActivitiesApiTests {
     @Test
     fun `try to create an activity with an invalid sportId`() {
         val sportID = "123123"
-        val body = ActivityCreationInput("02:16:32.993", "2020-01-01", testRoute.id.toString())
-        postRequest<ActivityCreationInput, HttpError>(
+        val body = ActivityInput("02:16:32.993", "2020-01-01", testRoute.id.toString())
+        postRequest<ActivityInput, HttpError>(
             testClient,
             "${ACTIVITY_PATH}$sportID/activities",
             body,
@@ -146,13 +149,13 @@ class ActivitiesApiTests {
 
     @Test
     fun `create an activity without the rid`() {
-        val body = ActivityCreationInput("02:16:32.993", "2020-01-01", null)
+        val body = ActivityInput("02:16:32.993", "2020-01-01", null)
         testClient.createActivity(body, testSport.id)
     }
 
     @Test
     fun `create an activity sucessfuly`() {
-        val body = ActivityCreationInput("02:16:32.993", "2020-01-01", testRoute.id.toString())
+        val body = ActivityInput("02:16:32.993", "2020-01-01", testRoute.id.toString())
         testClient.createActivity(body, testSport.id)
     }
 
@@ -166,12 +169,12 @@ class ActivitiesApiTests {
         val sportID = testClient.createSport(SportCreationInput("Teste", "descricao")).sportID
 
         val activityID1 = testClient.createActivity(
-            ActivityCreationInput("05:10:32.123", "2002-12-31", testRoute.id.toString()),
+            ActivityInput("05:10:32.123", "2002-12-31", testRoute.id.toString()),
             sportID
         ).activityID
 
         val activityID2 = testClient.createActivity(
-            ActivityCreationInput("02:10:32.123", "2002-12-30", testRoute.id.toString()),
+            ActivityInput("02:10:32.123", "2002-12-30", testRoute.id.toString()),
             sportID
         ).activityID
 
@@ -206,16 +209,16 @@ class ActivitiesApiTests {
         val date = "2002-05-20"
 
         testClient.createActivity(
-            ActivityCreationInput("05:10:32.123", "2002-12-31", testRoute.id.toString()), sportID
+            ActivityInput("05:10:32.123", "2002-12-31", testRoute.id.toString()), sportID
         ).activityID
 
         val activityID2 = testClient.createActivity(
-            ActivityCreationInput("02:10:32.123", date, testRoute.id.toString()),
+            ActivityInput("02:10:32.123", date, testRoute.id.toString()),
             sportID
         ).activityID
 
         val activityID3 = testClient.createActivity(
-            ActivityCreationInput("03:10:32.123", date, testRoute.id.toString()),
+            ActivityInput("03:10:32.123", date, testRoute.id.toString()),
             sportID
         ).activityID
 
@@ -241,11 +244,11 @@ class ActivitiesApiTests {
         val sportID = testSport.id
         val date = testActivity.date.toString()
         testClient.createActivity(
-            ActivityCreationInput("05:10:32.123", "2002-12-31", testRoute.id.toString()), sportID
+            ActivityInput("05:10:32.123", "2002-12-31", testRoute.id.toString()), sportID
         ).activityID
 
         val activityID2 = testClient.createActivity(
-            ActivityCreationInput("02:10:32.123", date, testRoute.id.toString()),
+            ActivityInput("02:10:32.123", date, testRoute.id.toString()),
             sportID
         ).activityID
 
@@ -371,11 +374,11 @@ class ActivitiesApiTests {
 
         val userInfo2 = testClient.createUser(UserCreationInput("Joao", "joao@email.com"))
         val user2 = getRequest<UserDTO>(testClient, "$USER_PATH${userInfo2.id}", Response::expectOK)
-        testClient.createActivity(ActivityCreationInput("00:04:00.000", "2002-05-20", routeId.toString()), sportID, userInfo2.authToken)
+        testClient.createActivity(ActivityInput("00:04:00.000", "2002-05-20", routeId.toString()), sportID, userInfo2.authToken)
 
         val userInfo3 = testClient.createUser(UserCreationInput("Miguel", "miguel@email.com"))
         val user3 = getRequest<UserDTO>(testClient, "$USER_PATH${userInfo3.id}", Response::expectOK)
-        testClient.createActivity(ActivityCreationInput("00:15:00.000", "2002-05-20", routeId.toString()), sportID, userInfo3.authToken)
+        testClient.createActivity(ActivityInput("00:15:00.000", "2002-05-20", routeId.toString()), sportID, userInfo3.authToken)
 
         val userListOutput =
             getRequest<UserListOutput>(testClient, "/api/sports/$sportID/users?rid=$routeId&limit=100000", Response::expectOK)
@@ -390,10 +393,280 @@ class ActivitiesApiTests {
 
     @Test
     fun `Delete activities sucessfully`() {
-        val body = ActivityCreationInput("02:16:32.993", "2020-01-01", testRoute.id.toString())
+        val body = ActivityInput("02:16:32.993", "2020-01-01", testRoute.id.toString())
         testClient.createActivity(body, testSport.id)
 
         deleteActivities(testSport.id, "0,1", GUEST_TOKEN).expectNoContent()
+    }
+
+    @Test
+    fun `Update all the parameters of the activity successfully`() {
+        val rid = testClient.createRoute(RouteCreationInput("a", "b", 20.0)).routeID
+        val body = ActivityInput("03:16:32.993", "2022-01-01", rid.toString())
+        val aid = testClient.createActivity(body, testSport.id).activityID
+        val updateBody = ActivityInput("05:16:32.993", "2015-01-02", testRoute.id.toString())
+
+        putRequest<ActivityInput>(
+            testClient,
+            "$SPORT_ACTIVITY_PATH/$aid",
+            updateBody,
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectNoContent
+        )
+
+        val activity = getRequest<ActivityDTO>(testClient, "$SPORT_ACTIVITY_PATH/$aid", Response::expectOK)
+        val expected = ActivityDTO(aid, "2015-01-02", "05:16:32.993", testSport.id, testRoute.id, guestUser.id)
+        assertEquals(expected, activity)
+    }
+
+    @Test
+    fun `Update duration of the activity successfully`() {
+
+        val updateBody = ActivityInput("12:16:32.893", null, null)
+        putRequest<ActivityInput>(
+            testClient,
+            "$SPORT_ACTIVITY_PATH/${testActivity.id}",
+            updateBody,
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectNoContent
+        )
+
+        val activity = getRequest<ActivityDTO>(
+            testClient,
+            "$SPORT_ACTIVITY_PATH/${testActivity.id}",
+            Response::expectOK
+        )
+        val expected = ActivityDTO(
+            testActivity.id,
+            testActivity.date.toString(),
+            "12:16:32.893",
+            testActivity.sport,
+            testActivity.route,
+            testActivity.user
+        )
+        assertEquals(expected, activity)
+    }
+
+    @Test
+    fun `Update date of the activity successfully`() {
+
+        val updateBody = ActivityInput(null, "2000-05-19", null)
+        putRequest<ActivityInput>(
+            testClient,
+            "$SPORT_ACTIVITY_PATH/${testActivity.id}",
+            updateBody,
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectNoContent
+        )
+
+        val activity = getRequest<ActivityDTO>(testClient, "$SPORT_ACTIVITY_PATH/${testActivity.id}", Response::expectOK)
+
+        val expected = ActivityDTO(
+            testActivity.id,
+            "2000-05-19",
+            Duration(testActivity.duration.millis).toFormat(),
+            testActivity.sport,
+            testActivity.route,
+            testActivity.user
+        )
+        assertEquals(expected, activity)
+    }
+
+    @Test
+    fun `Update route of the activity successfully`() {
+        val rid = testClient.createRoute(RouteCreationInput("a", "b", 20.0)).routeID
+        val updateBody = ActivityInput(null, null, rid.toString())
+        putRequest<ActivityInput>(
+            testClient,
+            "$SPORT_ACTIVITY_PATH/${testActivity.id}",
+            updateBody,
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectNoContent
+        )
+
+        val activity = getRequest<ActivityDTO>(testClient, "$SPORT_ACTIVITY_PATH/${testActivity.id}", Response::expectOK)
+
+        val expected = ActivityDTO(
+            testActivity.id,
+            testActivity.date.toString(),
+            Duration(testActivity.duration.millis).toFormat(),
+            testActivity.sport,
+            rid,
+            testActivity.user
+        )
+        assertEquals(expected, activity)
+    }
+
+    @Test
+    fun `Update route and duration of the activity successfully`() {
+        val rid = testClient.createRoute(RouteCreationInput("a", "b", 20.0)).routeID
+        val updateBody = ActivityInput("05:16:32.893", null, rid.toString())
+        putRequest<ActivityInput>(
+            testClient,
+            "$SPORT_ACTIVITY_PATH/${testActivity.id}",
+            updateBody,
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectNoContent
+        )
+
+        val activity = getRequest<ActivityDTO>(testClient, "$SPORT_ACTIVITY_PATH/${testActivity.id}", Response::expectOK)
+
+        val expected = ActivityDTO(
+            testActivity.id,
+            testActivity.date.toString(),
+            "05:16:32.893",
+            testActivity.sport,
+            rid,
+            testActivity.user
+        )
+        assertEquals(expected, activity)
+    }
+
+    @Test
+    fun `Update route and date of the activity successfully`() {
+        val rid = testClient.createRoute(RouteCreationInput("a", "b", 20.0)).routeID
+        val updateBody = ActivityInput(null, "2007-05-11", rid.toString())
+        putRequest<ActivityInput>(
+            testClient,
+            "$SPORT_ACTIVITY_PATH/${testActivity.id}",
+            updateBody,
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectNoContent
+        )
+
+        val activity = getRequest<ActivityDTO>(testClient, "$SPORT_ACTIVITY_PATH/${testActivity.id}", Response::expectOK)
+
+        val expected = ActivityDTO(
+            testActivity.id,
+            "2007-05-11",
+            Duration(testActivity.duration.millis).toFormat(),
+            testActivity.sport,
+            rid,
+            testActivity.user
+        )
+        assertEquals(expected, activity)
+    }
+
+    @Test
+    fun `Update duration and date of the activity successfully`() {
+        val updateBody = ActivityInput("15:16:32.893", "2014-05-11", null)
+        putRequest<ActivityInput>(
+            testClient,
+            "$SPORT_ACTIVITY_PATH/${testActivity.id}",
+            updateBody,
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectNoContent
+        )
+
+        val activity = getRequest<ActivityDTO>(testClient, "$SPORT_ACTIVITY_PATH/${testActivity.id}", Response::expectOK)
+
+        val expected = ActivityDTO(
+            testActivity.id,
+            "2014-05-11",
+            "15:16:32.893",
+            testActivity.sport,
+            testActivity.route,
+            testActivity.user
+        )
+        assertEquals(expected, activity)
+    }
+
+    @Test
+    fun `Update route with blank removes the route from the activity successfully`() {
+        val updateBody = ActivityInput(null, null, "")
+        putRequest<ActivityInput>(
+            testClient,
+            "$SPORT_ACTIVITY_PATH/${testActivity.id}",
+            updateBody,
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectNoContent
+        )
+
+        val activity = getRequest<ActivityDTO>(testClient, "$SPORT_ACTIVITY_PATH/${testActivity.id}", Response::expectOK)
+
+        val expected = ActivityDTO(
+            testActivity.id,
+            testActivity.date.toString(),
+            Duration(testActivity.duration.millis).toFormat(),
+            testActivity.sport,
+            null,
+            testActivity.user
+        )
+        assertEquals(expected, activity)
+    }
+
+    @Test
+    fun `Updating all parameters with null keeps the old data`() {
+        val updateBody = ActivityInput(null, null, null)
+
+        putRequest<ActivityInput>(
+            testClient,
+            "$SPORT_ACTIVITY_PATH/${testActivity.id}",
+            updateBody,
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectNoContent
+        )
+
+        val activity = getRequest<ActivityDTO>(testClient, "$SPORT_ACTIVITY_PATH/${testActivity.id}", Response::expectOK)
+
+        assertEquals(testActivity.toDTO(), activity)
+    }
+
+    @Test
+    fun `Update activity of another user fails`() {
+        val updateBody = ActivityInput(null, null, null)
+        val user = testClient.createUser(UserCreationInput("x", "n@gmail.com"))
+        putRequest<ActivityInput>(
+            testClient,
+            "$SPORT_ACTIVITY_PATH/${testActivity.id}",
+            updateBody,
+            authHeader(user.authToken),
+            expectedStatus = Response::expectForbidden
+        )
+    }
+
+    @Test
+    fun `Update an activity that doesn't exist gives not found`() {
+        putRequest<ActivityInput>(
+            testClient,
+            "$SPORT_ACTIVITY_PATH/9679076",
+            ActivityInput(),
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectNotFound
+        )
+    }
+
+    @Test
+    fun `Update an activity with a route that doesn't exist`() {
+        putRequest<ActivityInput>(
+            testClient,
+            "$SPORT_ACTIVITY_PATH/${testActivity.id}",
+            ActivityInput(rid = "1578546"),
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectNotFound
+        )
+    }
+
+    @Test
+    fun `Update an activity with an invalid duration gives bad request response`() {
+        putRequest<ActivityInput>(
+            testClient,
+            "$SPORT_ACTIVITY_PATH/${testActivity.id}",
+            ActivityInput(duration = "89864"),
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectBadRequest
+        )
+    }
+
+    @Test
+    fun `Update an activity with an invalid date gives bad request response`() {
+        putRequest<ActivityInput>(
+            testClient,
+            "$SPORT_ACTIVITY_PATH/${testActivity.id}",
+            ActivityInput(date = "2115-265-489"),
+            authHeader(GUEST_TOKEN),
+            expectedStatus = Response::expectBadRequest
+        )
     }
 
     private fun deleteActivity(sportID: SportID, activityID: ActivityID, token: UserToken) =

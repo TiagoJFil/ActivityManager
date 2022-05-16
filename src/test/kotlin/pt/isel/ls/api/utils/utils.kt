@@ -3,8 +3,8 @@ package pt.isel.ls.api.utils
 import org.http4k.core.Headers
 import org.http4k.core.HttpHandler
 import org.http4k.core.Response
-import pt.isel.ls.api.ActivityRoutes.ActivityCreationInput
 import pt.isel.ls.api.ActivityRoutes.ActivityIDOutput
+import pt.isel.ls.api.ActivityRoutes.ActivityInput
 import pt.isel.ls.api.RouteRoutes.RouteCreationInput
 import pt.isel.ls.api.RouteRoutes.RouteIDOutput
 import pt.isel.ls.api.SportRoutes.SportCreationInput
@@ -54,11 +54,11 @@ fun HttpHandler.createUser(userCreationBody: UserCreationInput): UserIDOutput =
  * @param activityCreationBody the body of the activity to be created. Must be valid.
  */
 fun HttpHandler.createActivity(
-    activityCreationBody: ActivityCreationInput,
+    activityCreationBody: ActivityInput,
     sportID: SportID,
     token: String = GUEST_TOKEN
 ): ActivityIDOutput =
-    postRequest<ActivityCreationInput, ActivityIDOutput>(
+    postRequest<ActivityInput, ActivityIDOutput>(
         this,
         "$ACTIVITY_PATH$sportID/activities",
         activityCreationBody,

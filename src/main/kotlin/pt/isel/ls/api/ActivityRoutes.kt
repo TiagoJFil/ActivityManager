@@ -24,7 +24,7 @@ import pt.isel.ls.utils.infoLogRequest
 class ActivityRoutes(
     private val activityServices: ActivityServices
 ) {
-    @Serializable data class ActivityCreationInput(
+    @Serializable data class ActivityInput(
         val duration: Param = null,
         val date: Param = null,
         val rid: Param = null,
@@ -43,7 +43,7 @@ class ActivityRoutes(
 
         val sportID = request.path("sid")
 
-        val activityBody = Json.decodeFromString<ActivityCreationInput>(request.bodyString())
+        val activityBody = Json.decodeFromString<ActivityInput>(request.bodyString())
         val token: UserToken? = getToken(request)
 
         val activityId = activityServices.createActivity(
@@ -150,9 +150,20 @@ class ActivityRoutes(
             .body(bodyString)
     }
 
+    /**
+     * Updates an activity using the information received from the body of the request.
+     */
     private fun updateActivity(request: Request): Response {
         logger.infoLogRequest(request)
-        TODO("Not yet implemented")
+
+        val activityBody = Json.decodeFromString<ActivityInput>(request.bodyString())
+        val activityId = request.path("aid")
+        val sportId = request.path("sid")
+        val token: UserToken? = getToken(request)
+
+        activityServices.updateActivity(token, sportId, activityId, activityBody.duration, activityBody.date, activityBody.rid)
+
+        return Response(Status.NO_CONTENT)
     }
 
     /**
@@ -187,7 +198,7 @@ class ActivityRoutes(
             "/{aid}" bind Method.GET to ::getActivity,
             "/" bind Method.GET to ::getActivitiesBySport,
             "/" bind Method.DELETE to ::deleteActivities,
-            "/" bind Method.PUT to ::updateActivity
+            "/{aid}" bind Method.PUT to ::updateActivity
         ),
         "/users/{uid}/activities" bind Method.GET to ::getActivitiesByUser,
         "/sports/{sid}/users" bind Method.GET to ::getUsersByActivity,

@@ -40,3 +40,9 @@ class UnauthenticatedError(message: String = "Invalid or missing token") : AppEr
  */
 data class InternalError(override val message: String) :
     AppError(2004, message)
+
+/**
+ * Error thrown when a user tries to access a resource that isn't his.
+ * @property message The error message.
+ */
+class ForbiddenError(message: String = "Can't access a resource with a token that isn't associated to it") : AppError(2005, message)

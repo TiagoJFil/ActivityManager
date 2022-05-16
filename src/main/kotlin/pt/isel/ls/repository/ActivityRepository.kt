@@ -31,6 +31,24 @@ interface ActivityRepository {
     ): ActivityID
 
     /**
+     * Updates an existing activity using the parameters received
+     *
+     * @param newDate the activity date
+     * @param newDuration the activity duration
+     * @param newRouteID the activity route ID
+     * @param activityID the activity ID
+     *
+     * @return [Boolean] indicating if the activity was updated or not
+     */
+    fun updateActivity(
+        newDate: LocalDate?,
+        newDuration: Activity.Duration?,
+        newRouteID: RouteID?,
+        activityID: ActivityID,
+        removeRoute: Boolean
+    ): Boolean
+
+    /**
      * Gets all the activities that were created by the given user.
      * @param userID the user unique identifier that the activity must have
      * @return [List] of [ActivityDTO] that were created by the given user

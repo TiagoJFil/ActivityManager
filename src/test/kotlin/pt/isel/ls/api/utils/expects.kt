@@ -45,6 +45,14 @@ fun Response.expectUnauthorized(): Response {
 }
 
 /**
+ * Ensure that the response has the FORBIDDEN status code.
+ */
+fun Response.expectForbidden(): Response {
+    assertEquals(Status.FORBIDDEN, this.status)
+    return this
+}
+
+/**
  * Ensure that the response has the NO_CONTENT status code.
  */
 fun Response.expectNoContent(): Response {

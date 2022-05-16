@@ -81,7 +81,7 @@ fun PreparedStatement.applyPagination(paginationInfo: PaginationInfo, indexes: P
  * @param table the name of the table to query
  * @param block the block to execute with the resultSet of the row
  */
-fun <T> DataSource.queryTableByID(id: ID, table: String, block: (ResultSet) -> T,): T =
+fun <T> DataSource.queryTableByID(id: ID, table: String, block: (ResultSet) -> T): T =
     connection.transaction {
         val query = """SELECT * FROM $table WHERE id = ?"""
         prepareStatement(query).use { ps ->

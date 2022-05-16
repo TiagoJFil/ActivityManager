@@ -32,6 +32,7 @@ import pt.isel.ls.utils.service.requireRoute
 import pt.isel.ls.utils.service.requireSport
 import pt.isel.ls.utils.service.requireUser
 import pt.isel.ls.utils.service.toDTO
+import pt.isel.ls.utils.service.toNullIfBlank
 import pt.isel.ls.utils.traceFunction
 import java.text.ParseException
 import java.util.Date
@@ -195,6 +196,65 @@ class ActivityServices(
 
         return activityRepository.getActivities(sidInt, orderByToSend, date?.toLocalDate(), ridInt, paginationInfo)
             .map(Activity::toDTO)
+    }
+
+    /**
+     * Updates an activity with the new given data.
+     * @param token the token of the user that wants to update the activity
+     * @param activityID the unique identifier of the activity
+     * @param duration the duration of the activity
+     * @param date the date of the activity
+     * @param rid the route associated to the activity
+     */
+    fun updateActivity(token: UserToken?, sportID: Param, activityID: Param, duration: Param, date: Param, rid: Param) {
+        try {
+            logger.traceFunction(::updateActivity.name) {
+                listOf(
+                    DURATION_PARAM to duration,
+                    DATE_PARAM to date,
+                    ROUTE_ID_PARAM to rid
+                )
+            }
+
+            val userID = userRepository.requireAuthenticated(token)
+            userRepository.requireUser(userID)
+            if (userID != getActivity(activityID, sportID).user)
+                throw ForbiddenError()
+
+            if (duration == null && date == null && rid == null) return
+
+            val safeActivityID = requireParameter(activityID, ACTIVITY_ID_PARAM)
+            val aidInt = requireIdInteger(safeActivityID, ACTIVITY_ID_PARAM)
+
+            val handledDuration = duration.toNullIfBlank()
+            val durationValue = handledDuration?.let {
+                val parsedDate: Date = Duration.format.parse(duration)
+                val millis: Long = parsedDate.time
+                Duration(millis)
+            }
+
+            val removeRoute = rid?.isBlank() == true
+            val handledRoute = rid?.toNullIfBlank()
+            val ridInt = handledRoute?.let {
+                val ridInt = requireIdInteger(it, ROUTE_ID_PARAM)
+                routeRepository.requireRoute(ridInt)
+                ridInt
+            }
+
+            if (!activityRepository.updateActivity(
+                    newDate = date?.toLocalDate(),
+                    newDuration = durationValue,
+                    newRouteID = ridInt,
+                    activityID = aidInt,
+                    removeRoute
+                )
+            )
+                throw ResourceNotFound(SportsServices.RESOURCE_NAME, safeActivityID)
+        } catch (e: ParseException) {
+            throw InvalidParameter(DURATION_INVALID_FORMAT)
+        } catch (e: IllegalArgumentException) {
+            throw InvalidParameter(DATE_INVALID_FORMAT)
+        }
     }
 
     /**

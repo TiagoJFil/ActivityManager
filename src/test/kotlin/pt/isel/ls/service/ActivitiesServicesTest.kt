@@ -9,6 +9,7 @@ import pt.isel.ls.config.testActivity
 import pt.isel.ls.config.testRoute
 import pt.isel.ls.config.testSport
 import pt.isel.ls.service.dto.ActivityDTO
+import pt.isel.ls.service.entities.Activity.Duration
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertEquals
@@ -16,11 +17,16 @@ import kotlin.test.assertFailsWith
 
 class ActivitiesServicesTest {
 
-    private var activitiesServices = TEST_ENV.activityServices
+    private val env = TEST_ENV
+    private var activitiesServices = env.activityServices
+    private var routeServices = env.routeServices
+    private var userServices = env.userServices
 
     @After
     fun tearDown() {
         activitiesServices = TEST_ENV.activityServices
+        routeServices = TEST_ENV.routeServices
+        userServices = TEST_ENV.userServices
     }
 
     @Test
@@ -223,7 +229,13 @@ class ActivitiesServicesTest {
 
     @Test
     fun `get all activities returns a list with existing activities`() {
-        val aid = activitiesServices.createActivity(GUEST_TOKEN, testSport.id.toString(), "02:10:32.123", "2002-05-20", testRoute.id.toString())
+        val aid = activitiesServices.createActivity(
+            GUEST_TOKEN,
+            testSport.id.toString(),
+            "02:10:32.123",
+            "2002-05-20",
+            testRoute.id.toString()
+        )
         val activity = activitiesServices.getActivity(aid.toString(), "0")
         val activities = activitiesServices.getAllActivities(PaginationInfo(10, 0))
         assertEquals(listOf(testActivity.toDTO(), activity), activities)
@@ -236,10 +248,292 @@ class ActivitiesServicesTest {
         }
     }
 
+    @Test
+    fun `update all the properties of the activity successfully`() {
+        val rid = routeServices.createRoute(GUEST_TOKEN, "a", "b", 220.0)
+
+        activitiesServices.updateActivity(
+            GUEST_TOKEN,
+            testSport.id.toString(),
+            testActivity.id.toString(),
+            "05:10:32.123",
+            "2012-05-20",
+            rid.toString()
+        )
+
+        val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
+        val expected = ActivityDTO(
+            testActivity.id,
+            "2012-05-20",
+            "05:10:32.123",
+            testActivity.sport,
+            rid,
+            guestUser.id
+        )
+        assertEquals(expected, activity)
+    }
+
+    @Test
+    fun `update date of the activity successfully`() {
+
+        activitiesServices.updateActivity(
+            GUEST_TOKEN,
+            testSport.id.toString(),
+            testActivity.id.toString(),
+            null,
+            "2016-07-20",
+            null
+        )
+
+        val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
+        val expected = ActivityDTO(
+            testActivity.id,
+            "2016-07-20",
+            Duration(testActivity.duration.millis).toFormat(),
+            testActivity.sport,
+            testActivity.route,
+            guestUser.id
+        )
+        assertEquals(expected, activity)
+    }
+
+    @Test
+    fun `update route of the activity successfully`() {
+        val rid = routeServices.createRoute(GUEST_TOKEN, "a", "b", 220.0)
+        activitiesServices.updateActivity(
+            GUEST_TOKEN,
+            testSport.id.toString(),
+            testActivity.id.toString(),
+            null,
+            null,
+            rid.toString()
+        )
+
+        val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
+        val expected = ActivityDTO(
+            testActivity.id,
+            testActivity.date.toString(),
+            Duration(testActivity.duration.millis).toFormat(),
+            testActivity.sport,
+            rid,
+            guestUser.id
+        )
+        assertEquals(expected, activity)
+    }
+
+    @Test
+    fun `update duration of the activity successfully`() {
+        activitiesServices.updateActivity(
+            GUEST_TOKEN,
+            testSport.id.toString(),
+            testActivity.id.toString(),
+            "15:10:32.123",
+            null,
+            null
+        )
+
+        val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
+        val expected = ActivityDTO(
+            testActivity.id,
+            testActivity.date.toString(),
+            "15:10:32.123",
+            testActivity.sport,
+            testActivity.route,
+            guestUser.id
+        )
+        assertEquals(expected, activity)
+    }
+
+    @Test
+    fun `update duration and route of the activity successfully`() {
+        val rid = routeServices.createRoute(GUEST_TOKEN, "a", "b", 220.0)
+        activitiesServices.updateActivity(
+            GUEST_TOKEN,
+            testSport.id.toString(),
+            testActivity.id.toString(),
+            "20:10:32.123",
+            null,
+            rid.toString()
+        )
+
+        val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
+        val expected = ActivityDTO(
+            testActivity.id,
+            testActivity.date.toString(),
+            "20:10:32.123",
+            testActivity.sport,
+            rid,
+            guestUser.id
+        )
+        assertEquals(expected, activity)
+    }
+
+    @Test
+    fun `update duration and date of the activity successfully`() {
+        activitiesServices.updateActivity(
+            GUEST_TOKEN,
+            testSport.id.toString(),
+            testActivity.id.toString(),
+            "20:10:32.123",
+            "2018-08-20",
+            null
+        )
+
+        val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
+        val expected = ActivityDTO(
+            testActivity.id,
+            "2018-08-20",
+            "20:10:32.123",
+            testActivity.sport,
+            testActivity.route,
+            guestUser.id
+        )
+        assertEquals(expected, activity)
+    }
+
+    @Test
+    fun `update date and route of the activity successfully`() {
+        val rid = routeServices.createRoute(GUEST_TOKEN, "a", "b", 220.0)
+        activitiesServices.updateActivity(
+            GUEST_TOKEN,
+            testSport.id.toString(),
+            testActivity.id.toString(),
+            null,
+            "2019-08-20",
+            rid.toString()
+        )
+
+        val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
+        val expected = ActivityDTO(
+            testActivity.id,
+            "2019-08-20",
+            Duration(testActivity.duration.millis).toFormat(),
+            testActivity.sport,
+            rid,
+            guestUser.id
+        )
+        assertEquals(expected, activity)
+    }
+
+    @Test
+    fun `update with blank route removes the route successfully`() {
+        activitiesServices.updateActivity(
+            GUEST_TOKEN,
+            testSport.id.toString(),
+            testActivity.id.toString(),
+            null,
+            null,
+            ""
+        )
+
+        val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
+        val expected = ActivityDTO(
+            testActivity.id,
+            testActivity.date.toString(),
+            Duration(testActivity.duration.millis).toFormat(),
+            testActivity.sport,
+            null,
+            guestUser.id
+        )
+        assertEquals(expected, activity)
+    }
+
+    @Test
+    fun `updating nothing keeps the previous activity`() {
+        activitiesServices.updateActivity(
+            GUEST_TOKEN,
+            testSport.id.toString(),
+            testActivity.id.toString(),
+            null,
+            null,
+            null
+        )
+
+        val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
+        assertEquals(testActivity.toDTO(), activity)
+    }
+
+    @Test
+    fun `update activity with user that didn't create it throws UnauthenticatedError`() {
+        val (token, _) = userServices.createUser("John", "john@email.com")
+
+        assertFailsWith<ForbiddenError> {
+            activitiesServices.updateActivity(
+                token,
+                testSport.id.toString(),
+                testActivity.id.toString(),
+                null,
+                null,
+                null
+            )
+        }
+    }
+
+    @Test
+    fun `update activity that does not exists`() {
+        assertFailsWith<ResourceNotFound> {
+            activitiesServices.updateActivity(
+                GUEST_TOKEN,
+                testSport.id.toString(),
+                "999986",
+                null,
+                null,
+                null
+            )
+        }
+    }
+
+    @Test
+    fun `update activity with invalid date fails`() {
+        assertFailsWith<InvalidParameter> {
+            activitiesServices.updateActivity(
+                GUEST_TOKEN,
+                testSport.id.toString(),
+                testActivity.id.toString(),
+                null,
+                "2562-001-689",
+                null
+            )
+        }
+    }
+
+    @Test
+    fun `update activity with invalid duration fails`() {
+        assertFailsWith<InvalidParameter> {
+            activitiesServices.updateActivity(
+                GUEST_TOKEN,
+                testSport.id.toString(),
+                testActivity.id.toString(),
+                "1234566",
+                null,
+                null
+            )
+        }
+    }
+
+    @Test
+    fun `update activity with a route that doesn't exist fails`() {
+        assertFailsWith<ResourceNotFound> {
+            activitiesServices.updateActivity(
+                GUEST_TOKEN,
+                testSport.id.toString(),
+                testActivity.id.toString(),
+                null,
+                null,
+                "9999898"
+            )
+        }
+    }
+
     // this test should not delete the activities if any goes wrong
     @Test
     fun `Delete activities doesnt work when deleting the same activity twice`() {
-        val aid = activitiesServices.createActivity(GUEST_TOKEN, testSport.id.toString(), "02:10:32.123", "2002-05-20", testRoute.id.toString())
+        val aid = activitiesServices.createActivity(
+            GUEST_TOKEN,
+            testSport.id.toString(),
+            "02:10:32.123", "2002-05-20",
+            testRoute.id.toString()
+        )
         val activities = activitiesServices.getAllActivities(PaginationInfo(10, 0))
         assertFailsWith<InvalidParameter> {
             activitiesServices.deleteActivities(GUEST_TOKEN, "$aid,$aid", testSport.id.toString())
