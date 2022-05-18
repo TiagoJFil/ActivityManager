@@ -30,9 +30,12 @@ class UserRoutes(
     @Serializable data class UserInput(val name: Param = null, val email: Param = null)
     @Serializable data class UserIDOutput(val authToken: UserToken, val id: UserID)
     @Serializable data class UserListOutput(val users: List<UserDTO>)
+    @Serializable data class AuthInput(val email: Param = null)
+    @Serializable data class AuthOutput(val authToken: UserToken)
 
     companion object {
         private val logger = getLoggerFor<UserRoutes>()
+        private const val UID_PLACEHOLDER = "uid"
     }
 
     /**
@@ -57,7 +60,7 @@ class UserRoutes(
     private fun getUserDetails(request: Request): Response {
         logger.infoLogRequest(request)
 
-        val userId = request.path("uid")
+        val userId = request.path(UID_PLACEHOLDER)
         val userResponse = userServices.getUserByID(userId)
         val userEncoded = Json.encodeToString(userResponse)
         return Response(Status.OK)
@@ -79,16 +82,33 @@ class UserRoutes(
             .body(usersJsonString)
     }
 
-    val handler: RoutingHttpHandler =
+    /**
+     * Gets the token for the user that is identified by the email that comes in the body of the HTTP request.
+     */
+    private fun authenticate(request: Request): Response {
+        logger.infoLogRequest(request)
+
+        val bodyString = request.bodyString()
+        val body = Json.decodeFromString<AuthInput>(bodyString)
+
+        val token = userServices.getTokenByEmail(body.email)
+
+        return Response(Status.OK)
+            .contentJson()
+            .body(Json.encodeToString(AuthOutput(token)))
+    }
+
+    val handler: RoutingHttpHandler = routes(
         "/users" bind routes(
             "/" bind Method.POST to ::createUser,
             "/" bind Method.GET to ::getUsers,
-            "/{uid}" bind Method.GET to ::getUserDetails,
+            "/{$UID_PLACEHOLDER}" bind Method.GET to ::getUserDetails,
             // TODO: UserRankings, UserByActivity, the first one is the one that has the least duration on the activity.
             // TODO: Search without a filter button.
-            // TODO: Ter uma vista que se passa o nome do utilizador e dá o token para usar nos pedidos.
             // TODO: Trocar o display da activity com o nome do sport e a data da mesma.
-        )
+        ),
+        "/login" bind Method.POST to ::authenticate
+    )
 }
 
 fun User(userServices: UserServices) =

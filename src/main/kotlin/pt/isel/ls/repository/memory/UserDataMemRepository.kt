@@ -79,6 +79,14 @@ class UserDataMemRepository(guest: User) : UserRepository {
     override fun getUserIDBy(token: UserToken): UserID? = tokenTable[token]
 
     /**
+     * Gets the user token of the user with the given email.
+     */
+    override fun getTokenByEmail(email: Email): UserToken? {
+        val userId = emailsMap[email.value]
+        return tokenTable.entries.firstOrNull { it.value == userId }?.key
+    }
+
+    /**
      * @param userID user's unique identifier
      * @return A [UserDTO] object or null if there is no user identified by [userID]
      */

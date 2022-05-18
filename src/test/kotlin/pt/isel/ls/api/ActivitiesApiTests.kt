@@ -1,6 +1,7 @@
 package pt.isel.ls.api
 
 import org.http4k.core.Method.DELETE
+import org.http4k.core.Method.POST
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.junit.After
@@ -396,7 +397,7 @@ class ActivitiesApiTests {
         val body = ActivityInput("02:16:32.993", "2020-01-01", testRoute.id.toString())
         testClient.createActivity(body, testSport.id)
 
-        deleteActivities(testSport.id, "0,1", GUEST_TOKEN).expectNoContent()
+        deleteActivities("0,1", GUEST_TOKEN).expectNoContent()
     }
 
     @Test
@@ -675,9 +676,9 @@ class ActivitiesApiTests {
                 .header("Authorization", "Bearer $token")
         )
 
-    private fun deleteActivities(sportID: SportID, activities: String, token: UserToken) =
+    private fun deleteActivities(activities: String, token: UserToken) =
         testClient(
-            Request(DELETE, "/api/sports/$sportID/activities/?activityIDs=$activities")
+            Request(POST, "/api/activities/deletes?activityIDs=$activities")
                 .header("Authorization", "Bearer $token")
         )
 }

@@ -21,7 +21,7 @@ import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
-import java.util.UUID
+import java.util.*
 
 /**
  * @param parameter the parameter to check.
@@ -151,6 +151,7 @@ fun RouteRepository.requireOwnership(userID: UserID, routeID: RouteID) =
 fun ActivityRepository.requireOwnership(userID: UserID, activityID: ActivityID) =
     this.getActivity(activityID)
         ?.let { if (userID != it.user) throw AuthorizationError("You are not the owner of this activity") }
+        ?: throw ResourceNotFound("Activity", activityID.toString())
 
 /**
  * Ensures that the activity identified by the given id exists.
