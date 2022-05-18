@@ -21,7 +21,6 @@ import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
-import pt.isel.ls.utils.service.requireActivity
 import pt.isel.ls.utils.service.requireActivityWith
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireIdInteger
@@ -318,9 +317,8 @@ class ActivityServices(
      * This operation is atomic
      * @param token The token of the user that created the activities.
      * @param activityIds The activityIds to be deleted.
-     * @param sportID The sport id of the activities to be deleted.
      */
-    fun deleteActivities(token: UserToken?, activityIds: Param, sportID: Param): Boolean {
+    fun deleteActivities(token: UserToken?, activityIds: Param): Boolean {
         logger.traceFunction(::deleteActivities.name) {
             listOf(
                 ACTIVITIES_ID_PARAM to activityIds
@@ -328,14 +326,10 @@ class ActivityServices(
         }
         val userID = userRepository.requireAuthenticated(token)
         val safeAIDS = requireParameter(activityIds, "activityIDs")
-        val safeSID = requireParameter(sportID, SPORT_ID_PARAM)
-        val sidInt = requireIdInteger(safeSID, SPORT_ID_PARAM)
 
         val checkedAIDS = safeAIDS.split(",").map {
             val aidInt = requireIdInteger(it, "Each activityID")
-            activityRepository.requireActivity(aidInt)
             activityRepository.requireOwnership(userID, aidInt)
-            activityRepository.requireActivityWith(aidInt, sidInt)
             aidInt
         }
         if (!activityRepository.deleteActivities(checkedAIDS))

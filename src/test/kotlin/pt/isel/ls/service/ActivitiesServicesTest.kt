@@ -244,7 +244,7 @@ class ActivitiesServicesTest {
     @Test
     fun `try to delete activities that dont exist`() {
         assertFailsWith<ResourceNotFound> {
-            activitiesServices.deleteActivities(GUEST_TOKEN, "1,4,2,3,6", testSport.id.toString())
+            activitiesServices.deleteActivities(GUEST_TOKEN, "1,4,2,3,6")
         }
     }
 
@@ -536,7 +536,7 @@ class ActivitiesServicesTest {
         )
         val activities = activitiesServices.getAllActivities(PaginationInfo(10, 0))
         assertFailsWith<InvalidParameter> {
-            activitiesServices.deleteActivities(GUEST_TOKEN, "$aid,$aid", testSport.id.toString())
+            activitiesServices.deleteActivities(GUEST_TOKEN, "$aid,$aid")
         }
         val activities2 = activitiesServices.getAllActivities(PaginationInfo(10, 0))
         assertEquals(activities, activities2)

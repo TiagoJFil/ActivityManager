@@ -99,4 +99,29 @@ class UserServicesTest {
             userServices.createUser("abcdefghijklmnopqrstuvwxyz", "asd@gma.com")
         }
     }
+
+    @Test
+    fun `create a user and login and get it's token for auth`() {
+        val (expectedToken, userId) = userServices.createUser("abc", "randomEmail@email.com")
+        val actualToken = userServices.getTokenByEmail("randomEmail@email.com")
+        val user = userServices.getUserByID(userId.toString())
+
+        assertEquals(user.email, "randomEmail@email.com")
+
+        assertEquals(expectedToken, actualToken)
+    }
+
+    @Test
+    fun `get a token for a email that does not exist gives an invalid parameter`() {
+        assertFailsWith<InvalidParameter> {
+            userServices.getTokenByEmail("random@email")
+        }
+    }
+
+    @Test
+    fun `get a token for an invalid  email  gives an invalid parameter`() {
+        assertFailsWith<InvalidParameter> {
+            userServices.getTokenByEmail("invalidEmail")
+        }
+    }
 }

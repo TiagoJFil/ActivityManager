@@ -83,4 +83,18 @@ class UserServices(
             .getUsers(paginationInfo)
             .map(User::toDTO)
     }
+
+    /**
+     * Gets the token of the user that has the given email.
+     * @param email the email of the user
+     * @return the token of the user
+     */
+    fun getTokenByEmail(email: Param): UserToken {
+        logger.traceFunction(::getTokenByEmail.name) { listOf(EMAIL_PARAM to email) }
+
+        val safeEmail = requireParameter(email, EMAIL_PARAM)
+
+        return userRepository.getTokenByEmail(Email(safeEmail))
+            ?: throw InvalidParameter("User with $EMAIL_PARAM $safeEmail not found")
+    }
 }

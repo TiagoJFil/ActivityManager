@@ -130,10 +130,9 @@ class ActivityRoutes(
         logger.infoLogRequest(request)
 
         val activityIds = request.query("activityIDs")
-        val sportID = request.path("sid")
         val token: UserToken? = getBearerToken(request)
 
-        activityServices.deleteActivities(token, activityIds, sportID)
+        activityServices.deleteActivities(token, activityIds)
         return Response(Status.NO_CONTENT)
     }
 
@@ -200,12 +199,15 @@ class ActivityRoutes(
             "/{aid}" bind Method.DELETE to ::deleteActivity,
             "/{aid}" bind Method.GET to ::getActivity,
             "/" bind Method.GET to ::getActivitiesBySport,
-            "/" bind Method.DELETE to ::deleteActivities,
             "/{aid}" bind Method.PUT to ::updateActivity
         ),
         "/users/{uid}/activities" bind Method.GET to ::getActivitiesByUser,
         "/sports/{sid}/users" bind Method.GET to ::getUsersByActivity,
-        "/activities" bind Method.GET to ::getAllActivities
+        "/activities" bind routes(
+            "/" bind Method.GET to ::getAllActivities,
+            "/deletes" bind Method.POST to ::deleteActivities
+        )
+
     )
 }
 
