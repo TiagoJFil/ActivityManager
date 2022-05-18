@@ -19,7 +19,7 @@ interface SportRepository {
     /**
      * Gets all the sports in the repository.
      */
-    fun getSports(paginationInfo: PaginationInfo): List<Sport>
+    fun getSports(search: String?, paginationInfo: PaginationInfo): List<Sport>
 
     /**
      * Gets a sport by its id.

@@ -60,6 +60,7 @@ class SportRoutes(
 
         val sportID = request.path("sid")
         val sport = sportsServices.getSport(sportID)
+
         val sportJson = Json.encodeToString(sport)
 
         return Response(Status.OK)
@@ -72,7 +73,10 @@ class SportRoutes(
      */
     private fun getSports(request: Request): Response {
         logger.infoLogRequest(request)
-        val sports = sportsServices.getSports(PaginationInfo.fromRequest(request))
+
+        val search = request.query("search")
+
+        val sports = sportsServices.getSports(search, PaginationInfo.fromRequest(request))
         val bodyString = Json.encodeToString(SportListOutput(sports))
         return Response(Status.OK)
             .contentJson()

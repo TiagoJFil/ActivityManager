@@ -3,6 +3,7 @@ package pt.isel.ls.service
 import org.junit.After
 import org.junit.Test
 import pt.isel.ls.api.utils.TEST_ENV
+import pt.isel.ls.api.utils.createSport
 import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.config.testSport
@@ -25,7 +26,7 @@ class SportServicesTest {
 
     @Test
     fun `get all the sports list`() {
-        assertEquals(listOf(testSport.toDTO()), sportsServices.getSports(PaginationInfo(10, 0)))
+        assertEquals(listOf(testSport.toDTO()), sportsServices.getSports(null, PaginationInfo(10, 0)))
     }
 
     @Test
@@ -89,8 +90,22 @@ class SportServicesTest {
             sportsServices.getSport(sportID.toString())
         }
         val allSports = listOf(testSport.toDTO()) + sports
-        assertEquals(1001, sportsServices.getSports(PaginationInfo(10000, 0)).size)
-        assertEquals(allSports, sportsServices.getSports(PaginationInfo(1002, 0)))
+        assertEquals(1001, sportsServices.getSports(null, PaginationInfo(10000, 0)).size)
+        assertEquals(allSports, sportsServices.getSports(null, PaginationInfo(1002, 0)))
+    }
+
+    @Test
+    fun `get sports with search query list`() {
+        val sportID1 = sportsServices.createSport(GUEST_TOKEN, "Basketball", "Game played with hands")
+        val sportID2 = sportsServices.createSport(GUEST_TOKEN, "Football", "Game played with feet")
+        val sportID3 = sportsServices.createSport(GUEST_TOKEN, "Footvolley", "Game played with hands")
+        val sportList = sportsServices.getSports("foot", PaginationInfo(10, 0))
+        val sportList2 = sportsServices.getSports("hands", PaginationInfo(10, 0))
+        val sport1 = SportDTO(sportID1, "Basketball", "Game played with hands", guestUser.id)
+        val sport2 = SportDTO(sportID2, "Football", "Game played with feet", guestUser.id)
+        val sport3 = SportDTO(sportID3, "Footvolley", "Game played with hands", guestUser.id)
+        assertEquals(listOf(sport2, sport3), sportList)
+        assertEquals(listOf(sport1, sport3), sportList2)
     }
 
     @Test

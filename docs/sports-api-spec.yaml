@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   description: "Api reference for Sports"
-  version: "0.2.1"
+  version: "0.3.3"
   title: "Swagger Sports"
   termsOfService: "https://swagger.io/terms/"
   license:
@@ -44,6 +44,33 @@ paths:
                 $ref: "#/components/schemas/User"
         "404":
           description: "User not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+  /login:
+    post:
+      tags:
+        - "User"
+      summary: "Login"
+      description: "Gets a token for a user with the given email"
+      operationId: "gettokenbyemail"
+      requestBody:
+        description: "Email of a user"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthInput"
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthOutput"
+        "400":
+          description: "Invalid username supplied"
           content:
             application/json:
               schema:
@@ -266,6 +293,8 @@ paths:
       summary: "Update route by route ID"
       description: "Updates a route by it's identifier"
       operationId: "updateRouteByID"
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: "rid"
           in: "path"
@@ -302,6 +331,13 @@ paths:
       description: "Gets all the sports."
       operationId: "getsports"
       parameters:
+        - name: "search"
+          in: "query"
+          description: "The text introduced for search purposes"
+          required: false
+          schema:
+            type: "string"
+          example: "football"
         - name: "skip"
           in: "query"
           description: "The starting position of the subsequence to return"
@@ -668,6 +704,8 @@ paths:
       summary: "Updates a sport"
       description: "Updates a sport by id"
       operationId: "updatesport"
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: "sid"
           in: "path"
@@ -813,6 +851,18 @@ components:
         id:
           type: "integer"
           example: 45
+    AuthInput:
+      type: "object"
+      properties:
+        email:
+          type: "string"
+          example: "guest@email.com"
+    AuthOutput:
+      type: "object"
+      properties:
+        authToken:
+          type: "string"
+          example: "10a3fa15-6c12-43d0-9112-caa7eddf3249"
     Route:
       type: "object"
       properties:

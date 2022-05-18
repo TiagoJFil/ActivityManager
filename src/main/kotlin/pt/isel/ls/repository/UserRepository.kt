@@ -51,4 +51,11 @@ interface UserRepository {
      * @return [UserID] the user id of the user with the given token.
      */
     fun getUserIDBy(token: UserToken): UserID?
+
+    /**
+     * Gets the user token of the user with the given email.
+     * @param email the email of the user.
+     * @return [UserToken] the user token of the user with the given email.
+     */
+    fun getTokenByEmail(email: Email): UserToken?
 }

@@ -155,6 +155,24 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
         }
 
     /**
+     * Gets the user token of the user with the given email.
+     * @param email the email of the user.
+     * @return [UserToken] the user token of the user with the given email.
+     */
+    override fun getTokenByEmail(email: Email): UserToken? {
+        val query =
+            """SELECT token FROM $tokenTable WHERE "user" = (SELECT "user" FROM $emailTable WHERE email = ?)"""
+        return dataSource.connection.transaction {
+            prepareStatement(query).use { stmt ->
+                stmt.setString(1, email.value)
+                stmt.executeQuery().use { resultSet ->
+                    resultSet.ifNext { resultSet.getString("token") }
+                }
+            }
+        }
+    }
+
+    /**
      * Checks if the user with the given id exists.
      *
      * @param userID the id of the user to be checked.
