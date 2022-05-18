@@ -25,7 +25,62 @@ class RouteServicesTest {
 
     @Test
     fun `get routes without creating returns a list with the testRoute`() {
-        assertEquals(listOf(testRoute.toDTO()), routeServices.getRoutes(PaginationInfo(10, 0)))
+        assertEquals(listOf(testRoute.toDTO()), routeServices.getRoutes(PaginationInfo(10, 0), null, null))
+    }
+
+    @Test
+    fun `get routes with a startlocation search query`() {
+        val newRid = routeServices.createRoute(
+            GUEST_TOKEN,
+            startLocation = "Porto",
+            endLocation = "Lisboa",
+            distance = 100.1,
+        )
+
+        val routes = routeServices.getRoutes(PaginationInfo(10, 0), "Porto", null)
+        assertEquals(1, routes.size)
+        assertEquals(newRid, routes[0].id)
+    }
+
+    @Test
+    fun `get routes with an endlocation search query`() {
+        val newRid = routeServices.createRoute(
+            GUEST_TOKEN,
+            startLocation = "Porto",
+            endLocation = "Lisboa",
+            distance = 100.1,
+        )
+
+        val routes = routeServices.getRoutes(PaginationInfo(10, 0), null, "Lisboa")
+        assertEquals(1, routes.size)
+        assertEquals(newRid, routes[0].id)
+    }
+
+    @Test
+    fun `get routes with a startlocation and an endlocation search query`() {
+        val newRid = routeServices.createRoute(
+            GUEST_TOKEN,
+            startLocation = "Porto",
+            endLocation = "Lisboa",
+            distance = 100.1,
+        )
+
+        val routes = routeServices.getRoutes(PaginationInfo(10, 0), "Porto", "Lisboa")
+        assertEquals(1, routes.size)
+        assertEquals(newRid, routes[0].id)
+    }
+
+    @Test
+    fun `get routes without finding a location`() {
+        routeServices.createRoute(
+            GUEST_TOKEN,
+            startLocation = "Porto",
+            endLocation = "Lisboa",
+            distance = 100.1,
+        )
+
+        val routes = routeServices.getRoutes(PaginationInfo(10, 0), null, "Porto")
+        assertEquals(0, routes.size)
     }
 
     @Test

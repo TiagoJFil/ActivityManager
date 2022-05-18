@@ -134,32 +134,23 @@ fun UserRepository.requireUser(userID: UserID) {
 /**
  * Ensures that the user owns the received sport.
  */
-fun SportRepository.requireOwnership(userID: UserID, sportID: SportID) =
-    this.getSport(sportID)
-        ?.let { if (userID != it.user) throw AuthorizationError("You are not the owner of this sport") }
-
+fun SportRepository.requireOwnership(userID: UserID, sportID: SportID) {
+    val route = getSport(sportID) ?: throw ResourceNotFound("Sport", sportID.toString())
+    if (route.user != userID) throw AuthorizationError("You are not the owner of this sport")
+}
 /**
  * Ensures that the user owns the received route.
  */
-fun RouteRepository.requireOwnership(userID: UserID, routeID: RouteID) =
-    this.getRoute(routeID)
-        ?.let { if (userID != it.user) throw AuthorizationError("You are not the owner of this route") }
-
+fun RouteRepository.requireOwnership(userID: UserID, routeID: RouteID) {
+    val route = getRoute(routeID) ?: throw ResourceNotFound("Route", routeID.toString())
+    if (userID != route.user) throw AuthorizationError("You are not the owner of this route")
+}
 /**
  * Ensures that the user owns the received activity.
  */
-fun ActivityRepository.requireOwnership(userID: UserID, activityID: ActivityID) =
-    this.getActivity(activityID)
-        ?.let { if (userID != it.user) throw AuthorizationError("You are not the owner of this activity") }
-
-/**
- * Ensures that the activity identified by the given id exists.
- *
- * @param activityID the activity ID to check.
- * @throws ResourceNotFound if the user does not exist.
- */
-fun ActivityRepository.requireActivity(activityID: ActivityID) {
-    if (!hasActivity(activityID)) throw ResourceNotFound("Activity", activityID.toString())
+fun ActivityRepository.requireOwnership(userID: UserID, activityID: ActivityID) {
+    val activity = getActivity(activityID) ?: throw ResourceNotFound("Activity", activityID.toString())
+    if (userID != activity.user) throw AuthorizationError("You are not the owner of this activity")
 }
 
 fun ActivityRepository.requireActivityWith(activityID: ActivityID, sportID: SportID) {

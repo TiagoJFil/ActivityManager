@@ -24,9 +24,10 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
     /**
      * Returns all the routes stored in the repository.
      */
-    override fun getRoutes(paginationInfo: PaginationInfo): List<Route> =
+    override fun getRoutes(paginationInfo: PaginationInfo, startLocationQuery: String?, endLocationQuery: String?): List<Route> =
         dataSource.connection.transaction {
-            val query = "SELECT * FROM $routeTable LIMIT ? OFFSET ?"
+            val query = buildSearchQuery(startLocationQuery, endLocationQuery)
+
             prepareStatement(query).use { stmt ->
                 stmt.applyPagination(paginationInfo, indexes = Pair(1, 2))
                 val rs = stmt.executeQuery()
@@ -109,6 +110,27 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
                 return stmt.executeUpdate() == 1
             }
         }
+    }
+
+    /**
+     * Auxiliary function to build the query to the get Routes function
+     */
+    private fun buildSearchQuery(startLocationQuery: String?, endLocationQuery: String?): String {
+        val query = StringBuilder("SELECT * FROM $routeTable")
+        if (startLocationQuery != null || endLocationQuery != null)
+            query.append(" WHERE ")
+
+        if (startLocationQuery != null)
+            query.append("startlocation LIKE '%${startLocationQuery.lowercase()}%'")
+
+        if (startLocationQuery != null && endLocationQuery != null)
+            query.append(" AND ")
+
+        if (endLocationQuery != null)
+            query.append("endlocation LIKE '%${endLocationQuery.lowercase()}%'")
+
+        query.append(" LIMIT ? OFFSET ?")
+        return query.toString()
     }
 
     /**

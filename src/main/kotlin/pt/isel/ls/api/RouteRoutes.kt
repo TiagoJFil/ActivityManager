@@ -13,6 +13,7 @@ import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.service.RouteServices
 import pt.isel.ls.service.dto.RouteDTO
+import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.api.contentJson
@@ -27,8 +28,8 @@ class RouteRoutes(
 ) {
     @Serializable data class RouteListOutput(val routes: List<RouteDTO>)
     @Serializable data class RouteInput(
-        val startLocation: String? = null,
-        val endLocation: String? = null,
+        val startLocation: Param = null,
+        val endLocation: Param = null,
         val distance: Double? = null
     )
     @Serializable data class RouteIDOutput(val routeID: RouteID)
@@ -41,8 +42,9 @@ class RouteRoutes(
      */
     private fun getRoutes(request: Request): Response {
         logger.infoLogRequest(request)
-
-        val routes = routeServices.getRoutes(PaginationInfo.fromRequest(request))
+        val endLocationQuery = request.query("endLocation")
+        val startLocationQuery = request.query("startLocation")
+        val routes = routeServices.getRoutes(PaginationInfo.fromRequest(request), startLocationQuery, endLocationQuery)
         val bodyString = Json.encodeToString(RouteListOutput(routes))
         return Response(Status.OK).contentJson().body(bodyString)
     }
@@ -81,6 +83,9 @@ class RouteRoutes(
             .body(Json.encodeToString(RouteIDOutput(routeId)))
     }
 
+    /**
+     * Updates a route identified by the given [RouteID] from the query "rid"
+     */
     private fun updateRoute(request: Request): Response {
         logger.infoLogRequest(request)
 

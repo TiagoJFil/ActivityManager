@@ -21,7 +21,6 @@ import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
-import pt.isel.ls.utils.service.requireActivity
 import pt.isel.ls.utils.service.requireActivityWith
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireIdInteger
@@ -218,8 +217,8 @@ class ActivityServices(
             userRepository.requireUser(userID)
 
             val safeActivityID = requireParameter(activityID, ACTIVITY_ID_PARAM)
-
             val aidInt = requireIdInteger(safeActivityID, ACTIVITY_ID_PARAM)
+
             activityRepository.requireOwnership(userID, aidInt)
 
             sportID?.let {
@@ -281,6 +280,7 @@ class ActivityServices(
         val sidInt = requireIdInteger(safeSID, SPORT_ID_PARAM)
         sportRepository.requireSport(sidInt)
         val aidInt = requireIdInteger(safeAID, ACTIVITY_ID_PARAM)
+
         activityRepository.requireActivityWith(aidInt, sidInt)
 
         activityRepository.requireOwnership(userID, aidInt)
@@ -333,7 +333,6 @@ class ActivityServices(
 
         val checkedAIDS = safeAIDS.split(",").map {
             val aidInt = requireIdInteger(it, "Each activityID")
-            activityRepository.requireActivity(aidInt)
             activityRepository.requireOwnership(userID, aidInt)
             activityRepository.requireActivityWith(aidInt, sidInt)
             aidInt

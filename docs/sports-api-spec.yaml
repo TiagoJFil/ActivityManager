@@ -52,7 +52,7 @@ paths:
     get:
       tags:
         - "User"
-      summary: "Get users by an Activity"
+      summary: "Get users by an sid and rid"
       description: "Gets a list of users having an Activity with the given sportID and routeID, the list is ordered ascendingly by Activity duration"
       operationId: "getUsersByActivity"
       parameters:
@@ -159,8 +159,8 @@ paths:
     get:
       tags:
         - "Routes"
-      summary: "Get all routes"
-      description: "Gets all the routes."
+      summary: "Get routes"
+      description: "Gets all the routes if no search parameters are given, otherwise gets the routes that match the given parameters"
       operationId: "getRoutes"
       parameters:
         - name: "skip"
@@ -177,6 +177,20 @@ paths:
           schema:
             type: "integer"
           example: 0
+        - name: "startLocation"
+          in: "query"
+          description: "a location to search for"
+          required: false
+          schema:
+            type: "string"
+          example: "Lisboa"
+        - name: "endLocation"
+          in: "query"
+          description: "a location to search for"
+          required: false
+          schema:
+            type: "string"
+          example: "Porto"
       responses:
         "200":
           description: "sucessfull operation"

@@ -13,7 +13,6 @@ import pt.isel.ls.api.utils.createRoute
 import pt.isel.ls.api.utils.createUser
 import pt.isel.ls.api.utils.expectBadRequest
 import pt.isel.ls.api.utils.expectForbidden
-import pt.isel.ls.api.utils.expectNoContent
 import pt.isel.ls.api.utils.expectNotFound
 import pt.isel.ls.api.utils.expectOK
 import pt.isel.ls.api.utils.expectUnauthorized
@@ -188,13 +187,8 @@ class RouteApiTests {
 
     @Test fun `update route without startLocation keeps the old one`() {
         val body = RouteInput(endLocation = "b", distance = 10.0)
-        putRequest<RouteInput>(
-            testClient,
-            "$ROUTE_PATH${testRoute.id}",
-            body,
-            authHeader(GUEST_TOKEN),
-            Response::expectNoContent
-        )
+
+        testClient.updateResource(body, testRoute.id, GUEST_TOKEN)
 
         val updatedRoute = getRequest<RouteDTO>(testClient, "$ROUTE_PATH${testRoute.id}", Response::expectOK)
         assertEquals(updatedRoute.startLocation, testRoute.startLocation)

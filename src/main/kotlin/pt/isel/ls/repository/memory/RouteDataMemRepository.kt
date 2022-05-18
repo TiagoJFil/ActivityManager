@@ -21,10 +21,20 @@ class RouteDataMemRepository(testRoute: Route) : RouteRepository {
      *
      * @return [List] of [Route]
      */
-    override fun getRoutes(paginationInfo: PaginationInfo): List<Route> =
-        routesMap.values
-            .toList()
-            .applyPagination(paginationInfo)
+    override fun getRoutes(paginationInfo: PaginationInfo, startLocationQuery: String?, endLocationQuery: String?): List<Route> {
+        val routes = routesMap.values.toList()
+
+        return if (startLocationQuery != null && endLocationQuery != null) {
+            routes.filter {
+                it.startLocation.lowercase().contains(startLocationQuery.lowercase()) && it.endLocation.lowercase().contains(endLocationQuery.lowercase())
+            }.applyPagination(paginationInfo)
+        } else if (startLocationQuery != null)
+            routes.filter { it.startLocation.lowercase().contains(startLocationQuery.lowercase()) }.applyPagination(paginationInfo)
+        else if (endLocationQuery != null)
+            routes.filter { it.endLocation.lowercase().contains(endLocationQuery.lowercase()) }.applyPagination(paginationInfo)
+        else
+            routes.applyPagination(paginationInfo)
+    }
 
     /**
      * Adds a new route to the repository.

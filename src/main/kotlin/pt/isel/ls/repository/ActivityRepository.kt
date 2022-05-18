@@ -92,13 +92,6 @@ interface ActivityRepository {
     fun deleteActivity(activityID: ActivityID): Boolean
 
     /**
-     * Checks if the activity identified by the given identifier exists.
-     * @param activityID the id of the activity to check
-     * @return [Boolean] true if it exists
-     */
-    fun hasActivity(activityID: ActivityID): Boolean
-
-    /**
      * Gets the users that have an activity matching the given sport id and route id.
      * @param sportID sport identifier
      * @param routeID route identifier

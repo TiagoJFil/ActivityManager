@@ -29,14 +29,24 @@ class RouteServices(
         const val END_LOCATION_PARAM = "endLocation"
         const val DISTANCE_PARAM = "distance"
         const val RESOURCE_NAME = "Route"
+        const val START_LOCATION_SEARCH_QUERY = "startlocation_search"
+        const val END_LOCATION_SEARCH_QUERY = "endlocation_search"
     }
 
     /**
      * Returns a list of all routes in the repository.
      */
-    fun getRoutes(paginationInfo: PaginationInfo) = routeRepository
-        .getRoutes(paginationInfo)
-        .map(Route::toDTO)
+    fun getRoutes(paginationInfo: PaginationInfo, startLocationQuery: Param, endLocationQuery: Param): List<RouteDTO> {
+        logger.traceFunction(::getRoutes.name) {
+            listOf(
+                START_LOCATION_SEARCH_QUERY to startLocationQuery,
+                END_LOCATION_SEARCH_QUERY to endLocationQuery
+            )
+        }
+        val routes = routeRepository.getRoutes(paginationInfo, startLocationQuery, endLocationQuery)
+
+        return routes.map(Route::toDTO)
+    }
 
     /**
      * Creates a new route.
@@ -96,6 +106,9 @@ class RouteServices(
         val ridInt: RouteID = requireIdInteger(safeRouteID, ROUTE_ID_PARAM)
 
         routeRepository.requireOwnership(userID, ridInt)
+
+        if (startLocation == null && endLocation == null && distance == null) return
+        // No update needed, don't waste resources
 
         requireNotBlankParameter(startLocation, START_LOCATION_PARAM)
         requireNotBlankParameter(endLocation, END_LOCATION_PARAM)

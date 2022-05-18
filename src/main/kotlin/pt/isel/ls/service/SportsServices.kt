@@ -11,9 +11,9 @@ import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireIdInteger
+import pt.isel.ls.utils.service.requireNotBlankParameter
 import pt.isel.ls.utils.service.requireOwnership
 import pt.isel.ls.utils.service.requireParameter
-import pt.isel.ls.utils.service.requireSport
 import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.traceFunction
 
@@ -57,8 +57,6 @@ class SportsServices(
         val userID = userRepository.requireAuthenticated(token)
         val safeName = requireParameter(name, NAME_PARAM)
         val handledDescription = description?.ifBlank { null }
-        if (safeName.length > Sport.MAX_NAME_LENGTH)
-            throw InvalidParameter("$NAME_PARAM is too long, max length is ${Sport.MAX_NAME_LENGTH}")
 
         return sportsRepository.addSport(safeName, handledDescription, userID)
     }
@@ -97,13 +95,10 @@ class SportsServices(
         val sidInt: SportID = requireIdInteger(safeSportID, SPORT_ID_PARAM)
 
         sportsRepository.requireOwnership(userId, sidInt)
-        sportsRepository.requireSport(sidInt)
 
         if ((name == null || name.isBlank()) && (description == null)) return
         // No update needed, don't waste resources
-
-        if (name != null && name.length > Sport.MAX_NAME_LENGTH)
-            throw InvalidParameter("$NAME_PARAM is too long, max length is ${Sport.MAX_NAME_LENGTH}")
+        requireNotBlankParameter(name, NAME_PARAM)
 
         if (!sportsRepository.updateSport(sidInt, name, description))
             throw ResourceNotFound(RESOURCE_NAME, safeSportID)

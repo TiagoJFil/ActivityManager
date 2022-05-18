@@ -10,7 +10,7 @@ interface RouteRepository {
     /**
      * Returns all the routes stored in the repository.
      */
-    fun getRoutes(paginationInfo: PaginationInfo): List<Route>
+    fun getRoutes(paginationInfo: PaginationInfo, startLocationQuery: String?, endLocationQuery: String?): List<Route>
 
     /**
      * Adds a new route to the repository.
