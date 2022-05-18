@@ -42,6 +42,20 @@ class SportApiTests {
         assertEquals(listOf(testSport.toDTO()), sportList.sports)
     }
 
+    @Test
+    fun `get sports with search query list`() {
+        val sportID1 = testClient.createSport(SportInput("Basketball", "Game played with hands")).sportID
+        val sportID2 = testClient.createSport(SportInput("Football", "Game played with feet")).sportID
+        val sportID3 = testClient.createSport(SportInput("Footvolley", "Game played with hands")).sportID
+        val sportList = getRequest<SportListOutput>(testClient, "$SPORT_PATH?search=foot", Response::expectOK)
+        val sportList2 = getRequest<SportListOutput>(testClient, "$SPORT_PATH?search=hands", Response::expectOK)
+        val sport1 = SportDTO(sportID1, "Basketball", "Game played with hands", guestUser.id)
+        val sport2 = SportDTO(sportID2, "Football", "Game played with feet", guestUser.id)
+        val sport3 = SportDTO(sportID3, "Footvolley", "Game played with hands", guestUser.id)
+        assertEquals(listOf(sport2, sport3), sportList.sports)
+        assertEquals(listOf(sport1, sport3), sportList2.sports)
+    }
+
     @Test fun `get a specific sport sucessfully`() {
         val sport = testClient.createSport(SportInput("Football", "Game played with feet.")).sportID
         getRequest<SportDTO>(testClient, "${SPORT_PATH}$sport", Response::expectOK)

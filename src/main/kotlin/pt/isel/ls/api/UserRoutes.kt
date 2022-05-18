@@ -83,7 +83,7 @@ class UserRoutes(
         "/users" bind routes(
             "/" bind Method.POST to ::createUser,
             "/" bind Method.GET to ::getUsers,
-            "/{uid}" bind Method.GET to ::getUserDetails,
+            "/{uid}" bind Method.GET to ::getUserDetails
             // TODO: UserRankings, UserByActivity, the first one is the one that has the least duration on the activity.
             // TODO: Search without a filter button.
             // TODO: Ter uma vista que se passa o nome do utilizador e dá o token para usar nos pedidos.

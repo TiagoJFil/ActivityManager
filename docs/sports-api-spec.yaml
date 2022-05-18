@@ -288,6 +288,13 @@ paths:
       description: "Gets all the sports."
       operationId: "getsports"
       parameters:
+        - name: "search"
+          in: "query"
+          description: "The text introduced for search purposes"
+          required: false
+          schema:
+            type: "string"
+          example: "football"
         - name: "skip"
           in: "query"
           description: "The starting position of the subsequence to return"

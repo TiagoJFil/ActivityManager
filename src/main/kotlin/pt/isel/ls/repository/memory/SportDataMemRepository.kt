@@ -36,10 +36,19 @@ class SportDataMemRepository(testSport: Sport) : SportRepository {
      *
      * @return [List] of [SportDTO]
      */
-    override fun getSports(paginationInfo: PaginationInfo): List<Sport> =
-        sportsMap.values
+    override fun getSports(search: String?, paginationInfo: PaginationInfo): List<Sport> {
+        val filteredSports = if (search == null) {
+            sportsMap.values
+        } else {
+            sportsMap.values.filter { sport ->
+                sport.name.contains(search, ignoreCase = true) || sport.description?.contains(search, ignoreCase = true) == true
+            }
+        }
+
+        return filteredSports
             .toList()
             .applyPagination(paginationInfo)
+    }
 
     /**
      * @param sportID the unique number that identifies the sport

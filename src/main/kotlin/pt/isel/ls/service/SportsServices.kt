@@ -67,10 +67,11 @@ class SportsServices(
      *
      * @return [List] of [SportDTO]
      */
-    fun getSports(paginationInfo: PaginationInfo): List<SportDTO> {
+    fun getSports(search: Param, paginationInfo: PaginationInfo): List<SportDTO> {
         logger.traceFunction(::getSports.name) { emptyList() }
+
         return sportsRepository
-            .getSports(paginationInfo)
+            .getSports(search, paginationInfo)
             .map(Sport::toDTO)
     }
 
