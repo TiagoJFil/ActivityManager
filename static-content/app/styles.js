@@ -11,6 +11,7 @@ const styles = {
     BUTTON : 'button',
     FILTER_SELECTOR: 'filter-selector',
     SELECTOR_OPTION: 'selector-option',
+    DATALIST_OPTION: 'datalist-option',
     TEXT: 'text',
     PAGE_LINK: 'page-link',
     PAGE_ARROW: 'page-arrow',
@@ -30,7 +31,13 @@ const styles = {
     DETAILS: 'details',
     PAGINATION_ICONS: "pagination-icons",
     NO_RESULTS_TEXT: "text-no-results",
-    LIST_PARENT: 'list-parent'
+    LIST_PARENT: 'list-parent',
+    FORM : 'form',
+    ROUTE_SEARCH: 'route-search',
+    SPORT_SEARCH: 'sport-search',
+    SEARCH_HEADER: 'search-header',
+    FORM_TEXT_INPUT : 'form-text-input',
+    DATALIST : 'datalist',
 }
 
 export default styles

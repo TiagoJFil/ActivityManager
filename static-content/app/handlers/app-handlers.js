@@ -101,7 +101,9 @@ export default {
     getActivity: activityHandlers.displayActivityDetails,
     getUsersByActivity: userHandlers.displayUsersByActivity,
     getActivitiesByUser: activityHandlers.displayActivitiesByUser,
-    getActivitiesBySport: activityHandlers.displayActivitiesBySport
+    getActivitiesBySport: activityHandlers.displayActivitiesBySport,
+    getUsersByRanking: userHandlers.displayUsersByRanking,
+    getSportsSearch: sportHandlers.displaySportSearch,
 }
 
 

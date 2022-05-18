@@ -36,6 +36,24 @@ async function displayRouteDetails(mainContent, params, _) {
     )
 }
 
+/**
+ * Displays the interface to search for a sport
+ */
+async function displayRouteSearch(mainContent, _, query) {
+    
+    const onSubmit = (sLocation,eLocation) =>{
+        window.location.hash = `routes?searchText=${searchText}`
+    }
+
+    mainContent.replaceChildren(
+        Div("rankings-main", 
+            H1(styles.HEADER, 'Route Search'),
+            RouteFilter(onSubmit)
+        )
+    )   
+}
+
+
 export const routeHandlers = {
     displayRouteDetails,
     displayRouteList,

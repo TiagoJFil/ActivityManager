@@ -75,29 +75,29 @@ async function fetchActivitiesByUserCount(uid){
 /**
  * Fetch the count of existing sports in the database
  */
-async function fetchSportsCount(){
-    return await fetchResourceCount(SPORTS_URL)
+async function fetchSportsCount(query){
+    return await fetchResourceCount(SPORTS_URL, query)
 }
 
 /**
  * Fetch the count of existing routes in the database
  */
-async function fetchRoutesCount(){
-    return await fetchResourceCount(ROUTE_URL)
+async function fetchRoutesCount(query){
+    return await fetchResourceCount(ROUTE_URL, query)
 }
 
 /**
  * Fetch the count of existing users in the database
  */
 async function fetchUsersCount(){
-    return await fetchResourceCount(USERS_URL)
+    return await fetchResourceCount(USERS_URL, query)
 }
 
 /**
  * Fetch the count of existing activities in the database
  */
 async function fetchActivitiesCount(){
-    return await fetchResourceCount(ACTIVITIES_URL)
+    return await fetchResourceCount(ACTIVITIES_URL, query)
 }
 
 /**
@@ -141,9 +141,8 @@ async function fetchResourceList(query, RESOURCE_PATH){
 /**
  * Fetches the count of existing resources in the database
  */
-async function fetchResourceCount(RESOURCE_PATH){
-    const resources = await fetchResourceList(LIMIT_QUERY,RESOURCE_PATH)
-
+async function fetchResourceCount(RESOURCE_PATH, query){
+    const resources = await fetchResourceList((query ? '?' + query : ''), RESOURCE_PATH)
     return resources.length
 }
 

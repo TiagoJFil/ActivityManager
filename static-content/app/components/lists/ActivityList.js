@@ -11,7 +11,7 @@ export default function ActivityList(activities) {
     return ResourceList(
         activities,
         activity => `#sports/${activity.sport}/activities/${activity.id}`, // Link to details
-        activity => `${activity.id} ` // display supplier
+        activity => `on ${activity.date}` // display supplier
     )
 }
 

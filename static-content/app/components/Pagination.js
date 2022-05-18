@@ -6,8 +6,10 @@ import styles from "../styles.js";
  * @returns {Number} The current page.
  */
 function getActualPage(itemsPerPage){
-    const skipString = window.location.hash.split("?").find(x => x.includes("skip="))   
-    const skip = skipString ? parseInt(skipString.split("=")[1]) : 0
+    const query = window.location.hash.split("?")[1]
+    const queryParams = new URLSearchParams(query)
+    const skipString = queryParams.get("skip")
+    const skip = skipString ? parseInt(skipString) : 0
     const actualPage = Math.floor(skip / itemsPerPage);
     return actualPage 
 }
@@ -32,23 +34,22 @@ export function getPaginationQuery() {
  * @param {Function} onPageChange receives the skipValue and timesPerPage as parameters.
  * @returns the pagination component
  */
-export function Pagination(totalElements, onPageChange){
+export function Pagination(totalElements, onPageChange, query){
     const MAX_PAGES_PER_VIEW = 7
 
     const itemsPerPage = getItemsPerPage()
     const actualPage = getActualPage(itemsPerPage)
-
     const isComplete = totalElements % itemsPerPage === 0 && totalElements !== 0
-    
-    const maxPages = Math.floor(totalElements / itemsPerPage)
-    let totalPages = isComplete ? maxPages : maxPages + 1
+    const totalPages = calculateTotalPages(itemsPerPage, totalElements, isComplete)
     const pagesPerView = (totalPages >= MAX_PAGES_PER_VIEW) ? MAX_PAGES_PER_VIEW : totalPages
-
     const visiblePages = getVisiblePages(totalPages, actualPage, pagesPerView)
+
 
     const pageButtons = visiblePages.map((pageNumber) => {
         const skipValue = pageNumber * itemsPerPage
         const className = (actualPage  === pageNumber) ? styles.PAGE_LINK_ACTIVE : styles.PAGE_LINK
+
+
         return Button(className, () => { onPageChange(skipValue, itemsPerPage) },
                 Text(styles.TEXT, pageNumber+1)
             )
@@ -58,6 +59,7 @@ export function Pagination(totalElements, onPageChange){
         () => onPageChange(0, itemsPerPage),
         Icon(styles.BX_CLASS, 'bx-chevrons-left', styles.PAGINATION_ICONS)
     )
+    
     const previousButton = Button(
         styles.PAGE_ARROW,
         () => onPageChange(actualPage * itemsPerPage - itemsPerPage, itemsPerPage),
@@ -137,6 +139,14 @@ function getVisiblePages(totalPages, actualPage, pagesPerView){
 
 
     return pages
+}
+
+
+function calculateTotalPages(itemsPerPage, totalElements, isComplete){
+    
+    const maxPages = Math.floor(totalElements / itemsPerPage)
+    let totalPages = isComplete ? maxPages : maxPages + 1
+    return totalPages
 }
 
 

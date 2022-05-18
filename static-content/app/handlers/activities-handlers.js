@@ -4,8 +4,19 @@ import ActivityList from '../components/lists/ActivityList.js'
 import {Pagination, getPaginationQuery} from '../components/Pagination.js'
 import { H1, Div } from '../components/dsl.js'
 import {queryBuilder, onPaginationChange} from './app-handlers.js'
-import ActivitySearchFilter from '../components/ActivitySearchFilter.js'
+import ActivitySearchFilter from '../components/filters/ActivitySearchFilter.js'
 import styles from '../styles.js'
+
+
+
+async function displaySearchActivities(mainContent, query) {
+    const activities = await activityApi.fetchActivities(queryBuilder(query) || getPaginationQuery())
+    
+    mainContent.replaceChildren(
+        H1(styles.HEADER, 'Search Results'),
+     
+    )
+}
 
 /**
  * Displays an activity list with the given query
@@ -89,4 +100,5 @@ export const activityHandlers = {
     displayActivitiesByUser,
     displayActivityDetails,
     displayActivityList,
+    displaySearchActivities
 }

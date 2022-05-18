@@ -43,17 +43,6 @@ export function Text(className, text) {
 
 
 /**
- * Represents a form element as a component
- *
- * @param className
- * @param children
- * @returns {HTMLElement}
- */
-export function Form(className, ...children) {
-    return createElement('form', className, ...children)
-}
-
-/**
  * Represents an icon item element as a component
  * 
  * @param {String} classNames The class names of the list item element
@@ -99,11 +88,35 @@ export function H1(className, text) {
  * @param id The id of the input element
  * @returns {HTMLElement} an input element 
  */
-export function Input(className, type, id) {
+export function Input(className, type, id, onInputChange, list) {
     const input = createElement('input', className)
     input.type = type
     input.id = id
+    input.setAttribute('list',list)
+    input.addEventListener("input", onInputChange)
     return input
+}
+
+/**
+ * Represents a form element as a component
+ *
+ * @param className
+ * @param children
+ * @returns {HTMLElement}
+ */
+export function Form(className, ...children) {
+    const form = createElement('form', className, ...children)
+    form.onsubmit = (e) => {
+        e.preventDefault()
+    }
+    form.autocomplete = 'off'
+    return form
+}
+
+export function Datalist(className,id,...children) {
+    const datalist = createElement('datalist',className, ...children)
+    datalist.id = id
+    return datalist
 }
 
 /**
@@ -123,16 +136,17 @@ export function Select(className, id, size , ...children) {
 }
 
 /**
- * Represents am option item element as a component
+ * Represents an option item element as a component
  * 
  * @param {String} className The class name of the list item element
  * @param {*} value The value of the option element
  * @param  {...HTMLElement} children The children of this element
  * @returns {HTMLElement} an option element 
  */
-export function Option(className, value, ...children){
+export function Option(className, value, label , ...children){
     const option = createElement('option', className, ...children)
     option.value = value
+    option.label = label
     return option
 }
 
