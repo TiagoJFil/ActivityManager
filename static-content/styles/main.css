@@ -101,7 +101,7 @@ button:hover {
     height: 100%;
 }
 
-.user-rankings .button{
+.user-rankings .button, .sport-filter .button, .add-container .button{
     width: 100px;
     height: 50px;
     border-radius: 20px;
@@ -117,28 +117,48 @@ button:hover {
 }
 
 
-.route-search, .sport-search {
+.route-search, .sport-search, .sport-filter, .add-item{
     display: flex;
     flex-direction: column;
+    align-content: center;
     width: 300px;
     gap: 10px;
     padding: 10px;
+
 }
 
-.sport-search-list {
-    margin-bottom: 300px;
-}
-
- .sport-filter {
+.sports-search-header-container .sport-filter{
     display: flex;
+    justify-content: end;
     flex-direction: row;
+    padding-right: 60px ;
+    width: 100%;
+    height: 100%;
 }
 
-.sport-filter .button{
-    margin-left: 40px;
-    margin-top: 40px;
-    margin-bottom: 160px;
-    height: 25px;
+.sports-search-header-container .sport-filter .form-text-input{
+    height: 30px;
+    margin-bottom: 10px;
+}
+
+.add-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sport-search-container, .add-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 375px;
+
+}
+
+.sport-filter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .search-header {

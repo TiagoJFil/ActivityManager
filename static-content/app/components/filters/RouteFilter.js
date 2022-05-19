@@ -5,13 +5,11 @@ import RouteSearch from "../searches/RouteSearch.js"
 export default function RouteFilter(onSubmit){
 
     const onSubmitForm = () => {
-
-
         onSubmit(searchText);
     }
 
     return (
-        Div("route-filter", 
+        Div("route-filter",
             Div("route-search",
                 RouteSearch()
             ),

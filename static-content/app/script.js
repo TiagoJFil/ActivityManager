@@ -17,7 +17,8 @@ function loadHandler(){
     router.addDefaultNotFoundRouteHandler(handlers.getNotFoundPage)
     router.addRouteHandler('home', handlers.getHome)
     
-    router.addRouteHandler('sports', handlers.getSports) 
+    router.addRouteHandler('sports', handlers.getSports)
+    router.addRouteHandler('sports/add', handlers.createSport)
     router.addRouteHandler('sports/search', handlers.getSportsSearch)
     router.addRouteHandler('sports/:sid', handlers.getSport) 
     router.addRouteHandler('sports/:sid/users', handlers.getUsersByActivity)  

@@ -10,8 +10,8 @@ export default function SportFilter(onSportTextChange, onSubmit, withHeader){
     }
 
     return (
-        Div("sport-filter", 
-            Div("sport-search",
+        Div(styles.SPORT_FILTER,
+            Div(styles.SPORT_SEARCH,
                 SportSearch(onSportTextChange, false, withHeader)
             ),
             Button(styles.BUTTON, onSubmitForm, Text(styles.TEXT, "Search"))

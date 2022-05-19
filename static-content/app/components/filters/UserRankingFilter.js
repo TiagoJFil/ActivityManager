@@ -17,8 +17,8 @@ export default function UserRankingFilter(onSportTextChange, onSubmit){
         }
         const withHeader = true
         return (
-            Div("user-rankings", 
-                Div("rankings-form",
+            Div(styles.USER_RANKINGS,
+                Div(styles.RANKINGS_FORM,
                     RouteSearch(),
                     SportSearch(onSportTextChange, true, withHeader),
                 ),

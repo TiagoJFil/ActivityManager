@@ -19,7 +19,7 @@ export default function ActivitySearchFilter(onFilterSubmit, routes, query) {
         onFilterSubmit(date, route, sortOrder)
     }
 
-    return Div('activity-filter',
+    return Div(styles.ACTIVITY_FILTER,
         DatePicker(query),
         OrderBySelector(query),
         RouteSelector(routes, query),
