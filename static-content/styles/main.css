@@ -117,7 +117,7 @@ button:hover {
 }
 
 
-.route-search, .sport-search, .sport-filter, .add-item{
+.route-search, .sport-search, .sport-filter, .route-filter, .add-item{
     display: flex;
     flex-direction: column;
     align-content: center;
@@ -147,14 +147,18 @@ button:hover {
     align-items: center;
 }
 
-.sport-search-container, .add-container {
+.sport-search-container, .add-container, .route-filter {
     display: flex;
+    align-items: center;
     justify-content: center;
     width: 100%;
     margin-bottom: 375px;
 
 }
 
+.route-filter{
+    margin-top: 125px;
+}
 .sport-filter {
     display: flex;
     flex-direction: column;

@@ -26,12 +26,13 @@ export function getRouteHandler(path){
     const [pathString, queryString] = path.split("?")
 
     const route = routes.find(route => route.pathRegex.test(pathString))
+
     if(!route) return { handler: notFoundRouteHandler , params: {}, query: {}}
 
     const [match, ...values] = route.pathRegex.exec(pathString)
     const params = {}
     route.placeholderNames.forEach((name, idx) => params[name] = values[idx])
-
+    console.log(route)
     // params: {sid: 39, aid: 27}
     return {handler:route.handler , params, query: queryString ? parseQuery(queryString) : {}}
 }

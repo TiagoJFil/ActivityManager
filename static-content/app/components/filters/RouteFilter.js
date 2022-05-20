@@ -5,12 +5,14 @@ import RouteSearch from "../searches/RouteSearch.js"
 export default function RouteFilter(onSubmit){
 
     const onSubmitForm = () => {
-        onSubmit(searchText);
+        const sLocation = document.getElementById('startLocation').value
+        const eLocation = document.getElementById('EndLocation').value
+        onSubmit(sLocation, eLocation)
     }
 
     return (
-        Div("route-filter",
-            Div("route-search",
+        Div(styles.ROUTE_FILTER,
+            Div(styles.ROUTE_SEARCH,
                 RouteSearch()
             ),
             Button(styles.BUTTON, onSubmitForm, Text(styles.TEXT, "Search"))
