@@ -5,6 +5,7 @@ import {Pagination, getPaginationQuery} from '../components/Pagination.js'
 import {queryBuilder, onPaginationChange} from './app-handlers.js'
 import styles from '../styles.js'
 import { H1, Div } from '../components/dsl.js'
+import RouteFilter from "../components/filters/RouteFilter.js";
 
 
 /**
@@ -37,24 +38,26 @@ async function displayRouteDetails(mainContent, params, _) {
 }
 
 /**
- * Displays the interface to search for a sport
+ * Displays the interface to search for a route
  */
-async function displayRouteSearch(mainContent, _, query) {
-    
+async function searchRoutesDisplay(mainContent, params, _) {
     const onSubmit = (sLocation,eLocation) =>{
-        window.location.hash = `routes?searchText=${searchText}`
+        window.location.hash = `routes?startLocation=${sLocation}&endLocation=${eLocation}`
     }
 
     mainContent.replaceChildren(
-        Div("rankings-main", 
-            H1(styles.HEADER, 'Route Search'),
+        H1(styles.HEADER, 'Route Search'),
+        Div(styles.SEARCH_ROUTE,
             RouteFilter(onSubmit)
-        )
-    )   
+        ),
+        Div(styles.SPACER),
+        Div(styles.SPACER),
+        Div(styles.SPACER)
+    )
 }
-
 
 export const routeHandlers = {
     displayRouteDetails,
     displayRouteList,
+    searchRoutesDisplay
 }

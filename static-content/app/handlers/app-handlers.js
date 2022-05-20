@@ -97,6 +97,7 @@ export default {
     getUser: userHandlers.displayUserDetails,
     getRoutes: routeHandlers.displayRouteList,
     getRoute: routeHandlers.displayRouteDetails,
+    getRoutesSearch: routeHandlers.searchRoutesDisplay,
     getActivities: activityHandlers.displayActivityList,
     getActivity: activityHandlers.displayActivityDetails,
     getUsersByActivity: userHandlers.displayUsersByActivity,

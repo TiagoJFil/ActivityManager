@@ -26,8 +26,10 @@ function loadHandler(){
     router.addRouteHandler('users/ranking', handlers.getUsersByRanking)  
     router.addRouteHandler('users/:uid', handlers.getUser) 
     
-    router.addRouteHandler('routes', handlers.getRoutes)  
+    router.addRouteHandler('routes', handlers.getRoutes)
+    router.addRouteHandler('routes/search', handlers.getRoutesSearch)
     router.addRouteHandler('routes/:rid', handlers.getRoute)
+
     
     router.addRouteHandler('activities', handlers.getActivities)
     router.addRouteHandler('sports/:sid/activities/:aid', handlers.getActivity)

@@ -40,7 +40,9 @@ const styles = {
     SPORT_SEARCH: 'sport-search',
     ACTIVITY_FILTER: 'activity-filter',
     SPORT_FILTER: 'sport-filter',
+    ROUTE_FILTER: 'route-filter',
     SEARCH_HEADER: 'search-header',
+    SEARCH_ROUTE: 'search-route',
     ADD_BUTTON_CONTAINER: 'add-button-container',
     ADD_ITEM: 'add-item',
     SEARCH_CONTAINER: 'sport-search-container',
@@ -48,6 +50,7 @@ const styles = {
     SEARCH_AND_HEADER_DIV: 'sports-search-header-container',
     FORM_TEXT_INPUT : 'form-text-input',
     DATALIST : 'datalist',
+    SPACER: 'spacer'
 }
 
 export default styles
