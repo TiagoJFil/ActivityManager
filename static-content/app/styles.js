@@ -27,7 +27,7 @@ const styles = {
     ROUTE_ICON: 'bx-trip',
     USERS_ICON: 'bx-group',
     SPORT_ICON: 'bx-football',
-    ADD_ICON: 'bx-add-to-queue',
+    ADD_ICON: 'bx-plus-circle',
     MAP_ICON: 'bx-map-alt',
     DETAILS: 'details',
     PAGINATION_ICONS: "pagination-icons",
@@ -49,7 +49,6 @@ const styles = {
     ADD_CONTAINER: 'add-container',
     SEARCH_AND_HEADER_DIV: 'sports-search-header-container',
     FORM_TEXT_INPUT : 'form-text-input',
-    DATALIST : 'datalist',
     SPACER: 'spacer'
 }
 

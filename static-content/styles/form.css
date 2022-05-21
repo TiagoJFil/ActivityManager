@@ -1,0 +1,20 @@
+
+.search-bar-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    gap: 10px;
+}
+
+.rankings-form{
+    display: flex;
+    justify-content: space-evenly;
+    width: 52%;
+    height: 100%;
+}
+
+.user-rankings button{
+    margin-top: 20px;
+}

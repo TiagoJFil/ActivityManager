@@ -1,4 +1,4 @@
-import {Button, Div, Form, Input, Option, Select, Text} from "../dsl.js"
+import {Button, Div, Form, Input, Text} from "../dsl.js"
 import styles from "../../styles.js";
 
 /**
@@ -10,19 +10,17 @@ import styles from "../../styles.js";
 export default function SportCreate(onSubmit) {
 
     const onSubmitForm = () => {
-        const sportName = document.getElementById("sport-name");
-        console.log(sportName.value)
-        const description = document.getElementById("sport-description");
-        console.log(description.value)
+        const sportName = document.querySelector("#sportName");
+        const description = document.querySelector("#sportDescription");
         onSubmit(sportName.value, description.value);
     }
 
     return (
         Form(styles.ADD_ITEM,
             Text(styles.SEARCH_HEADER, "NAME"),
-            Input(styles.FORM_TEXT_INPUT, "text", "sport-name"),
+            Input(styles.FORM_TEXT_INPUT, "text", "sportName", null),
             Text(styles.SEARCH_HEADER, "DESCRIPTION"),
-            Input(styles.FORM_TEXT_INPUT, "text", "sport-description"),
+            Input(styles.FORM_TEXT_INPUT, "text", "sportDescription", null, "Optional"),
             Div(styles.ADD_BUTTON_CONTAINER,
                 Button(styles.BUTTON, onSubmitForm, Text(styles.TEXT, "Add"))
             )

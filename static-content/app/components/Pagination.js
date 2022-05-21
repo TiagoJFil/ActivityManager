@@ -1,17 +1,17 @@
-import {Text, Button, Div, Icon} from "./dsl.js";
+import {Button, Div, Icon, Text} from "./dsl.js";
 import styles from "../styles.js";
 
 /**
  * @param {Number} itemsPerPage
  * @returns {Number} The current page.
  */
-function getActualPage(itemsPerPage){
+function getCurrentPage(itemsPerPage){
     const query = window.location.hash.split("?")[1]
     const queryParams = new URLSearchParams(query)
     const skipString = queryParams.get("skip")
     const skip = skipString ? parseInt(skipString) : 0
-    const actualPage = Math.floor(skip / itemsPerPage);
-    return actualPage 
+    const currentPage = Math.floor(skip / itemsPerPage);
+    return currentPage
 }
 
 /**
@@ -28,17 +28,18 @@ export function getPaginationQuery() {
     }
 }
 
+const MAX_PAGES_PER_VIEW = 7
+
 /**
  * Creates a pagination component 
  * @param {Number} totalElements The total number of elements in the list.
  * @param {Function} onPageChange receives the skipValue and timesPerPage as parameters.
  * @returns the pagination component
  */
-export function Pagination(totalElements, onPageChange, query){
-    const MAX_PAGES_PER_VIEW = 7
+export function Pagination(totalElements, onPageChange){
 
     const itemsPerPage = getItemsPerPage()
-    const actualPage = getActualPage(itemsPerPage)
+    const actualPage = getCurrentPage(itemsPerPage)
     const isComplete = totalElements % itemsPerPage === 0 && totalElements !== 0
     const totalPages = calculateTotalPages(itemsPerPage, totalElements, isComplete)
     const pagesPerView = (totalPages >= MAX_PAGES_PER_VIEW) ? MAX_PAGES_PER_VIEW : totalPages
@@ -74,29 +75,8 @@ export function Pagination(totalElements, onPageChange, query){
         () => onPageChange(actualPage * itemsPerPage + itemsPerPage, itemsPerPage),
         Icon(styles.BX_CLASS, 'bx-chevron-right', styles.PAGINATION_ICONS)
     )
-
   
-    if(totalPages <= MAX_PAGES_PER_VIEW){
-       startButton.disabled = true
-       endButton.disabled = true
-    }
-
-    if(actualPage === totalPages-1){
-        endButton.disabled = true
-        nextButton.disabled = true
-    }
-
-    if(actualPage === 0){
-        startButton.disabled = true
-        previousButton.disabled = true
-    }
-
-    if(totalPages === 0){
-        startButton.disabled = true
-        previousButton.disabled = true
-        endButton.disabled = true
-        nextButton.disabled = true
-    }
+    disableButtonsAccordingly(startButton, previousButton, endButton, nextButton, totalPages, actualPage)
 
      const items = [startButton, previousButton, ...pageButtons, nextButton, endButton]
 
@@ -143,10 +123,42 @@ function getVisiblePages(totalPages, actualPage, pagesPerView){
 
 
 function calculateTotalPages(itemsPerPage, totalElements, isComplete){
-    
     const maxPages = Math.floor(totalElements / itemsPerPage)
-    let totalPages = isComplete ? maxPages : maxPages + 1
-    return totalPages
+    return isComplete ? maxPages : maxPages + 1
+}
+
+
+/**
+ * Disables the buttons according to the current pagination state.
+ * @param startButton links to the first page
+ * @param previousButton links to the previous page
+ * @param endButton links to the last page
+ * @param nextButton links to the next page
+ * @param totalPages how many pages there are
+ * @param actualPage the current selected page
+ */
+function disableButtonsAccordingly(startButton, previousButton, endButton, nextButton, totalPages, actualPage){
+    if(totalPages <= MAX_PAGES_PER_VIEW){
+        startButton.disabled = true
+        endButton.disabled = true
+    }
+
+    if(actualPage === totalPages-1){
+        endButton.disabled = true
+        nextButton.disabled = true
+    }
+
+    if(actualPage === 0){
+        startButton.disabled = true
+        previousButton.disabled = true
+    }
+
+    if(totalPages === 0){
+        startButton.disabled = true
+        previousButton.disabled = true
+        endButton.disabled = true
+        nextButton.disabled = true
+    }
 }
 
 

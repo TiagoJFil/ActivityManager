@@ -3,21 +3,23 @@ import { sportHandlers } from "./sports-handlers.js";
 import { userHandlers } from "./users-handlers.js";
 import { routeHandlers } from "./routes-handlers.js";
 import { activityHandlers } from "./activities-handlers.js";
+import { queryBuilder } from "../api/api-utils.js";
 import styles from "../styles.js";
 
-const NOT_FOUND_MESSAGE = 'Sorry, the page you are looking for does not exist. Try heading to the home page.'
+
 
 /**
  * Displays the home page 
  */
 function getHome(mainContent) {
-    const h1 = H1(styles.HEADER, 'Home')
+
     mainContent.replaceChildren(
-        h1,
-        Text(styles.TEXT, 'WELCOME!')
+        H1(styles.HEADER, 'Home'),
     )
+
 }
 
+const NOT_FOUND_MESSAGE = 'Sorry, the page you are looking for does not exist. Try heading to the home page.'
 
 /**
  * Displays a page to indicate that nothing was found
@@ -27,7 +29,9 @@ function getNotFoundPage(mainContent) {
     mainContent.replaceChildren(
         H1(styles.HEADER,'404 - Not Found'),
         Text(styles.TEXT, NOT_FOUND_MESSAGE),
+        Div(styles.SPACER)
     )
+
 }
 
 /**
@@ -50,7 +54,7 @@ function getErrorPage(mainContent, error) {
     mainContent.replaceChildren(
         H1(styles.HEADER, header),
         Text(styles.TEXT, message),
-        Div("empty","")
+        Div(styles.SPACER)
     )
 }
 
@@ -64,27 +68,12 @@ function getErrorPage(mainContent, error) {
  */
  export function onPaginationChange(path, currentQuery, skip, limit){
 
-    const query = currentQuery ? currentQuery : {}
+    const query = currentQuery ? {...currentQuery} : {}
 
     query.skip = skip
     query.limit = limit
     
     window.location.hash = `#${path}?${queryBuilder(query)}`
-}
-
-/**
- * Builds the query string from the given query object
- * @param {Object} queryValues 
- * @returns {String} the query as String
- */
-export function queryBuilder(queryValues){
-
-    if(queryValues === undefined) return ''
-
-    return Object
-        .keys(queryValues)
-        .map(key => `${key}=${queryValues[key]}`)
-        .join('&')
 }
 
 export default {

@@ -1,9 +1,9 @@
-import {Button, Div, Text} from "../dsl.js"
+import {Button, Div, Form, Text} from "../dsl.js"
 import styles from "../../styles.js";
 import RouteSearch from "../searches/RouteSearch.js";
 import SportSearch from "../searches/SportSearch.js"
 
-export default function UserRankingFilter(onSportTextChange, onSubmit){
+export default function UserRankingFilter(onSportTextChange, onLocationsChange, onSubmit){
 
         const onSubmitForm = () => {
 
@@ -15,11 +15,12 @@ export default function UserRankingFilter(onSportTextChange, onSubmit){
 
             onSubmit(routeID, sportID);
         }
+
         const withHeader = true
         return (
-            Div(styles.USER_RANKINGS,
+            Form(styles.USER_RANKINGS,
                 Div(styles.RANKINGS_FORM,
-                    RouteSearch(),
+                    RouteSearch(onLocationsChange),
                     SportSearch(onSportTextChange, true, withHeader),
                 ),
                 Button(styles.BUTTON, onSubmitForm, Text(styles.TEXT, "Search"))

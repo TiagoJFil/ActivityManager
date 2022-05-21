@@ -11,7 +11,7 @@
 }
 
 nav{
-    width: 250px;
+    width: var(--nav-width);
     height: 100vh;
     background: var(--primary);
     top: 0;

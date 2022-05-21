@@ -82,17 +82,19 @@ export function H1(className, text) {
 
 /**
  * Represents an input item element as a component
- * 
+ *
  * @param {String} className The class name of the list item element
  * @param type The type of the input element
  * @param id The id of the input element
- * @returns {HTMLElement} an input element 
+ * @param onInputChange function to be called when the input changes
+ * @param placeholder The placeholder of the input element
+ * @returns {HTMLElement} an input element
  */
-export function Input(className, type, id, onInputChange, list) {
+export function Input(className, type, id, onInputChange, placeholder) {
     const input = createElement('input', className)
     input.type = type
     input.id = id
-    input.setAttribute('list',list)
+    input.setAttribute("placeholder", placeholder || "")
     input.addEventListener("input", onInputChange)
     return input
 }
@@ -137,11 +139,12 @@ export function Select(className, id, size , ...children) {
 
 /**
  * Represents an option item element as a component
- * 
+ *
  * @param {String} className The class name of the list item element
  * @param {*} value The value of the option element
+ * @param label The label of the option element
  * @param  {...HTMLElement} children The children of this element
- * @returns {HTMLElement} an option element 
+ * @returns {HTMLElement} an option element
  */
 export function Option(className, value, label , ...children){
     const option = createElement('option', className, ...children)
@@ -151,9 +154,19 @@ export function Option(className, value, label , ...children){
 }
 
 /**
+ * Creates an anchor element with the given class name and children
+ */
+export function Anchor(className, href, ...children) {
+    const anchor = createElement('a', className, ...children)
+    anchor.href = href
+    return anchor
+}
+
+/**
  * Creates an element with the given tag name and children
  *
  * @param {String} tag The tag name of the element to create
+ * @param className The class name of the element to create
  * @param  {...any} children
  * @returns {HTMLElement}  The created element
  */

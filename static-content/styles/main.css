@@ -6,6 +6,33 @@
     font-family: 'Roboto', sans-serif;
 }
 
+:root {
+    --primary: #3c5c5e;
+    --secondary: #4fcac2;
+    --background: #202833;
+    --button: #106466;
+    --disabled: #243749;
+    --nav-width: 250px;
+}
+
+.big{
+    font-size: 2.5rem;
+    color: var(--secondary);
+}
+
+.big i {
+    /* light box shadow */
+    text-shadow: 0 1px 1px white;
+}
+
+.big i:hover{
+    /* light box shadow */
+    color: var(--button);
+    text-shadow: 0 1px 1px black;
+    transform: scale(1.1);
+    transition: all 0.25s ease-in-out;
+}
+
 #mainContent{
     height: 100%;
     width: 88%;
@@ -13,7 +40,7 @@
     flex-direction: column;
     justify-content: space-between;
     padding: 24px;
-    margin-left: 250px;
+    margin-left: var(--nav-width);
 }
 
 .detail-header{
@@ -41,12 +68,7 @@ body{
     justify-content: space-evenly;
 }
 
-:root {
-    --primary: #3c5c5e;
-    --secondary: #4fcac2;
-    --background: #202833;
-    --disabled: #243749;
-}
+
 
 .error{
     justify-content: center;
@@ -92,15 +114,6 @@ button:hover {
     margin-right: 20px;
 }
 
-
-.rankings-form{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    width: 100%;
-    height: 100%;
-}
-
 .user-rankings .button, .sport-filter .button, .add-container .button{
     width: 100px;
     height: 50px;
@@ -113,7 +126,6 @@ button:hover {
     justify-content: center;
     align-items: center;
     width: 100%;
-    margin-top: 150px;
 }
 
 
@@ -123,8 +135,6 @@ button:hover {
     align-content: center;
     width: 300px;
     gap: 10px;
-    padding: 10px;
-
 }
 
 .sports-search-header-container .sport-filter{

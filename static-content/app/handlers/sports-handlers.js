@@ -1,20 +1,18 @@
-import {sportApi} from '../api.js'
+import {sportApi} from '../api/api.js'
 import SportDetails from '../components/details/SportDetails.js'
 import SportList from '../components/lists/SportList.js'
 import {Pagination} from '../components/Pagination.js'
-import {queryBuilder, onPaginationChange} from './app-handlers.js'
+import {onPaginationChange} from './app-handlers.js'
 import SportFilter from '../components/filters/SportFilter.js'
 import styles from '../styles.js'
-import {H1, Div} from '../components/dsl.js'
-import {LinkIcon} from "../components/LinkIcon.js";
+import {H1, Div, Icon, Anchor} from '../components/dsl.js'
 import SportCreate from "../components/creates/CreateSport.js";
 
 /**
  * Displays a sport list with the given query
  */
 async function displaySportList(mainContent, _, query) {
-    const paginationQuery = queryBuilder(query)
-    const sports = await sportApi.fetchSports(paginationQuery)
+    const sportsList = await sportApi.fetchSports(query)
     const withHeader = false
 
     const onSportTextChange = () => {
@@ -24,19 +22,19 @@ async function displaySportList(mainContent, _, query) {
         window.location.hash = `sports?search=${searchText}`
     }
 
+    const sportFilterBar = SportFilter(onSportTextChange, onSubmit, withHeader)
+
+    const addAnchor = Anchor("big",`#sports/add`, Icon(styles.BX_CLASS, styles.ADD_ICON))
+    addAnchor.title = "Add a sport"
+    sportFilterBar.prepend(addAnchor)
+
     mainContent.replaceChildren(
         Div(styles.SEARCH_AND_HEADER_DIV,
             H1(styles.HEADER, 'Sports'),
-            SportFilter(onSportTextChange, onSubmit, withHeader)
+            sportFilterBar
         ),
-
-        SportList(sports),
-
-        Div(styles.ADD_BUTTON_CONTAINER,
-            LinkIcon(styles.ADD_ICON,`#sports/add`, "Add a sport")
-        ),
-
-        Pagination(sports.length, (skip, limit) => onPaginationChange("sports", query, skip, limit))
+        SportList(sportsList.sports),
+        Pagination(sportsList.total, (skip, limit) => onPaginationChange("sports", query, skip, limit))
     )
 }
 
@@ -50,12 +48,10 @@ async function displaySportDetails(mainContent, params, _) {
     mainContent.replaceChildren(
         SportDetails(sport)
     )
+
 }
 
 async function displaySportSearch(mainContent, params, _) {
-
-    const onSportTextChange = () => {
-    }
 
     const onSubmit = (searchText) => {
         window.location.hash = `sports?search=${searchText}`
@@ -65,9 +61,10 @@ async function displaySportSearch(mainContent, params, _) {
     mainContent.replaceChildren(
         H1(styles.HEADER, 'Sport Search'),
         Div(styles.SEARCH_CONTAINER,
-            SportFilter(onSportTextChange, onSubmit, withHeader)
+            SportFilter(null, onSubmit, withHeader)
         )
     )
+
 }
 
 /**
@@ -75,8 +72,24 @@ async function displaySportSearch(mainContent, params, _) {
  */
 async function createSport(mainContent, params, _) {
 
-    const onSubmit = (name, description) => {
-        sportApi.createSport(name, description)
+    const onSubmit = async (name, description) => {
+        try{
+            await sportApi.createSport(name, description)
+        }catch(e){
+            let message = ""
+            if(e.code === 2000)
+                message = "Sport's name should be between 1-30 characters."
+            else if(e.code === 2003)
+                message = "Try logging in to create a sport."
+
+            Toastify({
+                text: message,
+                backgroundColor: "linear-gradient(to right, #ff6c6c, #f66262)",
+                oldestFirst: false,
+            }).showToast()
+            return
+        }
+
         window.location.hash = 'sports'
     }
 

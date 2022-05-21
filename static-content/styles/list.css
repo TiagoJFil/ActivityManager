@@ -29,8 +29,8 @@
 }
 
 .button{
-    background-color: #106466;
-    color:#ffffff;
+    background-color: var(--button);
+    color: white;
     font-size: 15px;
     border: none;
     outline: none;
@@ -102,9 +102,7 @@ input[type="date"] {
 }
 
 #rid{
-    min-height:58px; 
-    overflow-y :auto; 
-    overflow-x: hidden; 
+    min-height:58px;
     width:300px;
     overflow: scroll;
  }
@@ -123,7 +121,6 @@ input[type="date"] {
         justify-content: space-between;
         align-items: center;
         transform: translateY(0);
-        flex-wrap: none;
     }
 }
 
