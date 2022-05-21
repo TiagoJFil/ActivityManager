@@ -1,11 +1,8 @@
 import router from './router.js'
 import handlers from './handlers/app-handlers.js'
-import {getItemsPerPage} from "./components/Pagination.js";
 
 window.addEventListener('load', loadHandler)
 window.addEventListener('hashchange', hashChangeHandler)
-window.addEventListener('resize', hashChangeHandler)
-
 
 
 /**
@@ -19,7 +16,6 @@ function loadHandler(){
     
     router.addRouteHandler('sports', handlers.getSports)
     router.addRouteHandler('sports/add', handlers.createSport)
-    router.addRouteHandler('sports/search', handlers.getSportsSearch)
     router.addRouteHandler('sports/:sid', handlers.getSport) 
     router.addRouteHandler('sports/:sid/users', handlers.getUsersByActivity)  
     
@@ -27,7 +23,7 @@ function loadHandler(){
     router.addRouteHandler('users/:uid', handlers.getUser) 
     
     router.addRouteHandler('routes', handlers.getRoutes)
-    router.addRouteHandler('routes/search', handlers.getRoutesSearch)
+    router.addRouteHandler('routes/add', handlers.createRoute)
     router.addRouteHandler('routes/:rid', handlers.getRoute)
 
     

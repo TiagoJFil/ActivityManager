@@ -1,4 +1,4 @@
-import {fetchResourceList, getRequest} from "./api-utils.js";
+import {fetchResourceList, getRequest, getBodyOrThrow} from "./api-utils.js";
 
 // URL Related Constants
 
@@ -39,6 +39,24 @@ async function createSport(sportName, sportDescription) {
 
 }
 
+async function createRoute(sLocation, eLocation, distance) {
+    const response = await fetch(BASE_API_URL + ROUTE_URL, {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + 'TOKEN',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            startLocation: sLocation || '',
+            endLocation: eLocation || '',
+            distance: distance ? parseFloat(distance) : ""
+        })
+    })
+
+    return await getBodyOrThrow(response)
+
+}
+
 export const userApi = {
 
     fetchUsers: async (queryMap) =>
@@ -61,7 +79,6 @@ export const sportApi = {
         await fetchResourceList(BASE_API_URL + SPORTS_URL, queryMap, SPORTS_PROPERTY),
 
     createSport
-
 }
 
 export const activityApi = {
@@ -86,5 +103,7 @@ export const routeApi = {
 
     fetchRoutes: async (queryMap) =>
         await fetchResourceList(BASE_API_URL + ROUTE_URL, queryMap, ROUTES_PROPERTY),
+
+    createRoute    
 }
 

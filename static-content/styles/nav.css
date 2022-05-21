@@ -17,10 +17,15 @@ nav{
     top: 0;
     left: 0;
     padding: 20px 30px;
-    box-shadow: 0 4px 15px 0 var(--secondary);
+    box-shadow: 0 4px 15px 0 var(--primary);
     z-index: 10;
     position: fixed;
     overflow: hidden;
+    -moz-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+    background-image: linear-gradient(to right, #29323c, #37414b, #2e353b);
 }
 
 .nav-links{

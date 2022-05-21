@@ -18,4 +18,8 @@ data class Route(
     val endLocation: String,
     val distance: Double,
     val user: UserID
-)
+) {
+    companion object {
+        const val MAX_LOCATION_LENGTH = 150
+    }
+}

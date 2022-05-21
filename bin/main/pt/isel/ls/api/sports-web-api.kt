@@ -10,6 +10,7 @@ import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.core.Status.Companion.BAD_REQUEST
+import org.http4k.core.Status.Companion.FORBIDDEN
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.NOT_FOUND
 import org.http4k.core.Status.Companion.UNAUTHORIZED
@@ -23,13 +24,13 @@ import org.http4k.routing.static
 import org.slf4j.LoggerFactory
 import pt.isel.ls.config.Environment
 import pt.isel.ls.service.AppError
+import pt.isel.ls.service.AuthorizationError
 import pt.isel.ls.service.InternalError
 import pt.isel.ls.service.InvalidParameter
 import pt.isel.ls.service.MissingParameter
 import pt.isel.ls.service.ResourceNotFound
 import pt.isel.ls.service.UnauthenticatedError
 import pt.isel.ls.service.dto.HttpError
-import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.repository.DataBaseAccessException
 import pt.isel.ls.utils.warnStatus
 import kotlin.system.measureTimeMillis
@@ -43,12 +44,16 @@ fun getApiRoutes(routes: RoutingHttpHandler) = routes(
 
     "/api" bind routes.withFilter(timeFilter).withFilter(onErrorFilter),
     static(Classpath("public")),
-    singlePageApp(ResourceLoader.Directory("public"))
+    singlePageApp(ResourceLoader.Directory("static-content")) // For SPA
+
 )
 
-fun swaggerUi(htmlPath: String) = routes(
+/**
+ * Serves swagger ui to a /docs route by redirecting to the swagger ui index.html public resource
+ */
+private fun swaggerUi() = routes(
     "/docs" bind Method.GET to {
-        Response(Status.FOUND).header("Location", htmlPath)
+        Response(Status.FOUND).header("Location", "/swagger-ui/index.html")
     }
 )
 
@@ -61,7 +66,7 @@ fun getAppRoutes(env: Environment) = routes(
     Route(env.routeServices),
     Sport(env.sportsServices),
     Activity(env.activityServices),
-    swaggerUi("/swagger-ui/index.html")
+    swaggerUi()
 )
 
 private val eLogger = LoggerFactory.getLogger("pt.isel.ls.api.ERRORS")
@@ -92,6 +97,10 @@ private val onErrorFilter = Filter { handler ->
                     eLogger.warnStatus(UNAUTHORIZED, appError.message ?: "Unauthenticated")
                     baseResponse.status(UNAUTHORIZED)
                 }
+                is AuthorizationError -> {
+                    eLogger.warnStatus(FORBIDDEN, appError.message ?: "Forbidden")
+                    baseResponse.status(FORBIDDEN)
+                }
                 is MissingParameter, is InvalidParameter -> {
                     eLogger.warnStatus(BAD_REQUEST, appError.message ?: "Invalid parameter")
                     baseResponse
@@ -103,12 +112,17 @@ private val onErrorFilter = Filter { handler ->
             }
         } catch (serializerException: SerializationException) {
 
+            eLogger.error(serializerException.stackTraceToString())
             val body = Json.encodeToString(HttpError(0, "Invalid body."))
             eLogger.warnStatus(BAD_REQUEST, "Invalid body.")
             Response(BAD_REQUEST).header("content-type", "application/json").body(body)
         } catch (dbError: DataBaseAccessException) {
+            val body = Json.encodeToString(HttpError(2004, "Internal Error."))
+            eLogger.warnStatus(BAD_REQUEST, dbError.message ?: "Database Error")
+            Response(INTERNAL_SERVER_ERROR).header("content-type", "application/json").body(body)
+        } catch (e: Exception) {
+            eLogger.error(e.stackTraceToString())
             val body = Json.encodeToString(HttpError(0, "Internal Error."))
-            eLogger.error(dbError.message)
             Response(INTERNAL_SERVER_ERROR).header("content-type", "application/json").body(body)
         }
     }
@@ -126,15 +140,3 @@ private val timeFilter = Filter { handler ->
     }
     handlerWrapper
 }
-
-/**
- * Gets the user token from the request
- *
- * @param request request to get the token from
- * @return the user token or null if not found or in invalid format
- */
-fun getToken(request: Request): UserToken? =
-    request
-        .header("Authorization")
-        ?.substringAfter("Bearer ", missingDelimiterValue = "")
-        ?.ifBlank { null }

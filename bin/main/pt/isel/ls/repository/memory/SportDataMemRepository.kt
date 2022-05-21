@@ -5,6 +5,8 @@ import pt.isel.ls.service.dto.SportDTO
 import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.service.applyPagination
 
 class SportDataMemRepository(testSport: Sport) : SportRepository {
 
@@ -34,16 +36,42 @@ class SportDataMemRepository(testSport: Sport) : SportRepository {
      *
      * @return [List] of [SportDTO]
      */
-    override fun getSports(): List<Sport> = sportsMap.values.toList()
+    override fun getSports(search: String?, paginationInfo: PaginationInfo): List<Sport> {
+        val filteredSports = if (search == null) {
+            sportsMap.values
+        } else {
+            sportsMap.values.filter { sport ->
+                sport.name.contains(search, ignoreCase = true) || sport.description?.contains(search, ignoreCase = true) == true
+            }
+        }
+
+        return filteredSports
+            .toList()
+            .applyPagination(paginationInfo)
+    }
 
     /**
      * @param sportID the unique number that identifies the sport
      * @return A [SportDTO] object or null if there is no sport identified by the [sportID]
      */
-    override fun getSportByID(sportID: SportID): Sport? = sportsMap[sportID]
+    override fun getSport(sportID: SportID): Sport? = sportsMap[sportID]
 
     /**
      * Checks if a sport identified by [sportID] exists.
      */
     override fun hasSport(sportID: SportID): Boolean = sportsMap.containsKey(sportID)
+
+    /**
+     * Updates a sport in the repository.
+     * @param sid The id of the sport to be updated.
+     * @param newName The sport's name. or null if it should not be updated.
+     * @param newDescription The sport's description or null if it should not be updated.
+     */
+    override fun updateSport(sid: SportID, newName: String?, newDescription: String?): Boolean {
+        val sport = sportsMap[sid] ?: return false
+        val name = newName ?: sport.name
+        val description = newDescription ?: sport.description
+        sportsMap[sid] = sport.copy(name = name, description = description?.ifBlank { null })
+        return true
+    }
 }

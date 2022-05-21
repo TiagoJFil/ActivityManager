@@ -3,19 +3,16 @@ package pt.isel.ls.api
 import kotlinx.serialization.Serializable
 import org.http4k.core.Response
 import org.junit.After
-import org.junit.Before
-import pt.isel.ls.api.UserRoutes.UserCreationInput
+import pt.isel.ls.api.UserRoutes.UserInput
 import pt.isel.ls.api.UserRoutes.UserListOutput
 import pt.isel.ls.api.utils.TEST_ENV
 import pt.isel.ls.api.utils.USER_PATH
-import pt.isel.ls.api.utils.authHeader
 import pt.isel.ls.api.utils.createUser
 import pt.isel.ls.api.utils.expectBadRequest
 import pt.isel.ls.api.utils.expectNotFound
 import pt.isel.ls.api.utils.expectOK
 import pt.isel.ls.api.utils.getRequest
 import pt.isel.ls.api.utils.postRequest
-import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.service.dto.HttpError
 import pt.isel.ls.service.dto.UserDTO
@@ -36,12 +33,12 @@ class UserApiTests {
     fun `create multiple Users`() {
         val userCount = 1000
         val randomEmails = (0 until userCount).map { "${generateUUId()}@gmail.com" }
-        val usersCreationBody = List(userCount) { idx -> UserCreationInput("user$idx", randomEmails[idx]) }
+        val usersCreationBody = List(userCount) { idx -> UserInput("user$idx", randomEmails[idx]) }
         val responses = usersCreationBody.map {
             testClient.createUser(it)
         }
 
-        val usersList = getRequest<UserListOutput>(testClient, USER_PATH, Response::expectOK).users
+        val usersList = getRequest<UserListOutput>(testClient, "$USER_PATH?limit=1005", Response::expectOK).users
         val expected = responses.mapIndexed { index, userIDResponse ->
             UserDTO("user$index", randomEmails[index], userIDResponse.id)
         }
@@ -71,42 +68,39 @@ class UserApiTests {
     // USER CREATE
     @Test
     fun `create a correct user gives 201`() {
-        testClient.createUser(UserCreationInput("abc", "abc@gmail.com"))
+        testClient.createUser(UserInput("abc", "abc@gmail.com"))
     }
 
     @Test
     fun `try to create a user without the name gives 400`() {
-        val body = UserCreationInput(email = "abc@gmail.com")
-        postRequest<UserCreationInput, HttpError>(
+        val body = UserInput(email = "abc@gmail.com")
+        postRequest<UserInput, HttpError>(
             testClient,
             USER_PATH,
             body,
-            authHeader(GUEST_TOKEN),
-            Response::expectBadRequest
+            expectedStatus = Response::expectBadRequest
         )
     }
 
     @Test
     fun `try to create a user without the email gives 400`() {
-        val body = UserCreationInput(name = "Maria")
-        postRequest<UserCreationInput, HttpError>(
+        val body = UserInput(name = "Maria")
+        postRequest<UserInput, HttpError>(
             testClient,
             USER_PATH,
             body,
-            authHeader(GUEST_TOKEN),
-            Response::expectBadRequest
+            expectedStatus = Response::expectBadRequest
         )
     }
 
     @Test
     fun `create a user with a repeated email gives 400`() {
-        val body = UserCreationInput("Maria", guestUser.email.value)
-        postRequest<UserCreationInput, HttpError>(
+        val body = UserInput("Maria", guestUser.email.value)
+        postRequest<UserInput, HttpError>(
             testClient,
             USER_PATH,
             body,
-            authHeader(GUEST_TOKEN),
-            Response::expectBadRequest
+            expectedStatus = Response::expectBadRequest
         )
     }
 
@@ -120,48 +114,43 @@ class UserApiTests {
             testClient,
             USER_PATH,
             body,
-            authHeader(GUEST_TOKEN),
-            Response::expectBadRequest
+            expectedStatus = Response::expectBadRequest
         )
     }
 
     @Test
     fun `create a user with a wrong email gives 400`() {
-        val body = UserCreationInput("Maria", "tes@t123@gmail.com")
-        postRequest<UserCreationInput, HttpError>(
+        val body = UserInput("Maria", "tes@t123@gmail.com")
+        postRequest<UserInput, HttpError>(
             testClient,
             USER_PATH,
             body,
-            authHeader(GUEST_TOKEN),
-            Response::expectBadRequest
+            expectedStatus = Response::expectBadRequest
         )
     }
 
     @Test
     fun `create a user with a blank name parameter gives 400`() {
-        val body = UserCreationInput("", "test1234@gmail.com")
-        postRequest<UserCreationInput, HttpError>(
+        val body = UserInput("", "test1234@gmail.com")
+        postRequest<UserInput, HttpError>(
             testClient,
             USER_PATH,
             body,
-            authHeader(GUEST_TOKEN),
-            Response::expectBadRequest
+            expectedStatus = Response::expectBadRequest
         )
     }
 
     @Test
     fun `create a user with a blank email parameter gives 400`() {
-        val body = UserCreationInput("Mario", "")
-        postRequest<UserCreationInput, HttpError>(
+        val body = UserInput("Mario", "")
+        postRequest<UserInput, HttpError>(
             testClient,
             USER_PATH,
             body,
-            authHeader(GUEST_TOKEN),
-            Response::expectBadRequest
+            expectedStatus = Response::expectBadRequest
         )
     }
 
-    @Before
     @Test
     fun `a get a list without creating gives a list with the test user`() {
         val usersList = getRequest<UserListOutput>(testClient, USER_PATH, Response::expectOK)

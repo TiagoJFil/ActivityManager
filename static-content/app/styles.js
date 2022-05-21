@@ -49,8 +49,8 @@ const styles = {
     ADD_CONTAINER: 'add-container',
     SEARCH_AND_HEADER_DIV: 'sports-search-header-container',
     FORM_TEXT_INPUT : 'form-text-input',
+    SEARCH_BAR_WITH_ADD: 'search-bar-with-add',
     SPACER: 'spacer'
 }
 
 export default styles
-

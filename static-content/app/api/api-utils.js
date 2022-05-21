@@ -28,7 +28,7 @@ function isSuccessful(statusCode) {
  * Returns the response body as JSON if the status code is a success code
  * throws the error returned by the API otherwise
  */
-async function getBodyOrThrow(response) {
+export async function getBodyOrThrow(response) {
     const object = await response.json()
     if (isSuccessful(response.status))
         return object
@@ -57,7 +57,7 @@ export async function fetchResourceList(uri, queryObject, listPropertyName) {
     const listObject = await getRequest(uri, queryObject)
     const queryCopy = { ...queryObject }
     queryCopy.skip = 0
-    queryCopy.limit = 100_000
+    queryCopy.limit = 10_000_000
     // May fetch more items than the memory limit allows
     // TODO: Should be replaced by sending the total number of items in X-Total-Count response header in the api
     const totalObject = await getRequest(uri, queryCopy)

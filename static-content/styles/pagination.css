@@ -7,8 +7,6 @@
   justify-content: center;
   align-items: center;
   list-style: none;
-  /* pagination sticky */
-  position: sticky;
 }
 
 .page-link, .page-link-active,

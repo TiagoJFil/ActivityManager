@@ -6,6 +6,8 @@ import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.repository.applyPagination
 import pt.isel.ls.utils.repository.generatedKey
 import pt.isel.ls.utils.repository.ifNext
 import pt.isel.ls.utils.repository.toListOf
@@ -19,14 +21,14 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
 
     private val userTable = "user$suffix"
     private val emailTable = "email$suffix"
-    private val tokenTable = "tokens$suffix"
+    private val tokenTable = "token$suffix"
 
     /**
      * Returns the user with the given id.
      * @param userID the id of the user to be returned.
      * @return the user with the given id.
      */
-    override fun getUserByID(userID: UserID): User? =
+    override fun getUserBy(userID: UserID): User? =
         dataSource.connection.transaction {
             val email: String = prepareStatement("""SELECT email FROM $emailTable WHERE "user" = ?""").use { statement ->
                 statement.setInt(1, userID)
@@ -82,11 +84,14 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
     /**
      * Gets all the users in the repository.
      */
-    override fun getUsers(): List<User> =
+    override fun getUsers(paginationInfo: PaginationInfo): List<User> =
         dataSource.connection.transaction {
-            val emails = getEmails(connection = this)
-            createStatement().use { statement ->
-                statement.executeQuery("""SELECT * FROM $userTable """).use { resultSet ->
+            val emails = getEmails(connection = this, paginationInfo)
+            val query = """SELECT * FROM $userTable ORDER BY id LIMIT ? OFFSET ?"""
+            prepareStatement(query).use { statement ->
+                statement.applyPagination(paginationInfo, indexes = Pair(1, 2))
+
+                statement.executeQuery().use { resultSet ->
                     emails.map { email ->
                         resultSet.ifNext {
                             val userID = resultSet.getInt("id")
@@ -105,13 +110,16 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
      * @param connection the connection to the database.
      * @return a list of emails.
      */
-    private fun getEmails(connection: Connection): List<Email> =
-        connection.createStatement().use { statement ->
-            val resultSet = statement.executeQuery("""SELECT email FROM $emailTable""")
+    private fun getEmails(connection: Connection, paginationInfo: PaginationInfo): List<Email> {
+        val query = """SELECT email FROM $emailTable ORDER BY user LIMIT ? OFFSET ?"""
+        return connection.prepareStatement(query).use { statement ->
+            statement.applyPagination(paginationInfo, indexes = Pair(1, 2))
+            val resultSet = statement.executeQuery()
             resultSet.toListOf<Email> {
                 Email(resultSet.getString("email"))
             }
         }
+    }
 
     /**
      * Checks if any existing user has the given email.
@@ -133,7 +141,7 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
      * @param token the token of the user.
      * @return [UserID] the user id of the user with the given token.
      */
-    override fun getUserIDByToken(token: UserToken): UserID? =
+    override fun getUserIDBy(token: UserToken): UserID? =
         dataSource.connection.transaction {
             val query = "SELECT * FROM $tokenTable WHERE token = ?"
             prepareStatement(query).use { stmt ->
@@ -145,6 +153,24 @@ class UserDBRepository(private val dataSource: PGSimpleDataSource, suffix: Strin
                 }
             }
         }
+
+    /**
+     * Gets the user token of the user with the given email.
+     * @param email the email of the user.
+     * @return [UserToken] the user token of the user with the given email.
+     */
+    override fun getTokenByEmail(email: Email): UserToken? {
+        val query =
+            """SELECT token FROM $tokenTable WHERE "user" = (SELECT "user" FROM $emailTable WHERE email = ?)"""
+        return dataSource.connection.transaction {
+            prepareStatement(query).use { stmt ->
+                stmt.setString(1, email.value)
+                stmt.executeQuery().use { resultSet ->
+                    resultSet.ifNext { resultSet.getString("token") }
+                }
+            }
+        }
+    }
 
     /**
      * Checks if the user with the given id exists.

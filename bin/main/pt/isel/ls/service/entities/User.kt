@@ -13,6 +13,10 @@ import pt.isel.ls.utils.UserID
  */
 data class User(val name: String, val email: Email, val id: UserID) {
 
+    companion object {
+        const val MAX_NAME_LENGTH = 20
+    }
+
     /**
      * Represents an email from a [User]
      * @throws IllegalArgumentException if the email is not valid (wrong email format)

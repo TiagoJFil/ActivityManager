@@ -7,6 +7,7 @@ import pt.isel.ls.service.entities.User.Email
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.service.generateUUId
 import pt.isel.ls.utils.service.requireIdInteger
@@ -19,8 +20,8 @@ class UserServices(
 ) {
 
     companion object {
-        val logger = getLoggerFor<UserServices>()
-        const val NAME_PARAM = "name"
+        private val logger = getLoggerFor<UserServices>()
+        const val NAME_PARAM = "User name"
         const val EMAIL_PARAM = "email"
         const val EMAIL_TAKEN = "Email already taken"
         const val USER_ID_PARAM = "userID"
@@ -66,7 +67,7 @@ class UserServices(
 
         val safeUserID = requireParameter(uid, USER_ID_PARAM)
         val uidInt = requireIdInteger(safeUserID, USER_ID_PARAM)
-        return userRepository.getUserByID(uidInt)?.toDTO()
+        return userRepository.getUserBy(uidInt)?.toDTO()
             ?: throw ResourceNotFound(RESOURCE_NAME, "$uid")
     }
 
@@ -75,11 +76,25 @@ class UserServices(
      *
      * @return [List] of [User
      */
-    fun getUsers(): List<UserDTO> {
+    fun getUsers(paginationInfo: PaginationInfo): List<UserDTO> {
         logger.traceFunction(::getUsers.name)
 
         return userRepository
-            .getUsers()
+            .getUsers(paginationInfo)
             .map(User::toDTO)
+    }
+
+    /**
+     * Gets the token of the user that has the given email.
+     * @param email the email of the user
+     * @return the token of the user
+     */
+    fun getTokenByEmail(email: Param): UserToken {
+        logger.traceFunction(::getTokenByEmail.name) { listOf(EMAIL_PARAM to email) }
+
+        val safeEmail = requireParameter(email, EMAIL_PARAM)
+
+        return userRepository.getTokenByEmail(Email(safeEmail))
+            ?: throw InvalidParameter("User with $EMAIL_PARAM $safeEmail not found")
     }
 }

@@ -8,6 +8,8 @@ import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.service.applyPagination
 
 class UserDataMemRepository(guest: User) : UserRepository {
 
@@ -27,6 +29,9 @@ class UserDataMemRepository(guest: User) : UserRepository {
      * Mapping between a [UserID] and it's identified [User]
      */
     private val usersMap: MutableMap<Int, User> = mutableMapOf(guest.id to guest)
+
+    val map: Map<Int, User>
+        get() = usersMap.toMap()
 
     /**
      * Checks if the specified user has a repeated email
@@ -55,24 +60,35 @@ class UserDataMemRepository(guest: User) : UserRepository {
     }
 
     /**
-     * @param userID user's unique identifier
-     * @return A [UserDTO] object or null if there is no user identified by [userID]
-     */
-    override fun getUserByID(userID: UserID): User? = usersMap[userID]
-
-    /**
      * Gets all the users stored
      */
-    override fun getUsers(): List<User> = usersMap.values.toList()
-
-    /**
-     * @param token user's unique token
-     * @return the [UserID] identified by the [UserToken]
-     */
-    override fun getUserIDByToken(token: UserToken): UserID? = tokenTable[token]
+    override fun getUsers(paginationInfo: PaginationInfo): List<User> =
+        usersMap.values
+            .toList()
+            .applyPagination(paginationInfo)
 
     /**
      * Checks if the user with the given id exists
      */
     override fun hasUser(userID: UserID): Boolean = usersMap.containsKey(userID)
+
+    /**
+     * @param token user's unique token
+     * @return the [UserID] identified by the [UserToken]
+     */
+    override fun getUserIDBy(token: UserToken): UserID? = tokenTable[token]
+
+    /**
+     * Gets the user token of the user with the given email.
+     */
+    override fun getTokenByEmail(email: Email): UserToken? {
+        val userId = emailsMap[email.value]
+        return tokenTable.entries.firstOrNull { it.value == userId }?.key
+    }
+
+    /**
+     * @param userID user's unique identifier
+     * @return A [UserDTO] object or null if there is no user identified by [userID]
+     */
+    override fun getUserBy(userID: UserID): User? = usersMap[userID]
 }

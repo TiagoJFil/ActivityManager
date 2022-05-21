@@ -1,6 +1,6 @@
 import {Text, Select, Option,Form } from "../dsl.js"
 import styles from "../../styles.js";
-import {SearchBar} from "../SearchBar.js";
+import SearchBar from "../SearchBar.js";
 
 export default function SportSearch(onSportTextChange, isSelect, withHeader){
 

@@ -13,7 +13,12 @@ import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.service.RouteServices
 import pt.isel.ls.service.dto.RouteDTO
+import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.api.contentJson
+import pt.isel.ls.utils.api.fromRequest
+import pt.isel.ls.utils.api.getBearerToken
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
 
@@ -22,14 +27,14 @@ class RouteRoutes(
 
 ) {
     @Serializable data class RouteListOutput(val routes: List<RouteDTO>)
-    @Serializable data class RouteCreationInput(
-        val startLocation: String? = null,
-        val endLocation: String? = null,
+    @Serializable data class RouteInput(
+        val startLocation: Param = null,
+        val endLocation: Param = null,
         val distance: Double? = null
     )
     @Serializable data class RouteIDOutput(val routeID: RouteID)
     companion object {
-        val logger = getLoggerFor<RouteRoutes>()
+        private val logger = getLoggerFor<RouteRoutes>()
     }
 
     /**
@@ -37,10 +42,11 @@ class RouteRoutes(
      */
     private fun getRoutes(request: Request): Response {
         logger.infoLogRequest(request)
-
-        val routes = routeServices.getRoutes()
+        val endLocationQuery = request.query("endLocation")
+        val startLocationQuery = request.query("startLocation")
+        val routes = routeServices.getRoutes(PaginationInfo.fromRequest(request), startLocationQuery, endLocationQuery)
         val bodyString = Json.encodeToString(RouteListOutput(routes))
-        return Response(Status.OK).header("content-type", "application/json").body(bodyString)
+        return Response(Status.OK).contentJson().body(bodyString)
     }
 
     /**
@@ -56,7 +62,7 @@ class RouteRoutes(
         val routeJson = Json.encodeToString(route)
 
         return Response(Status.OK)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(routeJson)
     }
 
@@ -66,15 +72,30 @@ class RouteRoutes(
     private fun createRoute(request: Request): Response {
         logger.infoLogRequest(request)
 
-        val routeInfo = Json.decodeFromString<RouteCreationInput>(request.bodyString())
-        val token = getToken(request)
+        val routeInfo = Json.decodeFromString<RouteInput>(request.bodyString())
+        val token = getBearerToken(request)
 
         val routeId: RouteID =
             routeServices.createRoute(token, routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)
 
         return Response(Status.CREATED)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(Json.encodeToString(RouteIDOutput(routeId)))
+    }
+
+    /**
+     * Updates a route identified by the given [RouteID] from the query "rid"
+     */
+    private fun updateRoute(request: Request): Response {
+        logger.infoLogRequest(request)
+
+        val routeID = request.path("rid")
+        val routeInfo = Json.decodeFromString<RouteInput>(request.bodyString())
+        val token = getBearerToken(request)
+
+        routeServices.updateRoute(token, routeID, routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)
+
+        return Response(Status.NO_CONTENT)
     }
 
     val handler =
@@ -83,6 +104,7 @@ class RouteRoutes(
                 "/" bind Method.POST to ::createRoute,
                 "/" bind Method.GET to ::getRoutes,
                 "/{rid}" bind Method.GET to ::getRoute,
+                "/{rid}" bind Method.PUT to ::updateRoute,
             )
 }
 

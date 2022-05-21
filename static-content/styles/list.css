@@ -1,17 +1,55 @@
 
-.list{
-    --items-per-page: 10;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    height: 30%;
+
+:root{
+    --button-width: 300px;
+    --button-margin-right: 20px;
+}
+
+/*                               List Scrollbar styles                                    */
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey; 
+    border-radius: 10px;
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: gray; 
+    border-radius: 10px;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: gray; 
+  }
+
+  /*                           List Container and elements style                            */
+
+  .list{
+    --items-per-page: 20;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(calc(var(--button-width) + var(--button-margin-right)), 1fr));
+    grid-row-gap: var(--button-margin-right);
+    grid-column-gap: var(--button-margin-right);
+    height: 70%;
     width: 100%;
-    flex-wrap: wrap;
+    padding: 50px;
+    overflow-y: auto;
+    overflow-x: hidden;
+   /*box-shadow: 0 0 5px 0 rgba(0,0,0,0.25);*/
+   /**
+   background-color: #2f4353;
+   background-image: linear-gradient(315deg, #2f4353 0%, #d2ccc4 74%);
+   */
 }
 
 .list-button{
-    width: 120px;
+    width: var(--button-width);
     height: 120px;
     border-radius: 50px;
     -moz-transition: all .4s ease-in-out;
@@ -23,7 +61,7 @@
     margin-right: 20px;
     font-size: 20px;
     background-size: 300% 100%;
-    box-shadow: 0 4px 15px 0 var(--secondary);
+    box-shadow: 0 1px 10px 0 var(--primary);
     padding: 20px;
     margin-left: 15px;
 }
@@ -121,6 +159,11 @@ input[type="date"] {
         justify-content: space-between;
         align-items: center;
         transform: translateY(0);
+    }
+
+    .list-button{
+        width: 150px;
+        font-size: 25px;
     }
 }
 

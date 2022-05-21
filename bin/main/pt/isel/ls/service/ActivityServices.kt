@@ -6,24 +6,26 @@ import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.repository.UserRepository
-import pt.isel.ls.service.RouteServices.Companion.ROUTE_ID_PARAM
 import pt.isel.ls.service.SportsServices.Companion.SPORT_ID_PARAM
 import pt.isel.ls.service.UserServices.Companion.USER_ID_PARAM
 import pt.isel.ls.service.dto.ActivityDTO
+import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.service.entities.Activity.Duration
+import pt.isel.ls.service.entities.User
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.Order
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
-import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
-import pt.isel.ls.utils.service.requireActivity
+import pt.isel.ls.utils.service.requireActivityWith
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireIdInteger
 import pt.isel.ls.utils.service.requireNotBlankParameter
+import pt.isel.ls.utils.service.requireOwnership
 import pt.isel.ls.utils.service.requireParameter
 import pt.isel.ls.utils.service.requireRoute
 import pt.isel.ls.utils.service.requireSport
@@ -40,10 +42,11 @@ class ActivityServices(
     private val routeRepository: RouteRepository
 ) {
     companion object {
-        val logger = getLoggerFor<ActivityServices>()
+        private val logger = getLoggerFor<ActivityServices>()
 
-        const val USER_NOT_OWNER = "User is not the owner of the activity"
         const val ACTIVITY_ID_PARAM = "activityID"
+        const val ROUTE_ID_PARAM = "routeID"
+        const val ACTIVITIES_ID_PARAM = "activityIDs"
         const val RESOURCE_NAME = "Activity"
         const val DURATION_PARAM = "duration"
         const val DATE_PARAM = "date"
@@ -118,13 +121,17 @@ class ActivityServices(
      * @param activityID the unique identifier of the activity
      * @return [ActivityDTO] with the activity that matches the given id
      */
-    fun getActivity(activityID: Param): ActivityDTO {
+    fun getActivity(activityID: Param, sid: Param): ActivityDTO {
         logger.traceFunction(::getActivity.name) { listOf(ACTIVITY_ID_PARAM to activityID) }
+
+        val safeSID = requireParameter(sid, SPORT_ID_PARAM)
         val safeActivityID = requireParameter(activityID, ACTIVITY_ID_PARAM)
         val aidInt = requireIdInteger(safeActivityID, ACTIVITY_ID_PARAM)
+        val sidInt = requireIdInteger(safeSID, SPORT_ID_PARAM)
+        sportRepository.requireSport(sidInt)
+        activityRepository.requireActivityWith(aidInt, sidInt)
 
-        return activityRepository.getActivity(aidInt)?.toDTO()
-            ?: throw ResourceNotFound(RESOURCE_NAME, safeActivityID)
+        return activityRepository.getActivity(aidInt)?.toDTO() ?: throw ResourceNotFound(RESOURCE_NAME, safeActivityID)
     }
 
     /**
@@ -133,14 +140,14 @@ class ActivityServices(
      * @param uid the unique identifier of the user that created the activity
      * @return [List] of [ActivityDTO] with all the activities created by the user that matches the given id
      */
-    fun getActivitiesByUser(uid: Param): List<ActivityDTO> {
+    fun getActivitiesByUser(uid: Param, paginationInfo: PaginationInfo = PaginationInfo(10, 0)): List<ActivityDTO> {
         logger.traceFunction(::getActivitiesByUser.name) { listOf("userID" to uid) }
         val safeUID = requireParameter(uid, USER_ID_PARAM)
 
         val uidInt = requireIdInteger(safeUID, USER_ID_PARAM)
         userRepository.requireUser(uidInt)
 
-        return activityRepository.getActivitiesByUser(uidInt)
+        return activityRepository.getActivitiesByUser(uidInt, paginationInfo)
             .map(Activity::toDTO)
     }
 
@@ -155,7 +162,7 @@ class ActivityServices(
      *
      * @return [List] of [ActivityDTO]
      */
-    fun getActivities(sid: Param, orderBy: Param, date: Param, rid: Param): List<ActivityDTO> {
+    fun getActivities(sid: Param, orderBy: Param, date: Param, rid: Param, paginationInfo: PaginationInfo): List<ActivityDTO> {
         logger.traceFunction(::getActivities.name) {
             listOf(
                 SPORT_ID_PARAM to sid,
@@ -177,7 +184,6 @@ class ActivityServices(
         requireNotBlankParameter(date, DATE_PARAM)
         requireNotBlankParameter(rid, ROUTE_ID_PARAM)
         val ridInt: RouteID? = rid?.let { requireIdInteger(it, ROUTE_ID_PARAM) }
-        ridInt?.let { routeRepository.requireRoute(ridInt) }
 
         try {
             if (date != null) LocalDate.parse(date)
@@ -185,8 +191,73 @@ class ActivityServices(
             throw InvalidParameter(DATE_PARAM)
         }
 
-        return activityRepository.getActivities(sidInt, orderByToSend, date?.toLocalDate(), ridInt)
+        return activityRepository.getActivities(sidInt, orderByToSend, date?.toLocalDate(), ridInt, paginationInfo)
             .map(Activity::toDTO)
+    }
+
+    /**
+     * Updates an activity with the new given data.
+     * @param token the token of the user that wants to update the activity
+     * @param activityID the unique identifier of the activity
+     * @param duration the duration of the activity
+     * @param date the date of the activity
+     * @param rid the route associated to the activity
+     */
+    fun updateActivity(token: UserToken?, sportID: Param, activityID: Param, duration: Param, date: Param, rid: Param) {
+        try {
+            logger.traceFunction(::updateActivity.name) {
+                listOf(
+                    DURATION_PARAM to duration,
+                    DATE_PARAM to date,
+                    ROUTE_ID_PARAM to rid
+                )
+            }
+
+            val userID = userRepository.requireAuthenticated(token)
+            userRepository.requireUser(userID)
+
+            val safeActivityID = requireParameter(activityID, ACTIVITY_ID_PARAM)
+            val aidInt = requireIdInteger(safeActivityID, ACTIVITY_ID_PARAM)
+
+            activityRepository.requireOwnership(userID, aidInt)
+
+            sportID?.let {
+                val sidInt = requireIdInteger(sportID, SPORT_ID_PARAM)
+                sportRepository.requireSport(sidInt)
+                activityRepository.requireActivityWith(aidInt, sidInt)
+            }
+
+            if (duration == null && date == null && rid == null) return
+
+            val handledDuration = duration?.ifBlank { null }
+            val durationValue = handledDuration?.let {
+                val parsedDate: Date = Duration.format.parse(duration)
+                val millis: Long = parsedDate.time
+                Duration(millis)
+            }
+
+            val removeRoute = rid?.isBlank() == true
+            val handledRoute = rid?.ifBlank { null }
+            val ridInt = handledRoute?.let {
+                val ridInt = requireIdInteger(it, ROUTE_ID_PARAM)
+                routeRepository.requireRoute(ridInt)
+                ridInt
+            }
+
+            if (!activityRepository.updateActivity(
+                    newDate = date?.toLocalDate(),
+                    newDuration = durationValue,
+                    newRouteID = ridInt,
+                    activityID = aidInt,
+                    removeRoute
+                )
+            )
+                throw ResourceNotFound(SportsServices.RESOURCE_NAME, safeActivityID)
+        } catch (e: ParseException) {
+            throw InvalidParameter(DURATION_INVALID_FORMAT)
+        } catch (e: IllegalArgumentException) {
+            throw InvalidParameter(DATE_INVALID_FORMAT)
+        }
     }
 
     /**
@@ -196,7 +267,7 @@ class ActivityServices(
      * @param sid The sport id of the activity to be deleted.
      * @return true if the activity was deleted, false otherwise.
      */
-    fun deleteActivity(token: UserToken?, aid: Param, sid: Param): Boolean {
+    fun deleteActivity(token: UserToken?, aid: Param, sid: Param) {
         logger.traceFunction(::deleteActivity.name) {
             listOf(
                 ACTIVITY_ID_PARAM to aid,
@@ -209,16 +280,68 @@ class ActivityServices(
         val sidInt = requireIdInteger(safeSID, SPORT_ID_PARAM)
         sportRepository.requireSport(sidInt)
         val aidInt = requireIdInteger(safeAID, ACTIVITY_ID_PARAM)
-        activityRepository.requireActivity(aidInt)
 
-        if (!ownsActivity(userID, aidInt)) throw UnauthenticatedError(USER_NOT_OWNER)
+        activityRepository.requireActivityWith(aidInt, sidInt)
 
-        return activityRepository.deleteActivity(aidInt)
+        activityRepository.requireOwnership(userID, aidInt)
+
+        activityRepository.deleteActivity(aidInt)
+        return
     }
 
     /**
-     * Checks if the user identified by [userId] owns the activity identified by [activityId].
+     * Gets the users that match activities with the given sport id and route id.
+     * @param sportID The sport id of the activity.
+     * @param routeID The route id of the activity.
      */
-    private fun ownsActivity(userId: UserID, activityId: ActivityID): Boolean =
-        activityRepository.getActivity(activityId)?.user == userId
+    fun getUsersByActivity(sportID: Param, routeID: Param, paginationInfo: PaginationInfo): List<UserDTO> {
+        logger.traceFunction(::getUsersByActivity.name) {
+            listOf(
+                SPORT_ID_PARAM to sportID,
+                ROUTE_ID_PARAM to routeID
+            )
+        }
+        val safeSID = requireParameter(sportID, "SportID")
+        val safeRID = requireParameter(routeID, "RouteID")
+        val sidInt = requireIdInteger(safeSID, SPORT_ID_PARAM)
+        sportRepository.requireSport(sidInt)
+        val ridInt = requireIdInteger(safeRID, ROUTE_ID_PARAM)
+        routeRepository.requireRoute(ridInt)
+
+        return activityRepository
+            .getUsersBy(sidInt, ridInt, paginationInfo)
+            .map(User::toDTO)
+    }
+
+    /**
+     * Deletes all activities received.
+     * This operation is atomic
+     * @param token The token of the user that created the activities.
+     * @param activityIds The activityIds to be deleted.
+     */
+    fun deleteActivities(token: UserToken?, activityIds: Param): Boolean {
+        logger.traceFunction(::deleteActivities.name) {
+            listOf(
+                ACTIVITIES_ID_PARAM to activityIds
+            )
+        }
+        val userID = userRepository.requireAuthenticated(token)
+        val safeAIDS = requireParameter(activityIds, "activityIDs")
+
+        val checkedAIDS = safeAIDS.split(",").map {
+            val aidInt = requireIdInteger(it, "Each activityID")
+            activityRepository.requireOwnership(userID, aidInt)
+            aidInt
+        }
+        if (!activityRepository.deleteActivities(checkedAIDS))
+            throw InvalidParameter("Failed to delete activities.")
+        return true
+    }
+
+    /**
+     * Gets all existing activities.
+     * @return A [List] of all existing [Activity]s.
+     */
+    fun getAllActivities(fromRequest: PaginationInfo): List<ActivityDTO> =
+        activityRepository.getAllActivities(fromRequest).map(Activity::toDTO)
 }

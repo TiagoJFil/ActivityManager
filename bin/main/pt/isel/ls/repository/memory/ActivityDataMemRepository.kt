@@ -3,20 +3,23 @@ package pt.isel.ls.repository.memory
 import kotlinx.datetime.LocalDate
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.service.entities.Activity
+import pt.isel.ls.service.entities.User
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.Order
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.service.applyPagination
 
-class ActivityDataMemRepository(testActivity: Activity) : ActivityRepository {
+class ActivityDataMemRepository(testActivity: Activity, private val userRepo: UserDataMemRepository) : ActivityRepository {
 
     private var currentID = 0
 
     /**
      * Mapping between the [ActivityID] and the [Activity]
      */
-    private val activitiesMap = mutableMapOf<ActivityID, Activity>(testActivity.id to testActivity)
+    private val activitiesMap = mutableMapOf(testActivity.id to testActivity)
 
     /**
      * Creates a new activity using the parameters received
@@ -41,11 +44,38 @@ class ActivityDataMemRepository(testActivity: Activity) : ActivityRepository {
     }
 
     /**
+     * Updates an activity.
+     *
+     * @param newDate the activity date
+     * @param newDuration the activity duration
+     * @param newRouteID the activity route ID
+     * @param activityID the activity ID
+     */
+    override fun updateActivity(
+        newDate: LocalDate?,
+        newDuration: Activity.Duration?,
+        newRouteID: RouteID?,
+        activityID: ActivityID,
+        removeRoute: Boolean
+    ): Boolean {
+        val activity = activitiesMap[activityID] ?: return false
+        val duration = newDuration ?: activity.duration
+        val date = newDate ?: activity.date
+        val route = if (removeRoute)
+            null
+        else
+            newRouteID ?: activity.route
+        activitiesMap[activityID] = activity.copy(date = date, duration = duration, route = route)
+        return true
+    }
+
+    /**
      * Gets all the activities that were created by the given user.
      * @param userID the user unique identifier that the activity must have
      * @return [List] of [Activity] that were created by the given user
      */
-    override fun getActivitiesByUser(userID: UserID): List<Activity> = activitiesMap.values.filter { it.user == userID }
+    override fun getActivitiesByUser(userID: UserID, paginationInfo: PaginationInfo): List<Activity> =
+        activitiesMap.values.filter { it.user == userID }.applyPagination(paginationInfo)
 
     /**
      * Gets the activity that matches the given unique activity identifier.
@@ -66,7 +96,7 @@ class ActivityDataMemRepository(testActivity: Activity) : ActivityRepository {
      *
      * @return [List] of [Activity]
      */
-    override fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?): List<Activity> {
+    override fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?, paginationInfo: PaginationInfo): List<Activity> {
 
         val activities = activitiesMap.values.filter {
             when {
@@ -79,10 +109,11 @@ class ActivityDataMemRepository(testActivity: Activity) : ActivityRepository {
 
         if (activities.isEmpty()) return activities
 
-        return if (orderBy == Order.ASCENDING)
+        val activitiesList = if (orderBy == Order.ASCENDING)
             activities.sortedBy { it.duration.millis }
         else
             activities.sortedByDescending { it.duration.millis }
+        return activitiesList.applyPagination(paginationInfo)
     }
 
     /**
@@ -95,9 +126,46 @@ class ActivityDataMemRepository(testActivity: Activity) : ActivityRepository {
         activitiesMap.remove(activityID) != null
 
     /**
-     * Checks if the activity identified by the given identifier exists.
-     * @param activityID the id of the activity to check
-     * @return [Boolean] true if it exists
+     * Gets the users that have an activity matching the given sport id and route id.
+     * @param sportID sport identifier
+     * @param routeID route identifier
+     * @return [List] of [User] sorted by activity duration ASCENDING
      */
-    override fun hasActivity(activityID: ActivityID): Boolean = activitiesMap.containsKey(activityID)
+    override fun getUsersBy(sportID: SportID, routeID: RouteID, paginationInfo: PaginationInfo): List<User> =
+        activitiesMap.values
+            .filter { it.route == routeID && it.sport == sportID }
+            .sortedBy { it.duration.millis }
+            .mapNotNull { userRepo.map[it.user] }
+            .distinct()
+            .applyPagination(paginationInfo)
+
+    /**
+     * Gets all existing activities.
+     * @return [List] of [Activity]s
+     */
+    override fun getAllActivities(paginationInfo: PaginationInfo): List<Activity> =
+        activitiesMap.values.toList().applyPagination(paginationInfo)
+
+    /**
+     * Deletes all the activities supplied in the list.
+     * Atomic operation.
+     * Either all activities are deleted or none.
+     *
+     * @param activities the list of activities to delete
+     * @return [Boolean] true if it deleted successfully
+     *
+     */
+    override fun deleteActivities(activities: List<ActivityID>): Boolean {
+        val activitiesObjects = activities.toSet().filter { activitiesMap[it] != null }
+        val entries = activitiesMap.filter { it.key in activitiesObjects }
+        if (activitiesObjects.size != activities.size) return false
+        for (it in activities) {
+            activitiesMap.remove(it) // If could not remove add all again
+                ?: run {
+                    activitiesMap.putAll(entries)
+                    return false
+                }
+        }
+        return true
+    }
 }

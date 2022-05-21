@@ -86,15 +86,14 @@ export default {
     getUser: userHandlers.displayUserDetails,
     getRoutes: routeHandlers.displayRouteList,
     getRoute: routeHandlers.displayRouteDetails,
-    getRoutesSearch: routeHandlers.searchRoutesDisplay,
     getActivities: activityHandlers.displayActivityList,
     getActivity: activityHandlers.displayActivityDetails,
     getUsersByActivity: userHandlers.displayUsersByActivity,
     getActivitiesByUser: activityHandlers.displayActivitiesByUser,
     getActivitiesBySport: activityHandlers.displayActivitiesBySport,
     getUsersByRanking: userHandlers.displayUsersByRanking,
-    getSportsSearch: sportHandlers.displaySportSearch,
-    createSport: sportHandlers.createSport
+    createSport: sportHandlers.createSport,
+    createRoute: routeHandlers.createRoute
 }
 
 

@@ -1,4 +1,4 @@
-import {Button, List, Item, Text, Div} from "../dsl.js"
+import {Button, List, Item, Text} from "../dsl.js"
 import styles from "../../styles.js"
 
 /**
@@ -15,7 +15,7 @@ export default function ResourceList(resources, hrefSupplier,  displayTextSuppli
     }
         
 
-    return Div(styles.LIST_PARENT,List(styles.LIST,
+    return List(styles.LIST,
         ...resources.map(resource =>
             Item(styles.LIST_ELEMENT,
                 Button(styles.LIST_BUTTON, () => {location.href = hrefSupplier(resource)},
@@ -23,5 +23,5 @@ export default function ResourceList(resources, hrefSupplier,  displayTextSuppli
                 )
             )
         )
-    ))
+    )
 }

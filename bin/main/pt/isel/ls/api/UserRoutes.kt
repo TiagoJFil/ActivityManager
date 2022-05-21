@@ -18,19 +18,24 @@ import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.api.contentJson
+import pt.isel.ls.utils.api.fromRequest
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
 
 class UserRoutes(
     private val userServices: UserServices
 ) {
-
-    @Serializable data class UserCreationInput(val name: Param = null, val email: Param = null)
+    @Serializable data class UserInput(val name: Param = null, val email: Param = null)
     @Serializable data class UserIDOutput(val authToken: UserToken, val id: UserID)
     @Serializable data class UserListOutput(val users: List<UserDTO>)
+    @Serializable data class AuthInput(val email: Param = null)
+    @Serializable data class AuthOutput(val authToken: UserToken)
 
     companion object {
-        val logger = getLoggerFor<UserRoutes>()
+        private val logger = getLoggerFor<UserRoutes>()
+        private const val UID_PLACEHOLDER = "uid"
     }
 
     /**
@@ -40,12 +45,12 @@ class UserRoutes(
         logger.infoLogRequest(request)
 
         val bodyString = request.bodyString()
-        val body = Json.decodeFromString<UserCreationInput>(bodyString)
+        val body = Json.decodeFromString<UserInput>(bodyString)
 
         val res = userServices.createUser(body.name, body.email)
 
         return Response(CREATED)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(Json.encodeToString(UserIDOutput(res.first, res.second)))
     }
 
@@ -55,11 +60,11 @@ class UserRoutes(
     private fun getUserDetails(request: Request): Response {
         logger.infoLogRequest(request)
 
-        val userId = request.path("uid")
+        val userId = request.path(UID_PLACEHOLDER)
         val userResponse = userServices.getUserByID(userId)
         val userEncoded = Json.encodeToString(userResponse)
         return Response(Status.OK)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(userEncoded)
     }
 
@@ -69,20 +74,41 @@ class UserRoutes(
     private fun getUsers(request: Request): Response {
         logger.infoLogRequest(request)
 
-        val users = userServices.getUsers()
+        val users = userServices.getUsers(PaginationInfo.fromRequest(request))
         val usersJsonString = Json.encodeToString(UserListOutput(users))
 
         return Response(Status.OK)
-            .header("content-type", "application/json")
+            .contentJson()
             .body(usersJsonString)
     }
 
-    val handler: RoutingHttpHandler =
+    /**
+     * Gets the token for the user that is identified by the email that comes in the body of the HTTP request.
+     */
+    private fun authenticate(request: Request): Response {
+        logger.infoLogRequest(request)
+
+        val bodyString = request.bodyString()
+        val body = Json.decodeFromString<AuthInput>(bodyString)
+
+        val token = userServices.getTokenByEmail(body.email)
+
+        return Response(Status.OK)
+            .contentJson()
+            .body(Json.encodeToString(AuthOutput(token)))
+    }
+
+    val handler: RoutingHttpHandler = routes(
         "/users" bind routes(
             "/" bind Method.POST to ::createUser,
             "/" bind Method.GET to ::getUsers,
-            "/{uid}" bind Method.GET to ::getUserDetails,
-        )
+            "/{$UID_PLACEHOLDER}" bind Method.GET to ::getUserDetails,
+            // TODO: UserRankings, UserByActivity, the first one is the one that has the least duration on the activity.
+            // TODO: Search without a filter button.
+            // TODO: Trocar o display da activity com o nome do sport e a data da mesma.
+        ),
+        "/login" bind Method.POST to ::authenticate
+    )
 }
 
 fun User(userServices: UserServices) =

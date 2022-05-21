@@ -6,12 +6,11 @@ import org.http4k.server.Jetty
 import org.http4k.server.asServer
 import pt.isel.ls.api.getApiRoutes
 import pt.isel.ls.api.getAppRoutes
-import pt.isel.ls.config.EnvironmentType
 import pt.isel.ls.config.getEnv
 
 fun main() {
 
-    val env = EnvironmentType.TEST.getEnv()
+    val env = getEnv()
 
     val api = getApiRoutes(
         getAppRoutes(env)
@@ -19,10 +18,12 @@ fun main() {
 
     with(server(api, env.serverPort)) {
         start()
-        readln()
+        block()
         stop()
     }
+    // val server = server(api, env.serverPort)
+    // server.start()
+    // server.join()
 }
 
-fun server(api: RoutingHttpHandler, port: Int): Http4kServer =
-    api.asServer(Jetty(port)).start()
+fun server(api: RoutingHttpHandler, port: Int): Http4kServer = api.asServer(Jetty(port))

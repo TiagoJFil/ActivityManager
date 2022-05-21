@@ -10,7 +10,7 @@ import styles from "../styles.js";
  * @param header {string} - The header of the search bar or none if not needed
  * @returns {HTMLElement}
  */
-export function SearchBar(id, className, onTextChange, placeholder, header) {
+export default function SearchBar(id, className, onTextChange, placeholder, header) {
 
     const onChange = (event) => {
         onTextChange(event.target.value);

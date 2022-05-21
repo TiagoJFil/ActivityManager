@@ -36,9 +36,9 @@ const MAX_PAGES_PER_VIEW = 7
  * @param {Function} onPageChange receives the skipValue and timesPerPage as parameters.
  * @returns the pagination component
  */
-export function Pagination(totalElements, onPageChange){
+export function Pagination(totalElements, onPageChange, currentLimit){
 
-    const itemsPerPage = getItemsPerPage()
+    const itemsPerPage = currentLimit ?? getItemsPerPage()
     const actualPage = getCurrentPage(itemsPerPage)
     const isComplete = totalElements % itemsPerPage === 0 && totalElements !== 0
     const totalPages = calculateTotalPages(itemsPerPage, totalElements, isComplete)
@@ -88,7 +88,7 @@ export function Pagination(totalElements, onPageChange){
  */
 export function getItemsPerPage(){
     const list = document.querySelector('.list')
-    return list ? parseInt(getComputedStyle(list).getPropertyValue('--items-per-page')) : 10
+    return list ? parseInt(getComputedStyle(list).getPropertyValue('--items-per-page')) : 30
 }
 
 /**

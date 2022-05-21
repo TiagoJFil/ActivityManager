@@ -17,12 +17,22 @@ data class Environment(
 
 enum class EnvironmentType(val dbMode: DBMODE) {
     PROD(DBMODE.POSTGRESQL),
-    TEST(DBMODE.MEMORY),
+    TEST(DBMODE.MEMORY)
 }
 
-fun EnvironmentType.getEnv(): Environment {
+private fun getEnvType(): EnvironmentType {
 
-    val dbInfo = dbMode.source()
+    try {
+        val envType = System.getenv("APP_ENV_TYPE") ?: error("Please specify APP_ENV_TYPE environment variable")
+        return EnvironmentType.valueOf(envType)
+    } catch (e: IllegalArgumentException) {
+        throw IllegalArgumentException("Please specify a valid APP_ENV_TYPE: ${EnvironmentType.values().toList()}")
+    }
+}
+fun getEnv(): Environment {
+    val envType = getEnvType()
+
+    val dbInfo = envType.dbMode.source()
     val userRepo = dbInfo.userRepository
     val routeRepo = dbInfo.routeRepository
     val sportsRepo = dbInfo.sportRepository

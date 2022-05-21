@@ -1,6 +1,7 @@
 package pt.isel.ls.config
 
 import org.postgresql.ds.PGSimpleDataSource
+import org.postgresql.util.PSQLException
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.repository.SportRepository
@@ -39,6 +40,15 @@ private fun postgreSQL(suffix: String): DbSource {
         password = dbInfo.password
         databaseName = dbInfo.dataBase
     }
+    try {
+        dataSource.connection
+    } catch (e: PSQLException) {
+        throw IllegalArgumentException(
+            "Could not connect to database with the information given. " +
+                "Please check your JDBC environment variables or the connectivity to the database."
+        )
+    }
+
     return DbSource(
         userRepository = UserDBRepository(dataSource, suffix),
         routeRepository = RouteDBRepository(dataSource, suffix),
@@ -47,9 +57,12 @@ private fun postgreSQL(suffix: String): DbSource {
     )
 }
 
-private fun memory() = DbSource(
-    UserDataMemRepository(guestUser),
-    RouteDataMemRepository(testRoute),
-    SportDataMemRepository(testSport),
-    ActivityDataMemRepository(testActivity)
-)
+private fun memory(): DbSource {
+    val userRepository = UserDataMemRepository(guestUser)
+    return DbSource(
+        userRepository,
+        RouteDataMemRepository(testRoute),
+        SportDataMemRepository(testSport),
+        ActivityDataMemRepository(testActivity, userRepository)
+    )
+}

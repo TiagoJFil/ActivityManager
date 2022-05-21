@@ -8,6 +8,22 @@
     gap: 10px;
 }
 
+.search-bar-with-add{
+    width: 100%;    
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-bar-with-add .search-bar-container{
+    position: relative;
+    width: 400px;
+    height: 100%;
+    gap: 10px;
+    float: right;
+}
+
 .rankings-form{
     display: flex;
     justify-content: space-evenly;

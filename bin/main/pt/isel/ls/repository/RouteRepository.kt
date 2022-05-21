@@ -3,13 +3,14 @@ package pt.isel.ls.repository
 import pt.isel.ls.service.entities.Route
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserID
+import pt.isel.ls.utils.api.PaginationInfo
 
 interface RouteRepository {
 
     /**
      * Returns all the routes stored in the repository.
      */
-    fun getRoutes(): List<Route>
+    fun getRoutes(paginationInfo: PaginationInfo, startLocationQuery: String?, endLocationQuery: String?): List<Route>
 
     /**
      * Adds a new route to the repository.
@@ -33,4 +34,13 @@ interface RouteRepository {
      * @return [Boolean] True if the route exists, false otherwise.
      */
     fun hasRoute(routeID: RouteID): Boolean
+
+    /**
+     * Updates the route with the given id.
+     * @param routeID The id of the route to be updated.
+     * @param startLocation The new start location of the route.
+     * @param endLocation The new end location of the route.
+     * @param distance The new distance of the route.
+     */
+    fun updateRoute(routeID: RouteID, startLocation: String?, endLocation: String?, distance: Double?): Boolean
 }
