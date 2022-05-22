@@ -7,6 +7,7 @@ import styles from '../styles.js'
 import {H1, Div, Icon, Anchor} from '../components/dsl.js'
 import SportCreate from "../components/creates/CreateSport.js";
 import SearchBar from  "../components/SearchBar.js";
+import { SuccessToast, ErrorToast ,InfoToast} from '../toasts.js'
 
 /**
  * Displays a sport list with the given query
@@ -67,9 +68,25 @@ async function displaySportList(mainContent, _, query) {
 async function displaySportDetails(mainContent, params, _) {
 
     const sport = await sportApi.fetchSport(params.sid)
+    const onEditConfirm = async (name,description) => {
 
+        return sportApi.updateSport(sport.id, name, description)
+        .then(() => {
+            SuccessToast("Saved!").showToast()
+            return true
+        }).catch((e) => {
+            ErrorToast("Error updating sport").showToast()
+            InfoToast(e.message).showToast()
+            return false
+        })
+
+    }
     mainContent.replaceChildren(
-        SportDetails(sport)
+        H1(styles.HEADER, 'Sport Details'),
+        SportDetails(sport, onEditConfirm),
+        Div(styles.SPACER),
+        Div(styles.SPACER),
+        Div(styles.SPACER)
     )
 
 }
@@ -113,3 +130,8 @@ export const sportHandlers = {
     displaySportList,
     createSport
 }
+
+
+
+
+

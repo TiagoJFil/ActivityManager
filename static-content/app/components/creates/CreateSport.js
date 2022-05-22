@@ -21,9 +21,7 @@ export default function SportCreate(onSubmit) {
             Input(styles.FORM_TEXT_INPUT, "text", "sportName", null),
             Text(styles.SEARCH_HEADER, "DESCRIPTION"),
             Input(styles.FORM_TEXT_INPUT, "text", "sportDescription", null, "Optional"),
-            Div(styles.ADD_BUTTON_CONTAINER,
-                Button(styles.BUTTON, onSubmitForm, Text(styles.TEXT, "Add"))
-            )
+            Button(styles.BUTTON, onSubmitForm, Text(styles.TEXT, "Add"))
         )
     )
 }

@@ -20,6 +20,16 @@ export function LinkIcon(className, href ,titleOnHover  ){
     return button
 }
 
+
+export function ButtonIcon(className, onClick, titleOnHover){
+    const button = Button(styles.ICON_BUTTON_CLASS,
+        onClick,
+        Icon(styles.BX_CLASS,className)
+    )
+    button.title = titleOnHover
+    return button
+}
+
 /**
  * Creates a button with an icon.
  * When clicked this button opens a new page with the given href.

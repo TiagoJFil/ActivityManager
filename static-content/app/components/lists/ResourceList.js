@@ -1,4 +1,4 @@
-import {Button, List, Item, Text} from "../dsl.js"
+import {Button, List, Item, Text, Div} from "../dsl.js"
 import styles from "../../styles.js"
 
 /**
@@ -11,15 +11,19 @@ import styles from "../../styles.js"
 export default function ResourceList(resources, hrefSupplier,  displayTextSupplier) {
 
     if(resources.length === 0) {
-        return Text(styles.NO_RESULTS_TEXT, 'No results found')
+        return Div("no-results-text-container",
+            Text(styles.NO_RESULTS_TEXT, 'No results found')
+        )
     }
         
 
-    return List(styles.LIST,
-        ...resources.map(resource =>
-            Item(styles.LIST_ELEMENT,
-                Button(styles.LIST_BUTTON, () => {location.href = hrefSupplier(resource)},
-                    Text(styles.TEXT, displayTextSupplier(resource))
+    return Div(styles.LIST_PARENT,
+        List(styles.LIST,
+            ...resources.map(resource =>
+                Item(styles.LIST_ELEMENT,
+                    Button(styles.LIST_BUTTON, () => {location.href = hrefSupplier(resource)},
+                        Text(styles.TEXT, displayTextSupplier(resource))
+                    )
                 )
             )
         )

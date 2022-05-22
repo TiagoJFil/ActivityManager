@@ -24,9 +24,7 @@ export default function RouteCreate(onSubmit) {
             Input(styles.FORM_TEXT_INPUT, "text", "eLocation", null),
             Text(styles.SEARCH_HEADER, "DISTANCE"),
             Input(styles.FORM_TEXT_INPUT, "text", "distance", null),
-            Div(styles.ADD_BUTTON_CONTAINER,
-                Button(styles.BUTTON, onSubmitForm, Text(styles.TEXT, "Add"))
-            )
+            Button(styles.BUTTON, onSubmitForm, Text(styles.TEXT, "Add"))
         )
     )
 }

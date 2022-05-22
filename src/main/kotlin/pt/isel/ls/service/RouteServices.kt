@@ -43,7 +43,11 @@ class RouteServices(
                 END_LOCATION_SEARCH_QUERY to endLocationQuery
             )
         }
-        val routes = routeRepository.getRoutes(paginationInfo, startLocationQuery, endLocationQuery)
+
+        val handledStartLocation = startLocationQuery?.ifBlank{ null }
+        val handledEndLocation = endLocationQuery?.ifBlank{ null }
+
+        val routes = routeRepository.getRoutes(paginationInfo, handledStartLocation, handledEndLocation)
 
         return routes.map(Route::toDTO)
     }

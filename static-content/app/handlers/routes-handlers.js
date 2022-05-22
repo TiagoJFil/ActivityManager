@@ -1,7 +1,7 @@
 import { routeApi } from '../api/api.js'
 import RouteList from '../components/lists/RouteList.js'
 import RouteDetails from '../components/details/RouteDetails.js'
-import {Pagination} from '../components/Pagination.js'
+import {getItemsPerPage, Pagination} from '../components/Pagination.js'
 import { onPaginationChange} from './app-handlers.js'
 import styles from '../styles.js'
 import { H1, Div, Anchor, Icon} from '../components/dsl.js'
@@ -25,15 +25,41 @@ async function displayRouteList(mainContent, _, query) {
         query.limit
     )
 
-    const onRouteTextChange = async (searchText) => {
+    const newQuery = {
+        limit: query.limit ?? getItemsPerPage(),
+        skip: 0
+    }
 
-        const newQuery = {
-            search: searchText,
-            limit: query.limit ?? getItemsPerPage(),
-            skip: 0
-        }
+    const onStartLocationTextChange = async (searchText) => {
+        newQuery.startLocation = searchText
 
+        await filteredRouteDisplay(newQuery, listElement)
+    }
+
+    const onEndLocationTextChange = async (searchText) => {
+        newQuery.endLocation = searchText
+
+       await filteredRouteDisplay(newQuery)
+    }
+
+    const addAnchor = Anchor("big",`#routes/add`, Icon(styles.BX_CLASS, styles.ADD_ICON))
+    addAnchor.title = "Add a route"
+
+    mainContent.replaceChildren(
+        H1(styles.HEADER, 'Routes'),
+        Div(styles.SEARCH_BAR_WITH_ADD,
+            SearchBar("searchRes", styles.FORM_TEXT_INPUT, onStartLocationTextChange, "Search for a starting location", "Start Location"),
+            SearchBar("searchRes", styles.FORM_TEXT_INPUT, onEndLocationTextChange, "Search for an ending location", "End Location"),
+            addAnchor
+        ),
+        listElement,
+        paginationElement
+    )
+
+
+    async function filteredRouteDisplay(newQuery) {
         const innerRoutesList = await routeApi.fetchRoutes(newQuery)
+
         const newPagination = Pagination(
             innerRoutesList.total,
             onPageChange,
@@ -51,20 +77,10 @@ async function displayRouteList(mainContent, _, query) {
         listElement = newListElement
         paginationElement = newPagination
     }
-
-    const addAnchor = Anchor("big",`#routes/add`, Icon(styles.BX_CLASS, styles.ADD_ICON))
-    addAnchor.title = "Add a route"
-
-    mainContent.replaceChildren(
-        H1(styles.HEADER, 'Routes'),
-        Div(styles.SEARCH_BAR_WITH_ADD,
-            SearchBar("searchRes", styles.FORM_TEXT_INPUT, onRouteTextChange, "Search for a route", null),
-            addAnchor
-        ),
-        listElement,
-        paginationElement
-    )
 }
+
+
+
 
 /**
  * Displays a route details with the given id

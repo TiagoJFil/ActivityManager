@@ -1,5 +1,5 @@
 import {List, Item, Text, Div, H1} from "../dsl.js"
-import {LinkIcon} from "../LinkIcon.js"
+import {LinkIcon} from "../Icons.js"
 import styles from "../../styles.js";
 
 /**

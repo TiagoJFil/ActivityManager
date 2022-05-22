@@ -1,4 +1,9 @@
 
+
+export const responseCodeClass = (code) => 
+    Math.floor(code / 100)
+
+
 /**
  * Builds the query string from the given query object
  * @param {Object} queryObject - query key-value pairs in json format. e.g: { skip: 0, limit: 10 }
@@ -19,7 +24,7 @@ export function queryBuilder(queryObject){
  * @param statusCode
  * @returns {boolean}
  */
-function isSuccessful(statusCode) {
+export function isSuccessful(statusCode) {
     const statusFamily = Math.floor(statusCode / 100)
     return statusFamily === 2
 }
@@ -56,8 +61,10 @@ export async function getRequest(uri, queryObject) {
 export async function fetchResourceList(uri, queryObject, listPropertyName) {
     const listObject = await getRequest(uri, queryObject)
     const queryCopy = { ...queryObject }
+
     queryCopy.skip = 0
     queryCopy.limit = 10_000_000
+
     // May fetch more items than the memory limit allows
     // TODO: Should be replaced by sending the total number of items in X-Total-Count response header in the api
     const totalObject = await getRequest(uri, queryCopy)

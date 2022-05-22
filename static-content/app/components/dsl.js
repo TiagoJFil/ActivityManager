@@ -30,6 +30,9 @@ export function Div(className, ...children) {
     return createElement('div', className, ...children)
 }
 
+
+
+
 /**
  * Represents a text item element as a component
  * 
@@ -88,13 +91,16 @@ export function H1(className, text) {
  * @param id The id of the input element
  * @param onInputChange function to be called when the input changes
  * @param placeholder The placeholder of the input element
+ * @param startingValue The value of the input element
  * @returns {HTMLElement} an input element
  */
-export function Input(className, type, id, onInputChange, placeholder) {
+export function Input(className, type, id, onInputChange, placeholder, startingValue, required) {
     const input = createElement('input', className)
     input.type = type
     input.id = id
-    input.setAttribute("placeholder", placeholder || "")
+    input.value = startingValue ?? ""
+    input.required = required ?? false
+    input.setAttribute("placeholder", placeholder ?? "")
     input.addEventListener("input", onInputChange)
     return input
 }
@@ -161,6 +167,7 @@ export function Anchor(className, href, ...children) {
     anchor.href = href
     return anchor
 }
+
 
 /**
  * Creates an element with the given tag name and children

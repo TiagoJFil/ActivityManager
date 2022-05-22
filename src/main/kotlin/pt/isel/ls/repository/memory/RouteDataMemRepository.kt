@@ -21,17 +21,23 @@ class RouteDataMemRepository(testRoute: Route) : RouteRepository {
      *
      * @return [List] of [Route]
      */
-    override fun getRoutes(paginationInfo: PaginationInfo, startLocationQuery: String?, endLocationQuery: String?): List<Route> {
+    override fun getRoutes(
+        paginationInfo: PaginationInfo,
+        startLocationQuery: String?,
+        endLocationQuery: String?
+    ): List<Route> {
         val routes = routesMap.values.toList()
-
         return if (startLocationQuery != null && endLocationQuery != null) {
             routes.filter {
-                it.startLocation.lowercase().contains(startLocationQuery.lowercase()) && it.endLocation.lowercase().contains(endLocationQuery.lowercase())
+                it.startLocation.lowercase().contains(startLocationQuery.lowercase()) && it.endLocation.lowercase()
+                    .contains(endLocationQuery.lowercase())
             }.applyPagination(paginationInfo)
         } else if (startLocationQuery != null)
-            routes.filter { it.startLocation.lowercase().contains(startLocationQuery.lowercase()) }.applyPagination(paginationInfo)
+            routes.filter { it.startLocation.lowercase().contains(startLocationQuery.lowercase()) }
+                .applyPagination(paginationInfo)
         else if (endLocationQuery != null)
-            routes.filter { it.endLocation.lowercase().contains(endLocationQuery.lowercase()) }.applyPagination(paginationInfo)
+            routes.filter { it.endLocation.lowercase().contains(endLocationQuery.lowercase()) }
+                .applyPagination(paginationInfo)
         else
             routes.applyPagination(paginationInfo)
     }
@@ -85,7 +91,13 @@ class RouteDataMemRepository(testRoute: Route) : RouteRepository {
         distance: Double?
     ): Boolean {
         val route = routesMap[routeID] ?: return false
-        val newRoute = Route(routeID, startLocation ?: route.startLocation, endLocation ?: route.endLocation, distance ?: route.distance, route.user)
+        val newRoute = Route(
+            routeID,
+            startLocation ?: route.startLocation,
+            endLocation ?: route.endLocation,
+            distance ?: route.distance,
+            route.user
+        )
         routesMap[routeID] = newRoute
         return true
     }

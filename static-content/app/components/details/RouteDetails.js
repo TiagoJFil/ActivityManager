@@ -1,6 +1,6 @@
 import {List, Item, Text, Div} from "../dsl.js"
 import styles from "../../styles.js";
-import {LinkIcon, OuterLinkIcon} from "../LinkIcon.js"
+import {LinkIcon, OuterLinkIcon} from "../Icons.js"
 
 /**
  * RouteDetails component

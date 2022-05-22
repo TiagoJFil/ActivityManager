@@ -1,4 +1,4 @@
-import {fetchResourceList, getRequest, getBodyOrThrow} from "./api-utils.js";
+import {responseCodeClass,fetchResourceList, getRequest, getBodyOrThrow, isSuccessful} from "./api-utils.js";
 
 // URL Related Constants
 
@@ -33,11 +33,26 @@ async function createSport(sportName, sportDescription) {
         })
     })
 
-    if(Math.floor(response.status / 100) === 4) {
-        throw (await response.json())
-    }
-
+    return await getBodyOrThrow(response)
 }
+
+async function updateSport(sid, sportName, sportDescription) {
+    const response = await fetch(BASE_API_URL + SPORTS_URL + '/' + sid, {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + 'TOKEN',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "name": sportName,
+            "description": sportDescription || ''
+        })
+    })
+
+    if(!isSuccessful(response.status))
+        throw await response.json()    
+}
+
 
 async function createRoute(sLocation, eLocation, distance) {
     const response = await fetch(BASE_API_URL + ROUTE_URL, {
@@ -54,7 +69,6 @@ async function createRoute(sLocation, eLocation, distance) {
     })
 
     return await getBodyOrThrow(response)
-
 }
 
 export const userApi = {
@@ -78,7 +92,8 @@ export const sportApi = {
     fetchSports: async (queryMap) =>
         await fetchResourceList(BASE_API_URL + SPORTS_URL, queryMap, SPORTS_PROPERTY),
 
-    createSport
+    createSport,
+    updateSport
 }
 
 export const activityApi = {

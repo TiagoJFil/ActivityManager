@@ -1,7 +1,7 @@
 import {userApi, sportApi, routeApi} from '../api/api.js'
 import UserDetails from '../components/details/UserDetails.js'
 import UserList from '../components/lists/UserList.js'
-import {Pagination} from '../components/Pagination.js'
+import {getItemsPerPage, Pagination} from '../components/Pagination.js'
 import { onPaginationChange} from './app-handlers.js'
 import { H1, Div, Option} from '../components/dsl.js'
 import UserRankingFilter from '../components/filters/UserRankingFilter.js'
@@ -20,7 +20,8 @@ async function displayUsersByRanking(mainContent, _, __) {
             sportSelector.replaceChildren()
             return
         }
-        const sportList = await sportApi.fetchSports(`search=${sportText}`)
+
+        const sportList = await sportApi.fetchSports({search : sportText})
         const sportSelectorOptions = sportList.sports.map(sport => Option(styles.SELECTOR_OPTION, sport.id, sport.name))
 
         sportSelector.replaceChildren(
@@ -36,7 +37,14 @@ async function displayUsersByRanking(mainContent, _, __) {
             routeSelector.replaceChildren()
             return
         }
-        const routeList = await routeApi.fetchRoutes(`startLocation=${startLocation}&endLocation=${endLocation}`)
+
+        const newRouteQuery = {
+            startLocation,
+            endLocation
+        }
+
+        const routeList = await routeApi.fetchRoutes(newRouteQuery)
+
         const routeSelectorOptions = routeList.routes.map( (route) =>
             Option(styles.SELECTOR_OPTION, `${route.id}`,
                 `${route.startLocation} - ${route.endLocation}`

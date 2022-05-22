@@ -19,6 +19,8 @@ function loadHandler(){
     router.addRouteHandler('sports/:sid', handlers.getSport) 
     router.addRouteHandler('sports/:sid/users', handlers.getUsersByActivity)  
     
+
+
     router.addRouteHandler('users/ranking', handlers.getUsersByRanking)  
     router.addRouteHandler('users/:uid', handlers.getUser) 
     

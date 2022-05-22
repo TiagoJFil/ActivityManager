@@ -1,6 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
 
 
+:root {
+    --nav-width: 250px;
+    --hover-color: white;
+}
+
+
 .logo{
     display: block;
     margin-bottom: 130px;
@@ -21,11 +27,6 @@ nav{
     z-index: 10;
     position: fixed;
     overflow: hidden;
-    -moz-transition: all .4s ease-in-out;
-    -o-transition: all .4s ease-in-out;
-    -webkit-transition: all .4s ease-in-out;
-    transition: all .4s ease-in-out;
-    background-image: linear-gradient(to right, #29323c, #37414b, #2e353b);
 }
 
 .nav-links{
@@ -87,7 +88,7 @@ nav{
 }
 
 .active{
-    background: #fff;
+    background: var(--hover-color);
     width: 100%;
     height: 47px;
     position: absolute;

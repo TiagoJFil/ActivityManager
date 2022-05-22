@@ -7,11 +7,12 @@
 }
 
 :root {
-    --primary: #3c5c5e;
-    --secondary: #4fcac2;
+    --primary: #7f9bbd;
+    --secondary: #bedaef;
     --background: #202833;
-    --button: #106466;
-    --disabled: #243749;
+    --button: #9f9887;
+    --disabled: #8f8d86;
+    --detail-header-shadow: transparent;
     --nav-width: 250px;
 }
 
@@ -39,21 +40,78 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 24px;
     margin-left: var(--nav-width);
 }
 
 .detail-header{
     font-weight: bold;
     color: var(--primary);
+    text-shadow: 0.5px 0 0 var(--detail-header-shadow), 
+    -0.5px 0 0 var(--detail-header-shadow), 
+    0 0.5px 0 var(--detail-header-shadow), 
+    0 -0.5px 0 var(--detail-header-shadow), 
+    0.5px 0.5px var(--detail-header-shadow), 
+    -0.5px -0.5px 0 var(--detail-header-shadow), 
+    1px -1px 0 var(--detail-header-shadow), 
+    -1px 1px 0 var(--detail-header-shadow);
+}
+
+/* CSS */
+.button {
+  background-color: var(--primary);
+  border: 0 solid #E5E7EB;
+  box-sizing: border-box;
+  color: #000000;
+  display: flex;
+  font-family: ui-sans-serif,system-ui,-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+  font-size: 1rem;
+  font-weight: 700;
+  justify-content: center;
+  line-height: 1.75rem;
+  padding: .75rem 1.65rem;
+  position: relative;
+  text-align: center;
+  text-decoration: none #000000 solid;
+  text-decoration-thickness: auto;
+  width: 100%;
+  max-width: 460px;
+  position: relative;
+  cursor: pointer;
+  transform: rotate(-2deg);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button:focus {
+  outline: 0;
+}
+
+.button:after {
+  content: '';
+  position: absolute;
+  border: 1px solid #000000;
+  bottom: 4px;
+  left: 4px;
+  width: calc(100% - 1px);
+  height: calc(100% - 1px);
+}
+
+.button:hover:after {
+  bottom: 2px;
+  left: 2px;
+}
+
+.add-item .button{
+    margin-top: 20px;
 }
 
 .header{
     width: 100%;
     text-align: center;
     font-size: 72px;
-    background: -webkit-linear-gradient(#106466, #4fcac2);
-    text-shadow: 0 0 5px #4fcac2;
+    background: -webkit-linear-gradient(var(--button), var(--secondary));
+    text-shadow: 0 0 5px var(--secondary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
  }
@@ -84,6 +142,13 @@ body{
     white-space: normal;
 }
 
+.no-results-text-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: var(--list-height);
+}
+
 .text-no-results{
     text-align: center;
     color: white;
@@ -93,15 +158,6 @@ body{
 
 button{
     cursor: pointer;
-}
-
-button:hover {
-    box-shadow: 0 0.5em 0.5em -0.4em black;
-    background-position: 100% 0;
-    -moz-transition: all .4s ease-in-out;
-    -o-transition: all .4s ease-in-out;
-    -webkit-transition: all .4s ease-in-out;
-    transition: all .4s ease-in-out;
 }
 
 .icon-button, .outer-icon-button{
@@ -114,20 +170,6 @@ button:hover {
     background-color: var(--primary);
     margin-top: 15px;
     margin-right: 20px;
-}
-
-.user-rankings .button, .sport-filter .button, .add-container .button{
-    width: 100px;
-    height: 50px;
-    border-radius: 20px;
-}
-
-.user-rankings{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
 }
 
 
@@ -183,12 +225,19 @@ button:hover {
     font-size: 20px;
     color: #ffffff;
     text-align: center;
-    background-color: #3c5c5e;
+    background-color: var(--primary);
+}
+
+.details-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 .details{
     list-style: none;
-    margin-top: 100px;
     width: 100%;
     text-align: center;
 }
