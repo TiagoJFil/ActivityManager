@@ -16,7 +16,7 @@ fun ResultSet.toRoute(): Route = Route(
     id = getInt("id"),
     startLocation = getString("startlocation"),
     endLocation = getString("endlocation"),
-    distance = getDouble("distance"),
+    distance = getFloat("distance"),
     user = getInt("user")
 )
 

@@ -19,7 +19,7 @@ interface RouteRepository {
      * @param distance The distance of the route.
      * @param userID The id of the user that created the route.
      */
-    fun addRoute(startLocation: String, endLocation: String, distance: Double, userID: UserID): RouteID
+    fun addRoute(startLocation: String, endLocation: String, distance: Float, userID: UserID): RouteID
 
     /**
      * Returns the route with the given id.
@@ -42,5 +42,5 @@ interface RouteRepository {
      * @param endLocation The new end location of the route.
      * @param distance The new distance of the route.
      */
-    fun updateRoute(routeID: RouteID, startLocation: String?, endLocation: String?, distance: Double?): Boolean
+    fun updateRoute(routeID: RouteID, startLocation: String?, endLocation: String?, distance: Float?): Boolean
 }

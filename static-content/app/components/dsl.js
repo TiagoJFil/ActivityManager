@@ -94,12 +94,14 @@ export function H1(className, text) {
  * @param startingValue The value of the input element
  * @returns {HTMLElement} an input element
  */
-export function Input(className, type, id, onInputChange, placeholder, startingValue, required) {
+export function Input(className, type, id, onInputChange, placeholder, startingValue, required,min,max) {
     const input = createElement('input', className)
     input.type = type
     input.id = id
     input.value = startingValue ?? ""
     input.required = required ?? false
+    input.min = min  
+    input.max = max
     input.setAttribute("placeholder", placeholder ?? "")
     input.addEventListener("input", onInputChange)
     return input

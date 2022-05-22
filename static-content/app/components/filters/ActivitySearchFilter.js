@@ -10,10 +10,11 @@ import RouteSearch from "../searches/RouteSearch.js";
  * @param {Object} query 
  * @returns a {Div} component with the filter components.
  */
-export default function ActivitySearchFilter(onFilterSubmit, routes, query) {
+export default function ActivitySearchFilter(onFilterSubmit, routes,sports, query) {
 
     const onSubmit = () => {
         const date = document.querySelector('#dateFilter').value
+        const sport = document.querySelector('#sid').value
         const route = document.querySelector('#rid').value
         const sortOrder = document.querySelector('#orderBy').value
         onFilterSubmit(date, route, sortOrder)
@@ -22,6 +23,7 @@ export default function ActivitySearchFilter(onFilterSubmit, routes, query) {
     return Div(styles.ACTIVITY_FILTER,
         DatePicker(query),
         OrderBySelector(query),
+        SportSelector(sports,query),
         RouteSelector(routes, query),
         Button('button',onSubmit, Text('filter-text', 'Filter'))
     )
@@ -38,12 +40,12 @@ function OrderBySelector(query){
     const initialOrder = query.orderBy ;
 
     const ascendingOption = 
-        Option(styles.SELECTOR_OPTION, 'ascending',
+        Option(styles.SELECTOR_OPTION, 'ascending','Ascending',
             Text(styles.TEXT,'Ascending')
         )
     const descendingOption = 
-        Option(styles.SELECTOR_OPTION, 'descending',
-            Text(styles.TEXT,'Descending')
+        Option(styles.SELECTOR_OPTION, 'descending','Descending',
+            Text(styles.TEXT, 'Descending')
         )
 
     const orderBySelector 
@@ -59,6 +61,11 @@ function OrderBySelector(query){
     }
 
     return orderBySelector   
+}
+
+
+export function SportSelector(sports,query){
+
 }
 
 /**

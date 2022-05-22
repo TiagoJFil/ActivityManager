@@ -7,7 +7,7 @@ import styles from '../styles.js'
 import { H1, Div, Anchor, Icon} from '../components/dsl.js'
 import SearchBar from '../components/SearchBar.js'
 import RouteCreate from "../components/creates/CreateRoute.js";
-
+import { SuccessToast, ErrorToast ,InfoToast} from '../toasts.js'
 
 /**
  * Displays a route list with the given query
@@ -89,9 +89,21 @@ async function displayRouteDetails(mainContent, params, _) {
 
     const route = await routeApi.fetchRoute(params.rid)
 
+    const onEditConfirm = async (sLocation, eLocation, distance) => {
+        return routeApi.updateRoute(route.id, sLocation, eLocation, distance)
+        .then( () => {
+            SuccessToast("Saved!").showToast()
+            return true
+        }).catch( (e) => {
+            ErrorToast("Error updating route").showToast()
+            InfoToast(e.message).showToast()
+            return false
+        })
+    }
+
     mainContent.replaceChildren(
         H1(styles.HEADER, 'Route Details'),
-        RouteDetails(route),
+        RouteDetails(route,onEditConfirm),
         Div(styles.SPACER)
     )
 }

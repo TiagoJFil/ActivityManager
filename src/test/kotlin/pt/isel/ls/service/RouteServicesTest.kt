@@ -34,7 +34,7 @@ class RouteServicesTest {
             GUEST_TOKEN,
             startLocation = "Porto",
             endLocation = "Lisboa",
-            distance = 100.1,
+            distance = 100.1F,
         )
 
         val routes = routeServices.getRoutes(PaginationInfo(10, 0), "Porto", null)
@@ -48,7 +48,7 @@ class RouteServicesTest {
             GUEST_TOKEN,
             startLocation = "Porto",
             endLocation = "Lisboa",
-            distance = 100.1,
+            distance = 100.1F,
         )
 
         val routes = routeServices.getRoutes(PaginationInfo(10, 0), null, "Lisboa")
@@ -62,7 +62,7 @@ class RouteServicesTest {
             GUEST_TOKEN,
             startLocation = "Porto",
             endLocation = "Lisboa",
-            distance = 100.1,
+            distance = 100.1F,
         )
 
         val routes = routeServices.getRoutes(PaginationInfo(10, 0), "Porto", "Lisboa")
@@ -76,7 +76,7 @@ class RouteServicesTest {
             GUEST_TOKEN,
             startLocation = "Porto",
             endLocation = "Lisboa",
-            distance = 100.1,
+            distance = 100.1F,
         )
 
         val routes = routeServices.getRoutes(PaginationInfo(10, 0), null, "Porto")
@@ -101,24 +101,24 @@ class RouteServicesTest {
     @Test
     fun `create a route`() {
         val routeID: RouteID =
-            routeServices.createRoute(token = GUEST_TOKEN, startLocation = "a", endLocation = "b", distance = 10.0)
+            routeServices.createRoute(token = GUEST_TOKEN, startLocation = "a", endLocation = "b", distance = 10.0F)
 
         val routeCreated = routeServices.getRoute(routeID.toString())
-        val routeExpected = RouteDTO(id = routeID, user = guestUser.id, startLocation = "a", endLocation = "b", distance = 10.0)
+        val routeExpected = RouteDTO(id = routeID, user = guestUser.id, startLocation = "a", endLocation = "b", distance = 10.0F)
         assertEquals(routeExpected, routeCreated)
     }
 
     @Test
     fun `create a route with an invalid start location`() {
         assertFailsWith<InvalidParameter> {
-            routeServices.createRoute(token = GUEST_TOKEN, startLocation = " ", endLocation = "b", distance = 10.0)
+            routeServices.createRoute(token = GUEST_TOKEN, startLocation = " ", endLocation = "b", distance = 10.0F)
         }
     }
 
     @Test
     fun `create a route without end location`() {
         assertFailsWith<MissingParameter> {
-            routeServices.createRoute(token = GUEST_TOKEN, startLocation = "a", endLocation = null, distance = 10.0)
+            routeServices.createRoute(token = GUEST_TOKEN, startLocation = "a", endLocation = null, distance = 10.0F)
         }
     }
 
@@ -134,14 +134,14 @@ class RouteServicesTest {
         val name = "".padEnd(MAX_LOCATION_LENGTH + 1, 'a')
 
         assertFailsWith<InvalidParameter> {
-            routeServices.updateRoute(token = GUEST_TOKEN, routeID = testRoute.id.toString(), startLocation = name, endLocation = "b", distance = 10.0)
+            routeServices.updateRoute(token = GUEST_TOKEN, routeID = testRoute.id.toString(), startLocation = name, endLocation = "b", distance = 10.0F)
         }
     }
 
     @Test
     fun `update a route with an invalid distance throws InvalidParameter`() {
         assertFailsWith<InvalidParameter> {
-            routeServices.updateRoute(token = GUEST_TOKEN, routeID = testRoute.id.toString(), startLocation = "a", endLocation = "b", distance = -10.0)
+            routeServices.updateRoute(token = GUEST_TOKEN, routeID = testRoute.id.toString(), startLocation = "a", endLocation = "b", distance = -10.0F)
         }
     }
 
@@ -155,7 +155,7 @@ class RouteServicesTest {
 
     @Test
     fun `update a route's distance only`() {
-        val newDistance = 20.0
+        val newDistance = 20.0F
 
         routeServices.updateRoute(
             token = GUEST_TOKEN,

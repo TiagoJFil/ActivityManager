@@ -52,7 +52,7 @@ class RouteDataMemRepository(testRoute: Route) : RouteRepository {
     override fun addRoute(
         startLocation: String,
         endLocation: String,
-        distance: Double,
+        distance: Float,
         userID: UserID
     ): RouteID {
         val routeID = ++currentID
@@ -88,7 +88,7 @@ class RouteDataMemRepository(testRoute: Route) : RouteRepository {
         routeID: RouteID,
         startLocation: String?,
         endLocation: String?,
-        distance: Double?
+        distance: Float?
     ): Boolean {
         val route = routesMap[routeID] ?: return false
         val newRoute = Route(

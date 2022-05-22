@@ -41,7 +41,7 @@
 }
 
 .page-arrow:disabled {
-    background-color: var(--disabled);
+    background-color: var(--background);
     color: grey
 }
 

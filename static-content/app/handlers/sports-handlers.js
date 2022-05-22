@@ -24,9 +24,9 @@ async function displaySportList(mainContent, _, query) {
     const onSportTextChange = async (searchText) => {
 
         const newQuery = {
-            search: searchText,
             limit: query.limit ?? getItemsPerPage(),
-            skip: 0
+            skip: 0,
+            search: searchText ?? null
         }
 
         const innerSportsList = await sportApi.fetchSports(newQuery)

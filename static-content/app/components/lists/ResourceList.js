@@ -17,15 +17,14 @@ export default function ResourceList(resources, hrefSupplier,  displayTextSuppli
     }
         
 
-    return Div(styles.LIST_PARENT,
-        List(styles.LIST,
-            ...resources.map(resource =>
-                Item(styles.LIST_ELEMENT,
-                    Button(styles.LIST_BUTTON, () => {location.href = hrefSupplier(resource)},
-                        Text(styles.TEXT, displayTextSupplier(resource))
-                    )
+    return List(styles.LIST,
+        ...resources.map(resource =>
+            Item(styles.LIST_ELEMENT,
+                Button(styles.LIST_BUTTON, () => {location.href = hrefSupplier(resource)},
+                    Text(styles.TEXT, displayTextSupplier(resource))
                 )
             )
         )
     )
+    
 }

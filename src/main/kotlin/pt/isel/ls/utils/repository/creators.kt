@@ -10,10 +10,10 @@ import java.sql.Date
 import java.sql.PreparedStatement
 import java.sql.Types
 
-fun PreparedStatement.setRoute(startLocation: String, endLocation: String, distance: Double, userID: Int) {
+fun PreparedStatement.setRoute(startLocation: String, endLocation: String, distance: Float, userID: Int) {
     setString(1, startLocation)
     setString(2, endLocation)
-    setDouble(3, distance)
+    setFloat(3, distance)
     setInt(4, userID)
 }
 

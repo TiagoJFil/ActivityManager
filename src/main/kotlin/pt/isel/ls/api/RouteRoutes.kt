@@ -30,7 +30,7 @@ class RouteRoutes(
     @Serializable data class RouteInput(
         val startLocation: Param = null,
         val endLocation: Param = null,
-        val distance: Double? = null
+        val distance: Float? = null
     )
     @Serializable data class RouteIDOutput(val routeID: RouteID)
     companion object {
@@ -75,8 +75,7 @@ class RouteRoutes(
         val routeInfo = Json.decodeFromString<RouteInput>(request.bodyString())
         val token = getBearerToken(request)
 
-        val routeId: RouteID =
-            routeServices.createRoute(token, routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)
+        val routeId: RouteID = routeServices.createRoute(token, routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)
 
         return Response(Status.CREATED)
             .contentJson()

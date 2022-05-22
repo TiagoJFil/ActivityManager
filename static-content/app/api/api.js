@@ -7,7 +7,7 @@ const SPORTS_URL = 'sports'
 const USERS_URL = 'users'
 const ROUTE_URL = 'routes'
 const ACTIVITIES_URL = 'activities'
-
+const token = '285e3eb5-72c2-4cc7-92d9-586af2aaa885'
 const ACTIVITY_SPORT_URL = sid => `sports/${sid}/activities`
 const ACTIVITY_USER_URL = uid => `users/${uid}/activities`
 
@@ -24,7 +24,7 @@ async function createSport(sportName, sportDescription) {
     const response = await fetch(BASE_API_URL + SPORTS_URL, {
         method: 'POST',
         headers: {
-            'Authorization': 'Bearer ' + 'TOKEN',
+            'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -40,7 +40,7 @@ async function updateSport(sid, sportName, sportDescription) {
     const response = await fetch(BASE_API_URL + SPORTS_URL + '/' + sid, {
         method: 'PUT',
         headers: {
-            'Authorization': 'Bearer ' + 'TOKEN',
+            'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -58,7 +58,7 @@ async function createRoute(sLocation, eLocation, distance) {
     const response = await fetch(BASE_API_URL + ROUTE_URL, {
         method: 'POST',
         headers: {
-            'Authorization': 'Bearer ' + 'TOKEN',
+            'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -70,6 +70,25 @@ async function createRoute(sLocation, eLocation, distance) {
 
     return await getBodyOrThrow(response)
 }
+
+async function updateRoute(rid, sLocation, eLocation, distance) {
+    const response = await fetch(BASE_API_URL + ROUTE_URL + '/' + rid, {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            startLocation: sLocation || '',
+            endLocation: eLocation || '',
+            distance: distance ? parseFloat(distance) : ""
+        })
+    })
+
+    if(!isSuccessful(response.status))
+        throw await response.json()
+}
+
 
 export const userApi = {
 
@@ -119,6 +138,7 @@ export const routeApi = {
     fetchRoutes: async (queryMap) =>
         await fetchResourceList(BASE_API_URL + ROUTE_URL, queryMap, ROUTES_PROPERTY),
 
-    createRoute    
+    createRoute,
+    updateRoute 
 }
 

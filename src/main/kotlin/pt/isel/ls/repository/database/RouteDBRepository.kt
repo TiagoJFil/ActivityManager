@@ -45,7 +45,7 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
     override fun addRoute(
         startLocation: String,
         endLocation: String,
-        distance: Double,
+        distance: Float,
         userID: UserID
     ): RouteID =
         dataSource.connection.transaction {
@@ -89,23 +89,23 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
         routeID: RouteID,
         startLocation: String?,
         endLocation: String?,
-        distance: Double?
+        distance: Float?
     ): Boolean {
         val queryBuilder = StringBuilder("UPDATE $routeTable SET ")
         if (startLocation != null) queryBuilder.append("startlocation = ?, ")
         if (endLocation != null) queryBuilder.append("endlocation = ?, ")
-        if (distance != null) queryBuilder.append("distance = ?, ")
+        if (distance != null) queryBuilder.append("distance = ? ")
         queryBuilder.append("WHERE id = ?")
 
         val startLocationIdx = if (startLocation != null) 1 else 0
         val endLocationIdx = if (endLocation != null) startLocationIdx + 1 else startLocationIdx
         val distanceIdx = if (distance != null) endLocationIdx + 1 else endLocationIdx
-
+        println()
         dataSource.connection.transaction {
             prepareStatement(queryBuilder.toString()).use { stmt ->
                 if (startLocation != null) stmt.setString(startLocationIdx, startLocation)
                 if (endLocation != null) stmt.setString(endLocationIdx, endLocation)
-                if (distance != null) stmt.setDouble(distanceIdx, distance)
+                if (distance != null) stmt.setFloat(distanceIdx, distance)
                 stmt.setInt(distanceIdx + 1, routeID)
                 return stmt.executeUpdate() == 1
             }

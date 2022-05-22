@@ -29,9 +29,10 @@ function loadHandler(){
     router.addRouteHandler('routes/:rid', handlers.getRoute)
 
     
-    router.addRouteHandler('activities', handlers.getActivities)
+   // router.addRouteHandler('activities', handlers.getActivities)
+    router.addRouteHandler('activities/search', handlers.getActivitiesSearch)
     router.addRouteHandler('sports/:sid/activities/:aid', handlers.getActivity)
-    router.addRouteHandler('sports/:sid/activities', handlers.getActivitiesBySport)
+    
     router.addRouteHandler('users/:uid/activities', handlers.getActivitiesByUser)
 
     hashChangeHandler()

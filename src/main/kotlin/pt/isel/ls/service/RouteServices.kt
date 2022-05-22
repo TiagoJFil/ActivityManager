@@ -10,7 +10,7 @@ import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.service.requireAuthenticated
-import pt.isel.ls.utils.service.requireDoublePositive
+import pt.isel.ls.utils.service.requireValidDistance
 import pt.isel.ls.utils.service.requireIdInteger
 import pt.isel.ls.utils.service.requireNotBlankParameter
 import pt.isel.ls.utils.service.requireOwnership
@@ -60,7 +60,7 @@ class RouteServices(
      * @param distance the route's distance
      * @return [RouteID] the unique id that identifies the route
      */
-    fun createRoute(token: UserToken?, startLocation: String?, endLocation: String?, distance: Double?): RouteID {
+    fun createRoute(token: UserToken?, startLocation: String?, endLocation: String?, distance: Float?): RouteID {
         logger.traceFunction(::createRoute.name) {
             listOf(
                 START_LOCATION_PARAM to startLocation,
@@ -74,7 +74,7 @@ class RouteServices(
         val safeStartLocation = requireParameter(startLocation, START_LOCATION_PARAM)
         val safeEndLocation = requireParameter(endLocation, END_LOCATION_PARAM)
         if (distance == null) throw MissingParameter(DISTANCE_PARAM)
-        requireDoublePositive(distance, DISTANCE_PARAM)
+        requireValidDistance(distance, DISTANCE_PARAM)
 
         return routeRepository.addRoute(safeStartLocation, safeEndLocation, distance, userID)
     }
@@ -95,7 +95,7 @@ class RouteServices(
             ?: throw ResourceNotFound(RESOURCE_NAME, "$rid")
     }
 
-    fun updateRoute(token: UserToken?, routeID: Param, startLocation: Param, endLocation: Param, distance: Double?) {
+    fun updateRoute(token: UserToken?, routeID: Param, startLocation: Param, endLocation: Param, distance: Float?) {
         logger.traceFunction(::updateRoute.name) {
             listOf(
                 ROUTE_ID_PARAM to routeID,
@@ -116,7 +116,7 @@ class RouteServices(
 
         requireNotBlankParameter(startLocation, START_LOCATION_PARAM)
         requireNotBlankParameter(endLocation, END_LOCATION_PARAM)
-        requireDoublePositive(distance, DISTANCE_PARAM)
+        requireValidDistance(distance, DISTANCE_PARAM)
 
         if (!routeRepository.updateRoute(ridInt, startLocation, endLocation, distance))
             throw ResourceNotFound(RESOURCE_NAME, safeRouteID)

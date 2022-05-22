@@ -76,7 +76,7 @@ class ActivitiesApiTests {
             RouteInput(
                 "Lisboa",
                 "Loures",
-                20.0
+                20.0F
             )
         ).routeID
         val date = "2002-05-20"
@@ -402,7 +402,7 @@ class ActivitiesApiTests {
 
     @Test
     fun `Update all the parameters of the activity successfully`() {
-        val rid = testClient.createRoute(RouteInput("a", "b", 20.0)).routeID
+        val rid = testClient.createRoute(RouteInput("a", "b", 20.0F)).routeID
         val body = ActivityInput("03:16:32.993", "2022-01-01", rid.toString())
         val aid = testClient.createActivity(body, testSport.id).activityID
         val updateBody = ActivityInput("05:16:32.993", "2015-01-02", testRoute.id.toString())
@@ -475,7 +475,7 @@ class ActivitiesApiTests {
 
     @Test
     fun `Update route of the activity successfully`() {
-        val rid = testClient.createRoute(RouteInput("a", "b", 20.0)).routeID
+        val rid = testClient.createRoute(RouteInput("a", "b", 20.0F)).routeID
         val updateBody = ActivityInput(null, null, rid.toString())
         putRequest<ActivityInput>(
             testClient,
@@ -500,7 +500,7 @@ class ActivitiesApiTests {
 
     @Test
     fun `Update route and duration of the activity successfully`() {
-        val rid = testClient.createRoute(RouteInput("a", "b", 20.0)).routeID
+        val rid = testClient.createRoute(RouteInput("a", "b", 20.0F)).routeID
         val updateBody = ActivityInput("05:16:32.893", null, rid.toString())
         putRequest<ActivityInput>(
             testClient,
@@ -525,7 +525,7 @@ class ActivitiesApiTests {
 
     @Test
     fun `Update route and date of the activity successfully`() {
-        val rid = testClient.createRoute(RouteInput("a", "b", 20.0)).routeID
+        val rid = testClient.createRoute(RouteInput("a", "b", 20.0F)).routeID
         val updateBody = ActivityInput(null, "2007-05-11", rid.toString())
         putRequest<ActivityInput>(
             testClient,

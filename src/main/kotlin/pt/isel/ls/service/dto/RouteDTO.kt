@@ -19,7 +19,7 @@ data class RouteDTO(
     val id: RouteID,
     val startLocation: String,
     val endLocation: String,
-    val distance: Double,
+    val distance: Float,
     val user: UserID
 ) {
     constructor(routeEntity: Route) : this(

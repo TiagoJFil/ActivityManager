@@ -250,7 +250,7 @@ class ActivitiesServicesTest {
 
     @Test
     fun `update all the properties of the activity successfully`() {
-        val rid = routeServices.createRoute(GUEST_TOKEN, "a", "b", 220.0)
+        val rid = routeServices.createRoute(GUEST_TOKEN, "a", "b", 220.0F)
 
         activitiesServices.updateActivity(
             GUEST_TOKEN,
@@ -299,7 +299,7 @@ class ActivitiesServicesTest {
 
     @Test
     fun `update route of the activity successfully`() {
-        val rid = routeServices.createRoute(GUEST_TOKEN, "a", "b", 220.0)
+        val rid = routeServices.createRoute(GUEST_TOKEN, "a", "b", 220.0F)
         activitiesServices.updateActivity(
             GUEST_TOKEN,
             testSport.id.toString(),
@@ -346,7 +346,7 @@ class ActivitiesServicesTest {
 
     @Test
     fun `update duration and route of the activity successfully`() {
-        val rid = routeServices.createRoute(GUEST_TOKEN, "a", "b", 220.0)
+        val rid = routeServices.createRoute(GUEST_TOKEN, "a", "b", 220.0F)
         activitiesServices.updateActivity(
             GUEST_TOKEN,
             testSport.id.toString(),
@@ -393,7 +393,7 @@ class ActivitiesServicesTest {
 
     @Test
     fun `update date and route of the activity successfully`() {
-        val rid = routeServices.createRoute(GUEST_TOKEN, "a", "b", 220.0)
+        val rid = routeServices.createRoute(GUEST_TOKEN, "a", "b", 220.0F)
         activitiesServices.updateActivity(
             GUEST_TOKEN,
             testSport.id.toString(),

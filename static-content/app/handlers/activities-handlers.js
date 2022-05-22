@@ -28,13 +28,17 @@ async function displayActivityList(mainContent, _, query) {
 /**
  * Displays a list of activities for the given sport with the given query
  */
-async function displayActivitiesBySport(mainContent, params, query) {
+async function displaySearchActivities(mainContent, params, query) {
 
+    /*
     const [activityList, routeList, sportDetails] = await Promise.all([
         activityApi.fetchActivitiesBySport(params.sid, query),
         routeApi.fetchRoutes(query), // TODO: Change to filter
         sportApi.fetchSport(params.sid)
     ])
+    */
+    const [routeList, sportList] = await Promise.all([routeApi.fetchRoutes(query),sportApi.fetchSports(query)])
+    
 
     const onFilterSubmit = (date, route, sortOrder) => {
         const newQuery = query 
@@ -52,14 +56,10 @@ async function displayActivitiesBySport(mainContent, params, query) {
 
     mainContent.replaceChildren(
         Div('activity-header-filter',
-            H1(styles.HEADER, `Activities for ${sportDetails.name}`),
-            ActivitySearchFilter(onFilterSubmit, routeList.routes, query),
+            H1(styles.HEADER, `Activity search`),
+            ActivitySearchFilter(onFilterSubmit, routeList.routes,sportList.sports, query),
         ),
-        ActivityList(activityList.activities),
-        Pagination(
-            activityList.total,
-            (skip, limit) => onPaginationChange(`sports/${params.sid}/activities`, query, skip, limit)
-        )
+       
     )
 }
 
@@ -90,7 +90,7 @@ async function displayActivityDetails(mainContent, params, _) {
 }
 
 export const activityHandlers = {
-    displayActivitiesBySport,
+    displaySearchActivities,
     displayActivitiesByUser,
     displayActivityDetails,
     displayActivityList

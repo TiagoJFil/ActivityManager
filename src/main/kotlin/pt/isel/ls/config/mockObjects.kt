@@ -16,7 +16,7 @@ val testRoute = Route(
     id = 0,
     startLocation = "testStartLocation",
     endLocation = "testEndLocation",
-    distance = 23.0,
+    distance = 23.0F,
     user = guestUser.id
 )
 

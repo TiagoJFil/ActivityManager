@@ -41,6 +41,7 @@
     flex-direction: column;
     justify-content: space-between;
     margin-left: var(--nav-width);
+    padding: 20px;
 }
 
 .detail-header{

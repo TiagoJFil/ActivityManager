@@ -90,7 +90,7 @@ export default {
     getActivity: activityHandlers.displayActivityDetails,
     getUsersByActivity: userHandlers.displayUsersByActivity,
     getActivitiesByUser: activityHandlers.displayActivitiesByUser,
-    getActivitiesBySport: activityHandlers.displayActivitiesBySport,
+    getActivitiesSearch: activityHandlers.displaySearchActivities,
     getUsersByRanking: userHandlers.displayUsersByRanking,
     createSport: sportHandlers.createSport,
     createRoute: routeHandlers.createRoute

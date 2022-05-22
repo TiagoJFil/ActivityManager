@@ -32,15 +32,6 @@
 
   /*                           List Container and elements style                            */
 
-.list-parent{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: var(--list-height);
-}
-
 .list{
     --items-per-page: 20;
     display: grid;
@@ -52,7 +43,7 @@
     padding: 50px;
     overflow-y: auto;
     overflow-x: hidden;
-   /*box-shadow: 0 0 5px 0 rgba(0,0,0,0.25);*/
+   box-shadow: 0 0 5px 0 rgba(0,0,0,0.25);
    /**
    background-color: #2f4353;
    background-image: linear-gradient(315deg, #2f4353 0%, #d2ccc4 74%);

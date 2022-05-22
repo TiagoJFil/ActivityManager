@@ -45,11 +45,11 @@ class RouteApiTests {
     }
 
     @Test fun `create a route successfully`() {
-        testClient.createRoute(RouteInput(startLocation = "a", endLocation = "b", distance = 10.0))
+        testClient.createRoute(RouteInput(startLocation = "a", endLocation = "b", distance = 10.0F))
     }
 
     @Test fun `create a route without start location gives 400`() {
-        val body = RouteInput(endLocation = "b", distance = 10.0)
+        val body = RouteInput(endLocation = "b", distance = 10.0F)
         postRequest<RouteInput, HttpError>(
             testClient,
             ROUTE_PATH,
@@ -60,7 +60,7 @@ class RouteApiTests {
     }
 
     @Test fun `create a route without end location gives 400`() {
-        val body = RouteInput(distance = 20.0, startLocation = "a")
+        val body = RouteInput(distance = 20.0F, startLocation = "a")
         postRequest<RouteInput, HttpError>(
             testClient,
             ROUTE_PATH,
@@ -82,7 +82,7 @@ class RouteApiTests {
     }
 
     @Test fun `create a route with a blank parameter gives 400`() {
-        val body = RouteInput(startLocation = " ", endLocation = "b", distance = 10.0)
+        val body = RouteInput(startLocation = " ", endLocation = "b", distance = 10.0F)
         postRequest<RouteInput, HttpError>(
             testClient,
             ROUTE_PATH,
@@ -99,7 +99,7 @@ class RouteApiTests {
     }
 
     @Test fun `get a route successfully`() {
-        val body = RouteInput(startLocation = "a", endLocation = "b", distance = 10.0)
+        val body = RouteInput(startLocation = "a", endLocation = "b", distance = 10.0F)
         val routeResponse = testClient.createRoute(body)
         getRequest<RouteDTO>(testClient, "$ROUTE_PATH${routeResponse.routeID}", Response::expectOK)
     }
@@ -108,9 +108,9 @@ class RouteApiTests {
 
         val start = "Lisboa"
         val end = "Fátima"
-        val distance = 127.8
+        val distance = 127.8F
 
-        val creationBodies = List(1000) { RouteInput("Lisboa", "Fátima", 127.8) }
+        val creationBodies = List(1000) { RouteInput("Lisboa", "Fátima", 127.8F) }
         val routeIds: List<RouteID> = creationBodies.map { testClient.createRoute(it).routeID }
 
         val expected = routeIds.map { RouteDTO(id = it, start, end, distance, guestUser.id) }
@@ -120,10 +120,10 @@ class RouteApiTests {
     }
 
     @Test fun `update an existing route`() {
-        val body = RouteInput(startLocation = "a", endLocation = "b", distance = 10.0)
+        val body = RouteInput(startLocation = "a", endLocation = "b", distance = 10.0F)
         val routeResponse = testClient.createRoute(body)
         val routeId = routeResponse.routeID
-        val updatedBody = RouteInput(startLocation = "c", endLocation = "d", distance = 20.0)
+        val updatedBody = RouteInput(startLocation = "c", endLocation = "d", distance = 20.0F)
 
         testClient.updateResource<RouteInput, RouteID>(updatedBody, routeId, GUEST_TOKEN)
         val updatedRoute = getRequest<RouteDTO>(testClient, "$ROUTE_PATH$routeId", Response::expectOK)
@@ -134,7 +134,7 @@ class RouteApiTests {
     }
 
     @Test fun `update a route with a blank parameter gives 400`() {
-        val body = RouteInput(startLocation = "", endLocation = "b", distance = 10.0)
+        val body = RouteInput(startLocation = "", endLocation = "b", distance = 10.0F)
         //  testClient.updateResource<RouteInput,RouteID>(body, testRoute.id)
         putRequest<RouteInput>(
             testClient,
@@ -151,7 +151,7 @@ class RouteApiTests {
     }
 
     @Test fun `update a route that doesnt exist gives 404`() {
-        val body = RouteInput(startLocation = "a", endLocation = "b", distance = 10.0)
+        val body = RouteInput(startLocation = "a", endLocation = "b", distance = 10.0F)
         putRequest<RouteInput>(
             testClient,
             "${ROUTE_PATH}231",
@@ -162,7 +162,7 @@ class RouteApiTests {
     }
 
     @Test fun `update a route with an not known token gives 401`() {
-        val body = RouteInput(startLocation = "a", endLocation = "b", distance = 10.0)
+        val body = RouteInput(startLocation = "a", endLocation = "b", distance = 10.0F)
         putRequest<RouteInput>(
             testClient,
             "$ROUTE_PATH${testRoute.id}",
@@ -175,7 +175,7 @@ class RouteApiTests {
     @Test fun `update a route with a user that is not the owner gives 403`() {
         val user = testClient.createUser(UserInput("test", "test@gmail.com"))
 
-        val body = RouteInput(startLocation = "a", endLocation = "b", distance = 10.0)
+        val body = RouteInput(startLocation = "a", endLocation = "b", distance = 10.0F)
         putRequest<RouteInput>(
             testClient,
             "${ROUTE_PATH}${testRoute.id}",
@@ -186,7 +186,7 @@ class RouteApiTests {
     }
 
     @Test fun `update route without startLocation keeps the old one`() {
-        val body = RouteInput(endLocation = "b", distance = 10.0)
+        val body = RouteInput(endLocation = "b", distance = 10.0F)
 
         testClient.updateResource(body, testRoute.id, GUEST_TOKEN)
 
