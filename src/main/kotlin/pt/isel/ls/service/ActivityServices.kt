@@ -53,7 +53,7 @@ class ActivityServices(
         const val ORDER_PARAM = "orderBy"
         val ORDER_POSSIBLE_VALUES = "$ORDER_PARAM should be one of: ${Order.values().joinToString(", ")}"
         const val DATE_INVALID_FORMAT = "Date should have format yyyy-MM-dd"
-        const val DURATION_INVALID_FORMAT = "Duration should have format hh:mm:ss.ffff"
+        const val DURATION_INVALID_FORMAT = "Duration should have format hh:mm:ss.fff"
     }
 
     /**

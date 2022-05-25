@@ -1,9 +1,8 @@
-import {List, Item, Text, Button, Icon, Div, H1,Input} from "../dsl.js"
-import  {LinkIcon, ButtonIcon} from "../Icons.js"
+import {List, Item, Text, Div, } from "../dsl.js"
+import {LinkIcon, ButtonIcon} from "../Icons.js"
 import styles from "../../styles.js";
-import Modal from "../Modal.js";
-import {ErrorToast, InfoToast} from '../../toasts.js'
-import {SportEdit, DESCRIPTION_TEXT}  from '../edits/SportEdit.js'
+import {SportEditModal, DESCRIPTION_TEXT}  from '../edits/SportEdit.js'
+import { AddButton } from "../Icons.js";
 
 
 /**
@@ -21,7 +20,7 @@ export default function SportDetails(sport, onEditConfirm) {
         ]
         : [Text(styles.TEXT, DESCRIPTION_TEXT)]
     
-    const modal = SportEdit(sport,onEditConfirm)
+    const modal = SportEditModal(sport,onEditConfirm)
 
     const onEdit = () => {
         modal.style.display = "flex";
@@ -36,9 +35,9 @@ export default function SportDetails(sport, onEditConfirm) {
                 ...description
             ),
             Div(styles.ICON_GROUP,
-                LinkIcon(styles.CALENDAR_ICON,`#sports/${sport.id}/activities`, "Get activities for this sport"),
                 LinkIcon(styles.USER_ICON, `#users/${sport.user}`, "Get user details"),
-                ButtonIcon(styles.EDIT_ICON, onEdit, "Edit sport") 
+                ButtonIcon(styles.EDIT_ICON, onEdit, "Edit sport"),
+                LinkIcon(styles.ADD_ACTIVITY_ICON, `#sports/${sport.id}/activities/add`,"Add an activity")
             ),
             modal
         )

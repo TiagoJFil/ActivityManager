@@ -10,13 +10,13 @@ import styles from "../styles.js";
  * @param header {string} - The header of the search bar or none if not needed
  * @returns {HTMLElement}
  */
-export default function SearchBar(id, className, onTextChange, placeholder, header) {
+export default function SearchBar(id, className, onTextChange, placeholder, header,defaultValue) {
 
     const onChange = (event) => {
         onTextChange(event.target.value);
     };
 
-    const searchBar = Input(className, "search", id, onChange, placeholder);
+    const searchBar = Input(className, "search", id, onChange, placeholder,defaultValue);
     const items = header
         ? [Text(styles.DETAIL_HEADER, header), searchBar]
         : [searchBar];

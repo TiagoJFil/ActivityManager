@@ -80,8 +80,19 @@ export function Button(className, onClick, ...children) {
  */
 export function H1(className, text) {
     return createElement('h1', className, document.createTextNode(text))
-
 }
+
+/**
+ * Represents a Nav element as a component
+ * 
+ * @param {String} className The class name of the nav element
+ * @param  {...any} children  The children of this element
+ * @returns {HTMLElement} a nav element
+ */
+export function Nav(...children) {
+    return createElement('nav', null, ...children)
+}
+
 
 /**
  * Represents an input item element as a component
@@ -94,17 +105,27 @@ export function H1(className, text) {
  * @param startingValue The value of the input element
  * @returns {HTMLElement} an input element
  */
-export function Input(className, type, id, onInputChange, placeholder, startingValue, required,min,max) {
+export function Input(className, type, id, onInputChange, placeholder, startingValue, required, min, max) {
     const input = createElement('input', className)
     input.type = type
     input.id = id
     input.value = startingValue ?? ""
     input.required = required ?? false
-    input.min = min  
-    input.max = max
+    if(min) input.min = min
+    if(max) input.max = max
     input.setAttribute("placeholder", placeholder ?? "")
     input.addEventListener("input", onInputChange)
     return input
+}
+
+export function TextArea(className, id, onInputChange, placeholder, startingValue, required){
+    const element = createElement('textarea', className)
+    element.id = id
+    element.setAttribute("placeholder", placeholder ?? "")
+    element.textContent = startingValue ?? ""
+    element.required = required ?? false
+    element.setAttribute("wrap", "soft")
+    return element
 }
 
 /**
@@ -169,6 +190,17 @@ export function Anchor(className, href, ...children) {
     anchor.href = href
     return anchor
 }
+
+export function Image(className, id, src, alt){
+    const image = createElement("img", className)
+    id ? image.id = id : null
+    image.src = src
+    image.alt = alt 
+    return image
+}
+
+
+
 
 
 /**

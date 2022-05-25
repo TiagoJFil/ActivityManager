@@ -1,6 +1,8 @@
 import { Div, Input, Select, Option, Text, Button } from "../dsl.js";
 import styles from "../../styles.js";
 import RouteSearch from "../searches/RouteSearch.js";
+import SportSearch from "../searches/SportSearch.js";
+
 
 /**
  * Creates a div with the filter components.
@@ -10,24 +12,30 @@ import RouteSearch from "../searches/RouteSearch.js";
  * @param {Object} query 
  * @returns a {Div} component with the filter components.
  */
-export default function ActivitySearchFilter(onFilterSubmit, routes,sports, query) {
+export default function ActivitySearchFilter(onFilterSubmit, onRouteChange, onSportChange, query) {
 
     const onSubmit = () => {
-        const date = document.querySelector('#dateFilter').value
-        const sport = document.querySelector('#sid').value
-        const route = document.querySelector('#rid').value
-        const sortOrder = document.querySelector('#orderBy').value
-        onFilterSubmit(date, route, sortOrder)
+        const dateElem = document.querySelector('#dateFilter')
+        const sportElem = document.querySelector('#sportSelector')
+        const routeElem = document.querySelector('#routeSelector')
+        const sortOrderElem = document.querySelector('#orderBy')
+
+        const date = dateElem.value
+        const sid = sportElem.value
+        const rid = routeElem.value
+        const sortOrder = sortOrderElem.value
+        onFilterSubmit(date, sid, rid, sortOrder)
     }
 
-    return Div(styles.ACTIVITY_FILTER,
-        DatePicker(query),
-        OrderBySelector(query),
-        SportSelector(sports,query),
-        RouteSelector(routes, query),
-        Button('button',onSubmit, Text('filter-text', 'Filter'))
-    )
 
+    return Div(styles.ACTIVITY_FILTER,
+        DatePicker(null),
+        OrderBySelector(query),
+        SportSearch(onSportChange,true,true),
+        RouteSearch(onRouteChange,"ROUTE"),
+        Button(styles.BUTTON, onSubmit, Text('filter-text', 'Filter'))
+    )
+ 
 }
 
 /**
@@ -64,46 +72,14 @@ function OrderBySelector(query){
 }
 
 
-export function SportSelector(sports,query){
-
-}
-
-/**
- * Creates a Select component with options for selecting a route.
- * Selects the option that matches the query.route value.
- * @param {array<*>} routes 
- * @param {Object} query 
- * @returns {Select} the Select component created.
- */
-export function RouteSelector(routes, query){
-    const initialRouteID = query.rid;
-
-    const noOption = Option(styles.SELECTOR_OPTION, '', "No Route")
-    const routeOptions = routes.map( (route) => {
-        return Option(styles.SELECTOR_OPTION, `${route.id}`,
-            `${route.startLocation} - ${route.endLocation}`
-        )
-    })
-    
-    const ridSelector = Select(styles.FILTER_SELECTOR, 'rid',  1,
-     ...[noOption, ...routeOptions])
-
-    initialRouteID ? ridSelector.value = initialRouteID : noOption.selected = true
-
-    return ridSelector
-}
-
 /**
  * Creates a DatePicker component.
  * Inserts the value of the query.date property into the input field.
  * @param {Object} query 
  * @returns {Input} the DatePicker component created.
  */
-function DatePicker(query){
-    const initialDate = query.date;
-
+export function DatePicker(initialDate){
     const date = Input('date-filter', 'date', 'dateFilter')
     date.value = initialDate ? initialDate : ''
-
     return date
 }

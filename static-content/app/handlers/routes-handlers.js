@@ -8,6 +8,7 @@ import { H1, Div, Anchor, Icon} from '../components/dsl.js'
 import SearchBar from '../components/SearchBar.js'
 import RouteCreate from "../components/creates/CreateRoute.js";
 import { SuccessToast, ErrorToast ,InfoToast} from '../toasts.js'
+import {AddButton} from "../components/Icons.js";
 
 /**
  * Displays a route list with the given query
@@ -42,15 +43,14 @@ async function displayRouteList(mainContent, _, query) {
        await filteredRouteDisplay(newQuery)
     }
 
-    const addAnchor = Anchor("big",`#routes/add`, Icon(styles.BX_CLASS, styles.ADD_ICON))
-    addAnchor.title = "Add a route"
+
 
     mainContent.replaceChildren(
         H1(styles.HEADER, 'Routes'),
         Div(styles.SEARCH_BAR_WITH_ADD,
             SearchBar("searchRes", styles.FORM_TEXT_INPUT, onStartLocationTextChange, "Search for a starting location", "Start Location"),
             SearchBar("searchRes", styles.FORM_TEXT_INPUT, onEndLocationTextChange, "Search for an ending location", "End Location"),
-            addAnchor
+            AddButton(`#routes/add`,"Add a route")
         ),
         listElement,
         paginationElement
@@ -109,6 +109,8 @@ async function displayRouteDetails(mainContent, params, _) {
 }
 
 async function createRoute(mainContent, params, _) {
+    const nItems = getItemsPerPage()
+
     const onSubmit = async (sLocation, eLocation, distance) => {
         try{
             const toasts = []
@@ -157,7 +159,7 @@ async function createRoute(mainContent, params, _) {
             return
         }
 
-        window.location.hash = 'routes'
+        window.location.hash = `routes?skip=0&limit=${nItems}`
     }
 
     mainContent.replaceChildren(

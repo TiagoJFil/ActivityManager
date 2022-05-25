@@ -1,5 +1,6 @@
 import router from './router.js'
 import handlers from './handlers/app-handlers.js'
+import { Navigation } from './components/Navigation.js'
 
 window.addEventListener('load', loadHandler)
 window.addEventListener('hashchange', hashChangeHandler)
@@ -10,6 +11,8 @@ window.addEventListener('hashchange', hashChangeHandler)
  */
 function loadHandler(){
     if(!location.hash) location.hash = "#home" 
+    document.body.prepend(Navigation())
+
 
     router.addDefaultNotFoundRouteHandler(handlers.getNotFoundPage)
     router.addRouteHandler('home', handlers.getHome)
@@ -19,7 +22,6 @@ function loadHandler(){
     router.addRouteHandler('sports/:sid', handlers.getSport) 
     router.addRouteHandler('sports/:sid/users', handlers.getUsersByActivity)  
     
-
 
     router.addRouteHandler('users/ranking', handlers.getUsersByRanking)  
     router.addRouteHandler('users/:uid', handlers.getUser) 
@@ -31,8 +33,10 @@ function loadHandler(){
     
    // router.addRouteHandler('activities', handlers.getActivities)
     router.addRouteHandler('activities/search', handlers.getActivitiesSearch)
+    router.addRouteHandler('sports/:sid/activities/add', handlers.createActivity)
+
     router.addRouteHandler('sports/:sid/activities/:aid', handlers.getActivity)
-    
+    router.addRouteHandler('sports/:sid/activities', handlers.getActivities)
     router.addRouteHandler('users/:uid/activities', handlers.getActivitiesByUser)
 
     hashChangeHandler()

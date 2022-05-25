@@ -192,7 +192,6 @@ class ActivityRoutes(
             .contentJson()
             .body(activitiesJson)
     }
-
     val handler = routes(
         "/sports/{sid}/activities" bind routes(
             "/" bind Method.POST to ::createActivity,

@@ -21,7 +21,9 @@ export default function UserDetails(user){
                 Text(styles.DETAIL_HEADER, 'Email: '),
                 Text(styles.TEXT,user.email)
             ),
-            LinkIcon(styles.CALENDAR_ICON,`#users/${user.id}/activities`, "Get user's activities"),
+            Div(styles.ICON_GROUP, 
+                LinkIcon(styles.CALENDAR_ICON,`#users/${user.id}/activities`, "Get user's activities")
+            )
         )
     )
 }

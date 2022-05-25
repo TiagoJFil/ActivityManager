@@ -4,34 +4,59 @@
 :root {
     --nav-width: 250px;
     --hover-color: white;
+    --mobile-nav-width: 110px;
 }
-
 
 .logo{
     display: block;
-    margin-bottom: 130px;
+    margin-bottom: 200px;
+    margin-left: px;
+    transition: all 0.5s ease-in-out;
+}
+
+nav:hover .logo{
+    margin-left: 35px;
+    margin-bottom: 149px;
+}
+
+nav:hover .logo-img, nav:hover .logo{
+    transition: all 0.5s ease-in-out;
 }
 
 .logo-img{
+    width: 80px;
+    transition: all 0.5s ease-in-out;
+}
+
+nav:hover .logo-img{
     width: 150px;
 }
 
-nav{
+
+nav:hover{
     width: var(--nav-width);
     height: 100vh;
+    transition: all 0.5s ease-in-out;
+}
+
+nav{
+    width: 110px;
+    height: 100%;
     background: var(--primary);
     top: 0;
     left: 0;
-    padding: 20px 30px;
+    padding: 20px 16px;
     box-shadow: 0 4px 15px 0 var(--primary);
     z-index: 10;
     position: fixed;
     overflow: hidden;
+    transition: all 0.5s ease-out;
 }
 
 .nav-links{
     list-style: none;
     position: relative;
+    margin-left: 10px;
 }
 
 .nav-links li{
@@ -46,9 +71,23 @@ nav{
     align-items: center;
 }
 
+.nav-links li a .nav-text{
+    display: none;
+}
+
+nav:hover .nav-links li .nav-text{
+    display: block;
+    transition: all 0.3s ease-out;
+}
+
+nav:hover .nav-links li a i{
+    margin-right: 20px;
+    transition: all 0.3s ease-in-out;
+}
+
 .nav-links li a i{
     font-size: 22px;
-    margin-right: 20px;
+    margin-right: 0
 }
 
 .nav-links li:hover a,
@@ -113,12 +152,10 @@ nav{
     }
 
     .logo{
-        display: block;
-        margin-bottom:130px;
         margin-left: -10px;
     }
 
-    .nav-links li a p{
+    .nav-links li a .nav-text{
         display: none;
     }
 

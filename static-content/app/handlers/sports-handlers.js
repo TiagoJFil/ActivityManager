@@ -8,6 +8,7 @@ import {H1, Div, Icon, Anchor} from '../components/dsl.js'
 import SportCreate from "../components/creates/CreateSport.js";
 import SearchBar from  "../components/SearchBar.js";
 import { SuccessToast, ErrorToast ,InfoToast} from '../toasts.js'
+import { AddButton } from '../components/Icons.js'
 
 /**
  * Displays a sport list with the given query
@@ -22,7 +23,6 @@ async function displaySportList(mainContent, _, query) {
     )
 
     const onSportTextChange = async (searchText) => {
-
         const newQuery = {
             limit: query.limit ?? getItemsPerPage(),
             skip: 0,
@@ -48,14 +48,11 @@ async function displaySportList(mainContent, _, query) {
         paginationElement = newPagination
     }
 
-    const addAnchor = Anchor("big",`#sports/add`, Icon(styles.BX_CLASS, styles.ADD_ICON))
-    addAnchor.title = "Add a sport"
-
     mainContent.replaceChildren(
         H1(styles.HEADER, 'Sports'),
         Div(styles.SEARCH_BAR_WITH_ADD,
             SearchBar("searchRes", styles.FORM_TEXT_INPUT, onSportTextChange, "Search for a sport", null),
-            addAnchor
+            AddButton(`#sports/add`,"Add a sport")
         ),
         listElement,
         paginationElement
@@ -95,6 +92,8 @@ async function displaySportDetails(mainContent, params, _) {
  * Creates a new sport
  */
 async function createSport(mainContent, params, _) {
+    const nItems = getItemsPerPage()
+    
 
     const onSubmit = async (name, description) => {
         try{
@@ -113,8 +112,10 @@ async function createSport(mainContent, params, _) {
             }).showToast()
             return
         }
-
-        window.location.hash = 'sports'
+        
+        
+        
+        window.location.hash = `sports?skip=0&limit=${nItems}`
     }
 
     mainContent.replaceChildren(

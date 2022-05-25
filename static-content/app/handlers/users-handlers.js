@@ -16,10 +16,11 @@ async function displayUsersByRanking(mainContent, _, __) {
     // Replaces Sport's selector with sports that are relevant to the typed text
     const onSportTextChange = async (sportText) =>{
         const sportSelector = document.querySelector("#sportSelector")
+        /*
         if(sportText.length < 3) {
             sportSelector.replaceChildren()
             return
-        }
+        }*/
 
         const sportList = await sportApi.fetchSports({search : sportText})
         const sportSelectorOptions = sportList.sports.map(sport => Option(styles.SELECTOR_OPTION, sport.id, sport.name))
@@ -33,10 +34,11 @@ async function displayUsersByRanking(mainContent, _, __) {
     const onLocationsChange = async (startLocation, endLocation) => {
         const routeSelector = document.querySelector("#routeSelector")
 
+        /*
         if(startLocation.length < 3 && endLocation.length < 3) {
             routeSelector.replaceChildren()
             return
-        }
+        }*/
 
         const newRouteQuery = {
             startLocation,

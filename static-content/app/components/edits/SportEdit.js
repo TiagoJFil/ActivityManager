@@ -1,4 +1,4 @@
-import {List, Item, Text, Div, Input} from "../dsl.js"
+import {List, Item, Text, Div, Input, TextArea} from "../dsl.js"
 import  {ButtonIcon} from "../Icons.js"
 import styles from "../../styles.js";
 import Modal from "../Modal.js";
@@ -7,10 +7,10 @@ import {ErrorToast, InfoToast} from '../../toasts.js'
 
 const DESCRIPTION_TEXT = "No description available"
 
-function SportEdit(sport,onEditConfirm) {
+function SportEditModal(sport,onEditConfirm) {
 
-    const nameInput = Input('editedName','text', null, null, "e.g Football", sport.name, true)
-    const descriptionInput = Input('editedDescription','text', null, null, "e.g Played with a ball", sport.description)
+    const nameInput = Input('edited-name','text', null, null, "e.g Football", sport.name, true)
+    const descriptionInput = TextArea('edited-description','text', null, "e.g Game played with feet", sport.description, false)
 
     const onClickConfirm = async () => {
         const editedName = nameInput.value
@@ -62,7 +62,7 @@ function SportEdit(sport,onEditConfirm) {
     }
 
     const modal =  
-        Modal("Edit the sport",
+        Modal("sportEdit","Edit the sport",
             List(styles.DETAILS,
                 Item('name-item',
                     Text(styles.DETAIL_HEADER, 'Name: '),
@@ -85,5 +85,5 @@ function SportEdit(sport,onEditConfirm) {
 
 export {
     DESCRIPTION_TEXT,
-    SportEdit
+    SportEditModal
 }

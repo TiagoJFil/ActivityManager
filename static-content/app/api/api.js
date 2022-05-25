@@ -37,6 +37,7 @@ async function createSport(sportName, sportDescription) {
 }
 
 async function updateSport(sid, sportName, sportDescription) {
+    
     const response = await fetch(BASE_API_URL + SPORTS_URL + '/' + sid, {
         method: 'PUT',
         headers: {
@@ -90,6 +91,58 @@ async function updateRoute(rid, sLocation, eLocation, distance) {
 }
 
 
+async function createActivity(sid, date, duration, rid) {
+
+    console.log(ACTIVITY_SPORT_URL)
+    const response = await fetch(BASE_API_URL + ACTIVITY_SPORT_URL(sid), {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            duration: duration,
+            date: date,
+            rid: rid || ''
+        })
+    })
+    
+    return await getBodyOrThrow(response)
+}
+
+async function updateActivity(sid,aid,date, duration, rid) {
+    console.log(sid,aid,date,duration,rid)
+    const response = await fetch(BASE_API_URL + ACTIVITY_SPORT_URL(sid) + '/' + aid, {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            date: date,
+            duration: duration,
+            rid: rid || ''
+        })
+    })
+
+    if(!isSuccessful(response.status))
+        throw await response.json()
+}
+
+async function deleteActivity(sid,aid){
+    const response = await fetch(BASE_API_URL + ACTIVITY_SPORT_URL(sid) + '/' + aid, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    })
+
+    if(!isSuccessful(response.status))
+        throw await response.json()
+}
+
+
 export const userApi = {
 
     fetchUsers: async (queryMap) =>
@@ -128,6 +181,10 @@ export const activityApi = {
 
     fetchActivity: async (sid, aid) =>
         await getRequest(`${BASE_API_URL}${ACTIVITY_SPORT_URL(sid)}/${aid}`, null),
+
+    deleteActivity,
+    updateActivity,
+    createActivity
 
 }
 

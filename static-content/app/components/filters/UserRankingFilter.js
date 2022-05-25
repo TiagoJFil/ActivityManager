@@ -20,7 +20,7 @@ export default function UserRankingFilter(onSportTextChange, onLocationsChange, 
         return (
             Form(styles.USER_RANKINGS,
                 Div(styles.RANKINGS_FORM,
-                    RouteSearch(onLocationsChange),
+                    RouteSearch(onLocationsChange,"ROUTE"),
                     SportSearch(onSportTextChange, true, withHeader),
                 ),
                 Button(styles.BUTTON, onSubmitForm, Text(styles.TEXT, "Search"))

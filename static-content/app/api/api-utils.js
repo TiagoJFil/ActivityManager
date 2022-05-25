@@ -35,6 +35,7 @@ export function isSuccessful(statusCode) {
  */
 export async function getBodyOrThrow(response) {
     const object = await response.json()
+
     if (isSuccessful(response.status))
         return object
     else

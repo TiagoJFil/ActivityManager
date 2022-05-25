@@ -46,7 +46,8 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
 
             val query = buildQuery(search)
             val paginationIndexes = if (search == null) Pair(1, 2) else Pair(2, 3)
-            val searchString = "$search:*"
+            val searchString = if(search == null ) "" else "$search:*"
+
             prepareStatement(query).use { stmt ->
                 if (search != null) {
                     stmt.setString(1, searchString)

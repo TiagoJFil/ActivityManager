@@ -37,12 +37,19 @@ const MAX_PAGES_PER_VIEW = 7
  * @returns the pagination component
  */
 export function Pagination(totalElements, onPageChange, currentLimit){
-    const itemsPerPage = currentLimit ?? getItemsPerPage()
+    const itemsPerPage = currentLimit ? parseInt(currentLimit) : getItemsPerPage()
     const actualPage = getCurrentPage(itemsPerPage)
     const isComplete = totalElements % itemsPerPage === 0 && totalElements !== 0
     const totalPages = calculateTotalPages(itemsPerPage, totalElements, isComplete)
     const pagesPerView = (totalPages >= MAX_PAGES_PER_VIEW) ? MAX_PAGES_PER_VIEW : totalPages
     const visiblePages = getVisiblePages(totalPages, actualPage, pagesPerView)
+
+//    console.log("Total Elements:", totalElements)
+//    console.log("Items per page: ", itemsPerPage)
+//    console.log("Total pages: ", totalPages)
+//    console.log("Actual page: ", actualPage)
+ //   console.log("Pages per view: ", pagesPerView)
+//    console.log("Visible pages: ", visiblePages)
 
 
     const pageButtons = visiblePages.map((pageNumber) => {

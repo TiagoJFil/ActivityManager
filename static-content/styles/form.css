@@ -41,3 +41,7 @@
     margin-top: 50px;
 }
 
+textarea{
+    resize: none;
+}
+

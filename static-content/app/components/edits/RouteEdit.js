@@ -5,11 +5,15 @@ import Modal from "../Modal.js";
 import {ErrorToast, InfoToast} from '../../toasts.js'
 
 
+const DECIMAL_PLACES_DISTANCE = 2
+const LOCATION_MAX_LENGTH = 30
+
+
 export default function RouteEdit(route, onEditConfirm){
 
-    const startLocationInput = Input('editedName','text', null, null, "e.g Football", route.startLocation, true)
-    const endLocationInput = Input('editedDescription','text', null, null, "e.g Played with a ball", route.endLocation,false)
-    const distanceInput = Input('editedDescription','number', null, null, "e.g Played with a ball", route.distance,false,0,50000)
+    const startLocationInput = Input('editedSLocation','text', null, null, "e.g Lisboa", route.startLocation, true)
+    const endLocationInput = Input('editedELocation','text', null, null, "e.g Porto", route.endLocation,false)
+    const distanceInput = Input('editedDistance','number', null, null, "e.g 320.5", route.distance,false, 0, 50000)
 
     const onClickConfirm = async () => {
         const editedSLocation= startLocationInput.value
@@ -21,7 +25,7 @@ export default function RouteEdit(route, onEditConfirm){
         if(editedSLocation.length <= 0 || editedELocation.length <= 0){
             toasts.push(ErrorToast("Location cannot be empty."))
         }
-        if(editedSLocation.length > 30 || editedELocation > 30){
+        if(editedSLocation.length > LOCATION_MAX_LENGTH || editedELocation > LOCATION_MAX_LENGTH){
             toasts.push(ErrorToast("Location cannot have more than 150 characters."))
         }
         if(editedDistance === ""){
@@ -49,7 +53,7 @@ export default function RouteEdit(route, onEditConfirm){
         eLocationDisplay.textContent = editedELocation
 
         const distanceDisplay = document.querySelector('.distance-item .text')
-        distanceDisplay.textContent = Number(editedDistance).toFixed(3)
+        distanceDisplay.textContent = Number(editedDistance).toFixed(DECIMAL_PLACES_DISTANCE)
     }
    
     const resetEdit = () => {
@@ -65,7 +69,7 @@ export default function RouteEdit(route, onEditConfirm){
     }
 
     const modal =  
-        Modal("Edit the route",
+        Modal('route-edit',"Edit the route",
             List(styles.DETAILS,
                 Item('start-location-item',
                     Text(styles.DETAIL_HEADER, 'Start Location: '),

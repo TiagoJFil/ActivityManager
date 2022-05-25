@@ -35,7 +35,7 @@ export default function RouteDetails(route, onEditConfirm) {
                     )
                 )
             ),
-            Div('route-user',
+            Div(styles.ICON_GROUP,
                 LinkIcon(styles.USER_ICON, `#users/${route.user}`, "Get users details"),
                 OuterLinkIcon(styles.MAP_ICON, `https://www.google.com/maps/dir/${route.startLocation}/${route.endLocation}/`),
                 ButtonIcon(styles.EDIT_ICON, onEdit, "Edit route")           

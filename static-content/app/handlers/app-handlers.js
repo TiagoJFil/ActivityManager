@@ -1,4 +1,4 @@
-import {Div, H1, Text} from "../components/dsl.js"
+import {Div, H1, Text, Image} from "../components/dsl.js"
 import { sportHandlers } from "./sports-handlers.js";
 import { userHandlers } from "./users-handlers.js";
 import { routeHandlers } from "./routes-handlers.js";
@@ -14,7 +14,13 @@ import styles from "../styles.js";
 function getHome(mainContent) {
 
     mainContent.replaceChildren(
-        H1(styles.HEADER, 'Home'),
+        Div("home-page",
+            H1(styles.HEADER, 'Sports Isel'),
+            Div("image-group", 
+                Image("home-image", "homeImage", "./img/running.svg"),
+                Image("home-image", "homeImageGirl", "./img/running-girl.svg")
+            )
+        )
     )
 
 }
@@ -86,6 +92,7 @@ export default {
     getUser: userHandlers.displayUserDetails,
     getRoutes: routeHandlers.displayRouteList,
     getRoute: routeHandlers.displayRouteDetails,
+    createActivity: activityHandlers.createActivity,
     getActivities: activityHandlers.displayActivityList,
     getActivity: activityHandlers.displayActivityDetails,
     getUsersByActivity: userHandlers.displayUsersByActivity,

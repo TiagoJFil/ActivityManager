@@ -68,8 +68,10 @@ class SportsServices(
     fun getSports(search: Param, paginationInfo: PaginationInfo): List<SportDTO> {
         logger.traceFunction(::getSports.name) { emptyList() }
 
+        val handledSearch = search?.ifBlank { null }
+
         return sportsRepository
-            .getSports(search, paginationInfo)
+            .getSports(handledSearch, paginationInfo)
             .map(Sport::toDTO)
     }
 
