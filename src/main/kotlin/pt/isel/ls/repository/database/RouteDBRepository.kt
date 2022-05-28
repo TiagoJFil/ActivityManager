@@ -1,6 +1,5 @@
 package pt.isel.ls.repository.database
 
-import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.RouteRepository
 import pt.isel.ls.service.entities.Route
 import pt.isel.ls.utils.RouteID
@@ -13,27 +12,53 @@ import pt.isel.ls.utils.repository.queryTableByID
 import pt.isel.ls.utils.repository.setRoute
 import pt.isel.ls.utils.repository.toListOf
 import pt.isel.ls.utils.repository.toRoute
-import pt.isel.ls.utils.repository.transaction
+import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.Statement
 
-class RouteDBRepository(private val dataSource: PGSimpleDataSource, suffix: String) : RouteRepository {
+class RouteDBRepository(private val connection: Connection) : RouteRepository {
 
-    private val routeTable = "route$suffix"
+    private val routeTable = "Route"
 
     /**
      * Returns all the routes stored in the repository.
      */
-    override fun getRoutes(paginationInfo: PaginationInfo, startLocationQuery: String?, endLocationQuery: String?): List<Route> =
-        dataSource.connection.transaction {
-            val query = buildSearchQuery(startLocationQuery, endLocationQuery)
+    override fun getRoutes(
+        paginationInfo: PaginationInfo,
+        startLocationSearch: String?,
+        endLocationSearch: String?
+    ): List<Route> {
+        val query = buildSearchQuery(startLocationSearch, endLocationSearch)
 
-            prepareStatement(query).use { stmt ->
-                stmt.applyPagination(paginationInfo, indexes = Pair(1, 2))
-                val rs = stmt.executeQuery()
-                rs.toListOf<Route>(ResultSet::toRoute)
+        val parameters = listOfNotNull(startLocationSearch, endLocationSearch)
+            .map { "${it.trim()}:*".replace(" ", "&") }
+
+        return connection.prepareStatement(query).use { stmt ->
+            parameters.forEachIndexed { index, s -> stmt.setString(index + 1, s) }
+            stmt.applyPagination(paginationInfo, indexes = Pair(parameters.size + 1, parameters.size + 2))
+            val rs = stmt.executeQuery()
+            rs.toListOf<Route>(ResultSet::toRoute)
+        }
+    }
+
+    /**
+     * Auxiliary function to build the query to the get Routes function
+     */
+    private fun buildSearchQuery(startLocationSearch: String?, endLocationSearch: String?): String {
+        return if (startLocationSearch == null && endLocationSearch == null) {
+            """SELECT id, startLocation, endLocation, distance, "user" FROM $routeTable LIMIT ? OFFSET ?"""
+        } else {
+            val startLocationQuery = """SELECT id, startLocation, endLocation, distance, "user" FROM $routeTable """ +
+                "WHERE to_tsvector(coalesce(startLocation, '')) @@ to_tsquery(?)"
+            val endLocationQuery = """SELECT  id, startLocation, endLocation, distance, "user" FROM $routeTable """ +
+                "WHERE to_tsvector(coalesce(endLocation, '')) @@ to_tsquery(?)"
+            when {
+                startLocationSearch != null && endLocationSearch == null -> """$startLocationQuery LIMIT ? OFFSET ?"""
+                startLocationSearch == null && endLocationSearch != null -> """$endLocationQuery LIMIT ? OFFSET ?"""
+                else -> """ SELECT * FROM (($startLocationQuery) INTERSECT ($endLocationQuery)) as locationQuery LIMIT ? OFFSET ?"""
             }
         }
+    }
 
     /**
      * Adds a new route to the repository.
@@ -47,16 +72,15 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
         endLocation: String,
         distance: Float,
         userID: UserID
-    ): RouteID =
-        dataSource.connection.transaction {
-            val query = """INSERT INTO  $routeTable(startlocation,endlocation,distance,"user") VALUES (?, ?, ?, ?)"""
-            prepareStatement(query, Statement.RETURN_GENERATED_KEYS).use { stmt ->
-                stmt.apply {
-                    setRoute(startLocation, endLocation, distance, userID)
-                    executeUpdate()
-                }.generatedKey()
-            }
+    ): RouteID {
+        val query = """INSERT INTO  $routeTable(startlocation,endlocation,distance,"user") VALUES (?, ?, ?, ?)"""
+        return connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS).use { stmt ->
+            stmt.apply {
+                setRoute(startLocation, endLocation, distance, userID)
+                executeUpdate()
+            }.generatedKey()
         }
+    }
 
     /**
      * Returns the route with the given id.
@@ -100,38 +124,19 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
         val startLocationIdx = if (startLocation != null) 1 else 0
         val endLocationIdx = if (endLocation != null) startLocationIdx + 1 else startLocationIdx
         val distanceIdx = if (distance != null) endLocationIdx + 1 else endLocationIdx
-        println()
-        dataSource.connection.transaction {
-            prepareStatement(queryBuilder.toString()).use { stmt ->
-                if (startLocation != null) stmt.setString(startLocationIdx, startLocation)
-                if (endLocation != null) stmt.setString(endLocationIdx, endLocation)
-                if (distance != null) stmt.setFloat(distanceIdx, distance)
-                stmt.setInt(distanceIdx + 1, routeID)
-                return stmt.executeUpdate() == 1
-            }
+
+        connection.prepareStatement(queryBuilder.toString()).use { stmt ->
+            if (startLocation != null) stmt.setString(startLocationIdx, startLocation)
+            if (endLocation != null) stmt.setString(endLocationIdx, endLocation)
+            if (distance != null) stmt.setFloat(distanceIdx, distance)
+            stmt.setInt(distanceIdx + 1, routeID)
+            return stmt.executeUpdate() == 1
         }
     }
 
     /**
-     * Auxiliary function to build the query to the get Routes function
+     *
      */
-    private fun buildSearchQuery(startLocationQuery: String?, endLocationQuery: String?): String {
-        val query = StringBuilder("SELECT * FROM $routeTable")
-        if (startLocationQuery != null || endLocationQuery != null)
-            query.append(" WHERE ")
-
-        if (startLocationQuery != null)
-            query.append("startlocation LIKE '%${startLocationQuery.lowercase()}%'")
-
-        if (startLocationQuery != null && endLocationQuery != null)
-            query.append(" AND ")
-
-        if (endLocationQuery != null)
-            query.append("endlocation LIKE '%${endLocationQuery.lowercase()}%'")
-
-        query.append(" LIMIT ? OFFSET ?")
-        return query.toString()
-    }
 
     /**
      * Makes a query to get a route by its identifier.
@@ -141,5 +146,5 @@ class RouteDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
      * @return [T] The result of calling the block function.
      */
     private fun <T> queryRouteByID(routeID: RouteID, block: (ResultSet) -> T): T =
-        dataSource.queryTableByID(routeID, routeTable, block)
+        connection.queryTableByID(routeID, routeTable, block)
 }

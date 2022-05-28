@@ -1,7 +1,5 @@
 package pt.isel.ls.service
 
-import pt.isel.ls.repository.SportRepository
-import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.SportDTO
 import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.utils.Param
@@ -9,6 +7,7 @@ import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
+import pt.isel.ls.utils.repository.transactions.TransactionFactory
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireIdInteger
 import pt.isel.ls.utils.service.requireNotBlankParameter
@@ -18,8 +17,7 @@ import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.traceFunction
 
 class SportsServices(
-    private val sportsRepository: SportRepository,
-    private val userRepository: UserRepository
+    private val transactionFactory: TransactionFactory
 ) {
 
     companion object {
@@ -29,6 +27,7 @@ class SportsServices(
         const val SPORT_ID_PARAM = "sportID"
         const val RESOURCE_NAME = "Sport"
     }
+
     /**
      * Gets the [Sport] identified by the given id.
      *
@@ -40,8 +39,12 @@ class SportsServices(
 
         val safeSportID = requireParameter(sid, SPORT_ID_PARAM)
         val sidInt: SportID = requireIdInteger(safeSportID, SPORT_ID_PARAM)
-        return sportsRepository.getSport(sidInt)?.toDTO()
-            ?: throw ResourceNotFound(RESOURCE_NAME, safeSportID)
+
+        return transactionFactory.getTransaction().execute {
+
+            sportsRepository.getSport(sidInt)?.toDTO()
+                ?: throw ResourceNotFound(RESOURCE_NAME, safeSportID)
+        }
     }
 
     /**
@@ -52,14 +55,19 @@ class SportsServices(
      * @return [SportID] the sport's unique identifier
      */
     fun createSport(token: UserToken?, name: String?, description: String?): SportID {
-        logger.traceFunction(::createSport.name) { listOf(NAME_PARAM to name, DESCRIPTION_PARAM to description) }
 
-        val userID = userRepository.requireAuthenticated(token)
-        val safeName = requireParameter(name, NAME_PARAM)
-        val handledDescription = description?.ifBlank { null }
+        return transactionFactory.getTransaction().execute {
 
-        return sportsRepository.addSport(safeName, handledDescription, userID)
+            logger.traceFunction(::createSport.name) { listOf(NAME_PARAM to name, DESCRIPTION_PARAM to description) }
+
+            val userID = usersRepository.requireAuthenticated(token)
+            val safeName = requireParameter(name, NAME_PARAM)
+            val handledDescription = description?.ifBlank { null }
+
+            sportsRepository.addSport(safeName, handledDescription, userID)
+        }
     }
+
     /**
      * Gets all the existing sports
      *
@@ -69,10 +77,11 @@ class SportsServices(
         logger.traceFunction(::getSports.name) { emptyList() }
 
         val handledSearch = search?.ifBlank { null }
-
-        return sportsRepository
-            .getSports(handledSearch, paginationInfo)
-            .map(Sport::toDTO)
+        return transactionFactory.getTransaction().execute {
+            sportsRepository
+                .getSports(handledSearch, paginationInfo)
+                .map(Sport::toDTO)
+        }
     }
 
     /**
@@ -92,18 +101,22 @@ class SportsServices(
             )
         }
 
-        val userId = userRepository.requireAuthenticated(token)
-
-        val safeSportID = requireParameter(sid, SPORT_ID_PARAM)
-        val sidInt: SportID = requireIdInteger(safeSportID, SPORT_ID_PARAM)
-
-        sportsRepository.requireOwnership(userId, sidInt)
-
-        if ((name == null || name.isBlank()) && (description == null)) return
         // No update needed, don't waste resources
-        requireNotBlankParameter(name, NAME_PARAM)
+        if ((name == null || name.isBlank()) && (description == null)) return
 
-        if (!sportsRepository.updateSport(sidInt, name, description))
-            throw ResourceNotFound(RESOURCE_NAME, safeSportID)
+        return transactionFactory.getTransaction().execute {
+
+            val userId = usersRepository.requireAuthenticated(token)
+
+            val safeSportID = requireParameter(sid, SPORT_ID_PARAM)
+            val sidInt: SportID = requireIdInteger(safeSportID, SPORT_ID_PARAM)
+
+            sportsRepository.requireOwnership(userId, sidInt)
+
+            requireNotBlankParameter(name, NAME_PARAM)
+
+            if (!sportsRepository.updateSport(sidInt, name, description))
+                throw ResourceNotFound(RESOURCE_NAME, safeSportID)
+        }
     }
 }

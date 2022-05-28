@@ -1,6 +1,6 @@
-drop table if exists activity_prod cascade;
-drop table if exists sport_prod cascade;
-drop table if exists route_prod cascade;
-drop table if exists token_prod cascade ;
-drop table if exists email_prod cascade;
-drop table if exists user_prod cascade;
+drop table if exists activity cascade;
+drop table if exists sport cascade;
+drop table if exists route cascade;
+drop table if exists token cascade ;
+drop table if exists email cascade;
+drop table if exists "user" cascade;

@@ -82,7 +82,6 @@ const styles = {
     MAP_ICON: 'bx-map-alt',
     HOME_ICON: 'bx-home',
     ADD_ACTIVITY_ICON: 'bx-calendar-plus'
-
 }
 
 export default styles;

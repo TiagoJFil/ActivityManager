@@ -21,6 +21,8 @@ fun main() {
         block()
         stop()
     }
+
+    // Same as
     // val server = server(api, env.serverPort)
     // server.start()
     // server.join()

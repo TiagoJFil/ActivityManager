@@ -2,35 +2,19 @@ package pt.isel.ls.config
 
 import org.postgresql.ds.PGSimpleDataSource
 import org.postgresql.util.PSQLException
-import pt.isel.ls.repository.ActivityRepository
-import pt.isel.ls.repository.RouteRepository
-import pt.isel.ls.repository.SportRepository
-import pt.isel.ls.repository.UserRepository
-import pt.isel.ls.repository.database.ActivityDBRepository
-import pt.isel.ls.repository.database.RouteDBRepository
-import pt.isel.ls.repository.database.SportDBRepository
-import pt.isel.ls.repository.database.UserDBRepository
-import pt.isel.ls.repository.memory.ActivityDataMemRepository
-import pt.isel.ls.repository.memory.RouteDataMemRepository
-import pt.isel.ls.repository.memory.SportDataMemRepository
-import pt.isel.ls.repository.memory.UserDataMemRepository
+import pt.isel.ls.utils.repository.transactions.InMemoryTransactionFactory
+import pt.isel.ls.utils.repository.transactions.JDBCTransactionFactory
+import pt.isel.ls.utils.repository.transactions.TransactionFactory
 
 enum class DBMODE { MEMORY, POSTGRESQL }
 
-fun DBMODE.source(): DbSource =
+fun DBMODE.transactionFactory(): TransactionFactory =
     when (this) {
-        DBMODE.MEMORY -> memory()
-        DBMODE.POSTGRESQL -> postgreSQL("_prod")
+        DBMODE.MEMORY -> InMemoryTransactionFactory
+        DBMODE.POSTGRESQL -> postgreSQLTransactionFactory()
     }
 
-class DbSource(
-    val userRepository: UserRepository,
-    val routeRepository: RouteRepository,
-    val sportRepository: SportRepository,
-    val activityRepository: ActivityRepository
-)
-
-private fun postgreSQL(suffix: String): DbSource {
+private fun postgreSQLTransactionFactory(): TransactionFactory {
 
     val dbInfo = dbConnectionInfo()
 
@@ -40,6 +24,7 @@ private fun postgreSQL(suffix: String): DbSource {
         password = dbInfo.password
         databaseName = dbInfo.dataBase
     }
+
     try {
         dataSource.connection
     } catch (e: PSQLException) {
@@ -49,20 +34,5 @@ private fun postgreSQL(suffix: String): DbSource {
         )
     }
 
-    return DbSource(
-        userRepository = UserDBRepository(dataSource, suffix),
-        routeRepository = RouteDBRepository(dataSource, suffix),
-        sportRepository = SportDBRepository(dataSource, suffix),
-        activityRepository = ActivityDBRepository(dataSource, suffix)
-    )
-}
-
-private fun memory(): DbSource {
-    val userRepository = UserDataMemRepository(guestUser)
-    return DbSource(
-        userRepository,
-        RouteDataMemRepository(testRoute),
-        SportDataMemRepository(testSport),
-        ActivityDataMemRepository(testActivity, userRepository)
-    )
+    return JDBCTransactionFactory(dataSource)
 }

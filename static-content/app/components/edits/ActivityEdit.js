@@ -1,13 +1,22 @@
-import {List, Item, Text, Button, Icon, Div, H1,Input} from "../dsl.js"
-import {LinkIcon, ButtonIcon} from "../Icons.js"
+import {List, Item, Text, Div, Input} from "../dsl.js"
+import {ButtonIcon} from "../Icons.js"
 import styles from "../../styles.js";
 import RouteSearch from "../searches/RouteSearch.js";
 import Modal from "../Modal.js";
 import {ErrorToast, InfoToast} from '../../toasts.js'
-import {routeApi} from "../../api/api.js";
 import {DatePicker} from "../filters/ActivitySearchFilter.js"
 
 const DURATION_REGEX = /^(?:2[0-3]|[01]?[0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]$/
+
+/**
+ * Activity editing component
+ * Makes a modal window for editing an activity
+ * 
+ * @param {Object} activity - the activity to edit
+ * @param {Function} onEditConfirm - callback to call when the activity is edited
+ * @param {Function} onRouteChange - callback to call when the route is changed
+ * @param {Object} route - the route associated with the activity
+ */
 export default function ActivityEdit(activity, onEditConfirm, onRouteChange, route){
 
     const durationInput = Input('editedDuration','text', null, null, "e.g 10:10:10.555", activity.duration, true)

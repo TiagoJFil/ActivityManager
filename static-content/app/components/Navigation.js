@@ -1,9 +1,11 @@
-import {Button, Icon,Anchor, Nav, Image, List,Item, Text, Div} from "./dsl.js"
+import {Anchor, Nav, Image, List,Item, Text, Div} from "./dsl.js"
 import styles from "../styles.js"
 import {BoxIcon} from "./Icons.js";
 
 
-
+/**
+ * The navigation bar component
+ */
 export function Navigation(){
 
     return Nav(

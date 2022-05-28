@@ -3,6 +3,14 @@ import styles from "../../styles.js";
 import RouteSearch from "../searches/RouteSearch.js";
 import SportSearch from "../searches/SportSearch.js"
 
+
+/**
+ * Creates the User Ranking Filter component
+ * 
+ * @param {Function} onSportTextChange - callback function for when the sport text changes
+ * @param {Function} onLocationsChange - callback function for when the route location text changes
+ * @param {Function} onSubmit - callback function for when the form is submitted
+ */
 export default function UserRankingFilter(onSportTextChange, onLocationsChange, onSubmit){
 
         const onSubmitForm = () => {

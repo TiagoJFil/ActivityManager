@@ -5,6 +5,7 @@ import org.junit.Test
 import pt.isel.ls.api.utils.TEST_ENV
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.repository.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -14,7 +15,7 @@ class UserServicesTest {
 
     @After
     fun tearDown() {
-        userServices = TEST_ENV.userServices
+        InMemoryTransactionScope.reset()
     }
 
     /* Get User Details */

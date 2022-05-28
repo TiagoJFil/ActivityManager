@@ -11,6 +11,7 @@ import pt.isel.ls.config.testSport
 import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.service.entities.Activity.Duration
 import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.repository.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -24,9 +25,7 @@ class ActivitiesServicesTest {
 
     @After
     fun tearDown() {
-        activitiesServices = TEST_ENV.activityServices
-        routeServices = TEST_ENV.routeServices
-        userServices = TEST_ENV.userServices
+        InMemoryTransactionScope.reset()
     }
 
     @Test

@@ -1,5 +1,5 @@
-import {List, Item, Text, Button, Icon, Div, H1,Input} from "../dsl.js"
-import  {LinkIcon, ButtonIcon} from "../Icons.js"
+import {List, Item, Text, Div, Input} from "../dsl.js"
+import  {ButtonIcon} from "../Icons.js"
 import styles from "../../styles.js";
 import Modal from "../Modal.js";
 import {ErrorToast, InfoToast} from '../../toasts.js'
@@ -9,6 +9,13 @@ const DECIMAL_PLACES_DISTANCE = 2
 const LOCATION_MAX_LENGTH = 30
 
 
+/**
+ * Route editing component
+ * Makes a modal window for editing a route
+ * 
+ * @param {Object} route - the route to edit
+ * @param {Function} onEditConfirm - callback to call when the confirm button is clicked
+ */
 export default function RouteEdit(route, onEditConfirm){
 
     const startLocationInput = Input('editedSLocation','text', null, null, "e.g Lisboa", route.startLocation, true)

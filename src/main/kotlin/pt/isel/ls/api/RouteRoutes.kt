@@ -42,9 +42,12 @@ class RouteRoutes(
      */
     private fun getRoutes(request: Request): Response {
         logger.infoLogRequest(request)
+
         val endLocationQuery = request.query("endLocation")
         val startLocationQuery = request.query("startLocation")
+
         val routes = routeServices.getRoutes(PaginationInfo.fromRequest(request), startLocationQuery, endLocationQuery)
+
         val bodyString = Json.encodeToString(RouteListOutput(routes))
         return Response(Status.OK).contentJson().body(bodyString)
     }

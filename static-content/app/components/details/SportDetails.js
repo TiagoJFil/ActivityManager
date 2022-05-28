@@ -2,14 +2,13 @@ import {List, Item, Text, Div, } from "../dsl.js"
 import {LinkIcon, ButtonIcon} from "../Icons.js"
 import styles from "../../styles.js";
 import {SportEditModal, DESCRIPTION_TEXT}  from '../edits/SportEdit.js'
-import { AddButton } from "../Icons.js";
-
 
 /**
  * SportDetails component
  *
  * @param {Sport} sport the sport to display
  *
+ * @param onEditConfirm callback to call when the edit modal is confirmed
  * @returns {Div} the sport details component
  */
 export default function SportDetails(sport, onEditConfirm) {

@@ -16,6 +16,7 @@ import pt.isel.ls.api.utils.postRequest
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.service.dto.HttpError
 import pt.isel.ls.service.dto.UserDTO
+import pt.isel.ls.utils.repository.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.service.generateUUId
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.Test
@@ -27,8 +28,9 @@ class UserApiTests {
 
     @After
     fun tearDown() {
-        testClient = getApiRoutes(getAppRoutes(TEST_ENV))
+        InMemoryTransactionScope.reset()
     }
+
     @Test
     fun `create multiple Users`() {
         val userCount = 1000

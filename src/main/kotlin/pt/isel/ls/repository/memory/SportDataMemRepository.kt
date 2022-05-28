@@ -8,7 +8,6 @@ import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.service.applyPagination
 
-
 class SportDataMemRepository(testSport: Sport) : SportRepository {
 
     private var currentID = 0

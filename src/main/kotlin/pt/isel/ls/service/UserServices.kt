@@ -9,6 +9,7 @@ import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
+import pt.isel.ls.utils.repository.transactions.TransactionFactory
 import pt.isel.ls.utils.service.generateUUId
 import pt.isel.ls.utils.service.requireIdInteger
 import pt.isel.ls.utils.service.requireParameter
@@ -16,7 +17,7 @@ import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.traceFunction
 
 class UserServices(
-    private val userRepository: UserRepository
+    private val transactionFactory: TransactionFactory,
 ) {
 
     companion object {
@@ -39,20 +40,19 @@ class UserServices(
         logger.traceFunction(::createUser.name) {
             listOf(NAME_PARAM to name, EMAIL_PARAM to email)
         }
-
         val safeName = requireParameter(name, NAME_PARAM)
         val safeEmail = requireParameter(email, EMAIL_PARAM)
-
         val userAuthToken = generateUUId()
-
         val possibleEmail = Email(safeEmail)
 
-        if (userRepository.hasRepeatedEmail(possibleEmail))
-            throw InvalidParameter(EMAIL_TAKEN)
+        return transactionFactory.getTransaction().execute {
+            if (usersRepository.hasRepeatedEmail(possibleEmail))
+                throw InvalidParameter(EMAIL_TAKEN)
 
-        val userID = userRepository.addUser(safeName, possibleEmail, userAuthToken)
+            val userID = usersRepository.addUser(safeName, possibleEmail, userAuthToken)
 
-        return Pair(userAuthToken, userID)
+            return@execute Pair(userAuthToken, userID)
+        }
     }
 
     /**
@@ -67,8 +67,11 @@ class UserServices(
 
         val safeUserID = requireParameter(uid, USER_ID_PARAM)
         val uidInt = requireIdInteger(safeUserID, USER_ID_PARAM)
-        return userRepository.getUserBy(uidInt)?.toDTO()
-            ?: throw ResourceNotFound(RESOURCE_NAME, "$uid")
+
+        return transactionFactory.getTransaction().execute {
+            usersRepository.getUserBy(uidInt)?.toDTO()
+                ?: throw ResourceNotFound(RESOURCE_NAME, "$uid")
+        }
     }
 
     /**
@@ -79,9 +82,11 @@ class UserServices(
     fun getUsers(paginationInfo: PaginationInfo): List<UserDTO> {
         logger.traceFunction(::getUsers.name)
 
-        return userRepository
-            .getUsers(paginationInfo)
-            .map(User::toDTO)
+        return transactionFactory.getTransaction().execute {
+            usersRepository
+                .getUsers(paginationInfo)
+                .map(User::toDTO)
+        }
     }
 
     /**
@@ -94,7 +99,9 @@ class UserServices(
 
         val safeEmail = requireParameter(email, EMAIL_PARAM)
 
-        return userRepository.getTokenByEmail(Email(safeEmail))
-            ?: throw InvalidParameter("User with $EMAIL_PARAM $safeEmail not found")
+        return transactionFactory.getTransaction().execute {
+            usersRepository.getTokenByEmail(Email(safeEmail))
+                ?: throw InvalidParameter("User with $EMAIL_PARAM $safeEmail not found")
+        }
     }
 }

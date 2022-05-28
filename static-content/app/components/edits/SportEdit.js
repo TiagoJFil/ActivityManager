@@ -7,6 +7,14 @@ import {ErrorToast, InfoToast} from '../../toasts.js'
 
 const DESCRIPTION_TEXT = "No description available"
 
+
+/**
+ * Sport editing component
+ * Makes a modal window for editing a sport
+ * 
+ * @param {Object} sport - the sport to edit
+ * @param {Function} onEditConfirm - callback to call when the confirm button is clicked
+ */
 function SportEditModal(sport,onEditConfirm) {
 
     const nameInput = Input('edited-name','text', null, null, "e.g Football", sport.name, true)

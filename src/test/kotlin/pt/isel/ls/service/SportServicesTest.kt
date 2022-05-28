@@ -3,13 +3,13 @@ package pt.isel.ls.service
 import org.junit.After
 import org.junit.Test
 import pt.isel.ls.api.utils.TEST_ENV
-import pt.isel.ls.api.utils.createSport
 import pt.isel.ls.config.GUEST_TOKEN
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.config.testSport
 import pt.isel.ls.service.dto.SportDTO
 import pt.isel.ls.service.entities.Sport.Companion.MAX_NAME_LENGTH
 import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.repository.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -21,7 +21,7 @@ class SportServicesTest {
 
     @After
     fun tearDown() {
-        sportsServices = TEST_ENV.sportsServices
+        InMemoryTransactionScope.reset()
     }
 
     @Test
@@ -159,11 +159,11 @@ class SportServicesTest {
     }
 
     @Test
-    fun `update sport with user that didn't create it throws UnauthenticatedError`() {
+    fun `update sport with user that didn't create but exists it throws AuthorizationError`() {
         val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", null)
         val (token, _) = userServices.createUser("John", "john@email.com")
 
-        assertFailsWith<UnauthenticatedError> {
+        assertFailsWith<AuthorizationError> {
             sportsServices.updateSport(token, sportID.toString(), "Basketball", "A game played with hands")
         }
     }

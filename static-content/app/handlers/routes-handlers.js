@@ -4,11 +4,11 @@ import RouteDetails from '../components/details/RouteDetails.js'
 import {getItemsPerPage, Pagination} from '../components/Pagination.js'
 import { onPaginationChange} from './app-handlers.js'
 import styles from '../styles.js'
-import { H1, Div, Anchor, Icon} from '../components/dsl.js'
+import { H1, Div} from '../components/dsl.js'
 import SearchBar from '../components/SearchBar.js'
 import RouteCreate from "../components/creates/CreateRoute.js";
 import { SuccessToast, ErrorToast ,InfoToast} from '../toasts.js'
-import {AddButton} from "../components/Icons.js";
+import { BoardlessIconButton } from "../components/Icons.js";
 
 /**
  * Displays a route list with the given query
@@ -34,13 +34,13 @@ async function displayRouteList(mainContent, _, query) {
     const onStartLocationTextChange = async (searchText) => {
         newQuery.startLocation = searchText
 
-        await filteredRouteDisplay(newQuery, listElement)
+        await updateRouteDisplayItems(newQuery, listElement)
     }
 
     const onEndLocationTextChange = async (searchText) => {
         newQuery.endLocation = searchText
 
-       await filteredRouteDisplay(newQuery)
+       await updateRouteDisplayItems(newQuery)
     }
 
 
@@ -50,14 +50,14 @@ async function displayRouteList(mainContent, _, query) {
         Div(styles.SEARCH_BAR_WITH_ADD,
             SearchBar("searchRes", styles.FORM_TEXT_INPUT, onStartLocationTextChange, "Search for a starting location", "Start Location"),
             SearchBar("searchRes", styles.FORM_TEXT_INPUT, onEndLocationTextChange, "Search for an ending location", "End Location"),
-            AddButton(`#routes/add`,"Add a route")
+            BoardlessIconButton(`#routes/add`,"Add a route")
         ),
         listElement,
         paginationElement
     )
 
 
-    async function filteredRouteDisplay(newQuery) {
+    async function updateRouteDisplayItems(newQuery) {
         const innerRoutesList = await routeApi.fetchRoutes(newQuery)
 
         const newPagination = Pagination(
@@ -78,8 +78,6 @@ async function displayRouteList(mainContent, _, query) {
         paginationElement = newPagination
     }
 }
-
-
 
 
 /**
@@ -108,6 +106,10 @@ async function displayRouteDetails(mainContent, params, _) {
     )
 }
 
+
+/**
+ * Displays the route creation page
+ */
 async function createRoute(mainContent, params, _) {
     const nItems = getItemsPerPage()
 

@@ -1,10 +1,15 @@
-import {List, Item, Text, Div, Input, TextArea} from "../dsl.js"
-import  {ButtonIcon} from "../Icons.js"
+import {Text, Div} from "../dsl.js"
+import {ButtonIcon} from "../Icons.js"
 import styles from "../../styles.js";
 import Modal from "../Modal.js";
-import {ErrorToast, InfoToast} from '../../toasts.js'
 
 
+/**
+ * Creates a modal dialog to delete an activity.
+ * 
+ * @param {Function} onConfirm - Function to call when the user confirms the deletion.
+ * @return {HTMLElement} - The modal dialog.
+ */
 export default function ActivityDelete(onConfirm){
 
     const cancelDelete = () => {
@@ -19,8 +24,6 @@ export default function ActivityDelete(onConfirm){
                 ButtonIcon(styles.CHECK_ICON, onConfirm, 'Confirm')
             )
         )
-    
-        
 
     return modal
 }

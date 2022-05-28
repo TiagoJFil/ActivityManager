@@ -30,9 +30,6 @@ export function Div(className, ...children) {
     return createElement('div', className, ...children)
 }
 
-
-
-
 /**
  * Represents a text item element as a component
  * 
@@ -43,7 +40,6 @@ export function Div(className, ...children) {
 export function Text(className, text) {
     return createElement('span', className, document.createTextNode(text))
 }
-
 
 /**
  * Represents an icon item element as a component
@@ -93,7 +89,6 @@ export function Nav(...children) {
     return createElement('nav', null, ...children)
 }
 
-
 /**
  * Represents an input item element as a component
  *
@@ -118,6 +113,17 @@ export function Input(className, type, id, onInputChange, placeholder, startingV
     return input
 }
 
+/**
+ * Represents a TextArea element as a component
+ * 
+ * @param {String} className The class name of the text area element
+ * @param {String} id The id of the text area element
+ * @param {Function} onInputChange function to be called when the input changes
+ * @param {String} placeholder The placeholder of the text area element
+ * @param {String} startingValue The value of the text area element
+ * @param {Boolean} required Whether the text area is required
+ * @returns {HTMLElement} a text area element
+ */
 export function TextArea(className, id, onInputChange, placeholder, startingValue, required){
     const element = createElement('textarea', className)
     element.id = id
@@ -144,6 +150,14 @@ export function Form(className, ...children) {
     return form
 }
 
+/**
+ * Represents a datalist element as a component
+ * 
+ * @param {String} className The class name of the datalist element
+ * @param {String} id The id of the datalist element
+ * @param {...HTMLElement} children The children of this element 
+ * @returns {HTMLElement} a datalist element 
+ */
 export function Datalist(className,id,...children) {
     const datalist = createElement('datalist',className, ...children)
     datalist.id = id
@@ -156,7 +170,7 @@ export function Datalist(className,id,...children) {
  * @param {String} className The class name of the list item element
  * @param size size of the maximum of elements to display
  * @param id The id of the input element
- * @param  {...HTMLElement} children The children of this element 
+ * @param {...HTMLElement} children The children of this element 
  * @returns {HTMLElement} an select element 
  */
 export function Select(className, id, size , ...children) {
@@ -191,6 +205,14 @@ export function Anchor(className, href, ...children) {
     return anchor
 }
 
+/**
+ * Creates an image element with the given class name and children
+ * 
+ * @param {String} className The class name of the image element
+ * @param {String} id The id of the image element
+ * @param {String} src The source of the image element
+ * @param {String} alt The alt of the image element
+ */
 export function Image(className, id, src, alt){
     const image = createElement("img", className)
     id ? image.id = id : null
@@ -198,10 +220,6 @@ export function Image(className, id, src, alt){
     image.alt = alt 
     return image
 }
-
-
-
-
 
 /**
  * Creates an element with the given tag name and children
@@ -221,4 +239,3 @@ function createElement(tag, className, ...children) {
 }
 
 // Domain Specific Language (DSL)
-

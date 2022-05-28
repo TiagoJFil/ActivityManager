@@ -23,17 +23,17 @@ class RouteDataMemRepository(testRoute: Route) : RouteRepository {
      */
     override fun getRoutes(
         paginationInfo: PaginationInfo,
-        startLocationQuery: String?,
+        startLocationSearch: String?,
         endLocationQuery: String?
     ): List<Route> {
         val routes = routesMap.values.toList()
-        return if (startLocationQuery != null && endLocationQuery != null) {
+        return if (startLocationSearch != null && endLocationQuery != null) {
             routes.filter {
-                it.startLocation.lowercase().contains(startLocationQuery.lowercase()) && it.endLocation.lowercase()
+                it.startLocation.lowercase().contains(startLocationSearch.lowercase()) && it.endLocation.lowercase()
                     .contains(endLocationQuery.lowercase())
             }.applyPagination(paginationInfo)
-        } else if (startLocationQuery != null)
-            routes.filter { it.startLocation.lowercase().contains(startLocationQuery.lowercase()) }
+        } else if (startLocationSearch != null)
+            routes.filter { it.startLocation.lowercase().contains(startLocationSearch.lowercase()) }
                 .applyPagination(paginationInfo)
         else if (endLocationQuery != null)
             routes.filter { it.endLocation.lowercase().contains(endLocationQuery.lowercase()) }

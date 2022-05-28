@@ -2,19 +2,19 @@ import { activityApi, routeApi, sportApi, userApi } from '../api/api.js'
 import ActivityDetails from '../components/details/ActivityDetails.js'
 import ActivityList from '../components/lists/ActivityList.js'
 import {Pagination} from '../components/Pagination.js'
-import { H1, Div, Option, Anchor } from '../components/dsl.js'
+import {H1, Div} from '../components/dsl.js'
 import {onPaginationChange} from './app-handlers.js'
 import {queryBuilder} from "../api/api-utils.js";
 import ActivitySearchFilter from '../components/filters/ActivitySearchFilter.js'
 import ActivityCreate from '../components/creates/CreateActivity.js'
 import styles from '../styles.js'
 import { ErrorToast , InfoToast, SuccessToast } from '../toasts.js'
-import {LinkIcon, ButtonIcon, AddButton} from "../components/Icons.js"
+import { onRouteLocationsChange, DURATION_REGEX, onSportTextChange } from './utils.js'
 
 /**
  * Displays an activity list with the given query
  */
-async function displayActivityList(mainContent, params, query) {
+ async function displayActivityList(mainContent, params, query) {
     const activityList = await activityApi.fetchActivitiesBySport(params.sid,query)
     
     const activities = query.deleted 
@@ -30,11 +30,12 @@ async function displayActivityList(mainContent, params, query) {
         ActivityList(activities),
         Pagination(
             total,
-            (skip, limit) => onPaginationChange("activities", query, skip, limit)
+            (skip, limit) => onPaginationChange("/sports/${}/activities", query, skip, limit)
         )
     )
-
 }
+
+
 /**
  * Displays a list of activities for the given sport with the given query
  */
@@ -60,47 +61,6 @@ async function displaySearchActivities(mainContent, _, query) {
         window.location.hash = `#sports/${sid}/activities?${queryBuilder(newQuery)}`
     } 
     
-    // Replaces Sport's selector with sports that are relevant to the typed text
-    const onSportTextChange = async (sportText) =>{
-        const sportSelector = document.querySelector("#sportSelector")
-        
-
-        const sportList = await sportApi.fetchSports({search : sportText})
-        console.log(sportList)
-        const sportSelectorOptions = sportList.sports.map(sport => Option(styles.SELECTOR_OPTION, sport.id, sport.name))
-
-        sportSelector.replaceChildren(
-            ...sportSelectorOptions
-        )
-    }
-
-    // Replaces Route's selector with routes that are relevant to both of the locations
-    const onRouteLocationsChange = async (startLocation, endLocation) => {
-        const routeSelector = document.querySelector("#routeSelector")
-
-        /*
-        if(startLocation.length < 3 && endLocation.length < 3) {
-            routeSelector.replaceChildren()
-            return
-        }*/
-
-        const newRouteQuery = {
-            startLocation,
-            endLocation
-        }
-
-        const routeList = await routeApi.fetchRoutes(newRouteQuery)
-
-        const routeSelectorOptions = routeList.routes.map( (route) =>
-            Option(styles.SELECTOR_OPTION, `${route.id}`,
-                `${route.startLocation} - ${route.endLocation}`
-             )
-        )
-        
-        routeSelector.replaceChildren(...routeSelectorOptions)
-    } 
-
-
 
     mainContent.replaceChildren(
         Div('activity-header-filter',
@@ -131,7 +91,6 @@ async function displayActivitiesByUser(mainContent, params, query) {
  * Displays the activity details for the given activity id
  */
 async function displayActivityDetails(mainContent, params, _) {
-
     const activity = await activityApi.fetchActivity(params.sid, params.aid)
     const route = activity.route ? await routeApi.fetchRoute(activity.route) : null
 
@@ -150,31 +109,6 @@ async function displayActivityDetails(mainContent, params, _) {
         window.location.hash = `#sports/${params.sid}/activities?deleted=${params.aid}`
     }
 
-    const onRouteChange = async (startLocation, endLocation) => {
-        const routeSelector = document.querySelector("#routeSelector")
-
-        /*
-        if(startLocation.length < 3 && endLocation.length < 3) {
-            routeSelector.replaceChildren()
-            return
-        }*/
-
-        const newRouteQuery = {
-            startLocation,
-            endLocation
-        }
-
-        const routeList = await routeApi.fetchRoutes(newRouteQuery)
-
-        const routeSelectorOptions = routeList.routes.map( (route) =>
-            Option(styles.SELECTOR_OPTION, `${route.id}`,
-                `${route.startLocation} - ${route.endLocation}`
-             )
-        )
-        
-        routeSelector.replaceChildren(...routeSelectorOptions)
-    }
-
     const onEditConfirm = async (date, duration, rid) => {
 
         activityApi.updateActivity(params.sid, params.aid, date, duration, rid)
@@ -191,12 +125,15 @@ async function displayActivityDetails(mainContent, params, _) {
     }
 
     mainContent.replaceChildren(
-        ActivityDetails(activity,onDeleteConfirm, onEditConfirm, onRouteChange, route)
+        ActivityDetails(activity, onDeleteConfirm, onEditConfirm, onRouteLocationsChange, route)
     )
 }
 
 
-const DURATION_REGEX = /^(?:2[0-3]|[01]?[0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]$/
+
+/**
+ * Displays the activty creation page
+ */
 async function createActivity(mainContent, params, _){
     
     const onSubmit = async (date, duration, route) => {
@@ -252,35 +189,10 @@ async function createActivity(mainContent, params, _){
         window.location.hash = `sports/${params.sid}`
     }
 
-    const onRouteChange = async (startLocation, endLocation) => {
-        const routeSelector = document.querySelector("#routeSelector")
-
-        /*
-        if(startLocation.length < 3 && endLocation.length < 3) {
-            routeSelector.replaceChildren()
-            return
-        }*/
-
-        const newRouteQuery = {
-            startLocation,
-            endLocation
-        }
-
-        const routeList = await routeApi.fetchRoutes(newRouteQuery)
-
-        const routeSelectorOptions = routeList.routes.map( (route) =>
-            Option(styles.SELECTOR_OPTION, `${route.id}`,
-                `${route.startLocation} - ${route.endLocation}`
-             )
-        )
-        
-        routeSelector.replaceChildren(...routeSelectorOptions)
-    } 
-
     mainContent.replaceChildren(
-        H1(styles.HEADER, 'Add an Activity'),
+        H1(styles.HEADER, 'Add an Activity' ),
         Div(styles.ADD_CONTAINER,
-            ActivityCreate(onSubmit, onRouteChange)
+            ActivityCreate(onSubmit, onRouteLocationsChange)
         )
     )
 }

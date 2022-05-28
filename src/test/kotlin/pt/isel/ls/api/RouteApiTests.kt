@@ -26,6 +26,7 @@ import pt.isel.ls.config.testRoute
 import pt.isel.ls.service.dto.HttpError
 import pt.isel.ls.service.dto.RouteDTO
 import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.repository.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -36,7 +37,7 @@ class RouteApiTests {
 
     @After
     fun tearDown() {
-        testClient = getApiRoutes(getAppRoutes(TEST_ENV))
+        InMemoryTransactionScope.reset()
     }
 
     @Test fun `get routes without creating returns a list with the default route`() {

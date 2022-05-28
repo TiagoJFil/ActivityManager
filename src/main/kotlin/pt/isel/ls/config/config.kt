@@ -32,18 +32,14 @@ private fun getEnvType(): EnvironmentType {
 fun getEnv(): Environment {
     val envType = getEnvType()
 
-    val dbInfo = envType.dbMode.source()
-    val userRepo = dbInfo.userRepository
-    val routeRepo = dbInfo.routeRepository
-    val sportsRepo = dbInfo.sportRepository
-    val activityRepo = dbInfo.activityRepository
-
+    val transactionFactory = envType.dbMode.transactionFactory()
     val port = System.getenv("SERVER_PORT")?.toInt() ?: DEFAULT_PORT
 
-    val userServices = UserServices(userRepo)
-    val routeServices = RouteServices(routeRepo, userRepo)
-    val sportsServices = SportsServices(sportsRepo, userRepo)
-    val activityServices = ActivityServices(activityRepo, userRepo, sportsRepo, routeRepo)
-
-    return Environment(userServices, activityServices, routeServices, sportsServices, port)
+    return Environment(
+        UserServices(transactionFactory),
+        ActivityServices(transactionFactory),
+        RouteServices(transactionFactory),
+        SportsServices(transactionFactory),
+        port
+    )
 }

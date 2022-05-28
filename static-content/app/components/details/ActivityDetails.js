@@ -1,5 +1,5 @@
 import {List, Item, Text, Div, H1} from "../dsl.js"
-import  {LinkIcon,ButtonIcon} from "../Icons.js"
+import {LinkIcon,ButtonIcon} from "../Icons.js"
 import styles from "../../styles.js";
 import ActivityDelete  from '../deletes/ActivityDelete.js'
 import ActivityEdit  from '../edits/ActivityEdit.js'
@@ -9,7 +9,11 @@ import ActivityEdit  from '../edits/ActivityEdit.js'
  * Contains the details of an activity and its links in form of buttons
  *
  * @param {Activity} activity the activity to display
- * @returns {Div} the activity details component
+ * @param onDeleteConfirm the function to call when the user confirms the deletion
+ * @param onEditConfirm the function to call when the user confirms the edition
+ * @param onRouteChange the function to call when the user ?????????????????????? Não deveria estar no onEditConfirm? TODO?
+ * @param route the current route
+ * @returns {HTMLElement} the activity details component
  */
 export default function ActivityDetails(activity, onDeleteConfirm, onEditConfirm, onRouteChange, route) {
     const emptyText = Text(styles.TEXT, '')

@@ -44,8 +44,8 @@ fun requireNotBlankParameter(parameter: String?, parameterName: String): String?
  * @throws [MissingParameter] if the parameter is null or is lower than 0.
  */
 fun requireValidDistance(parameter: Float?, parameterName: String): Float? {
-    if (parameter != null && parameter < 0) throw InvalidParameter(parameterName)
-    if(parameter != null && parameter > 50_000) throw InvalidParameter("parameterName")
+    if (parameter != null && parameter <= 0) throw InvalidParameter(parameterName)
+    if (parameter != null && parameter > 50_000) throw InvalidParameter("parameterName")
     return parameter
 }
 

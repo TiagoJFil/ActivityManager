@@ -1,11 +1,11 @@
-import {Button, Div, Form, Input, Text} from "../dsl.js"
+import {Button, Form, Input, Text} from "../dsl.js"
 import styles from "../../styles.js";
 
 /**
  * Creates a form with the new item components.
  *
- * @param onSubmit
- * @returns {HTMLElement}
+ * @param onSubmit - The function to call when the form is submitted.
+ * @returns {HTMLElement} - The form element.
  */
 export default function RouteCreate(onSubmit) {
 

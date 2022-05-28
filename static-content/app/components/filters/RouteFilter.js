@@ -2,6 +2,12 @@ import {Button, Div, Text} from "../dsl.js"
 import styles from "../../styles.js";
 import RouteSearch from "../searches/RouteSearch.js"
 
+
+/**
+ * Creates a route filter component.
+ * 
+ * @param {RouteFilter} onSubmit - Callback for when the filter is submitted.
+ */
 export default function RouteFilter(onSubmit){
 
     const onSubmitForm = () => {

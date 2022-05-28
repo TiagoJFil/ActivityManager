@@ -31,8 +31,8 @@ import pt.isel.ls.service.MissingParameter
 import pt.isel.ls.service.ResourceNotFound
 import pt.isel.ls.service.UnauthenticatedError
 import pt.isel.ls.service.dto.HttpError
-import pt.isel.ls.utils.repository.DataBaseAccessException
 import pt.isel.ls.utils.warnStatus
+import java.sql.SQLException
 import kotlin.system.measureTimeMillis
 
 /**
@@ -116,9 +116,9 @@ private val onErrorFilter = Filter { handler ->
             val body = Json.encodeToString(HttpError(0, "Invalid body."))
             eLogger.warnStatus(BAD_REQUEST, "Invalid body.")
             Response(BAD_REQUEST).header("content-type", "application/json").body(body)
-        } catch (dbError: DataBaseAccessException) {
+        } catch (dbError: SQLException) {
             val body = Json.encodeToString(HttpError(2004, "Internal Error."))
-            eLogger.warnStatus(BAD_REQUEST, dbError.message ?: "Database Error")
+            eLogger.warnStatus(INTERNAL_SERVER_ERROR, dbError.message ?: "Database Error")
             Response(INTERNAL_SERVER_ERROR).header("content-type", "application/json").body(body)
         } catch (e: Exception) {
             eLogger.error(e.stackTraceToString())

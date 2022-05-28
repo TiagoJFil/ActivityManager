@@ -2,6 +2,7 @@ import {Button, List, Item, Text, Div} from "../dsl.js"
 import styles from "../../styles.js"
 
 /**
+ * Represents a list of resources.
  * 
  * @param {Array<*>} resources  the resources to display
  * @param {Function} hrefSupplier a function that returns the href for a resource details. Receives the resource as parameter.

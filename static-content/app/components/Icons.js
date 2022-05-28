@@ -4,10 +4,11 @@ import styles from "../styles.js"
 /**
  * Creates a button with an icon.
  * When clicked, the button navigates to the given href.
- * 
+ *
  * @param className the className to apply to the button
  * @param {String} href the href to set on the button
  * @param titleOnHover the title to set on the button when hovered
+ * @param id the id to set on the button
  * @returns {HTMLElement} the button
  */
 export function LinkIcon(className, href ,titleOnHover, id){
@@ -25,10 +26,11 @@ export function LinkIcon(className, href ,titleOnHover, id){
 /**
  * Creates a button with an icon.
  * When clicked, the button executes the given onClick function.
- * 
+ *
  * @param className the className to apply to the button
  * @param onClick the function to execute when the button is clicked
  * @param titleOnHover the title to set on the button when hovered
+ * @param id the id to set on the button
  * @returns {HTMLElement} the button
  */
 export function ButtonIcon(className, onClick, titleOnHover,id){
@@ -59,18 +61,20 @@ export function OuterLinkIcon(className, href){
 
 
 /**
- * 
+ * Creates a borderless icon button
  * @param {String} href 
  * @param {String} titleOnHover 
  * @returns {Anchor} the anchor 
  */
-export function AddButton(href,titleOnHover){
+export function BoardlessIconButton(href,titleOnHover){
     const addAnchor = Anchor(styles.BIG,href, BoxIcon(styles.ADD_ICON) )
     addAnchor.title = titleOnHover
     return addAnchor
 }
 
-
+/**
+ * Creates an icon with the given class
+ */
 export function BoxIcon(className){
     return Icon(styles.BX_CLASS, className)
 }

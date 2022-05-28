@@ -2,6 +2,14 @@ import {Button, Div, Text} from "../dsl.js"
 import styles from "../../styles.js";
 import SportSearch from "../searches/SportSearch.js"
 
+
+/**
+ * Creates a sport filter component
+ * 
+ * @param {Function} onSportTextChange - callback for when the sport text changes
+ * @param {Function} onSubmit - callback for when the submit button is pressed
+ * @param {Boolean} withHeader - whether to show the header
+ */
 export default function SportFilter(onSportTextChange, onSubmit, withHeader) {
 
     const onSubmitForm = () => {

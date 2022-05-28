@@ -2,6 +2,16 @@ import {Text, Select, Option,Form} from "../dsl.js"
 import styles from "../../styles.js";
 import SearchBar  from "../SearchBar.js";
 
+
+/**
+ * Creates the RouteSearch component.
+ * 
+ * @param {Function} onLocationsChange - Function to be called when the location inputs are changed.
+ * @param {String} header - The header of the component.
+ * @param {String} defaultSLocation - The default Startlocation if there is one.
+ * @param {String} defaultELocation - The default Endlocation if there is one.
+ * @returns {HTMLFormElement} a form with the search bars and a select
+ */
 export default function RouteSearch(onLocationsChange,header,defaultSLocation,defaultELocation){
 
     let currentStartLocation = ""

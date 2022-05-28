@@ -24,6 +24,7 @@ import pt.isel.ls.config.testSport
 import pt.isel.ls.service.dto.HttpError
 import pt.isel.ls.service.dto.SportDTO
 import pt.isel.ls.utils.SportID
+import pt.isel.ls.utils.repository.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.Test
 import kotlin.test.assertContains
@@ -32,8 +33,9 @@ import kotlin.test.assertEquals
 class SportApiTests {
     private var testClient = getApiRoutes(getAppRoutes(TEST_ENV))
 
-    @After fun tearDown() {
-        testClient = getApiRoutes(getAppRoutes(TEST_ENV))
+    @After
+    fun tearDown() {
+        InMemoryTransactionScope.reset()
     }
 
     @Test fun `get sports without creating returns a list with the testSport list`() {
@@ -200,7 +202,7 @@ class SportApiTests {
         putRequest<SportInput>(
             testClient,
             "$SPORT_PATH$sportID",
-            SportInput(),
+            SportInput("Football", ""),
             authHeader(userToken),
             expectedStatus = Response::expectForbidden
         )
@@ -215,7 +217,7 @@ class SportApiTests {
         putRequest<SportInput>(
             testClient,
             "${SPORT_PATH}9679076",
-            SportInput(),
+            SportInput("Football", "Does not exist"),
             authHeader(GUEST_TOKEN),
             expectedStatus = Response::expectNotFound
         )

@@ -42,6 +42,7 @@ import pt.isel.ls.service.entities.Activity.Duration
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
+import pt.isel.ls.utils.repository.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -58,7 +59,7 @@ class ActivitiesApiTests {
 
     @After
     fun tearDown() {
-        testClient = getApiRoutes(getAppRoutes(TEST_ENV)) // Resets the client resetting the database
+        InMemoryTransactionScope.reset()
     }
 
     @Test

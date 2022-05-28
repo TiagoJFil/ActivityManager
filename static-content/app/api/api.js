@@ -1,4 +1,4 @@
-import {responseCodeClass,fetchResourceList, getRequest, getBodyOrThrow, isSuccessful} from "./api-utils.js";
+import {fetchResourceList, getRequest, getBodyOrThrow, isSuccessful, sendRequest} from "./api-utils.js";
 
 // URL Related Constants
 
@@ -7,7 +7,6 @@ const SPORTS_URL = 'sports'
 const USERS_URL = 'users'
 const ROUTE_URL = 'routes'
 const ACTIVITIES_URL = 'activities'
-const token = '285e3eb5-72c2-4cc7-92d9-586af2aaa885'
 const ACTIVITY_SPORT_URL = sid => `sports/${sid}/activities`
 const ACTIVITY_USER_URL = uid => `users/${uid}/activities`
 
@@ -17,126 +16,109 @@ const SPORTS_PROPERTY = 'sports'
 const USERS_PROPERTY = 'users'
 const ACTIVITIES_PROPERTY = 'activities'
 
+
+
 /**
  * Makes a post request to the API to create a sport
  */
 async function createSport(sportName, sportDescription) {
-    const response = await fetch(BASE_API_URL + SPORTS_URL, {
-        method: 'POST',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            name: sportName,
-            description: sportDescription
-        })
+    const uri = BASE_API_URL + SPORTS_URL 
+    const body = JSON.stringify({
+        name: sportName,
+        description: sportDescription
     })
+    const response = await sendRequest(uri, 'POST',body)
 
     return await getBodyOrThrow(response)
 }
 
-async function updateSport(sid, sportName, sportDescription) {
-    
-    const response = await fetch(BASE_API_URL + SPORTS_URL + '/' + sid, {
-        method: 'PUT',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            "name": sportName,
-            "description": sportDescription || ''
-        })
+
+/**
+ * Makes a post request to the API to create a route.
+ */
+async function createRoute(sLocation, eLocation, distance) {
+    const uri = BASE_API_URL + ROUTE_URL
+    const body = JSON.stringify({
+        startLocation: sLocation || '',
+            endLocation: eLocation || '',
+            distance: distance ? parseFloat(distance) : ""
     })
+    const response = await sendRequest(uri, 'POST',body)
+    
+    return await getBodyOrThrow(response)
+}
+
+/**
+ * Makes a post request to the API to create an activity
+ */
+async function createActivity(sid, date, duration, rid) {
+    const uri = BASE_API_URL + ACTIVITY_SPORT_URL(sid)
+    const body = JSON.stringify({
+        duration: duration,
+        date: date,
+        rid: rid || ''
+    })
+    const response = await sendRequest(uri, 'POST',body)
+    
+    return await getBodyOrThrow(response)
+}
+
+
+/**
+ * Makes a put request to the API to update a sport
+ */
+ async function updateSport(sid, sportName, sportDescription) {
+    const uri = BASE_API_URL + SPORTS_URL + '/' + sid
+    const body = JSON.stringify({
+        "name": sportName,
+        "description": sportDescription || ''
+    })
+    const response = await sendRequest(uri, 'PUT',body)
 
     if(!isSuccessful(response.status))
         throw await response.json()    
 }
 
 
-async function createRoute(sLocation, eLocation, distance) {
-    const response = await fetch(BASE_API_URL + ROUTE_URL, {
-        method: 'POST',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            startLocation: sLocation || '',
-            endLocation: eLocation || '',
-            distance: distance ? parseFloat(distance) : ""
-        })
-    })
-
-    return await getBodyOrThrow(response)
-}
-
+/**
+ * Makes a put request to the API to update a route
+ */
 async function updateRoute(rid, sLocation, eLocation, distance) {
-    const response = await fetch(BASE_API_URL + ROUTE_URL + '/' + rid, {
-        method: 'PUT',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            startLocation: sLocation || '',
-            endLocation: eLocation || '',
-            distance: distance ? parseFloat(distance) : ""
-        })
+    const uri = BASE_API_URL + ROUTE_URL + '/' + rid
+    const body = JSON.stringify({
+        startLocation: sLocation || '',
+        endLocation: eLocation || '',
+        distance: distance ? parseFloat(distance) : ""
     })
+    const response = await sendRequest(uri, 'PUT',body)
 
     if(!isSuccessful(response.status))
         throw await response.json()
 }
 
 
-async function createActivity(sid, date, duration, rid) {
-
-    console.log(ACTIVITY_SPORT_URL)
-    const response = await fetch(BASE_API_URL + ACTIVITY_SPORT_URL(sid), {
-        method: 'POST',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            duration: duration,
-            date: date,
-            rid: rid || ''
-        })
-    })
-    
-    return await getBodyOrThrow(response)
-}
-
+/**
+ * Makes a put request to the API to update an activity
+ */
 async function updateActivity(sid,aid,date, duration, rid) {
-    console.log(sid,aid,date,duration,rid)
-    const response = await fetch(BASE_API_URL + ACTIVITY_SPORT_URL(sid) + '/' + aid, {
-        method: 'PUT',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            date: date,
-            duration: duration,
-            rid: rid || ''
-        })
+    const uri = BASE_API_URL + ACTIVITY_SPORT_URL(sid) + '/' + aid
+    const body = JSON.stringify({
+        date: date,
+        duration: duration,
+        rid: rid || ''
     })
+    const response = await sendRequest(uri, 'PUT',body)
 
     if(!isSuccessful(response.status))
         throw await response.json()
 }
 
+/**
+ * Makes a delete request to the API to delete an activity
+ */
 async function deleteActivity(sid,aid){
-    const response = await fetch(BASE_API_URL + ACTIVITY_SPORT_URL(sid) + '/' + aid, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        }
-    })
+    const uri = BASE_API_URL + ACTIVITY_SPORT_URL(sid) + '/' + aid
+    const response = await sendRequest(uri, 'Delete', null)
 
     if(!isSuccessful(response.status))
         throw await response.json()

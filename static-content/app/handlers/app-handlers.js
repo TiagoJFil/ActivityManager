@@ -7,7 +7,6 @@ import { queryBuilder } from "../api/api-utils.js";
 import styles from "../styles.js";
 
 
-
 /**
  * Displays the home page 
  */

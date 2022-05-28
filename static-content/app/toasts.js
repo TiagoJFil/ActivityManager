@@ -1,5 +1,7 @@
 
-
+/**
+ * Toast that gives an error message
+ */
 export function ErrorToast(message) {
     return Toastify({
         text: message,
@@ -8,6 +10,9 @@ export function ErrorToast(message) {
     })     
 }
 
+/**
+ * Toast that gives a succesfull message
+ */
 export function SuccessToast(message) {
     return Toastify({
         text: message,
@@ -16,6 +21,9 @@ export function SuccessToast(message) {
     })     
 }
 
+/**
+ * Toast that gives an informational message
+ */
 export function InfoToast(message) {
     return Toastify({
         text: message,

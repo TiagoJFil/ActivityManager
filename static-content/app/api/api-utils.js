@@ -1,9 +1,3 @@
-
-
-export const responseCodeClass = (code) => 
-    Math.floor(code / 100)
-
-
 /**
  * Builds the query string from the given query object
  * @param {Object} queryObject - query key-value pairs in json format. e.g: { skip: 0, limit: 10 }
@@ -73,3 +67,20 @@ export async function fetchResourceList(uri, queryObject, listPropertyName) {
 
     return listObject
 }
+
+
+const token = '1b6cfbdf-ab9f-4c3f-bd58-5a894e040f9d'
+/**
+ * Sends a request with the provided method and body
+ */
+export async function sendRequest(uri, requestMethod, body) {
+    return await fetch(uri, {
+        method: requestMethod,
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        },
+        body
+    })
+}
+

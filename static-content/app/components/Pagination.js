@@ -2,6 +2,8 @@ import {Button, Div, Icon, Text} from "./dsl.js";
 import styles from "../styles.js";
 
 /**
+ * Gets the current page.
+ * 
  * @param {Number} itemsPerPage
  * @returns {Number} The current page.
  */
@@ -31,9 +33,10 @@ export function getPaginationQuery() {
 const MAX_PAGES_PER_VIEW = 7
 
 /**
- * Creates a pagination component 
+ * Creates a pagination component.
  * @param {Number} totalElements The total number of elements in the list.
  * @param {Function} onPageChange receives the skipValue and timesPerPage as parameters.
+ * @param currentLimit limit of the current page.
  * @returns the pagination component
  */
 export function Pagination(totalElements, onPageChange, currentLimit){
@@ -90,6 +93,8 @@ export function Pagination(totalElements, onPageChange, currentLimit){
 }
 
 /**
+ * Gets the number of items per page.
+ * 
  * @returns {Number} The number of items per page.
  */
 export function getItemsPerPage(){
@@ -98,6 +103,8 @@ export function getItemsPerPage(){
 }
 
 /**
+ * Gets the pages that are visible in the pagination
+ * 
  * @param {Number} totalPages
  * @param {Number} actualPage
  * @param {Number} pagesPerView
@@ -127,7 +134,9 @@ function getVisiblePages(totalPages, actualPage, pagesPerView){
     return pages
 }
 
-
+/**
+ * Calculates the total number of pages needed given the items per page and the total number of elements.
+ */
 function calculateTotalPages(itemsPerPage, totalElements, isComplete){
     const maxPages = Math.floor(totalElements / itemsPerPage)
     return isComplete ? maxPages : maxPages + 1

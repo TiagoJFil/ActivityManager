@@ -5,9 +5,9 @@ import kotlinx.datetime.toJavaLocalDate
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.service.entities.Activity.Duration
+import pt.isel.ls.service.entities.Order
 import pt.isel.ls.service.entities.User
 import pt.isel.ls.utils.ActivityID
-import pt.isel.ls.utils.Order
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
@@ -20,18 +20,18 @@ import pt.isel.ls.utils.repository.setActivity
 import pt.isel.ls.utils.repository.toActivity
 import pt.isel.ls.utils.repository.toListOf
 import pt.isel.ls.utils.repository.toUser
-import pt.isel.ls.utils.repository.transaction
+import java.sql.Connection
 import java.sql.Date
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.Statement
-import javax.sql.DataSource
 
-class ActivityDBRepository(private val dataSource: DataSource, suffix: String) : ActivityRepository {
+class ActivityDBRepository(private val connection: Connection) : ActivityRepository {
 
-    private val activityTable = "activity$suffix"
-    private val userTable = "user$suffix"
-    private val emailTable = "email$suffix"
+    private val activityTable = "Activity"
+    private val userTable = "User"
+    private val emailTable = "Email"
+
     /**
      * Creates a new activity using the parameters received
      *
@@ -47,17 +47,16 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
         sportID: SportID,
         routeID: RouteID?,
         userID: UserID
-    ): ActivityID =
-        dataSource.connection.transaction {
-            val query = """INSERT INTO $activityTable (date, duration, sport, route, "user") VALUES (?, ?, ?, ?, ?)"""
-            val pstmt = prepareStatement(query, Statement.RETURN_GENERATED_KEYS)
-            pstmt.use { ps ->
-                ps.apply {
-                    setActivity(date, duration, sportID, routeID, userID)
-                    executeUpdate()
-                }.generatedKey()
-            }
+    ): ActivityID {
+        val query = """INSERT INTO $activityTable (date, duration, sport, route, "user") VALUES (?, ?, ?, ?, ?)"""
+        val pstmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)
+        return pstmt.use { ps ->
+            ps.apply {
+                setActivity(date, duration, sportID, routeID, userID)
+                executeUpdate()
+            }.generatedKey()
         }
+    }
 
     /**
      * Updates the activity with the parameters received
@@ -99,21 +98,19 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
 
         val activityIndex = if (removeRoute) notNullAttributesCount + 2 else notNullAttributesCount + 1
 
-        return dataSource.connection.transaction {
-            prepareStatement(queryBuilder.toString()).use { stmt ->
-                if (newDate != null)
-                    stmt.setDate(calculateIndex(attributes, 1), Date.valueOf(newDate.toJavaLocalDate()))
-                if (newDuration != null)
-                    stmt.setString(calculateIndex(attributes, 2), newDuration.millis.toString())
-                if (newRouteID != null) {
-                    stmt.setInt(calculateIndex(attributes, 3), newRouteID)
-                } else {
-                    if (removeRoute)
-                        stmt.setObject(calculateIndex(attributes, 3), null)
-                }
-                stmt.setInt(activityIndex, activityID)
-                stmt.executeUpdate() == 1
+        return connection.prepareStatement(queryBuilder.toString()).use { stmt ->
+            if (newDate != null)
+                stmt.setDate(calculateIndex(attributes, 1), Date.valueOf(newDate.toJavaLocalDate()))
+            if (newDuration != null)
+                stmt.setString(calculateIndex(attributes, 2), newDuration.millis.toString())
+            if (newRouteID != null) {
+                stmt.setInt(calculateIndex(attributes, 3), newRouteID)
+            } else {
+                if (removeRoute)
+                    stmt.setObject(calculateIndex(attributes, 3), null)
             }
+            stmt.setInt(activityIndex, activityID)
+            stmt.executeUpdate() == 1
         }
     }
 
@@ -143,17 +140,15 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
      * @return [List] of [Activity] that were created by the given user
      */
     override fun getActivitiesByUser(userID: UserID, paginationInfo: PaginationInfo): List<Activity> {
-        dataSource.connection.transaction {
-            val query = """SELECT * FROM $activityTable WHERE "user" = ? LIMIT ? OFFSET ?"""
-            val pstmt = prepareStatement(query)
-            pstmt.use { ps ->
-                ps.apply {
-                    setInt(1, userID)
-                    applyPagination(paginationInfo, Pair(2, 3))
-                }
-                val rs = ps.executeQuery()
-                return rs.toListOf(ResultSet::toActivity)
+        val query = """SELECT * FROM $activityTable WHERE "user" = ? LIMIT ? OFFSET ?"""
+        val pstmt = connection.prepareStatement(query)
+        pstmt.use { ps ->
+            ps.apply {
+                setInt(1, userID)
+                applyPagination(paginationInfo, Pair(2, 3))
             }
+            val rs = ps.executeQuery()
+            return rs.toListOf(ResultSet::toActivity)
         }
     }
 
@@ -169,30 +164,31 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
      *
      * @return [List] of [Activity]
      */
-    override fun getActivities(sid: SportID, orderBy: Order, date: LocalDate?, rid: RouteID?, paginationInfo: PaginationInfo): List<Activity> {
-        dataSource.connection.transaction {
-            val (query, hasDate) = getActivitiesQueryBuilder(date, rid, orderBy)
-            val queryWithPaginationInfo = "$query LIMIT ? OFFSET ?"
-            val pstmt = prepareStatement(queryWithPaginationInfo)
-            val ridIdx = if (hasDate) 3 else 2
-            val pagIdx = if (rid != null) ridIdx + 1 else ridIdx
-            pstmt.use { ps ->
-                ps.apply {
-
-                    setInt(1, sid)
-
-                    date?.let {
-                        setDate(2, Date.valueOf(it.toJavaLocalDate()))
-                    }
-
-                    rid?.let { rid ->
-                        setInt(ridIdx, rid)
-                    }
-                    applyPagination(paginationInfo, Pair(pagIdx, pagIdx + 1))
+    override fun getActivities(
+        sid: SportID,
+        orderBy: Order,
+        date: LocalDate?,
+        rid: RouteID?,
+        paginationInfo: PaginationInfo
+    ): List<Activity> {
+        val (query, hasDate) = getActivitiesQueryBuilder(date, rid, orderBy)
+        val queryWithPaginationInfo = "$query LIMIT ? OFFSET ?"
+        val pstmt = connection.prepareStatement(queryWithPaginationInfo)
+        val ridIdx = if (hasDate) 3 else 2
+        val pagIdx = if (rid != null) ridIdx + 1 else ridIdx
+        pstmt.use { ps ->
+            ps.apply {
+                setInt(1, sid)
+                date?.let {
+                    setDate(2, Date.valueOf(it.toJavaLocalDate()))
                 }
-                val rs = ps.executeQuery()
-                return rs.toListOf(ResultSet::toActivity)
+                rid?.let { rid ->
+                    setInt(ridIdx, rid)
+                }
+                applyPagination(paginationInfo, Pair(pagIdx, pagIdx + 1))
             }
+            val rs = ps.executeQuery()
+            return rs.toListOf(ResultSet::toActivity)
         }
     }
 
@@ -219,14 +215,13 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
      * @param activityID the id of the activity to delete
      * @return [Boolean] true if it deleted successfully
      */
-    override fun deleteActivity(activityID: ActivityID): Boolean =
-        dataSource.connection.transaction<Boolean> {
-            val query = """DELETE FROM $activityTable WHERE id = ?"""
-            prepareStatement(query).use { ps ->
-                ps.setInt(1, activityID)
-                return ps.executeUpdate() == 1
-            }
+    override fun deleteActivity(activityID: ActivityID): Boolean {
+        val query = """DELETE FROM $activityTable WHERE id = ?"""
+        connection.prepareStatement(query).use { ps ->
+            ps.setInt(1, activityID)
+            return ps.executeUpdate() == 1
         }
+    }
 
     /**
      * Gets the activity that matches the given unique activity identifier.
@@ -246,23 +241,21 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
      * @return [List] of [User]
      */
     override fun getUsersBy(sportID: SportID, routeID: RouteID, paginationInfo: PaginationInfo): List<User> {
-        dataSource.connection.transaction {
-            val query =
-                "select distinct * from (" +
-                    "SELECT $userTable.id ,$userTable.name, $emailTable.email " +
-                    "FROM $activityTable " +
-                    "JOIN $userTable ON ($activityTable.user = $userTable.id) " +
-                    "JOIN $emailTable ON ($emailTable.user = $userTable.id) " +
-                    "WHERE $activityTable.sport = ? AND $activityTable.route = ? " +
-                    "ORDER BY $activityTable.duration DESC " +
-                    "LIMIT ? OFFSET ?) as t"
-            prepareStatement(query).use {
-                it.applyPagination(paginationInfo, indexes = Pair(3, 4))
-                it.setInt(1, sportID)
-                it.setInt(2, routeID)
-                val rs = it.executeQuery()
-                return rs.toListOf(ResultSet::toUser)
-            }
+        val query =
+            "select distinct * from (" +
+                "SELECT $userTable.id ,$userTable.name, $emailTable.email " +
+                "FROM $activityTable " +
+                "JOIN $userTable ON ($activityTable.user = $userTable.id) " +
+                "JOIN $emailTable ON ($emailTable.user = $userTable.id) " +
+                "WHERE $activityTable.sport = ? AND $activityTable.route = ? " +
+                "ORDER BY $activityTable.duration DESC " +
+                "LIMIT ? OFFSET ?) as t"
+        connection.prepareStatement(query).use {
+            it.applyPagination(paginationInfo, indexes = Pair(3, 4))
+            it.setInt(1, sportID)
+            it.setInt(2, routeID)
+            val rs = it.executeQuery()
+            return rs.toListOf(ResultSet::toUser)
         }
     }
 
@@ -270,15 +263,14 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
      * Gets all existing activities.
      * @return [List] of [Activity]s
      */
-    override fun getAllActivities(paginationInfo: PaginationInfo): List<Activity> =
-        dataSource.connection.transaction {
-            val query = """SELECT * FROM $activityTable LIMIT ? OFFSET ? """
-            prepareStatement(query).use { ps ->
-                ps.applyPagination(paginationInfo, Pair(1, 2))
-                val rs: ResultSet = ps.executeQuery()
-                rs.toListOf<Activity>(ResultSet::toActivity)
-            }
+    override fun getAllActivities(paginationInfo: PaginationInfo): List<Activity> {
+        val query = """SELECT * FROM $activityTable LIMIT ? OFFSET ? """
+        return connection.prepareStatement(query).use { ps ->
+            ps.applyPagination(paginationInfo, Pair(1, 2))
+            val rs: ResultSet = ps.executeQuery()
+            rs.toListOf<Activity>(ResultSet::toActivity)
         }
+    }
 
     /**
      * Deletes all the activities supplied in the list.
@@ -289,17 +281,16 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
      * @return [Boolean] true if it deleted successfully
      *
      */
-    override fun deleteActivities(activities: List<ActivityID>): Boolean =
-        dataSource.connection.transaction {
-            val query = "DELETE FROM $activityTable WHERE id = ?"
-            prepareStatement(query).use<PreparedStatement, Boolean> { ps ->
-                activities.forEach {
-                    ps.setInt(1, it)
-                    ps.addBatch()
-                }
-                return ps.executeBatch().all { it == 1 }
+    override fun deleteActivities(activities: List<ActivityID>): Boolean {
+        val query = "DELETE FROM $activityTable WHERE id = ?"
+        connection.prepareStatement(query).use<PreparedStatement, Boolean> { ps ->
+            activities.forEach {
+                ps.setInt(1, it)
+                ps.addBatch()
             }
+            return ps.executeBatch().all { it == 1 }
         }
+    }
 
     /**
      * Makes a query to get an activity by its identifier.
@@ -309,5 +300,5 @@ class ActivityDBRepository(private val dataSource: DataSource, suffix: String) :
      * @return [T] The result of calling the block function.
      */
     private fun <T> queryActivityByID(activityID: ActivityID, block: (ResultSet) -> T): T =
-        dataSource.queryTableByID(activityID, activityTable, block)
+        connection.queryTableByID(activityID, activityTable, block)
 }

@@ -1,12 +1,15 @@
-import {Button, Div, Form, Input, Text} from "../dsl.js"
+import {Button, Form, Input, Text} from "../dsl.js"
 import styles from "../../styles.js";
 import { DatePicker } from "../filters/ActivitySearchFilter.js";
 import RouteSearch from "../searches/RouteSearch.js";
+
+
 /**
  * Creates a form with the new item components.
  *
- * @param onSubmit
- * @returns {HTMLElement}
+ * @param onSubmit - The function to call when the form is submitted.
+ * @param onRouteChange - function to be called when the route inputted is changed
+ * @returns {HTMLElement} - The form element.
  */
 export default function ActivityCreate(onSubmit, onRouteChange) {
 

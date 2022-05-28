@@ -1,14 +1,14 @@
-import {sportApi} from '../api/api.js'
+import { sportApi } from '../api/api.js'
 import SportDetails from '../components/details/SportDetails.js'
 import SportList from '../components/lists/SportList.js'
-import {getItemsPerPage, Pagination} from '../components/Pagination.js'
-import {onPaginationChange} from './app-handlers.js'
+import { getItemsPerPage, Pagination } from '../components/Pagination.js'
+import { onPaginationChange } from './app-handlers.js'
 import styles from '../styles.js'
-import {H1, Div, Icon, Anchor} from '../components/dsl.js'
+import { H1, Div } from '../components/dsl.js'
 import SportCreate from "../components/creates/CreateSport.js";
 import SearchBar from  "../components/SearchBar.js";
-import { SuccessToast, ErrorToast ,InfoToast} from '../toasts.js'
-import { AddButton } from '../components/Icons.js'
+import { SuccessToast, ErrorToast ,InfoToast } from '../toasts.js'
+import { BoardlessIconButton } from '../components/Icons.js'
 
 /**
  * Displays a sport list with the given query
@@ -52,7 +52,7 @@ async function displaySportList(mainContent, _, query) {
         H1(styles.HEADER, 'Sports'),
         Div(styles.SEARCH_BAR_WITH_ADD,
             SearchBar("searchRes", styles.FORM_TEXT_INPUT, onSportTextChange, "Search for a sport", null),
-            AddButton(`#sports/add`,"Add a sport")
+            BoardlessIconButton(styles.BX_ADD, `#sports/add`, "Add a sport")
         ),
         listElement,
         paginationElement
@@ -112,8 +112,6 @@ async function createSport(mainContent, params, _) {
             }).showToast()
             return
         }
-        
-        
         
         window.location.hash = `sports?skip=0&limit=${nItems}`
     }

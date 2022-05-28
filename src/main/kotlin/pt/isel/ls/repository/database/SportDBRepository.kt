@@ -1,6 +1,5 @@
 package pt.isel.ls.repository.database
 
-import org.postgresql.ds.PGSimpleDataSource
 import pt.isel.ls.repository.SportRepository
 import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.utils.SportID
@@ -12,13 +11,13 @@ import pt.isel.ls.utils.repository.ifNext
 import pt.isel.ls.utils.repository.setSport
 import pt.isel.ls.utils.repository.toListOf
 import pt.isel.ls.utils.repository.toSport
-import pt.isel.ls.utils.repository.transaction
+import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.Statement
 
-class SportDBRepository(private val dataSource: PGSimpleDataSource, suffix: String) : SportRepository {
+class SportDBRepository(val connection: Connection) : SportRepository {
 
-    private val sportTable = "sport$suffix"
+    private val sportTable = "Sport"
 
     /**
      * Adds a new sport to the repository.
@@ -27,37 +26,34 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
      * @param description The sport's description(optional).
      * @param userID The user's id.
      */
-    override fun addSport(name: String, description: String?, userID: UserID): SportID =
-        dataSource.connection.transaction {
-            val insertSport = """INSERT INTO $sportTable (name, description, "user") VALUES (?, ?, ?)"""
-            val statement = prepareStatement(insertSport, Statement.RETURN_GENERATED_KEYS)
-            statement.apply {
-                setSport(name, description, userID)
-                executeUpdate()
-            }
-            statement.generatedKey()
+    override fun addSport(name: String, description: String?, userID: UserID): SportID {
+        val insertSport = """INSERT INTO $sportTable (name, description, "user") VALUES (?, ?, ?)"""
+        val statement = connection.prepareStatement(insertSport, Statement.RETURN_GENERATED_KEYS)
+        statement.apply {
+            setSport(name, description, userID)
+            executeUpdate()
         }
+        return statement.generatedKey()
+    }
 
     /**
      * Gets all the sports in the repository.
      */
-    override fun getSports(search: String?, paginationInfo: PaginationInfo): List<Sport> =
-        dataSource.connection.transaction {
+    override fun getSports(search: String?, paginationInfo: PaginationInfo): List<Sport> {
+        val query = buildQuery(search)
+        val paginationIndexes = if (search == null) Pair(1, 2) else Pair(2, 3)
+        val searchString = if (search == null) "" else "${search.trim()}:*".replace(" ", "&")
 
-            val query = buildQuery(search)
-            val paginationIndexes = if (search == null) Pair(1, 2) else Pair(2, 3)
-            val searchString = if(search == null ) "" else "$search:*"
-
-            prepareStatement(query).use { stmt ->
-                if (search != null) {
-                    stmt.setString(1, searchString)
-                }
-                stmt.applyPagination(paginationInfo, indexes = paginationIndexes)
-                stmt.executeQuery().use { rs ->
-                    rs.toListOf<Sport>(ResultSet::toSport)
-                }
+        return connection.prepareStatement(query).use { stmt ->
+            if (search != null) {
+                stmt.setString(1, searchString)
+            }
+            stmt.applyPagination(paginationInfo, indexes = paginationIndexes)
+            stmt.executeQuery().use { rs ->
+                rs.toListOf<Sport>(ResultSet::toSport)
             }
         }
+    }
 
     /**
      * Builds the query to get the sports
@@ -120,15 +116,13 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
                 else -> 1
             }
 
-        return dataSource.connection.transaction {
-            prepareStatement(queryBuilder.toString()).use { stmt ->
-                if (newName != null)
-                    stmt.setString(nameIndex, newName)
-                if (newDescription != null)
-                    stmt.setString(nameIndex + 1, newDescription.ifBlank { null })
-                stmt.setInt(sidIndex, sid)
-                stmt.executeUpdate() == 1
-            }
+        return connection.prepareStatement(queryBuilder.toString()).use { stmt ->
+            if (newName != null)
+                stmt.setString(nameIndex, newName)
+            if (newDescription != null)
+                stmt.setString(nameIndex + 1, newDescription.ifBlank { null })
+            stmt.setInt(sidIndex, sid)
+            stmt.executeUpdate() == 1
         }
     }
 
@@ -139,13 +133,12 @@ class SportDBRepository(private val dataSource: PGSimpleDataSource, suffix: Stri
      * @param block specifies what the caller wants to do with the result set.
      * @return [T] The result of calling the block function.
      */
-    private fun <T> querySportByID(sportID: SportID, block: (ResultSet) -> T): T =
-        dataSource.connection.transaction {
-            val pstmt = prepareStatement("""SELECT * FROM $sportTable WHERE id = ?;""")
-            pstmt.use { ps ->
-                ps.setInt(1, sportID)
-                val resultSet: ResultSet = ps.executeQuery()
-                resultSet.use { block(it) }
-            }
+    private fun <T> querySportByID(sportID: SportID, block: (ResultSet) -> T): T {
+        val pstmt = connection.prepareStatement("""SELECT * FROM $sportTable WHERE id = ?;""")
+        return pstmt.use { ps ->
+            ps.setInt(1, sportID)
+            val resultSet: ResultSet = ps.executeQuery()
+            resultSet.use { block(it) }
         }
+    }
 }

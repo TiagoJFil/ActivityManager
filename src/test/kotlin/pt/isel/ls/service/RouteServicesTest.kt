@@ -10,6 +10,7 @@ import pt.isel.ls.service.dto.RouteDTO
 import pt.isel.ls.service.entities.Route.Companion.MAX_LOCATION_LENGTH
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.repository.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -20,7 +21,7 @@ class RouteServicesTest {
 
     @After
     fun tearDown() {
-        routeServices = TEST_ENV.routeServices
+        InMemoryTransactionScope.reset()
     }
 
     @Test
