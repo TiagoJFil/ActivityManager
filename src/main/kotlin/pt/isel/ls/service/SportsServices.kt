@@ -55,10 +55,9 @@ class SportsServices(
      * @return [SportID] the sport's unique identifier
      */
     fun createSport(token: UserToken?, name: String?, description: String?): SportID {
+        logger.traceFunction(::createSport.name) { listOf(NAME_PARAM to name, DESCRIPTION_PARAM to description) }
 
         return transactionFactory.getTransaction().execute {
-
-            logger.traceFunction(::createSport.name) { listOf(NAME_PARAM to name, DESCRIPTION_PARAM to description) }
 
             val userID = usersRepository.requireAuthenticated(token)
             val safeName = requireParameter(name, NAME_PARAM)

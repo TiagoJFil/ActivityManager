@@ -22,11 +22,11 @@ import pt.isel.ls.repository.memory.UserDataMemRepository
  *
  * It is used to provide the necessary repositories for the transaction.
  */
-sealed interface TransactionScope {
-    val sportsRepository: SportRepository
-    val routesRepository: RouteRepository
-    val activitiesRepository: ActivityRepository
-    val usersRepository: UserRepository
+sealed class TransactionScope(val transaction: Transaction) {
+    abstract val sportsRepository: SportRepository
+    abstract val routesRepository: RouteRepository
+    abstract val activitiesRepository: ActivityRepository
+    abstract val usersRepository: UserRepository
 }
 
 /**
@@ -36,7 +36,7 @@ sealed interface TransactionScope {
  * to the database inside the repositories.
  *
  */
-class JDBCTransactionScope(val transaction: JDBCTransaction) : TransactionScope {
+class JDBCTransactionScope(transaction: JDBCTransaction) : TransactionScope(transaction) {
 
     override val sportsRepository: SportRepository
         by lazy { SportDBRepository(transaction.connection) }
@@ -56,7 +56,7 @@ class JDBCTransactionScope(val transaction: JDBCTransaction) : TransactionScope 
  *
  * Provides repositories for the transaction and a method to reset the repositories.
  */
-object InMemoryTransactionScope : TransactionScope {
+object InMemoryTransactionScope : TransactionScope(InMemoryTransaction) {
 
     override var sportsRepository: SportRepository = SportDataMemRepository(testSport)
         private set

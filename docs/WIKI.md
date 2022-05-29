@@ -1,4 +1,4 @@
-# Phase 2
+# Phase 3
 
 ## Introduction
 
@@ -288,15 +288,12 @@ For the get sports and get routes operation, the [query](https://github.com/isel
         }
     }
 ```
-### Connection Management
-
-All the database access classes receive the data source from the [app configuration](https://github.com/isel-leic-ls/2122-2-LEIC42D-G04/blob/main/src/main/kotlin/pt/isel/ls/config/db-mode.kt#L50). This data source is used to create the connection to the database.
 
 ## Transaction Management
 
-To provide a consistent behavior, the service layer is responsible for managing data access transactions.
+To always maintain a consistent state of the database, the service layer has to have support for transactions.
 
-For this feature new protagonist domain classes are created to handle the transactions.
+This feature required the introduction of new domain classes.
 
 - **Transaction**: Represents a transaction that can be used to execute a series of data access operations.
 
@@ -311,25 +308,15 @@ For this feature new protagonist domain classes are created to handle the transa
  * Represents an app transaction.
  */
 sealed interface Transaction {
-
-    /**
-     * Begins the transaction.
-     */
+    
+    val scope: TransactionScope
+    
     fun begin()
-
-    /**
-     * Commits the changes made in the transaction.
-     */
+    
     fun commit()
-
-    /**
-     * Rolls back the changes made in the transaction.
-     */
+    
     fun rollback()
-
-    /**
-     * Ends the transaction.
-     */
+    
     fun end()
     
 }
@@ -337,12 +324,22 @@ sealed interface Transaction {
 ```
 The interface has these four trivial methods that are used to manage the state of the transaction.
 
+#### TransactionFactory
+
+This domain class is responsible for creating a new transaction.
+
+```kotlin
+
+interface TransactionFactory {
+    fun getTransaction(): Transaction
+}
+
+```
 
 Example of a correct transaction usage:
 ```kotlin
-
 fun transactionExample(transactionFactory: TransactionFactory) {
-    val transaction = transactionFactory.create()
+    val transaction = transactionFactory.getTransaction()
     transaction.begin()
     try {
         // do something
@@ -356,27 +353,17 @@ fun transactionExample(transactionFactory: TransactionFactory) {
 
 ```
 
-Using kotlin higher order functions, the transaction provides a method that hides the transaction management:
+Using kotlin higher order functions allowed the creation of an abstraction 
+of the transaction management mechanism.
+
 
 ```kotlin
-/**
- * Executes the given [block] in a transaction scope.
- *
- * Meaning that the changes made in the transaction to repositories covered by the [TransactionScope]
- * will be committed if the block completes without errors,
- * or rolled back if the block throws an exception.
- *
- * The exception thrown by the block is propagated after rollback.
- */
+// Transaction.kt
+
 fun <T> execute(block: TransactionScope.() -> T): T {
     begin()
     try {
-        val scope = when (this) {
-            is JDBCTransaction -> JDBCTransactionScope(this)
-            InMemoryTransaction -> DataMemTransactionScope
-        }
-
-        val result = scope.block()
+        val result = this.scope.block()
         commit()
         return result
     } catch (e: Exception) {
@@ -387,14 +374,87 @@ fun <T> execute(block: TransactionScope.() -> T): T {
     }
 }
 ```
+All the database operations are wrapped in an [execute](https://github.com/isel-leic-ls/2122-2-LEIC42D-G04/blob/main/src/main/kotlin/pt/isel/ls/utils/repository/transactions/Transaction.kt#L40) block.
 
+e.g execute being used to create a sport.
 
-All the database operations are wrapped in a [transaction](https://github.com/isel-leic-ls/2122-2-LEIC42D-G04/blob/side/src/main/kotlin/pt/isel/ls/repository/database/utils/transactions.kt#L18) block.
-This block ensures that the connection is properly closed and if an error occurs the transaction is rolled back, which means the database is always in a consistent state.
+```kotlin
+// SportService.kt
 
+fun createSport(token: UserToken?, name: String?, description: String?): SportID {
+    logger.traceFunction(::createSport.name) { listOf(NAME_PARAM to name, DESCRIPTION_PARAM to description) }
 
+    return transactionFactory.getTransaction().execute {
 
-_e.g._ Transaction being used on the [delete Activity](https://github.com/isel-leic-ls/2122-2-LEIC42D-G04/blob/side/src/main/kotlin/pt/isel/ls/repository/database/ActivityDBRepository.kt#L122) operation:
+        val userID = usersRepository.requireAuthenticated(token) // db access
+        val safeName = requireParameter(name, NAME_PARAM)
+        val handledDescription = description?.ifBlank { null }
+
+        sportsRepository.addSport(safeName, handledDescription, userID) // db access
+    }
+}
+
+```
+
+#### TransactionScope
+
+This domain class is responsible for providing 
+the data access operations to be executed in a transaction.
+
+Is the receiver of the execute function parameter `block`.
+
+Is defined as follows:
+
+```kotlin
+sealed class TransactionScope(val transaction: Transaction) {
+    abstract val sportsRepository: SportRepository
+    abstract val routesRepository: RouteRepository
+    abstract val activitiesRepository: ActivityRepository
+    abstract val usersRepository: UserRepository
+}
+```
+
+This implementation restricts the access to the repositories inside the transaction.
+Which means the database is always in a consistent state.
+
+As mentioned before, the data access is made through the JDBC library.
+
+One possible implementation of transaction management for JDBC:
+
+```kotlin
+class JDBCTransaction(val connection: Connection) : Transaction {
+
+    override val scope = JDBCTransactionScope(this)
+    
+    override fun begin() {
+        connection.autoCommit = false
+    }
+    
+    override fun commit() {
+        connection.commit()
+    }
+    
+    override fun rollback() {
+        connection.rollback()
+    }
+    
+    override fun end() {
+        connection.autoCommit = true
+    }
+    
+    override fun <T> execute(block: TransactionScope.() -> T): T {
+        return connection.use { super.execute(block) }
+    }
+}
+
+```
+
+Each JDBC transaction is associated with a connection, which means that all database operations that are executed in this transaction
+have to use the same connection.
+This was accomplished by passing the connection to the respective scope and then to the respective repositories, provided by the same scope.
+A database operation may not use all the repositories provided by the scope. 
+With this in mind all the repository objects are created lazily, so that the scope does not create them
+until they are needed.
 
 
 ### Error Handling Processing
@@ -513,9 +573,6 @@ It uses the following flow of information:
 
 ![Information flow of the components](https://user-images.githubusercontent.com/86708200/170840497-8547a02d-450c-43e3-a4fb-0671e0a6170e.svg)
 
-_e.g_: The Div component is defined as follows:
-
-```kotlin
 ```js
 /**
  * Represents a div element as a component
@@ -540,7 +597,7 @@ The base components and respective html elements:
 - Input - `<input></input>`
 - Select - `<select></select>`
 - Option - `<option></option>` used as child of Select
-- Image - `<img></img>` 
+- Image - `<img>` 
 - Anchor - `<a></a>`
 - Datalist - `<datalist></datalist>`
 - Form  - `<form></form>`
@@ -618,11 +675,11 @@ export default function RouteDetails(route, onEditConfirm) {
 ## Critical Evaluation
 
 ### Defects
+Memory data access does not support transactions yet.
 
 ### Improvements to be made
 
-- Make integration tests using a test database.
-- Return the total length of elements in all of the endpoints that return a list to make it easier to calculate pagination and avoid
+- Return the total length of elements in the X-total-count header in all of the endpoints that return a list to make it easier to calculate pagination and avoid
   multiple requests to the api.
 
 - Consider sending the full resource instead of the id only in the foreign keys of the resources to avoid multiple requests on the display functions so the ui loads smoothly.
