@@ -509,7 +509,13 @@ const responseWithQuery = router.getRouteHandler('/users/1/?rid=412')
 ## Domain Specific Language
 
 A domain-specific language was created in order to facilitate the creation of user interface components.
+It uses the following flow of information:
 
+![Information flow of the components](https://user-images.githubusercontent.com/86708200/170840497-8547a02d-450c-43e3-a4fb-0671e0a6170e.svg)
+
+_e.g_: The Div component is defined as follows:
+
+```kotlin
 ```js
 /**
  * Represents a div element as a component
