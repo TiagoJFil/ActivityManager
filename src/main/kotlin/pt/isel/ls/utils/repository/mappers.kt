@@ -37,6 +37,7 @@ fun ResultSet.toUser(email: Email) = User(
     id = getInt("id"),
     name = getString("name"),
     email = email,
+    passwordToken = getString("password"),
 )
 
 /**
@@ -45,7 +46,8 @@ fun ResultSet.toUser(email: Email) = User(
 fun ResultSet.toUser() = User(
     id = getInt("id"),
     name = getString("name"),
-    email = Email(getString("email"))
+    email = Email(getString("email")),
+    passwordToken = getString("password"),
 )
 
 /**

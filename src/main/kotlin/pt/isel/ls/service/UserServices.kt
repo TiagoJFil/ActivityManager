@@ -11,6 +11,7 @@ import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.repository.transactions.TransactionFactory
 import pt.isel.ls.utils.service.generateUUId
+import pt.isel.ls.utils.service.hashPassword
 import pt.isel.ls.utils.service.requireIdInteger
 import pt.isel.ls.utils.service.requireParameter
 import pt.isel.ls.utils.service.toDTO
@@ -20,12 +21,18 @@ class UserServices(
     private val transactionFactory: TransactionFactory,
 ) {
 
+
+
     companion object {
         private val logger = getLoggerFor<UserServices>()
+
         const val NAME_PARAM = "User name"
         const val EMAIL_PARAM = "email"
-        const val EMAIL_TAKEN = "Email already taken"
+        const val PASSWORD_PARAM: String = "password"
         const val USER_ID_PARAM = "userID"
+
+        const val EMAIL_TAKEN = "Email already taken"
+        const val INVALID_CREDENTIALS = "Invalid credentials"
         const val RESOURCE_NAME = "User"
     }
 
@@ -94,14 +101,18 @@ class UserServices(
      * @param email the email of the user
      * @return the token of the user
      */
-    fun getTokenByEmail(email: Param): UserToken {
-        logger.traceFunction(::getTokenByEmail.name) { listOf(EMAIL_PARAM to email) }
+    fun getTokenByAuth(email: Param, password: Param): UserToken {
+        logger.traceFunction(::getTokenByAuth.name) { listOf(EMAIL_PARAM to email) }
 
-        val safeEmail = requireParameter(email, EMAIL_PARAM)
+        val safeEmail = Email(requireParameter(email, EMAIL_PARAM))
+        val safePassword = requireParameter(password, PASSWORD_PARAM)
+
+        val passwordHash = hashPassword(safePassword)
 
         return transactionFactory.getTransaction().execute {
-            usersRepository.getTokenByEmail(Email(safeEmail))
-                ?: throw InvalidParameter("User with $EMAIL_PARAM $safeEmail not found")
+
+            usersRepository.getTokenByAuth(safeEmail, passwordHash)
+                ?: throw InvalidParameter(INVALID_CREDENTIALS)
         }
     }
 }

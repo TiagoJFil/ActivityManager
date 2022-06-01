@@ -21,7 +21,9 @@ import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
-import java.util.UUID
+import java.security.MessageDigest
+import java.util.*
+
 
 /**
  * @param parameter the parameter to check.
@@ -175,6 +177,15 @@ fun RouteRepository.requireRoute(routeID: RouteID) {
 fun generateUUId() = UUID.randomUUID().toString()
 
 /**
- *
+ * Returns the given list with the elements specified by [PaginationInfo].
  */
 fun <T> List<T>.applyPagination(paginationInfo: PaginationInfo) = drop(paginationInfo.offset).take(paginationInfo.limit)
+
+private val digest = MessageDigest.getInstance("SHA-512")
+
+
+
+fun hashPassword(password: String): String
+   = digest.digest(password.toByteArray()).toString(Charsets.UTF_8)
+
+

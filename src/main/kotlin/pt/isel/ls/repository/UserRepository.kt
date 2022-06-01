@@ -55,7 +55,8 @@ interface UserRepository {
     /**
      * Gets the user token of the user with the given email.
      * @param email the email of the user.
+     * @param passwordHash the password hash token of the user.
      * @return [UserToken] the user token of the user with the given email.
      */
-    fun getTokenByEmail(email: Email): UserToken?
+    fun getTokenByAuth(email: Email, passwordHash: String): UserToken?
 }

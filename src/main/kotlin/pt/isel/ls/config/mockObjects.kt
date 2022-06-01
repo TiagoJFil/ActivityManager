@@ -5,11 +5,13 @@ import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.service.entities.Route
 import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.service.entities.User
+import pt.isel.ls.utils.service.hashPassword
 
 val guestUser = User(
     name = "guest",
     id = 0,
-    email = User.Email("guest@gmail.com")
+    email = User.Email("guest@gmail.com"),
+    passwordToken = hashPassword("guest")
 )
 
 val testRoute = Route(

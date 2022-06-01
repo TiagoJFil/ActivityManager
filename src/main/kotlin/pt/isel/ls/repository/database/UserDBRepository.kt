@@ -92,7 +92,8 @@ class UserDBRepository(private val connection: Connection) : UserRepository {
                     resultSet.ifNext {
                         val userID = resultSet.getInt("id")
                         val name = resultSet.getString("name")
-                        User(name, email, userID)
+                        val password = resultSet.getString("password")
+                        User(name, email, userID, password)
                     } ?: throw IllegalStateException("Database has inconsistent data on emails and users")
                 }
             }
@@ -150,14 +151,22 @@ class UserDBRepository(private val connection: Connection) : UserRepository {
     /**
      * Gets the user token of the user with the given email.
      * @param email the email of the user.
+     * @param passwordHash the password token of the user.
      * @return [UserToken] the user token of the user with the given email.
      */
-    override fun getTokenByEmail(email: Email): UserToken? {
-        val query =
-            """SELECT token FROM $tokenTable WHERE "user" = (SELECT "user" FROM $emailTable WHERE email = ?)"""
+    override fun getTokenByAuth(email: Email, passwordHash: String): UserToken? {
+
+
+        val query = """
+            SELECT token FROM $userTable
+            INNER JOIN $emailTable ON $userTable.id = $emailTable.user
+            INNER JOIN $tokenTable ON $userTable.id = $tokenTable.user
+            WHERE $emailTable.email = ? AND $userTable.password = ?
+        """
 
         connection.prepareStatement(query).use { stmt ->
             stmt.setString(1, email.value)
+            stmt.setString(2, passwordHash)
             stmt.executeQuery().use { resultSet ->
                 return resultSet.ifNext { resultSet.getString("token") }
             }

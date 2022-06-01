@@ -52,7 +52,7 @@ class UserDataMemRepository(guest: User) : UserRepository {
      */
     override fun addUser(userName: String, email: Email, userAuthToken: UserToken): UserID {
         val userId = ++currentID
-        val user = User(userName, email, userId)
+        val user = User(userName, email, userId, "randomPassword")
         usersMap[userId] = user
         emailsMap[email.value] = userId
         tokenTable[userAuthToken] = userId
@@ -80,10 +80,19 @@ class UserDataMemRepository(guest: User) : UserRepository {
 
     /**
      * Gets the user token of the user with the given email.
+     * @param email the email of the user.
+     * @param passwordHash the password hash token of the user.
+     * @return [UserToken] the user token of the user with the given email.
      */
-    override fun getTokenByEmail(email: Email): UserToken? {
+    override fun getTokenByAuth(email: Email, passwordHash: String): UserToken? {
         val userId = emailsMap[email.value]
-        return tokenTable.entries.firstOrNull { it.value == userId }?.key
+        val storedPassword = usersMap[userId]?.passwordToken ?: return null
+
+        return if (storedPassword == passwordHash) {
+            tokenTable.entries.find { it.value == userId }?.key
+        } else {
+            null
+        }
     }
 
     /**

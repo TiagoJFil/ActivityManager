@@ -30,7 +30,7 @@ class UserRoutes(
     @Serializable data class UserInput(val name: Param = null, val email: Param = null)
     @Serializable data class UserIDOutput(val authToken: UserToken, val id: UserID)
     @Serializable data class UserListOutput(val users: List<UserDTO>)
-    @Serializable data class AuthInput(val email: Param = null)
+    @Serializable data class AuthInput(val email: Param = null, val password: Param = null)
     @Serializable data class AuthOutput(val authToken: UserToken)
 
     companion object {
@@ -91,7 +91,7 @@ class UserRoutes(
         val bodyString = request.bodyString()
         val body = Json.decodeFromString<AuthInput>(bodyString)
 
-        val token = userServices.getTokenByEmail(body.email)
+        val token = userServices.getTokenByAuth(body.email, body.password)
 
         return Response(Status.OK)
             .contentJson()
@@ -103,8 +103,6 @@ class UserRoutes(
             "/" bind Method.POST to ::createUser,
             "/" bind Method.GET to ::getUsers,
             "/{$UID_PLACEHOLDER}" bind Method.GET to ::getUserDetails,
-            // TODO: UserRankings, UserByActivity, the first one is the one that has the least duration on the activity.
-            // TODO: Search without a filter button.
             // TODO: Trocar o display da activity com o nome do sport e a data da mesma.
         ),
         "/login" bind Method.POST to ::authenticate
