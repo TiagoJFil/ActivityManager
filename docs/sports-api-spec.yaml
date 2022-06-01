@@ -53,8 +53,8 @@ paths:
       tags:
         - "User"
       summary: "Login"
-      description: "Gets a token for a user with the given email"
-      operationId: "gettokenbyemail"
+      description: "Gets a token for a user with the given email and password"
+      operationId: "gettokenbyauth"
       requestBody:
         description: "Email of a user"
         required: true
@@ -168,14 +168,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserCreationBody"
+              $ref: "#/components/schemas/UserInput"
       responses:
         "201":
           description: "A user has been sucessfully created!"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserCreationResponse"
+                $ref: "#/components/schemas/UserOutput"
         "400":
           description: "A parameter is missing or is incorrect"
           content:
@@ -239,14 +239,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RouteCreationBody"
+              $ref: "#/components/schemas/RouteInput"
       responses:
         "201":
           description: "A route has been sucessfully created!"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RouteCreationResponse"
+                $ref: "#/components/schemas/RouteOutput"
         "400":
           description: "A parameter is missing or is incorrect"
           content:
@@ -373,14 +373,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SportCreationBody"
+              $ref: "#/components/schemas/SportInput"
       responses:
         "200":
           description: "Sport created successfully"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SportIDResponse"
+                $ref: "#/components/schemas/SportOutput"
         "400":
           description: "A required parameter is missing or is incorrect"
           content:
@@ -460,7 +460,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ActivityCreationBody"
+              $ref: "#/components/schemas/ActivityInput"
       responses:
         "204":
           description: "Successfull operation"
@@ -533,7 +533,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ActivityCreationBody"
+              $ref: "#/components/schemas/ActivityInput"
       parameters:
         - name: "sid"
           in: "path"
@@ -562,7 +562,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ActivityIDResponse"
+                $ref: "#/components/schemas/ActivityOutput"
         "400":
           description: "A required parameter is missing or is incorrect"
           content:
@@ -718,7 +718,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SportCreationBody"
+              $ref: "#/components/schemas/SportInput"
       responses:
         "204":
           description: "sucessfull operation"
@@ -833,7 +833,7 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/User"
-    UserCreationBody:
+    UserInput:
       type: "object"
       properties:
         name:
@@ -845,7 +845,7 @@ components:
         password:
           type: "string"
           example: "password"
-    UserCreationResponse:
+    UserOutput:
       type: "object"
       properties:
         authToken:
@@ -860,6 +860,9 @@ components:
         email:
           type: "string"
           example: "guest@email.com"
+        password:
+          type: "string"
+          example: "user_password"
     AuthOutput:
       type: "object"
       properties:
@@ -891,7 +894,7 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/Route"
-    RouteCreationBody:
+    RouteInput:
       type: "object"
       properties:
         startLocation:
@@ -903,7 +906,7 @@ components:
         distance:
           type: "number"
           example: 128.7
-    RouteCreationResponse:
+    RouteOutput:
       type: "object"
       properties:
         routeID:
@@ -935,7 +938,7 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/Sport"
-    SportCreationBody:
+    SportInput:
       type: "object"
       required:
         - name
@@ -946,7 +949,7 @@ components:
         description:
           type: "string"
           example: "Game played with feet."
-    SportIDResponse:
+    SportOutput:
       type: "object"
       properties:
         sportID:
@@ -986,7 +989,7 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/Activity"
-    ActivityCreationBody:
+    ActivityInput:
       type: "object"
       required:
         - duration
@@ -1001,7 +1004,7 @@ components:
         rid:
           type: "string"
           example: "123"
-    ActivityIDResponse:
+    ActivityOutput:
       type: "object"
       properties:
         activityID:

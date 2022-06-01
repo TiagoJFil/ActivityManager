@@ -21,8 +21,6 @@ class UserServices(
     private val transactionFactory: TransactionFactory,
 ) {
 
-
-
     companion object {
         private val logger = getLoggerFor<UserServices>()
 

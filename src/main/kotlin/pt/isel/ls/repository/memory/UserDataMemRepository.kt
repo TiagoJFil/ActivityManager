@@ -25,12 +25,12 @@ class UserDataMemRepository(guest: User) : UserRepository {
      */
     private val emailsMap: MutableMap<String, Int> = mutableMapOf(guest.email.value to guest.id)
 
+    private val passwordMap = mutableMapOf(guest.id to GUEST_PASSWORD)
+
     /**
      * Mapping between a [UserID] and it's identified [User]
      */
     private val usersMap: MutableMap<Int, User> = mutableMapOf(guest.id to guest)
-
-    private val passwordsMap: MutableMap<Int, String> = mutableMapOf(guest.id to GUEST_PASSWORD)
 
     val map: Map<Int, User>
         get() = usersMap.toMap()
@@ -55,8 +55,8 @@ class UserDataMemRepository(guest: User) : UserRepository {
     override fun addUser(userName: String, email: Email, userAuthToken: UserToken, hashedPassword: String): UserID {
         val userId = ++currentID
         val user = User(userName, email, userId)
-        passwordsMap[userId] = hashedPassword
         usersMap[userId] = user
+        passwordMap[userId] = hashedPassword
         emailsMap[email.value] = userId
         tokenTable[userAuthToken] = userId
         return userId
@@ -89,8 +89,7 @@ class UserDataMemRepository(guest: User) : UserRepository {
      */
     override fun getTokenByAuth(email: Email, passwordHash: String): UserToken? {
         val userId = emailsMap[email.value]
-        val storedPassword = usersMap[userId]?.passwordToken ?: return null
-
+        val storedPassword = passwordMap[userId] ?: return null
         return if (storedPassword == passwordHash) {
             tokenTable.entries.find { it.value == userId }?.key
         } else {

@@ -150,11 +150,9 @@ The app has a [configuration module](https://github.com/isel-leic-ls/2122-2-LEIC
 There are two ways of [accessing data](https://github.com/isel-leic-ls/2122-2-LEIC42D-G04/blob/main/src/main/kotlin/pt/isel/ls/config/db-mode.kt#L17)
 
 - **PostgreSQL**: Uses a remote postgreSQL database.
-    - It has four configurable environment variables:
+    - It has a configurable environment variable:
         - **JDBC_DATABASE_URL**: the url of the database.
-        - **JDBC_DATABASE_USER**: the user of the database.
-        - **JDBC_DATABASE_PASSWORD**: the password of the database.
-        - **JDBC_DATABASE_NAME**: the name of the database.
+        - 
 - **Memory**: Uses an in-memory database. On startup, the database is populated with mock data for testing purposes.
 
 #### Environment

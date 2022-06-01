@@ -24,15 +24,20 @@ private fun getEnvType(): EnvironmentType {
 
     try {
         val envType = System.getenv("APP_ENV_TYPE") ?: error("Please specify APP_ENV_TYPE environment variable")
-        return EnvironmentType.valueOf(envType)
+        println("APP_ENV_TYPE: $envType")
+
+        return when (envType) {
+            "PROD" -> EnvironmentType.PROD
+            "TEST" -> EnvironmentType.TEST
+            else -> error("Invalid APP_ENV_TYPE: $envType")
+        }
     } catch (e: IllegalArgumentException) {
         throw IllegalArgumentException("Please specify a valid APP_ENV_TYPE: ${EnvironmentType.values().toList()}")
     }
 }
 fun getEnv(): Environment {
     val envType = getEnvType()
-
-    val transactionFactory = envType.dbMode.transactionFactory()
+    val transactionFactory = envType.dbMode.transactionFactory
     val port = System.getenv("SERVER_PORT")?.toInt() ?: DEFAULT_PORT
 
     return Environment(

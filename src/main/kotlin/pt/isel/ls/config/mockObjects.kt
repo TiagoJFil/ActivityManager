@@ -10,8 +10,7 @@ import pt.isel.ls.utils.service.hashPassword
 val guestUser = User(
     name = "guest",
     id = 0,
-    email = User.Email("guest@gmail.com"),
-    passwordToken = hashPassword("guest")
+    email = User.Email("guest@gmail.com")
 )
 
 val testRoute = Route(
@@ -39,5 +38,4 @@ val testActivity = Activity(
 )
 
 const val GUEST_TOKEN = "TOKEN"
-
-const val GUEST_PASSWORD = hashPassword("PASSWORD")
+val GUEST_PASSWORD = hashPassword("PASSWORD")

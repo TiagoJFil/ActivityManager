@@ -6,13 +6,15 @@ import pt.isel.ls.utils.repository.transactions.InMemoryTransactionFactory
 import pt.isel.ls.utils.repository.transactions.JDBCTransactionFactory
 import pt.isel.ls.utils.repository.transactions.TransactionFactory
 
-enum class DBMODE { MEMORY, POSTGRESQL }
+enum class DBMODE {
+    MEMORY, POSTGRESQL;
 
-fun DBMODE.transactionFactory(): TransactionFactory =
-    when (this) {
-        DBMODE.MEMORY -> InMemoryTransactionFactory
-        DBMODE.POSTGRESQL -> postgreSQLTransactionFactory()
-    }
+    val transactionFactory: TransactionFactory
+        get() = when (this) {
+            MEMORY -> InMemoryTransactionFactory
+            POSTGRESQL -> postgreSQLTransactionFactory()
+        }
+}
 
 private fun postgreSQLTransactionFactory(): TransactionFactory {
 
@@ -20,9 +22,6 @@ private fun postgreSQLTransactionFactory(): TransactionFactory {
 
     val dataSource = PGSimpleDataSource().apply {
         setURL(dbInfo.url)
-        user = dbInfo.user
-        password = dbInfo.password
-        databaseName = dbInfo.dataBase
     }
 
     try {

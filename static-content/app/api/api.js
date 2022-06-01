@@ -2,11 +2,12 @@ import {fetchResourceList, getRequest, getBodyOrThrow, isSuccessful, sendRequest
 
 // URL Related Constants
 
-const BASE_API_URL = 'http://localhost:9000/api/';
+const BASE_API_URL = '/api/';
 const SPORTS_URL = 'sports'
 const USERS_URL = 'users'
 const ROUTE_URL = 'routes'
 const ACTIVITIES_URL = 'activities'
+
 const ACTIVITY_SPORT_URL = sid => `sports/${sid}/activities`
 const ACTIVITY_USER_URL = uid => `users/${uid}/activities`
 

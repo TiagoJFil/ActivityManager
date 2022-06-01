@@ -22,8 +22,7 @@ import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import java.security.MessageDigest
-import java.util.*
-
+import java.util.UUID
 
 /**
  * @param parameter the parameter to check.
@@ -183,9 +182,5 @@ fun <T> List<T>.applyPagination(paginationInfo: PaginationInfo) = drop(paginatio
 
 private val digest = MessageDigest.getInstance("SHA-512")
 
-
-
-fun hashPassword(password: String): String
-   = digest.digest(password.toByteArray()).toString(Charsets.UTF_8)
-
-
+fun hashPassword(password: String): String =
+    digest.digest(password.toByteArray()).toString(Charsets.UTF_8)

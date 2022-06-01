@@ -16,13 +16,14 @@ import pt.isel.ls.repository.memory.ActivityDataMemRepository
 import pt.isel.ls.repository.memory.RouteDataMemRepository
 import pt.isel.ls.repository.memory.SportDataMemRepository
 import pt.isel.ls.repository.memory.UserDataMemRepository
+import java.sql.Connection
 
 /**
  * A [TransactionScope] is a scope for a transaction.
  *
  * It is used to provide the necessary repositories for the transaction.
  */
-sealed class TransactionScope(val transaction: Transaction) {
+sealed class TransactionScope {
     abstract val sportsRepository: SportRepository
     abstract val routesRepository: RouteRepository
     abstract val activitiesRepository: ActivityRepository
@@ -36,19 +37,19 @@ sealed class TransactionScope(val transaction: Transaction) {
  * to the database inside the repositories.
  *
  */
-class JDBCTransactionScope(transaction: JDBCTransaction) : TransactionScope(transaction) {
+class JDBCTransactionScope(connection: Connection) : TransactionScope() {
 
     override val sportsRepository: SportRepository
-        by lazy { SportDBRepository(transaction.connection) }
+        by lazy { SportDBRepository(connection) }
 
     override val routesRepository: RouteRepository
-        by lazy { RouteDBRepository(transaction.connection) }
+        by lazy { RouteDBRepository(connection) }
 
     override val activitiesRepository: ActivityRepository
-        by lazy { ActivityDBRepository(transaction.connection) }
+        by lazy { ActivityDBRepository(connection) }
 
     override val usersRepository: UserRepository
-        by lazy { UserDBRepository(transaction.connection) }
+        by lazy { UserDBRepository(connection) }
 }
 
 /**
@@ -56,7 +57,7 @@ class JDBCTransactionScope(transaction: JDBCTransaction) : TransactionScope(tran
  *
  * Provides repositories for the transaction and a method to reset the repositories.
  */
-object InMemoryTransactionScope : TransactionScope(InMemoryTransaction) {
+object InMemoryTransactionScope : TransactionScope() {
 
     override var sportsRepository: SportRepository = SportDataMemRepository(testSport)
         private set

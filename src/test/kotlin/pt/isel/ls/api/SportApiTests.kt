@@ -197,7 +197,7 @@ class SportApiTests {
     fun `update sport with a user that didn't create it throws AuthorizationError`() {
         val sportInput = SportInput("Football", "Game played with hands.")
         val sportID = testClient.createSport(sportInput).sportID
-        val userToken = testClient.createUser(UserInput(name = "user", email = "random@okay.com")).authToken
+        val userToken = testClient.createUser(UserInput(name = "user", email = "random@okay.com", "craque")).authToken
 
         putRequest<SportInput>(
             testClient,

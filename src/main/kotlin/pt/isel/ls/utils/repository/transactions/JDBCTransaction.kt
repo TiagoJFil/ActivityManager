@@ -6,7 +6,7 @@ import java.sql.Statement
 
 class JDBCTransaction(val connection: Connection) : Transaction {
 
-    override val scope = JDBCTransactionScope(this)
+    override val scope: TransactionScope = JDBCTransactionScope(connection)
 
     /**
      * Begins the transaction.

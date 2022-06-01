@@ -174,7 +174,7 @@ class RouteApiTests {
     }
 
     @Test fun `update a route with a user that is not the owner gives 403`() {
-        val user = testClient.createUser(UserInput("test", "test@gmail.com"))
+        val user = testClient.createUser(UserInput("test", "test@gmail.com", "password"))
 
         val body = RouteInput(startLocation = "a", endLocation = "b", distance = 10.0F)
         putRequest<RouteInput>(

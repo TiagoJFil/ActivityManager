@@ -302,7 +302,7 @@ class ActivitiesApiTests {
 
     @Test
     fun `try to delete an activity through a user that didn't create the activity gives 401`() {
-        val notOwner = testClient.createUser(UserInput("Joao", "joaosousa@gmail.com"))
+        val notOwner = testClient.createUser(UserInput("Joao", "joaosousa@gmail.com", "ta feito entao"))
         deleteActivity(testSport.id, testActivity.id, notOwner.authToken).expectForbidden()
     }
 
@@ -374,11 +374,11 @@ class ActivitiesApiTests {
         val sportID = testSport.id
         val routeId = testRoute.id
 
-        val userInfo2 = testClient.createUser(UserInput("Joao", "joao@email.com"))
+        val userInfo2 = testClient.createUser(UserInput("Joao", "joao@email.com", "easy"))
         val user2 = getRequest<UserDTO>(testClient, "$USER_PATH${userInfo2.id}", Response::expectOK)
         testClient.createActivity(ActivityInput("00:04:00.000", "2002-05-20", routeId.toString()), sportID, userInfo2.authToken)
 
-        val userInfo3 = testClient.createUser(UserInput("Miguel", "miguel@email.com"))
+        val userInfo3 = testClient.createUser(UserInput("Miguel", "miguel@email.com", "easy"))
         val user3 = getRequest<UserDTO>(testClient, "$USER_PATH${userInfo3.id}", Response::expectOK)
         testClient.createActivity(ActivityInput("00:15:00.000", "2002-05-20", routeId.toString()), sportID, userInfo3.authToken)
 
@@ -617,7 +617,7 @@ class ActivitiesApiTests {
     @Test
     fun `Update activity of another user fails`() {
         val updateBody = ActivityInput(null, null, null)
-        val user = testClient.createUser(UserInput("x", "n@gmail.com"))
+        val user = testClient.createUser(UserInput("x", "n@gmail.com", "ja acabou?"))
         putRequest<ActivityInput>(
             testClient,
             "$SPORT_ACTIVITY_PATH/${testActivity.id}",

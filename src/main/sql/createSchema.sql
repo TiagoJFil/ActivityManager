@@ -2,8 +2,9 @@
 create table if not exists "User" (
     id serial primary key,
     name varchar(20) not null,
-    password varchar(200) not null
+    password text not null
 );
+
 create table if not exists Email(
     "user" int,
     email varchar(100) constraint email_invalid check(email ~* '^[A-Z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$') primary key,

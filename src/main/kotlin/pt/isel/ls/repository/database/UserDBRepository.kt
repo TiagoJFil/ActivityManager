@@ -17,7 +17,7 @@ import java.sql.Statement
 
 class UserDBRepository(private val connection: Connection) : UserRepository {
 
-    private val userTable = "\"User\""
+    private val userTable = """"User""""
     private val emailTable = "Email"
     private val tokenTable = "Token"
 
@@ -35,7 +35,7 @@ class UserDBRepository(private val connection: Connection) : UserRepository {
                 }
             }
 
-        return connection.prepareStatement("""SELECT (id,name) FROM $userTable WHERE id = ?""").use { statement ->
+        return connection.prepareStatement("""SELECT id,name FROM $userTable WHERE id = ?""").use { statement ->
             statement.setInt(1, userID)
             statement.executeQuery().use { userResultSet ->
                 userResultSet.ifNext {
@@ -86,17 +86,17 @@ class UserDBRepository(private val connection: Connection) : UserRepository {
      */
     override fun getUsers(paginationInfo: PaginationInfo): List<User> {
         val emails = getEmails(paginationInfo)
-        val query = """SELECT (id,name) FROM $userTable ORDER BY id LIMIT ? OFFSET ?"""
+        val query = """SELECT id, name FROM $userTable LIMIT ? OFFSET ?"""
         return connection.prepareStatement(query).use { statement ->
             statement.applyPagination(paginationInfo, indexes = Pair(1, 2))
 
             statement.executeQuery().use { resultSet ->
                 emails.map { email ->
                     resultSet.ifNext {
-                        val userID = resultSet.getInt("id")
                         val name = resultSet.getString("name")
-                        val password = resultSet.getString("password")
-                        User(name, email, userID, password)
+                        val userID = resultSet.getInt("id")
+
+                        User(name, email, userID)
                     } ?: throw IllegalStateException("Database has inconsistent data on emails and users")
                 }
             }
@@ -158,7 +158,6 @@ class UserDBRepository(private val connection: Connection) : UserRepository {
      * @return [UserToken] the user token of the user with the given email.
      */
     override fun getTokenByAuth(email: Email, passwordHash: String): UserToken? {
-
 
         val query = """
             SELECT token FROM $userTable

@@ -11,7 +11,7 @@ import pt.isel.ls.utils.UserID
  * @property id unique identifier
  *
  */
-data class User(val name: String, val email: Email, val id: UserID, val passwordToken: String) {
+data class User(val name: String, val email: Email, val id: UserID) {
 
     companion object {
         const val MAX_NAME_LENGTH = 20
@@ -34,5 +34,4 @@ data class User(val name: String, val email: Email, val id: UserID, val password
             if (!emailRegex.matches(value)) throw InvalidParameter("email")
         }
     }
-
 }
