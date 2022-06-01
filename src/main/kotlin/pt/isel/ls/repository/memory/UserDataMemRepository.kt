@@ -1,7 +1,7 @@
 package pt.isel.ls.repository.memory
 
+import pt.isel.ls.config.GUEST_PASSWORD
 import pt.isel.ls.config.GUEST_TOKEN
-import pt.isel.ls.config.guestUser
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.service.entities.User
@@ -18,17 +18,19 @@ class UserDataMemRepository(guest: User) : UserRepository {
     /**
      * Mapping between a [UserToken] and a [UserID]
      */
-    private val tokenTable: MutableMap<UserToken, Int> = mutableMapOf(GUEST_TOKEN to guestUser.id)
+    private val tokenTable: MutableMap<UserToken, Int> = mutableMapOf(GUEST_TOKEN to guest.id)
 
     /**
      * Mapping between an email and a [UserID]
      */
-    private val emailsMap: MutableMap<String, Int> = mutableMapOf(guest.email.value to guestUser.id)
+    private val emailsMap: MutableMap<String, Int> = mutableMapOf(guest.email.value to guest.id)
 
     /**
      * Mapping between a [UserID] and it's identified [User]
      */
     private val usersMap: MutableMap<Int, User> = mutableMapOf(guest.id to guest)
+
+    private val passwordsMap: MutableMap<Int, String> = mutableMapOf(guest.id to GUEST_PASSWORD)
 
     val map: Map<Int, User>
         get() = usersMap.toMap()
@@ -50,9 +52,10 @@ class UserDataMemRepository(guest: User) : UserRepository {
      * @param userAuthToken the authentication token of the user to be added.
      * @return the user's id.
      */
-    override fun addUser(userName: String, email: Email, userAuthToken: UserToken): UserID {
+    override fun addUser(userName: String, email: Email, userAuthToken: UserToken, hashedPassword: String): UserID {
         val userId = ++currentID
-        val user = User(userName, email, userId, "randomPassword")
+        val user = User(userName, email, userId)
+        passwordsMap[userId] = hashedPassword
         usersMap[userId] = user
         emailsMap[email.value] = userId
         tokenTable[userAuthToken] = userId

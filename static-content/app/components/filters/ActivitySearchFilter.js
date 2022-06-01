@@ -8,9 +8,10 @@ import SportSearch from "../searches/SportSearch.js";
  * Creates a div with the filter components.
  * 
  * @param {Function} onFilterSubmit 
- * @param {array<*>} routes 
+ * @param {Function} onRouteChange
+ * @param {Function} onSportChange
  * @param {Object} query 
- * @returns a {Div} component with the filter components.
+ * @returns {Div} component with the filter components.
  */
 export default function ActivitySearchFilter(onFilterSubmit, onRouteChange, onSportChange, query) {
 

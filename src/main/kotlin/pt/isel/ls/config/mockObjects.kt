@@ -39,3 +39,5 @@ val testActivity = Activity(
 )
 
 const val GUEST_TOKEN = "TOKEN"
+
+const val GUEST_PASSWORD = hashPassword("PASSWORD")

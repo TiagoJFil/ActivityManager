@@ -2,13 +2,15 @@ import {Button, Icon, Div,Text} from "./dsl.js"
 import styles from "../styles.js";
 
 /**
- *  Represents a modal window component.
+ * Represents a modal window component.
+ * To open the modal window, call simply change the style.display to a visible type.
  */
 export default function Modal(id, headerText,...children){
 
     const onDispose = () => {
         modal.style.display = 'none'
     }
+
     const button = Button(styles.UNSTYLED_BUTTON, onDispose,
         Icon(styles.BX_CLASS,styles.CLOSE_ICON)
     )

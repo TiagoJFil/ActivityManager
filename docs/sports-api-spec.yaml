@@ -842,6 +842,9 @@ components:
         email:
           type: "string"
           example: "email@gmail.com"
+        password:
+          type: "string"
+          example: "password"
     UserCreationResponse:
       type: "object"
       properties:

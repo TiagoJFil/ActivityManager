@@ -41,7 +41,7 @@ class UserServicesTest {
 
     @Test
     fun `create a user sucessfully`() {
-        val sut = userServices.createUser("abc", "abc@gmail.com")
+        val sut = userServices.createUser("abc", "abc@gmail.com", "abc")
 
         val user = userServices.getUserByID(sut.second.toString())
 
@@ -52,28 +52,28 @@ class UserServicesTest {
     @Test
     fun `cant create a user without a valid email`() {
         assertFailsWith<InvalidParameter> {
-            userServices.createUser("abc", "abc@gm@a.il.com")
+            userServices.createUser("abc", "abc@gm@a.il.com", "abc")
         }
     }
 
     @Test
     fun `cant create a user without an email`() {
         assertFailsWith<MissingParameter> {
-            userServices.createUser("abc", null)
+            userServices.createUser("abc", null, "abc")
         }
     }
 
     @Test
     fun `cant create a user with an empty string`() {
         assertFailsWith<InvalidParameter> {
-            userServices.createUser("", "emailteste@hotmail.com")
+            userServices.createUser("", "emailteste@hotmail.com", "abc")
         }
     }
 
     @Test
     fun `cant create a user without a name`() {
         assertFailsWith<MissingParameter> {
-            userServices.createUser(null, "emailteste12@hotmail.com")
+            userServices.createUser(null, "emailteste12@hotmail.com", "abc")
         }
     }
 
@@ -86,7 +86,7 @@ class UserServicesTest {
 
     @Test
     fun `get all users list returns a list with one user`() {
-        val newUserId = userServices.createUser("abc", "abc@gmail.com").second
+        val newUserId = userServices.createUser("abc", "abc@gmail.com", "abc").second
         val newUser = userServices.getUserByID(newUserId.toString())
 
         val userListReceived = userServices.getUsers(PaginationInfo(10, 0))
@@ -97,13 +97,13 @@ class UserServicesTest {
     @Test
     fun `Cant create a user with a name longer than 20 letters`() {
         assertFailsWith<InvalidParameter> {
-            userServices.createUser("abcdefghijklmnopqrstuvwxyz", "asd@gma.com")
+            userServices.createUser("abcdefghijklmnopqrstuvwxyz", "asd@gma.com", "abc")
         }
     }
 
     @Test
     fun `create a user and login and get it's token for auth`() {
-        val (expectedToken, userId) = userServices.createUser("abc", "randomEmail@email.com")
+        val (expectedToken, userId) = userServices.createUser("abc", "randomEmail@email.com", "abc")
         val actualToken = userServices.getTokenByAuth("randomEmail@email.com")
         val user = userServices.getUserByID(userId.toString())
 

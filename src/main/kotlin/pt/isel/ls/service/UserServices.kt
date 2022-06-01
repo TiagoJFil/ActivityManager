@@ -43,20 +43,25 @@ class UserServices(
      * @return a pair of [Pair] with a [UserToken] and a [UserID]
      * @throws IllegalArgumentException
      */
-    fun createUser(name: String?, email: String?): Pair<UserToken, UserID> {
+    fun createUser(name: Param, email: Param, password: Param): Pair<UserToken, UserID> {
         logger.traceFunction(::createUser.name) {
             listOf(NAME_PARAM to name, EMAIL_PARAM to email)
         }
         val safeName = requireParameter(name, NAME_PARAM)
         val safeEmail = requireParameter(email, EMAIL_PARAM)
+        val safePassword = requireParameter(password, PASSWORD_PARAM)
+
         val userAuthToken = generateUUId()
         val possibleEmail = Email(safeEmail)
 
+        val hashedPassword = hashPassword(safePassword)
+
         return transactionFactory.getTransaction().execute {
+
             if (usersRepository.hasRepeatedEmail(possibleEmail))
                 throw InvalidParameter(EMAIL_TAKEN)
 
-            val userID = usersRepository.addUser(safeName, possibleEmail, userAuthToken)
+            val userID = usersRepository.addUser(safeName, possibleEmail, userAuthToken, hashedPassword)
 
             return@execute Pair(userAuthToken, userID)
         }
@@ -99,6 +104,7 @@ class UserServices(
     /**
      * Gets the token of the user that has the given email.
      * @param email the email of the user
+     * @param password the password of the user
      * @return the token of the user
      */
     fun getTokenByAuth(email: Param, password: Param): UserToken {

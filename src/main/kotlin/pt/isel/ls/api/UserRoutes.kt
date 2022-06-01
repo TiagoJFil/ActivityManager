@@ -27,7 +27,7 @@ import pt.isel.ls.utils.infoLogRequest
 class UserRoutes(
     private val userServices: UserServices
 ) {
-    @Serializable data class UserInput(val name: Param = null, val email: Param = null)
+    @Serializable data class UserInput(val name: Param = null, val email: Param = null, val password: Param = null)
     @Serializable data class UserIDOutput(val authToken: UserToken, val id: UserID)
     @Serializable data class UserListOutput(val users: List<UserDTO>)
     @Serializable data class AuthInput(val email: Param = null, val password: Param = null)
@@ -47,7 +47,7 @@ class UserRoutes(
         val bodyString = request.bodyString()
         val body = Json.decodeFromString<UserInput>(bodyString)
 
-        val res = userServices.createUser(body.name, body.email)
+        val res = userServices.createUser(body.name, body.email, body.password)
 
         return Response(CREATED)
             .contentJson()

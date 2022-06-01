@@ -35,7 +35,7 @@ class UserDBRepository(private val connection: Connection) : UserRepository {
                 }
             }
 
-        return connection.prepareStatement("""SELECT * FROM $userTable WHERE id = ?""").use { statement ->
+        return connection.prepareStatement("""SELECT (id,name) FROM $userTable WHERE id = ?""").use { statement ->
             statement.setInt(1, userID)
             statement.executeQuery().use { userResultSet ->
                 userResultSet.ifNext {
@@ -52,15 +52,18 @@ class UserDBRepository(private val connection: Connection) : UserRepository {
      * @param userAuthToken the authentication token of the user to be added.
      * @return [UserID] of the added user.
      */
-    override fun addUser(userName: String, email: Email, userAuthToken: UserToken): UserID {
+    override fun addUser(userName: String, email: Email, userAuthToken: UserToken, hashedPassword: String): UserID {
 
         fun PreparedStatement.update(param: String) {
             setString(1, param)
             executeUpdate()
         }
-        val addUserQuery = """INSERT INTO $userTable (name) VALUES (?)"""
+
+        val addUserQuery = """INSERT INTO $userTable (name,password) VALUES (?,?)"""
         val userID: UserID = connection.prepareStatement(addUserQuery, Statement.RETURN_GENERATED_KEYS).use { preparedStatement ->
-            preparedStatement.update(userName)
+            preparedStatement.setString(1, userName)
+            preparedStatement.setString(2, hashedPassword)
+            preparedStatement.executeUpdate()
 
             preparedStatement.generatedKey()
         }
@@ -83,7 +86,7 @@ class UserDBRepository(private val connection: Connection) : UserRepository {
      */
     override fun getUsers(paginationInfo: PaginationInfo): List<User> {
         val emails = getEmails(paginationInfo)
-        val query = """SELECT * FROM $userTable ORDER BY id LIMIT ? OFFSET ?"""
+        val query = """SELECT (id,name) FROM $userTable ORDER BY id LIMIT ? OFFSET ?"""
         return connection.prepareStatement(query).use { statement ->
             statement.applyPagination(paginationInfo, indexes = Pair(1, 2))
 

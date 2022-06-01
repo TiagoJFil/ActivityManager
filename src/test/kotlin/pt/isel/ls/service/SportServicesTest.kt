@@ -161,7 +161,7 @@ class SportServicesTest {
     @Test
     fun `update sport with user that didn't create but exists it throws AuthorizationError`() {
         val sportID = sportsServices.createSport(GUEST_TOKEN, "Football", null)
-        val (token, _) = userServices.createUser("John", "john@email.com")
+        val (token, _) = userServices.createUser("John", "john@email.com", body.password)
 
         assertFailsWith<AuthorizationError> {
             sportsServices.updateSport(token, sportID.toString(), "Basketball", "A game played with hands")
