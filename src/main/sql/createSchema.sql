@@ -1,7 +1,8 @@
 
 create table if not exists "User" (
     id serial primary key,
-    name varchar(20) not null
+    name varchar(20) not null,
+    password varchar(200) not null
 );
 create table if not exists Email(
     "user" int,
@@ -43,10 +44,3 @@ create table if not exists Activity (
     foreign key (sport) references Sport(id),
     foreign key (route) references Route(id)
 );
-
-SELECT * FROM
-((SELECT id, startLocation, endLocation, distance, "user" FROM Route WHERE to_tsvector(coalesce(startLocation, '')) @@ to_tsquery(?))
-INTERSECT (SELECT  id, startLocation, endLocation, distance, "user" FROM Route WHERE to_tsvector(coalesce(endLocation, '')) @@ to_tsquery(?)))
-as locationQuery
-LIMIT ?
-OFFSET ?;

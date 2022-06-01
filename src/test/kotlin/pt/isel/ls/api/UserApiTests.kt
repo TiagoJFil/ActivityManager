@@ -35,7 +35,7 @@ class UserApiTests {
     fun `create multiple Users`() {
         val userCount = 1000
         val randomEmails = (0 until userCount).map { "${generateUUId()}@gmail.com" }
-        val usersCreationBody = List(userCount) { idx -> UserInput("user$idx", randomEmails[idx]) }
+        val usersCreationBody = List(userCount) { idx -> UserInput("user$idx", randomEmails[idx], "abc") }
         val responses = usersCreationBody.map {
             testClient.createUser(it)
         }
@@ -70,7 +70,7 @@ class UserApiTests {
     // USER CREATE
     @Test
     fun `create a correct user gives 201`() {
-        testClient.createUser(UserInput("abc", "abc@gmail.com"))
+        testClient.createUser(UserInput("abc", "abc@gmail.com", "abc"))
     }
 
     @Test
@@ -122,7 +122,7 @@ class UserApiTests {
 
     @Test
     fun `create a user with a wrong email gives 400`() {
-        val body = UserInput("Maria", "tes@t123@gmail.com")
+        val body = UserInput("Maria", "tes@t123@gmail.com", "abc")
         postRequest<UserInput, HttpError>(
             testClient,
             USER_PATH,
@@ -133,7 +133,7 @@ class UserApiTests {
 
     @Test
     fun `create a user with a blank name parameter gives 400`() {
-        val body = UserInput("", "test1234@gmail.com")
+        val body = UserInput("", "test1234@gmail.com", "abc")
         postRequest<UserInput, HttpError>(
             testClient,
             USER_PATH,
@@ -144,7 +144,7 @@ class UserApiTests {
 
     @Test
     fun `create a user with a blank email parameter gives 400`() {
-        val body = UserInput("Mario", "")
+        val body = UserInput("Mario", "", "abc")
         postRequest<UserInput, HttpError>(
             testClient,
             USER_PATH,

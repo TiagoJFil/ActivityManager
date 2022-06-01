@@ -454,7 +454,7 @@ class ActivitiesServicesTest {
 
     @Test
     fun `update activity with user that didn't create it throws UnauthenticatedError`() {
-        val (token, _) = userServices.createUser("John", "john@email.com")
+        val (token, _) = userServices.createUser("John", "john@email.com", body.password)
 
         assertFailsWith<AuthorizationError> {
             activitiesServices.updateActivity(
