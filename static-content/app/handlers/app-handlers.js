@@ -16,8 +16,8 @@ function getHome(mainContent) {
         Div("home-page",
             H1(styles.HEADER, 'Sports Isel'),
             Div("image-group", 
-                Image("home-image", "homeImage", "./img/running.svg"),
-                Image("home-image", "homeImageGirl", "./img/running-girl.svg")
+                Image("home-image", "homeImage", "./img/running.svg","https://api.vexels.com/v1/download/263640/"),
+                Image("home-image", "homeImageGirl", "./img/running-girl.svg","https://api.vexels.com/v1/download/263646/")
             )
         )
     )
