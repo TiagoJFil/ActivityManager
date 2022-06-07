@@ -68,7 +68,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AuthOutput"
+                $ref: "#/components/schemas/UserOutput"
         "400":
           description: "Invalid username supplied"
           content:
@@ -863,12 +863,6 @@ components:
         password:
           type: "string"
           example: "user_password"
-    AuthOutput:
-      type: "object"
-      properties:
-        authToken:
-          type: "string"
-          example: "10a3fa15-6c12-43d0-9112-caa7eddf3249"
     Route:
       type: "object"
       properties:

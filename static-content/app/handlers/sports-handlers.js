@@ -7,7 +7,7 @@ import styles from '../styles.js'
 import { H1, Div } from '../components/dsl.js'
 import SportCreate from "../components/creates/CreateSport.js";
 import SearchBar from  "../components/SearchBar.js";
-import { SuccessToast, ErrorToast ,InfoToast } from '../toasts.js'
+import { SuccessToast, ErrorToast, InfoToast } from '../toasts.js'
 import { BoardlessIconButton } from '../components/Icons.js'
 
 /**
@@ -78,6 +78,7 @@ async function displaySportDetails(mainContent, params, _) {
         })
 
     }
+    
     mainContent.replaceChildren(
         H1(styles.HEADER, 'Sport Details'),
         SportDetails(sport, onEditConfirm),
