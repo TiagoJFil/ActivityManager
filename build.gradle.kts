@@ -47,3 +47,37 @@ tasks.test {
         )
     )
 }
+
+tasks.register("docker-build") {
+    group = "docker"
+    // depends on gradle build
+    dependsOn("build")
+    // docker build
+    val outFile = File("gradle_docker_build_output.txt")
+    doLast {
+        val dockerBuildCommand = "docker build -t sports-server:latest $projectDir"
+        println("Executing: $dockerBuildCommand")
+        ProcessBuilder(dockerBuildCommand.split(" "))
+            .inheritIO() // inherit sys envs
+            .redirectOutput(outFile)
+            .redirectError(outFile)
+            .start()
+            .waitFor()
+    }
+}
+
+tasks.register("docker-run") {
+    group = "docker"
+    dependsOn("docker-build")
+    val outFile = File("gradle_docker_run_output.txt")
+    doLast {
+        val dockerRunCommand = "docker run -p 9000:9000 -d sports-server:latest"
+        println("Executing: $dockerRunCommand")
+        ProcessBuilder(dockerRunCommand.split(" "))
+            .inheritIO() // inherit sys envs
+            .redirectOutput(outFile)
+            .redirectError(outFile)
+            .start()
+            .waitFor()
+    }
+}
