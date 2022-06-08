@@ -10,11 +10,13 @@ import SearchBar from  "../components/SearchBar.js";
 import { SuccessToast, ErrorToast, InfoToast } from '../toasts.js'
 import { BoardlessIconButton } from '../components/Icons.js'
 import {isLoggedIn} from "../api/session.js"
+import {queryBuilder} from "../api/api-utils.js"
+import { debounce } from "./utils.js"
 
 /**
  * Displays a sport list with the given query
  */
-async function displaySportList(mainContent, _, query) {
+async function displaySportList(params, query) {
     const sportsList = await sportApi.fetchSports(query)
     let listElement = SportList(sportsList.sports)
 
@@ -27,8 +29,16 @@ async function displaySportList(mainContent, _, query) {
         const newQuery = {
             limit: query.limit ?? getItemsPerPage(),
             skip: 0,
-            search: searchText ?? null
+            search: encodeURI(searchText) ?? null
         }
+
+
+        if(searchText != query.search){
+            const builtQuery = queryBuilder(newQuery)
+            console.log(builtQuery)
+            window.location.hash = `sports?${builtQuery}`
+        }
+      
 
         const innerSportsList = await sportApi.fetchSports(newQuery)
         const newPagination = Pagination(
@@ -52,21 +62,25 @@ async function displaySportList(mainContent, _, query) {
     const addButton =  isLoggedIn() ? BoardlessIconButton( `#sports/add`, "Add a sport") : Div()
 
 
-    mainContent.replaceChildren(
+    const startingSearchBarValue = query.search ? decodeURI(query.search) : null
+    const searchBar = SearchBar("searchRes", styles.FORM_TEXT_INPUT, onSportTextChange, "Search for a sport", null, startingSearchBarValue)
+  
+
+    return[
         H1(styles.HEADER, 'Sports'),
         Div(styles.SEARCH_BAR_WITH_ADD,
-            SearchBar("searchRes", styles.FORM_TEXT_INPUT, onSportTextChange, "Search for a sport", null),
+            searchBar,
             addButton
         ),
         listElement,
         paginationElement
-    )
+    ]
 }
 
 /**
  * Displays a sport details with the given id
  */
-async function displaySportDetails(mainContent, params, _) {
+async function displaySportDetails(params, _) {
 
     const sport = await sportApi.fetchSport(params.sid)
     const onEditConfirm = async (name,description) => {
@@ -83,20 +97,19 @@ async function displaySportDetails(mainContent, params, _) {
 
     }
     
-    mainContent.replaceChildren(
+    return[
         H1(styles.HEADER, 'Sport Details'),
         SportDetails(sport, onEditConfirm),
         Div(styles.SPACER),
         Div(styles.SPACER),
         Div(styles.SPACER)
-    )
-
+    ]
 }
 
 /**
  * Creates a new sport
  */
-async function createSport(mainContent, params, _) {
+async function createSport(params, _) {
     const nItems = getItemsPerPage()
     
 
@@ -121,12 +134,12 @@ async function createSport(mainContent, params, _) {
         window.location.hash = `sports?skip=0&limit=${nItems}`
     }
 
-    mainContent.replaceChildren(
+    return[
         H1(styles.HEADER, 'Add a Sport'),
         Div(styles.ADD_CONTAINER,
             SportCreate(onSubmit)
         )
-    )
+    ]
 }
 
 export const sportHandlers = {

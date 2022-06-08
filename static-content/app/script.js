@@ -52,9 +52,11 @@ async function hashChangeHandler(){
     const mainContent = document.querySelector('#mainContent')
     const path = window.location.hash.replace('#', '')
     const handlerInfo = router.getRouteHandler(path)
-
+    
     try{
-        await handlerInfo.handler(mainContent, handlerInfo.params, handlerInfo.query)
+        mainContent.replaceChildren(
+            ...await handlerInfo.handler(handlerInfo.params, handlerInfo.query)
+        ) 
     }catch(e){
         console.log(e)
         handlers.getErrorPage(mainContent, e)

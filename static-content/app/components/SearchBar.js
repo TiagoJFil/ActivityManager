@@ -18,9 +18,9 @@ export default function SearchBar(id, className, onTextChange, placeholder, head
         onTextChange(event.target.value)
     };
 
-    const debouncedChange = debounce(onChange, 200);
-
+    const debouncedChange = debounce(onChange, 750);
     const searchBar = Input(className, "search", id, debouncedChange, placeholder, defaultValue);
+
     const items = header
         ? [Text(styles.DETAIL_HEADER, header), searchBar]
         : [searchBar];

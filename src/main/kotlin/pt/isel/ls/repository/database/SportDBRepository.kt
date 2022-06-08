@@ -8,7 +8,9 @@ import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.repository.applyPagination
 import pt.isel.ls.utils.repository.generatedKey
 import pt.isel.ls.utils.repository.ifNext
+import pt.isel.ls.utils.repository.queryTableByID
 import pt.isel.ls.utils.repository.setSport
+import pt.isel.ls.utils.repository.sportTable
 import pt.isel.ls.utils.repository.toListOf
 import pt.isel.ls.utils.repository.toSport
 import java.sql.Connection
@@ -16,8 +18,6 @@ import java.sql.ResultSet
 import java.sql.Statement
 
 class SportDBRepository(val connection: Connection) : SportRepository {
-
-    private val sportTable = "Sport"
 
     /**
      * Adds a new sport to the repository.
@@ -133,12 +133,6 @@ class SportDBRepository(val connection: Connection) : SportRepository {
      * @param block specifies what the caller wants to do with the result set.
      * @return [T] The result of calling the block function.
      */
-    private fun <T> querySportByID(sportID: SportID, block: (ResultSet) -> T): T {
-        val pstmt = connection.prepareStatement("""SELECT * FROM $sportTable WHERE id = ?;""")
-        return pstmt.use { ps ->
-            ps.setInt(1, sportID)
-            val resultSet: ResultSet = ps.executeQuery()
-            resultSet.use { block(it) }
-        }
-    }
+    private fun <T> querySportByID(sportID: SportID, block: (ResultSet) -> T): T =
+        connection.queryTableByID(sportID, sportTable, block)
 }

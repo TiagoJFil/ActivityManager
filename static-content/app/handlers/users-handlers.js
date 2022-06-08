@@ -13,7 +13,7 @@ import { onRouteLocationsChange, onSportTextChange } from './utils.js'
 /**
  * Displays the page to search for the users.
  */
-async function displayUsersByRanking(mainContent, _, __) {
+async function displayUsersByRanking(_, __) {
     // Loads user rankings list
     const onSubmit = (rid,sid) =>{
         if(rid === "" || sid === "") {
@@ -27,49 +27,50 @@ async function displayUsersByRanking(mainContent, _, __) {
         window.location.hash = `sports/${sid}/user?rid=${rid}`
     }
   
-    mainContent.replaceChildren(
+    return[
         H1(styles.HEADER, 'User ranking'),
         UserRankingFilter(onSportTextChange, onRouteLocationsChange, onSubmit),
         Div(styles.SPACER)
-    )   
+    ]
 }
 
 /**
  * Displays an user list with the given query
  */
-async function displayUserList(mainContent, _, query) {
+async function displayUserList(_, query) {
     const userList = await userApi.fetchUsers(queryBuilder(query))
 
-    mainContent.replaceChildren(
+    return[
         H1(styles.HEADER, 'Users'),
         UserList(userList.users),
         Pagination(userList.total, (skip, limit) => onPaginationChange("users", query, skip, limit))
-    )
+    ]
 }
 /**
  * Displays the details of the user with the id from the params.
  */
-async function displayUserDetails(mainContent, params, _) {
+async function displayUserDetails(params, _) {
     const user = await userApi.fetchUser(params.uid)
 
-    mainContent.replaceChildren(
+    return[
         UserDetails(user)
-    )
+    ]
 }
 
 /**
  * Displays a list of users that have the given SportID and RouteID
  */
-async function displayUsersByActivity(mainContent, params, query) {
+async function displayUsersByActivity(params, query) {
     const userList = await userApi.fetchUsersByActivity(params.sid, query)
-    mainContent.replaceChildren(
+    
+    return[
         H1(styles.HEADER, 'Users'),
         UserList(userList.users),
         Pagination(
             userList.total,
             (skip, limit) => onPaginationChange(`sports/${params.sid}/users`, query, skip, limit)
         )
-    )
+    ]
 }
 
 export const userHandlers = {

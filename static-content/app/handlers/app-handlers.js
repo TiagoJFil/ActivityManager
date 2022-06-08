@@ -9,16 +9,16 @@ import CreateUser from "../components/creates/CreateUser.js";
 import styles from "../styles.js";
 import Login from "../components/Login.js";
 import { userApi } from "../api/api.js";
-import {setUserInfo ,isLoggedIn} from "../api/session.js"
+import {setUserInfo ,isLoggedIn, logOut} from "../api/session.js"
 
 import { reloadNav} from "./utils.js"
 
 /**
  * Displays the home page 
  */
-function getHome(mainContent) {
+function getHome() {
 
-    mainContent.replaceChildren(
+    return [
         Div("home-page",
             H1(styles.HEADER, 'Sports Isel'),
             Div("image-group", 
@@ -26,7 +26,7 @@ function getHome(mainContent) {
                 Image("home-image", "homeImageGirl", "./img/running-girl.svg","https://api.vexels.com/v1/download/263646/")
             )
         )
-    )
+    ]
 
 }
 
@@ -35,20 +35,21 @@ const NOT_FOUND_MESSAGE = 'Sorry, the page you are looking for does not exist. T
 /**
  * Displays a page to indicate that nothing was found
  */
-function getNotFoundPage(mainContent) {
+function getNotFoundPage() {
 
-    mainContent.replaceChildren(
+    return[
         H1(styles.HEADER,'404 - Not Found'),
         Text(styles.TEXT, NOT_FOUND_MESSAGE),
         Div(styles.SPACER)
-    )
+    ]
+        
 
 }
 
 /**
  * Displays the error page with the given error message
  */
-function getErrorPage(mainContent, error) {
+function getErrorPage( error) {
     let message;
     let header;
     
@@ -62,18 +63,19 @@ function getErrorPage(mainContent, error) {
             message = 'An error has occurred. Please try again later.'
             break
     }
-    mainContent.replaceChildren(
+
+    return[
         H1(styles.HEADER, header),
         Text(styles.TEXT, message),
         Div(styles.SPACER)
-    )
+    ]
 }
 
 
 
 
 
-function getLogin(mainContent){
+function getLogin(){
 
     const onLoginConfirm = async (email, password, Button) => {
         try{
@@ -97,26 +99,25 @@ function getLogin(mainContent){
         }
     }
 
-    mainContent.replaceChildren(
+    return[
         Div("login-page",
             H1(styles.HEADER, 'Sign In'),
             Div(styles.LOGIN_ELEMS,
-            Login(onLoginConfirm),
-            Div(styles.SPACER),
-            Text(styles.TEXT, "Don't have an account yet? "),
-            
-                Anchor(styles.REGISTER_ANCHOR, "#register", Text(styles.TEXT, "Register"))
+                Login(onLoginConfirm),
+                Div(styles.SPACER),
+                Text(styles.TEXT, "Don't have an account yet? "),
+                    Anchor(styles.REGISTER_ANCHOR, "#register", Text(styles.TEXT, "Register"))
             )
         )
-    )
+    ]
 }
 
-function getLogout(mainContent){
+function getLogout(){
     if(!isLoggedIn()){
         window.location.hash = "home"
         return
     }
-    setUserInfo(null)
+    logOut()
     InfoToast(`Goodbye :(`).showToast()
 
 
@@ -124,7 +125,7 @@ function getLogout(mainContent){
     window.location.hash = "home"
 }
 
-function getRegister(mainContent){
+function getRegister(){
 
     const onRegisterConfirm = async (name, email, password, reinsertedPassword, Button) => {
         try{ 
@@ -147,18 +148,21 @@ function getRegister(mainContent){
             let message = ''
             if(e.code = 2000)
                 message = "Name should not be empty or email already taken"
-            
+            else
+                message = "An error has occurred. Please try again later."
+                
+            ErrorToast(message).showToast()
             Button.disabled = false
             return
         }
     }
 
-    mainContent.replaceChildren(
+    return[
         H1(styles.HEADER, 'Register'),
         Div(styles.REGISTER_ELEMS,
             CreateUser(onRegisterConfirm)
-        ),
-    )
+        )
+    ]
 }
 
 /**

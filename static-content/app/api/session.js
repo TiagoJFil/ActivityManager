@@ -1,25 +1,38 @@
 
-let USER_INFO = null
+const ID_PROP = "id"
+const TOKEN_PROP = "authToken"
+
+
 
 function getUserInfo(){
-    return USER_INFO
+    return {
+        ID_KEY: sessionStorage.getItem(ID_PROP),
+        TOKEN_PROP : sessionStorage.getItem(TOKEN_PROP)
+    }
 }
 
 function setUserInfo(info){
-    USER_INFO = info
+    sessionStorage.setItem(TOKEN_PROP, info[TOKEN_PROP])
+    sessionStorage.setItem(ID_PROP, info[ID_PROP])
 }
 
 function getUserToken(){
-    return USER_INFO ? USER_INFO["authToken"] : null
+    return sessionStorage.getItem(TOKEN_PROP)
+}
+
+function logOut(){
+    sessionStorage.removeItem(ID_PROP)
+    sessionStorage.removeItem(TOKEN_PROP)
 }
 
 function isLoggedIn(){
-    return !!USER_INFO
+    return !!sessionStorage.getItem(TOKEN_PROP)
 }
 
 export  {
     getUserInfo,
     setUserInfo,
     isLoggedIn,
-    getUserToken
+    getUserToken,
+    logOut
 }

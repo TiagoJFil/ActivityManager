@@ -11,7 +11,6 @@ import org.http4k.core.Status
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
-import pt.isel.ls.api.UserRoutes.UserListOutput
 import pt.isel.ls.service.ActivityServices
 import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.utils.ActivityID
@@ -137,22 +136,6 @@ class ActivityRoutes(
     }
 
     /**
-     * Get the list of [User] that have an activity with the given sport and rid.
-     */
-    private fun getUsersByActivity(request: Request): Response {
-        logger.infoLogRequest(request)
-        val sportID = request.path("sid")
-        val routeID = request.query("rid")
-
-        val users = activityServices.getUsersByActivity(sportID, routeID, PaginationInfo.fromRequest(request))
-        val bodyString = Json.encodeToString(UserListOutput(users))
-
-        return Response(Status.OK)
-            .contentJson()
-            .body(bodyString)
-    }
-
-    /**
      * Updates an activity using the information received from the body of the request.
      */
     private fun updateActivity(request: Request): Response {
@@ -201,7 +184,6 @@ class ActivityRoutes(
             "/{aid}" bind Method.PUT to ::updateActivity
         ),
         "/users/{uid}/activities" bind Method.GET to ::getActivitiesByUser,
-        "/sports/{sid}/users" bind Method.GET to ::getUsersByActivity,
         "/activities" bind routes(
             "/" bind Method.GET to ::getAllActivities,
             "/deletes" bind Method.POST to ::deleteActivities

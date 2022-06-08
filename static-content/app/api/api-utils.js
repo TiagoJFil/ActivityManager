@@ -12,7 +12,7 @@ export function queryBuilder(queryObject){
     
     return Object
         .keys(queryObject)
-        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(queryObject[key])}`)
+        .map(key => `${key}=${queryObject[key]}`)
         .join('&')
 }
 

@@ -10,11 +10,12 @@ import RouteCreate from "../components/creates/CreateRoute.js";
 import { SuccessToast, ErrorToast ,InfoToast} from '../toasts.js'
 import { BoardlessIconButton } from "../components/Icons.js";
 import {isLoggedIn} from "../api/session.js"
+import {queryBuilder} from "../api/api-utils.js"
 
 /**
  * Displays a route list with the given query
  */
-async function displayRouteList(mainContent, _, query) {
+async function displayRouteList(_, query) {
 
     const routeList = await routeApi.fetchRoutes(query)
     let listElement = RouteList(routeList.routes)
@@ -27,35 +28,66 @@ async function displayRouteList(mainContent, _, query) {
         query.limit
     )
 
-    const newQuery = {
+    let newQuery  = {
         limit: query.limit ?? getItemsPerPage(),
-        skip: 0
+        skip: 0,
     }
-
     const onStartLocationTextChange = async (searchText) => {
-        newQuery.startLocation = searchText
+        if(newQuery && query.endLocation){
+            newQuery = {
+                limit: query.limit ?? getItemsPerPage(),
+                skip: 0,
+                startLocation: searchText,
+                endLocation: query.endLocation
+            }
+        }else{
 
+            newQuery.startLocation = searchText
+
+        }
+            
+        
+
+        window.location.hash = `routes?${queryBuilder(newQuery)}`
         await updateRouteDisplayItems(newQuery, listElement)
     }
 
     const onEndLocationTextChange = async (searchText) => {
-        newQuery.endLocation = searchText
+        if(newQuery && query.startLocation){
+            newQuery = {
+                limit: query.limit ?? getItemsPerPage(),
+                skip: 0,
+                startLocation: query.startLocation,
+                endLocation: searchText
+            }
+        }else{
 
+            newQuery.endLocation = searchText
+        
+        }
+        
+
+        window.location.hash = `routes?${queryBuilder(newQuery)}`
        await updateRouteDisplayItems(newQuery)
     }
 
     const addButton =  isLoggedIn() ? BoardlessIconButton(`#routes/add`,"Add a route") : Div()
 
-    mainContent.replaceChildren(
+    const startingSLocationSearchBarValue = query.startLocation ?? null
+    const startingELocationSearchBarValue = query.endLocation ?? null
+
+    
+
+    return[
         H1(styles.HEADER, 'Routes'),
         Div(styles.SEARCH_BAR_WITH_ADD,
-            SearchBar("searchRes", styles.FORM_TEXT_INPUT, onStartLocationTextChange, "Search for a starting location", "Start Location"),
-            SearchBar("searchRes", styles.FORM_TEXT_INPUT, onEndLocationTextChange, "Search for an ending location", "End Location"),
+            SearchBar("searchRes", styles.FORM_TEXT_INPUT, onStartLocationTextChange, "Search for a starting location", "Start Location",startingSLocationSearchBarValue),
+            SearchBar("searchRes", styles.FORM_TEXT_INPUT, onEndLocationTextChange, "Search for an ending location", "End Location",startingELocationSearchBarValue),
             addButton
         ),
         listElement,
         paginationElement
-    )
+    ]
 
 
     async function updateRouteDisplayItems(newQuery) {
@@ -84,7 +116,7 @@ async function displayRouteList(mainContent, _, query) {
 /**
  * Displays a route details with the given id
  */
-async function displayRouteDetails(mainContent, params, _) {
+async function displayRouteDetails(params, _) {
 
     const route = await routeApi.fetchRoute(params.rid)
 
@@ -100,11 +132,11 @@ async function displayRouteDetails(mainContent, params, _) {
         })
     }
 
-    mainContent.replaceChildren(
+    return[
         H1(styles.HEADER, 'Route Details'),
         RouteDetails(route,onEditConfirm),
         Div(styles.SPACER)
-    )
+    ]
 }
 
 
@@ -113,7 +145,7 @@ async function displayRouteDetails(mainContent, params, _) {
 /**
  * Displays the route creation page
  */
-async function createRoute(mainContent, params, _) {
+async function createRoute(params, _) {
     const nItems = getItemsPerPage()
 
     const onSubmit = async (sLocation, eLocation, distance) => {
@@ -167,12 +199,12 @@ async function createRoute(mainContent, params, _) {
         window.location.hash = `routes?skip=0&limit=${nItems}`
     }
 
-    mainContent.replaceChildren(
+    return[
         H1(styles.HEADER, 'Add a Route'),
         Div(styles.ADD_CONTAINER,
             RouteCreate(onSubmit)
         )
-    )
+    ]
 }
 
 

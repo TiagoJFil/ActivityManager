@@ -2,6 +2,8 @@ package pt.isel.ls.repository
 
 import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
+import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
@@ -37,6 +39,14 @@ interface UserRepository {
      * @return [Boolean] true if the user exists or false if it doesn't.
      */
     fun hasUser(userID: UserID): Boolean
+
+    /**
+     * Gets the users that have an activity matching the given sport id and route id.
+     * @param sportID sport identifier
+     * @param routeID route identifier
+     * @return [List] of [User]
+     */
+    fun getUsersBy(sportID: SportID, routeID: RouteID, paginationInfo: PaginationInfo): List<User>
 
     /**
      * Returns the user with the given id.

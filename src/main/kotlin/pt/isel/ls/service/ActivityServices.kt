@@ -5,11 +5,9 @@ import kotlinx.datetime.toLocalDate
 import pt.isel.ls.service.SportsServices.Companion.SPORT_ID_PARAM
 import pt.isel.ls.service.UserServices.Companion.USER_ID_PARAM
 import pt.isel.ls.service.dto.ActivityDTO
-import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.service.entities.Activity.Duration
 import pt.isel.ls.service.entities.Order
-import pt.isel.ls.service.entities.User
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.RouteID
@@ -81,13 +79,13 @@ class ActivityServices(
             try {
                 val userID = usersRepository.requireAuthenticated(token)
                 val sid = requireParameter(sportID, SPORT_ID_PARAM)
+                val sidInt = requireIdInteger(sid, SPORT_ID_PARAM)
                 val safeDate = requireParameter(date, DATE_PARAM)
                 requireParameter(duration, DURATION_PARAM)
                 requireNotBlankParameter(rid, ROUTE_ID_PARAM)
 
-                val parsedDate: Date = Duration.format.parse(duration)
-                val millis: Long = parsedDate.time
-                val sidInt = requireIdInteger(sid, SPORT_ID_PARAM)
+                val parsedDuration: Date = Duration.format.parse(duration)
+                val millis: Long = parsedDuration.time
 
                 sportsRepository.requireSport(sidInt)
                 usersRepository.requireUser(userID)
@@ -295,33 +293,6 @@ class ActivityServices(
             activitiesRepository.requireOwnership(userID, aidInt)
 
             activitiesRepository.deleteActivity(aidInt)
-        }
-    }
-
-    /**
-     * Gets the users that match activities with the given sport id and route id.
-     * @param sportID The sport id of the activity.
-     * @param routeID The route id of the activity.
-     */
-    fun getUsersByActivity(sportID: Param, routeID: Param, paginationInfo: PaginationInfo): List<UserDTO> {
-        logger.traceFunction(::getUsersByActivity.name) {
-            listOf(
-                SPORT_ID_PARAM to sportID,
-                ROUTE_ID_PARAM to routeID
-            )
-        }
-        val safeSID = requireParameter(sportID, "SportID")
-        val safeRID = requireParameter(routeID, "RouteID")
-        val sidInt = requireIdInteger(safeSID, SPORT_ID_PARAM)
-
-        return transactionFactory.getTransaction().execute {
-            sportsRepository.requireSport(sidInt)
-            val ridInt = requireIdInteger(safeRID, ROUTE_ID_PARAM)
-            routesRepository.requireRoute(ridInt)
-
-            return@execute activitiesRepository
-                .getUsersBy(sidInt, ridInt, paginationInfo)
-                .map(User::toDTO)
         }
     }
 

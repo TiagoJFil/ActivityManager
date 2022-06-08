@@ -216,7 +216,7 @@ class ActivitiesServicesTest {
         val sportID = testSport.id.toString()
         val routeId = testRoute.id.toString()
         activitiesServices.createActivity(GUEST_TOKEN, sportID, "02:10:32.123", "2002-05-20", routeId)
-        val users = activitiesServices.getUsersByActivity(sportID, routeId, PaginationInfo(10, 0))
+        val users = userServices.getUsersByActivity(sportID, routeId, PaginationInfo(10, 0))
         assertEquals(listOf(guestUser.toDTO()), users)
     }
 
