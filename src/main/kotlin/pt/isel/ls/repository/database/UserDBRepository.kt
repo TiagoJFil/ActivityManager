@@ -157,10 +157,10 @@ class UserDBRepository(private val connection: Connection) : UserRepository {
      * @param passwordHash the password token of the user.
      * @return [UserToken] the user token of the user with the given email.
      */
-    override fun getTokenByAuth(email: Email, passwordHash: String): UserToken? {
+    override fun getUserInfoByAuth(email: Email, passwordHash: String): Pair<UserToken, UserID>? {
 
         val query = """
-            SELECT token FROM $userTable
+            SELECT token, token."user" as tuser FROM $userTable
             INNER JOIN $emailTable ON $userTable.id = $emailTable.user
             INNER JOIN $tokenTable ON $userTable.id = $tokenTable.user
             WHERE $emailTable.email = ? AND $userTable.password = ?
@@ -170,7 +170,11 @@ class UserDBRepository(private val connection: Connection) : UserRepository {
             stmt.setString(1, email.value)
             stmt.setString(2, passwordHash)
             stmt.executeQuery().use { resultSet ->
-                return resultSet.ifNext { resultSet.getString("token") }
+                return resultSet.ifNext {
+                    val token = resultSet.getString("token")
+                    val uid = resultSet.getInt("tuser")
+                    token to uid
+                }
             }
         }
     }

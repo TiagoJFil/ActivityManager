@@ -167,7 +167,7 @@ class ActivitiesApiTests {
     }
 
     @Test
-    fun `8get a list of activities by sport ascending and descending`() {
+    fun `get a list of activities by sport ascending and descending`() {
         val sportID = testClient.createSport(SportInput("Teste", "descricao")).sportID
 
         val activityID1 = testClient.createActivity(

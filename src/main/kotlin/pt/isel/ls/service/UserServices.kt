@@ -105,8 +105,8 @@ class UserServices(
      * @param password the password of the user
      * @return the token of the user
      */
-    fun getTokenByAuth(email: Param, password: Param): UserToken {
-        logger.traceFunction(::getTokenByAuth.name) { listOf(EMAIL_PARAM to email) }
+    fun getUserInfoByAuth(email: Param, password: Param): Pair<UserToken, UserID> {
+        logger.traceFunction(::getUserInfoByAuth.name) { listOf(EMAIL_PARAM to email) }
 
         val safeEmail = Email(requireParameter(email, EMAIL_PARAM))
         val safePassword = requireParameter(password, PASSWORD_PARAM)
@@ -115,7 +115,7 @@ class UserServices(
 
         return transactionFactory.getTransaction().execute {
 
-            usersRepository.getTokenByAuth(safeEmail, passwordHash)
+            usersRepository.getUserInfoByAuth(safeEmail, passwordHash)
                 ?: throw InvalidParameter(INVALID_CREDENTIALS)
         }
     }

@@ -5,12 +5,11 @@ import javax.sql.DataSource
 /**
  * A factory for creating [Transaction] instances.
  *
- * @param dataSource the data source to use for creating transactions.
  */
 interface TransactionFactory {
 
     /**
-     * Creates a new [Transaction] instance based on the [dataSource] provided.
+     * Creates a new [Transaction]
      *
      * @return a new [Transaction] instance.
      */
@@ -19,7 +18,7 @@ interface TransactionFactory {
 
 class JDBCTransactionFactory(val dataSource: DataSource) : TransactionFactory {
     /**
-     * Creates a new [Transaction] instance based on the [dataSource] provided.
+     * Creates a new [Transaction]
      *
      * @return a new [Transaction] instance.
      */
@@ -29,9 +28,7 @@ class JDBCTransactionFactory(val dataSource: DataSource) : TransactionFactory {
 object InMemoryTransactionFactory : TransactionFactory {
 
     /**
-     * Creates a new [Transaction] instance based on the [dataSource] provided.
-     *
-     * @return a new [Transaction] instance.
+     * Creates a new [Transaction] instance
      */
     override fun getTransaction(): Transaction = InMemoryTransaction
 }

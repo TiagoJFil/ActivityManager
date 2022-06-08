@@ -31,7 +31,6 @@ class UserRoutes(
     @Serializable data class UserIDOutput(val authToken: UserToken, val id: UserID)
     @Serializable data class UserListOutput(val users: List<UserDTO>)
     @Serializable data class AuthInput(val email: Param = null, val password: Param = null)
-    @Serializable data class AuthOutput(val authToken: UserToken)
 
     companion object {
         private val logger = getLoggerFor<UserRoutes>()
@@ -47,11 +46,11 @@ class UserRoutes(
         val bodyString = request.bodyString()
         val body = Json.decodeFromString<UserInput>(bodyString)
 
-        val res = userServices.createUser(body.name, body.email, body.password)
+        val (token, id) = userServices.createUser(body.name, body.email, body.password)
 
         return Response(CREATED)
             .contentJson()
-            .body(Json.encodeToString(UserIDOutput(res.first, res.second)))
+            .body(Json.encodeToString(UserIDOutput(token, id)))
     }
 
     /**
@@ -91,11 +90,11 @@ class UserRoutes(
         val bodyString = request.bodyString()
         val body = Json.decodeFromString<AuthInput>(bodyString)
 
-        val token = userServices.getTokenByAuth(body.email, body.password)
+        val (token, id) = userServices.getUserInfoByAuth(body.email, body.password)
 
         return Response(Status.OK)
             .contentJson()
-            .body(Json.encodeToString(AuthOutput(token)))
+            .body(Json.encodeToString(UserIDOutput(token, id)))
     }
 
     val handler: RoutingHttpHandler = routes(
