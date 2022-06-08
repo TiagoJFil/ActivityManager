@@ -52,7 +52,7 @@ async function displaySportList(mainContent, _, query) {
         H1(styles.HEADER, 'Sports'),
         Div(styles.SEARCH_BAR_WITH_ADD,
             SearchBar("searchRes", styles.FORM_TEXT_INPUT, onSportTextChange, "Search for a sport", null),
-            BoardlessIconButton(styles.BX_ADD, `#sports/add`, "Add a sport")
+            BoardlessIconButton( `#sports/add`, "Add a sport")
         ),
         listElement,
         paginationElement

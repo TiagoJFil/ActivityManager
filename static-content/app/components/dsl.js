@@ -85,8 +85,8 @@ export function H1(className, text) {
  * @param  {...any} children  The children of this element
  * @returns {HTMLElement} a nav element
  */
-export function Nav(...children) {
-    return createElement('nav', null, ...children)
+export function Nav(className, ...children) {
+    return createElement('nav', className, ...children)
 }
 
 /**

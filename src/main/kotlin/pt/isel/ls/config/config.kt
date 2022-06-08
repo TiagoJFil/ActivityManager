@@ -38,7 +38,7 @@ private fun getEnvType(): EnvironmentType {
 fun getEnv(): Environment {
     val envType = getEnvType()
     val transactionFactory = envType.dbMode.transactionFactory
-    val port = System.getenv("SERVER_PORT")?.toInt() ?: DEFAULT_PORT
+    val port = System.getenv("PORT")?.toInt() ?: DEFAULT_PORT
 
     return Environment(
         UserServices(transactionFactory),

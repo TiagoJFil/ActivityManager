@@ -1,11 +1,17 @@
-import {Div, H1, Text, Image} from "../components/dsl.js"
+import {Div, H1, Text, Image, Button, Anchor} from "../components/dsl.js"
 import { sportHandlers } from "./sports-handlers.js";
 import { userHandlers } from "./users-handlers.js";
 import { routeHandlers } from "./routes-handlers.js";
 import { activityHandlers } from "./activities-handlers.js";
-import { queryBuilder } from "../api/api-utils.js";
+import { getBodyOrThrow, queryBuilder } from "../api/api-utils.js";
+import { ErrorToast, SuccessToast , InfoToast} from "../toasts.js";
+import CreateUser from "../components/creates/CreateUser.js";
 import styles from "../styles.js";
+import Login from "../components/Login.js";
+import { userApi } from "../api/api.js";
+import {setUserInfo ,isLoggedIn} from "../api/session.js"
 
+import { reloadNav} from "./utils.js"
 
 /**
  * Displays the home page 
@@ -63,6 +69,79 @@ function getErrorPage(mainContent, error) {
     )
 }
 
+
+
+
+
+function getLogin(mainContent){
+
+    const onLoginConfirm = async (email, password) => {
+        try{
+            const tokenObject = await userApi.login(email, password)
+            setUserInfo(tokenObject.authToken)
+            SuccessToast(`Welcome!`).showToast()
+
+
+            reloadNav()
+            window.location.hash = "home"
+        }
+        catch( e) {
+            ErrorToast("Error Logging in").showToast()
+            InfoToast(e.message).showToast()
+            return false
+        }
+    }
+
+    mainContent.replaceChildren(
+        Div("login-page",
+            H1(styles.HEADER, 'Sign In'),
+            Login(onLoginConfirm),
+            Text(styles.TEXT, "Don't have an account yet?"),
+            Anchor(null, "#register", Text(styles.TEXT, "Register"))
+        )
+    )
+}
+
+function getLogout(mainContent){
+    if(!isLoggedIn()){
+        window.location.hash = "home"
+        return
+    }
+    setUserInfo(null)
+    InfoToast(`Goodbye :(`).showToast()
+
+
+    reloadNav()
+    window.location.hash = "home"
+}
+
+function getRegister(mainContent){
+
+    const onRegisterConfirm = async (name, email, password, reinsertedPassword) => {
+        try{
+            if(password != reinsertedPassword){
+                ErrorToast("Passwords do not match").showToast()
+                return 
+            }
+            const User = await userApi.createUser(name, email, password)
+            setUserInfo(User.authToken)
+
+            reloadNav()
+            SuccessToast(`Welcome ${name}`).showToast()
+            window.location.hash = "home"
+        }catch(e){
+            let message = ""
+            console.log(e)
+            return
+        }
+    }
+
+    mainContent.replaceChildren(
+        H1(styles.HEADER, 'Register'),
+        CreateUser(onRegisterConfirm),
+    )
+}
+
 /**
  * The function to be called when the pagination is changed
  * 
@@ -71,7 +150,7 @@ function getErrorPage(mainContent, error) {
  * @param {Number} skip  the skip to be used in the query
  * @param {Number} limit   the limit to be used in the query
  */
- export function onPaginationChange(path, currentQuery, skip, limit){
+export function onPaginationChange(path, currentQuery, skip, limit){
 
     const query = currentQuery ? {...currentQuery} : {}
 
@@ -85,6 +164,9 @@ export default {
     getHome,
     getNotFoundPage,
     getErrorPage,
+    getLogin,
+    getRegister,
+    getLogout,
     getSports: sportHandlers.displaySportList,
     getSport: sportHandlers.displaySportDetails,
     getUsers: userHandlers.displayUserList,

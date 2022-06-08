@@ -1,7 +1,7 @@
 import router from './router.js'
 import handlers from './handlers/app-handlers.js'
 import { Navigation } from './components/Navigation.js'
-
+import {isLoggedIn} from './api/session.js'
 window.addEventListener('load', loadHandler)
 window.addEventListener('hashchange', hashChangeHandler)
 
@@ -11,7 +11,7 @@ window.addEventListener('hashchange', hashChangeHandler)
  */
 function loadHandler(){
     if(!location.hash) location.hash = "#home" 
-    document.body.prepend(Navigation())
+    document.body.prepend(Navigation(isLoggedIn()))
 
 
     router.addDefaultNotFoundRouteHandler(handlers.getNotFoundPage)
@@ -36,6 +36,10 @@ function loadHandler(){
     router.addRouteHandler('sports/:sid/activities/:aid', handlers.getActivity)
     router.addRouteHandler('sports/:sid/activities', handlers.getActivities)
     router.addRouteHandler('users/:uid/activities', handlers.getActivitiesByUser)
+
+    router.addRouteHandler('login', handlers.getLogin)
+    router.addRouteHandler('register', handlers.getRegister)
+    router.addRouteHandler('logout', handlers.getLogout)
 
     hashChangeHandler()
 }

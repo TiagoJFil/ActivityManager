@@ -1,3 +1,6 @@
+import {setUserInfo, getUserInfo} from "./session.js"
+
+
 /**
  * Builds the query string from the given query object
  * @param {Object} queryObject - query key-value pairs in json format. e.g: { skip: 0, limit: 10 }
@@ -6,10 +9,10 @@
 export function queryBuilder(queryObject){
 
     if(queryObject === undefined) return ''
-
+    
     return Object
         .keys(queryObject)
-        .map(key => `${key}=${queryObject[key]}`)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(queryObject[key])}`)
         .join('&')
 }
 
@@ -69,7 +72,8 @@ export async function fetchResourceList(uri, queryObject, listPropertyName) {
 }
 
 
-const token = '1b6cfbdf-ab9f-4c3f-bd58-5a894e040f9d'
+const token =  getUserInfo()   //'1b6cfbdf-ab9f-4c3f-bd58-5a894e040f9d'
+
 /**
  * Sends a request with the provided method and body
  */

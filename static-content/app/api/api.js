@@ -2,9 +2,10 @@ import {fetchResourceList, getRequest, getBodyOrThrow, isSuccessful, sendRequest
 
 // URL Related Constants
 
-const BASE_API_URL = '/api/';
+const BASE_API_URL = '/api/'
 const SPORTS_URL = 'sports'
 const USERS_URL = 'users'
+const LOGIN_URL = 'login'
 const ROUTE_URL = 'routes'
 const ACTIVITIES_URL = 'activities'
 
@@ -64,6 +65,37 @@ async function createActivity(sid, date, duration, rid) {
     return await getBodyOrThrow(response)
 }
 
+/**
+ * Makes a post request to the API to create an user
+ */
+async function createUser(name, email, password) {
+    const uri = BASE_API_URL + USERS_URL
+    const body = JSON.stringify({
+        name,
+        email,
+        password
+    })
+    const response = await sendRequest(uri, 'POST', body)
+
+    return await getBodyOrThrow(response)
+}
+
+
+/**
+ * Makes a post request to check login credentials
+ */
+ async function login(email, password) {
+    const uri = BASE_API_URL + LOGIN_URL
+    const body = JSON.stringify({
+        email,
+        password
+    })
+    const response = await sendRequest(uri, 'POST', body)
+
+    return await getBodyOrThrow(response)
+}
+
+
 
 /**
  * Makes a put request to the API to update a sport
@@ -74,7 +106,7 @@ async function createActivity(sid, date, duration, rid) {
         "name": sportName,
         "description": sportDescription || ''
     })
-    const response = await sendRequest(uri, 'PUT',body)
+    const response = await sendRequest(uri, 'PUT', body)
 
     if(!isSuccessful(response.status))
         throw await response.json()    
@@ -91,7 +123,7 @@ async function updateRoute(rid, sLocation, eLocation, distance) {
         endLocation: eLocation || '',
         distance: distance ? parseFloat(distance) : ""
     })
-    const response = await sendRequest(uri, 'PUT',body)
+    const response = await sendRequest(uri, 'PUT', body)
 
     if(!isSuccessful(response.status))
         throw await response.json()
@@ -136,6 +168,9 @@ export const userApi = {
 
     fetchUsersByActivity: async (sid, queryObject) =>
         await fetchResourceList(BASE_API_URL + `${SPORTS_URL}/${sid}/users`, queryObject, USERS_PROPERTY),
+    
+    createUser,
+    login
 
 }
 

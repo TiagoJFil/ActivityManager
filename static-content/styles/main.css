@@ -107,7 +107,7 @@ body{
   left: 2px;
 }
 
-.add-item .button{
+.add-item .button, .login-item .button{
     margin-top: 20px;
 }
 
@@ -171,7 +171,7 @@ button{
 }
 
 
-.route-search, .sport-search, .sport-filter, .route-filter, .add-item{
+.route-search, .sport-search, .sport-filter, .route-filter, .add-item, .login-item  {
     display: flex;
     flex-direction: column;
     align-content: center;

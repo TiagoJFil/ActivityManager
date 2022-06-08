@@ -33,6 +33,7 @@ const styles = {
     SEARCH_HEADER: 'search-header',
     SEARCH_ROUTE: 'search-route',
     ADD_ITEM: 'add-item',
+    LOGIN_ITEM: 'login-item',
     SEARCH_CONTAINER: 'sport-search-container',
     ADD_CONTAINER: 'add-container',
     SEARCH_AND_HEADER_DIV: 'sports-search-header-container',
@@ -55,6 +56,8 @@ const styles = {
     NAV_LINKS: 'nav-links',
     NAV_TEXT: 'nav-text',
     ACTIVE : 'active',
+    AUTH : 'auth',
+    MAIN_NAV : 'main-nav',
 
 
     LIST_BUTTON: 'list-button',
@@ -81,7 +84,9 @@ const styles = {
     ADD_ICON: 'bx-plus-circle',
     MAP_ICON: 'bx-map-alt',
     HOME_ICON: 'bx-home',
-    ADD_ACTIVITY_ICON: 'bx-calendar-plus'
+    ADD_ACTIVITY_ICON: 'bx-calendar-plus',
+    LOGIN_ICON: 'bx-log-in',
+    LOGOUT_ICON: 'bx-log-out',
 }
 
 export default styles;

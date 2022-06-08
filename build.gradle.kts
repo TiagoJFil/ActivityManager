@@ -52,6 +52,8 @@ tasks.register("docker-build") {
     group = "docker"
     // depends on gradle build
     dependsOn("build")
+    dependsOn("docker-clean")
+
     // docker build
     val outFile = File("gradle_docker_build_output.txt")
     doLast {
@@ -66,15 +68,65 @@ tasks.register("docker-build") {
     }
 }
 
+tasks.register("docker-clean") {
+    group = "docker"
+    val dockerRmCommand = "docker rmi -f sports-server"
+
+    val outFile = File("gradle_docker_clean_output.txt")
+    doLast {
+
+        ProcessBuilder(dockerRmCommand.split(" "))
+            .inheritIO() // inherit sys envs
+            .redirectOutput(outFile)
+            .redirectError(outFile)
+            .start()
+            .waitFor()
+    }
+}
+
 tasks.register("docker-run") {
     group = "docker"
     dependsOn("docker-build")
+    dependsOn("docker-clean")
     val outFile = File("gradle_docker_run_output.txt")
     doLast {
         val dockerRunCommand = "docker run -p 9000:9000 -d sports-server:latest"
         println("Executing: $dockerRunCommand")
         ProcessBuilder(dockerRunCommand.split(" "))
             .inheritIO() // inherit sys envs
+            .redirectOutput(outFile)
+            .redirectError(outFile)
+            .start()
+            .waitFor()
+    }
+}
+
+tasks.register("heroku-deploy") {
+    group = "docker"
+    dependsOn("docker-build")
+
+    val outFile = File("gradle_heroku_deploy_output.txt")
+    val herokuLogin = "heroku container:login"
+    val herokuPushCommand = "heroku container:push web"
+    val herokuDeployCommand = "heroku container:release web"
+
+    doLast {
+        ProcessBuilder(herokuLogin.split(" "))
+            .inheritIO()
+            .redirectOutput(outFile)
+            .redirectError(outFile)
+            .start()
+            .waitFor()
+
+        ProcessBuilder(herokuPushCommand.split(" "))
+            .inheritIO()
+            .redirectOutput(outFile)
+            .redirectError(outFile)
+            .start()
+            .waitFor()
+
+        ProcessBuilder(herokuDeployCommand.split(" "))
+            .inheritIO()
             .redirectOutput(outFile)
             .redirectError(outFile)
             .start()

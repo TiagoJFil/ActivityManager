@@ -1,7 +1,8 @@
 import {routeApi, sportApi} from '../api/api.js'
 import {Option} from '../components/dsl.js'
 import styles from '../styles.js'
-
+import {isLoggedIn} from "../api/session.js"
+import { Navigation } from "../components/Navigation.js";
 
 export const DURATION_REGEX = /^(?:2[0-3]|[01]?[0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]$/
 
@@ -56,4 +57,11 @@ export async function onSportTextChange (sportText){
    sportSelector.replaceChildren(
        ...sportSelectorOptions
    )
+}
+
+
+export function reloadNav(){
+    document.querySelector(".main-nav").replaceChildren(
+        Navigation(isLoggedIn()),
+    )
 }

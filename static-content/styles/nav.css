@@ -16,7 +16,7 @@
 
 nav:hover .logo{
     margin-left: 35px;
-    margin-bottom: 149px;
+    margin-bottom: 153px;
 }
 
 nav:hover .logo-img, nav:hover .logo{
@@ -53,16 +53,37 @@ nav{
     transition: all 0.3s ease-in-out;
 }
 
+
 .nav-links{
     list-style: none;
     position: relative;
     margin-left: 10px;
 }
 
+
 .nav-links li{
     padding: 10px 0;
 }
 
+.auth {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    bottom: 25px;
+    margin-left: 6px;
+    height: 47px;
+    
+    padding-top: 12px;
+    padding-bottom: 8px;
+}
+
+.auth a {
+    position: relative;
+    margin-bottom: 5px;
+    
+}
+
+nav .auth a,
 .nav-links li a{
     color: #fff;
     text-decoration: none;
@@ -71,31 +92,38 @@ nav{
     align-items: center;
 }
 
+nav .auth a .nav-text,
 .nav-links li a .nav-text{
     display: none;
+    white-space: nowrap;
 }
 
+nav:hover .auth a .nav-text,
 nav:hover .nav-links li .nav-text{
     display: block;
-    transition: all 0.9s ease-out;
 }
 
+nav:hover .auth a i,
 nav:hover .nav-links li a i{
     margin-right: 20px;
     transition: all 0.3s ease-in-out;
 }
 
+nav .auth a i,
 .nav-links li a i{
     font-size: 22px;
     margin-right: 0;
     margin-left: 3.5px;
 }
 
+.auth:hover a,
+.auth:focus a,
 .nav-links li:hover a,
 .nav-links li:focus a{
     color: var(--primary);
     transition: 0.3s;
 }
+
 
 .nav-links li:hover ~ .active,
 .nav-links li:focus ~ .active{
@@ -125,6 +153,16 @@ nav:hover .nav-links li a i{
 .nav-links li:nth-child(5):hover ~ .active,
 .nav-links li:nth-child(5):focus ~ .active{
     top: 82.6%;
+}
+
+.auth:hover {
+    background: var(--hover-color);
+    width: 84%;
+   /* height: 42px;*/
+    
+    z-index: -1;
+    border-radius: 5px;
+    box-shadow: 0 5px 10px rgba(255, 255, 255, 0.4);
 }
 
 .active{

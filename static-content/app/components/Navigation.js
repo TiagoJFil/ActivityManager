@@ -6,9 +6,24 @@ import {BoxIcon} from "./Icons.js";
 /**
  * The navigation bar component
  */
-export function Navigation(){
+export function Navigation(isLoggedIn){
 
-    return Nav(
+
+    const auth = isLoggedIn ?
+    Div(styles.AUTH,
+        Anchor(null, "#logout",
+            BoxIcon(styles.LOGIN_ICON),
+            Text(styles.NAV_TEXT, "Logout")
+        )
+    )
+       :
+     Div(styles.AUTH,
+        Anchor(null, "#login",
+            BoxIcon(styles.LOGIN_ICON),
+            Text(styles.NAV_TEXT, "Sign In")
+        )
+    )
+    return Nav(styles.MAIN_NAV,
         Anchor(styles.LOGO, "#home",
             Image(styles.LOGO_IMAGE, null, "img/logo.png")
         ),
@@ -44,7 +59,8 @@ export function Navigation(){
                 )
             ),
             Div(styles.ACTIVE)
-        )
+        ),
+        auth
     )
 
 }
