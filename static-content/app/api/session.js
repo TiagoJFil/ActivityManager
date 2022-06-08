@@ -5,8 +5,12 @@ function getUserInfo(){
     return USER_INFO
 }
 
-function setUserInfo(token){
-    USER_INFO = token
+function setUserInfo(info){
+    USER_INFO = info
+}
+
+function getUserToken(){
+    return USER_INFO ? USER_INFO["authToken"] : null
 }
 
 function isLoggedIn(){
@@ -16,5 +20,6 @@ function isLoggedIn(){
 export  {
     getUserInfo,
     setUserInfo,
-    isLoggedIn
+    isLoggedIn,
+    getUserToken
 }

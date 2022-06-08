@@ -12,7 +12,7 @@ export function Navigation(isLoggedIn){
     const auth = isLoggedIn ?
     Div(styles.AUTH,
         Anchor(null, "#logout",
-            BoxIcon(styles.LOGIN_ICON),
+            BoxIcon(styles.LOGOUT_ICON),
             Text(styles.NAV_TEXT, "Logout")
         )
     )

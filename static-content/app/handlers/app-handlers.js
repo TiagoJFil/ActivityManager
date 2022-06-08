@@ -75,19 +75,24 @@ function getErrorPage(mainContent, error) {
 
 function getLogin(mainContent){
 
-    const onLoginConfirm = async (email, password) => {
+    const onLoginConfirm = async (email, password, Button) => {
         try{
-            const tokenObject = await userApi.login(email, password)
-            setUserInfo(tokenObject.authToken)
-            SuccessToast(`Welcome!`).showToast()
-
-
-            reloadNav()
+            Button.disabled = true
+            const auth = await userApi.login(email, password)
+            const user = userApi.fetchUser(auth.id)
+            
+            user.then( userObj => {
+                SuccessToast(`Welcome ${userObj.name}`).showToast()
+                reloadNav()
+            })
+            
+            setUserInfo(auth)
             window.location.hash = "home"
         }
-        catch( e) {
-            ErrorToast("Error Logging in").showToast()
-            InfoToast(e.message).showToast()
+        catch(e) {
+            ErrorToast(e.message).showToast()
+            Button.disabled = false
+            
             return false
         }
     }
@@ -95,9 +100,13 @@ function getLogin(mainContent){
     mainContent.replaceChildren(
         Div("login-page",
             H1(styles.HEADER, 'Sign In'),
+            Div(styles.LOGIN_ELEMS,
             Login(onLoginConfirm),
-            Text(styles.TEXT, "Don't have an account yet?"),
-            Anchor(null, "#register", Text(styles.TEXT, "Register"))
+            Div(styles.SPACER),
+            Text(styles.TEXT, "Don't have an account yet? "),
+            
+                Anchor(styles.REGISTER_ANCHOR, "#register", Text(styles.TEXT, "Register"))
+            )
         )
     )
 }
@@ -117,28 +126,38 @@ function getLogout(mainContent){
 
 function getRegister(mainContent){
 
-    const onRegisterConfirm = async (name, email, password, reinsertedPassword) => {
-        try{
+    const onRegisterConfirm = async (name, email, password, reinsertedPassword, Button) => {
+        try{ 
             if(password != reinsertedPassword){
                 ErrorToast("Passwords do not match").showToast()
                 return 
             }
-            const User = await userApi.createUser(name, email, password)
-            setUserInfo(User.authToken)
 
+            Button.disabled = true
+
+            const User = await userApi.createUser(name, email, password)
+            window.location.hash = "home"
+            
+            setUserInfo(User)
             reloadNav()
             SuccessToast(`Welcome ${name}`).showToast()
-            window.location.hash = "home"
+            
+            
         }catch(e){
-            let message = ""
-            console.log(e)
+            let message = ''
+            if(e.code = 2000)
+                message = "Name should not be empty or email already taken"
+            
+            Button.disabled = false
             return
         }
     }
 
     mainContent.replaceChildren(
         H1(styles.HEADER, 'Register'),
-        CreateUser(onRegisterConfirm),
+        Div(styles.REGISTER_ELEMS,
+            CreateUser(onRegisterConfirm)
+        ),
     )
 }
 

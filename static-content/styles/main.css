@@ -170,6 +170,50 @@ button{
     margin-top: 20px;
 }
 
+.login-page .spacer{
+    padding-top: 10px;
+}
+
+.login-page .register-anchor .text{
+    color: var(--secondary)
+ }
+
+ .login-page .register-anchor {
+    background-color: transparent;
+    text-decoration: none;
+ }
+
+ .login-page .register-anchor:hover .text {
+    background-color: transparent;
+    width: 84%;
+    z-index: -1;
+    border-radius: 5px;
+    box-shadow: 0 5px 10px rgba(255, 255, 255, 0.4);
+ }
+
+ .login-elems {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+   
+ }
+
+ .register-elems {
+    margin-top: -50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+   
+ }
+
 
 .route-search, .sport-search, .sport-filter, .route-filter, .add-item, .login-item  {
     display: flex;

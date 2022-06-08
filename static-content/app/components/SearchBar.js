@@ -1,5 +1,6 @@
 import {Div, Input, Text} from "./dsl.js";
 import styles from "../styles.js";
+import { debounce } from "../handlers/utils.js"
 
 /**
  * Search bar component
@@ -12,12 +13,14 @@ import styles from "../styles.js";
  * @returns {HTMLElement}
  */
 export default function SearchBar(id, className, onTextChange, placeholder, header, defaultValue) {
-
+    
     const onChange = (event) => {
-        onTextChange(event.target.value);
+        onTextChange(event.target.value)
     };
 
-    const searchBar = Input(className, "search", id, onChange, placeholder, defaultValue);
+    const debouncedChange = debounce(onChange, 200);
+
+    const searchBar = Input(className, "search", id, debouncedChange, placeholder, defaultValue);
     const items = header
         ? [Text(styles.DETAIL_HEADER, header), searchBar]
         : [searchBar];
