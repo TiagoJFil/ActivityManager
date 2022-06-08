@@ -24,6 +24,7 @@ export default function SportDetails(sport, onEditConfirm) {
     const onEdit = () => {
         modal.style.display = "flex";
     }
+    const addButton =  isLoggedIn() ?  LinkIcon(styles.ADD_ACTIVITY_ICON, `#sports/${sport.id}/activities/add`,"Add an activity") : Div()
 
     return List(styles.DETAILS,
             Item('name-item',
@@ -36,7 +37,7 @@ export default function SportDetails(sport, onEditConfirm) {
             Div(styles.ICON_GROUP,
                 LinkIcon(styles.USER_ICON, `#users/${sport.user}`, "Get user details"),
                 ButtonIcon(styles.EDIT_ICON, onEdit, "Edit sport"),
-                LinkIcon(styles.ADD_ACTIVITY_ICON, `#sports/${sport.id}/activities/add`,"Add an activity")
+                addButton
             ),
             modal
         )

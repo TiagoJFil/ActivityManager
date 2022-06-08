@@ -22,7 +22,7 @@ import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import java.security.MessageDigest
-import java.util.*
+import java.util.UUID
 
 /**
  * @param parameter the parameter to check.
@@ -180,11 +180,11 @@ fun generateUUId() = UUID.randomUUID().toString()
  */
 fun <T> List<T>.applyPagination(paginationInfo: PaginationInfo) = drop(paginationInfo.offset).take(paginationInfo.limit)
 
-private val digest = MessageDigest.getInstance("SHA-512") //"SHA-512"
+private val digest = MessageDigest.getInstance("SHA-512") // "SHA-512"
 
 fun ByteArray.toHex(): String {
     return joinToString("") { "%02x".format(it) }
 }
 
 fun hashPassword(password: String): String =
-     digest.digest(password.toByteArray()).toHex()
+    digest.digest(password.toByteArray()).toHex()

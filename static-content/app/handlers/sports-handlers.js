@@ -9,6 +9,7 @@ import SportCreate from "../components/creates/CreateSport.js";
 import SearchBar from  "../components/SearchBar.js";
 import { SuccessToast, ErrorToast, InfoToast } from '../toasts.js'
 import { BoardlessIconButton } from '../components/Icons.js'
+import {isLoggedIn} from "../api/session.js"
 
 /**
  * Displays a sport list with the given query
@@ -48,11 +49,14 @@ async function displaySportList(mainContent, _, query) {
         paginationElement = newPagination
     }
 
+    const addButton =  isLoggedIn() ? BoardlessIconButton( `#sports/add`, "Add a sport") : Div()
+
+
     mainContent.replaceChildren(
         H1(styles.HEADER, 'Sports'),
         Div(styles.SEARCH_BAR_WITH_ADD,
             SearchBar("searchRes", styles.FORM_TEXT_INPUT, onSportTextChange, "Search for a sport", null),
-            BoardlessIconButton( `#sports/add`, "Add a sport")
+            addButton
         ),
         listElement,
         paginationElement

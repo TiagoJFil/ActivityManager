@@ -23,7 +23,7 @@ export default function RouteCreate(onSubmit) {
             Text(styles.SEARCH_HEADER, "END LOCATION"),
             Input(styles.FORM_TEXT_INPUT, "text", "eLocation", null),
             Text(styles.SEARCH_HEADER, "DISTANCE"),
-            Input(styles.FORM_TEXT_INPUT, "text", "distance", null,'e.g. 10km'),
+            Input(styles.FORM_TEXT_INPUT, "text", "distance", null,'e.g. 10'),
             Button(styles.BUTTON, onSubmitForm, Text(styles.TEXT, "Add"))
         )
     )

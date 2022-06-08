@@ -30,7 +30,7 @@ import { onRouteLocationsChange, DURATION_REGEX, onSportTextChange } from './uti
         ActivityList(activities),
         Pagination(
             total,
-            (skip, limit) => onPaginationChange("/sports/${}/activities", query, skip, limit)
+            (skip, limit) => onPaginationChange(`sports/${params.sid}/activities`, query, skip, limit)
         )
     )
 }

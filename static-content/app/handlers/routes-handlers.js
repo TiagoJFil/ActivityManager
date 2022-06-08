@@ -9,6 +9,7 @@ import SearchBar from '../components/SearchBar.js'
 import RouteCreate from "../components/creates/CreateRoute.js";
 import { SuccessToast, ErrorToast ,InfoToast} from '../toasts.js'
 import { BoardlessIconButton } from "../components/Icons.js";
+import {isLoggedIn} from "../api/session.js"
 
 /**
  * Displays a route list with the given query
@@ -43,14 +44,14 @@ async function displayRouteList(mainContent, _, query) {
        await updateRouteDisplayItems(newQuery)
     }
 
-
+    const addButton =  isLoggedIn() ? BoardlessIconButton(`#routes/add`,"Add a route") : Div()
 
     mainContent.replaceChildren(
         H1(styles.HEADER, 'Routes'),
         Div(styles.SEARCH_BAR_WITH_ADD,
             SearchBar("searchRes", styles.FORM_TEXT_INPUT, onStartLocationTextChange, "Search for a starting location", "Start Location"),
             SearchBar("searchRes", styles.FORM_TEXT_INPUT, onEndLocationTextChange, "Search for an ending location", "End Location"),
-            BoardlessIconButton(`#routes/add`,"Add a route")
+            addButton
         ),
         listElement,
         paginationElement

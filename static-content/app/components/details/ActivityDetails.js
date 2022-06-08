@@ -11,7 +11,7 @@ import ActivityEdit  from '../edits/ActivityEdit.js'
  * @param {Activity} activity the activity to display
  * @param onDeleteConfirm the function to call when the user confirms the deletion
  * @param onEditConfirm the function to call when the user confirms the edition
- * @param onRouteChange the function to call when the user ?????????????????????? Não deveria estar no onEditConfirm? TODO?
+ * @param onRouteChange the function to call when the route changes
  * @param route the current route
  * @returns {HTMLElement} the activity details component
  */
