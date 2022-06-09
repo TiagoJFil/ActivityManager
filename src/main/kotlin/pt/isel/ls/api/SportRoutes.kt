@@ -16,11 +16,9 @@ import org.http4k.routing.routes
 import pt.isel.ls.service.SportsServices
 import pt.isel.ls.service.dto.SportDTO
 import pt.isel.ls.utils.SportID
-import pt.isel.ls.utils.UserToken
-import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.api.contentJson
-import pt.isel.ls.utils.api.fromRequest
-import pt.isel.ls.utils.api.getBearerToken
+import pt.isel.ls.utils.api.pagination
+import pt.isel.ls.utils.api.token
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
 
@@ -43,9 +41,7 @@ class SportRoutes(
         logger.infoLogRequest(request)
 
         val sportsBody = Json.decodeFromString<SportInput>(request.bodyString())
-
-        val token: UserToken? = getBearerToken(request)
-        val sportID = sportsServices.createSport(token, sportsBody.name, sportsBody.description)
+        val sportID = sportsServices.createSport(request.token, sportsBody.name, sportsBody.description)
 
         return Response(Status.CREATED)
             .contentJson()
@@ -76,7 +72,7 @@ class SportRoutes(
 
         val search = request.query("search")
 
-        val sports = sportsServices.getSports(search, PaginationInfo.fromRequest(request))
+        val sports = sportsServices.getSports(search, request.pagination)
         val bodyString = Json.encodeToString(SportListOutput(sports))
         return Response(Status.OK)
             .contentJson()
@@ -93,8 +89,7 @@ class SportRoutes(
 
         val sportID = request.path("sid")
 
-        val token: UserToken? = getBearerToken(request)
-        sportsServices.updateSport(token, sportID, sportBody.name, sportBody.description)
+        sportsServices.updateSport(request.token, sportID, sportBody.name, sportBody.description)
 
         return Response(Status.NO_CONTENT)
     }

@@ -18,9 +18,8 @@ import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
-import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.api.contentJson
-import pt.isel.ls.utils.api.fromRequest
+import pt.isel.ls.utils.api.pagination
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
 
@@ -73,7 +72,7 @@ class UserRoutes(
     private fun getUsers(request: Request): Response {
         logger.infoLogRequest(request)
 
-        val users = userServices.getUsers(PaginationInfo.fromRequest(request))
+        val users = userServices.getUsers(request.pagination)
         val usersJsonString = Json.encodeToString(UserListOutput(users))
 
         return Response(Status.OK)

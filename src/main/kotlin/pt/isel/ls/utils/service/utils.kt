@@ -182,9 +182,6 @@ fun <T> List<T>.applyPagination(paginationInfo: PaginationInfo) = drop(paginatio
 
 private val digest = MessageDigest.getInstance("SHA-512") // "SHA-512"
 
-fun ByteArray.toHex(): String {
-    return joinToString("") { "%02x".format(it) }
-}
+fun ByteArray.toHex(): String = joinToString("") { "%02x".format(it) }
 
-fun hashPassword(password: String): String =
-    digest.digest(password.toByteArray()).toHex()
+fun hashPassword(password: String): String = digest.digest(password.toByteArray()).toHex()

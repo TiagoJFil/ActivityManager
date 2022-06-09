@@ -8,6 +8,7 @@ import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
+import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.bind
 import org.http4k.routing.path
 import org.http4k.routing.routes
@@ -16,11 +17,9 @@ import pt.isel.ls.service.ActivityServices
 import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.Param
-import pt.isel.ls.utils.UserToken
-import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.api.contentJson
-import pt.isel.ls.utils.api.fromRequest
-import pt.isel.ls.utils.api.getBearerToken
+import pt.isel.ls.utils.api.pagination
+import pt.isel.ls.utils.api.token
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
 
@@ -47,10 +46,9 @@ class ActivityRoutes(
         val sportID = request.path("sid")
 
         val activityBody = Json.decodeFromString<ActivityInput>(request.bodyString())
-        val token: UserToken? = getBearerToken(request)
 
         val activityId = activityServices.createActivity(
-            token,
+            request.token,
             sportID,
             activityBody.duration,
             activityBody.date,
@@ -87,7 +85,7 @@ class ActivityRoutes(
 
         val userId = request.path("uid")
 
-        val activities = activityServices.getActivitiesByUser(userId, PaginationInfo.fromRequest(request))
+        val activities = activityServices.getActivitiesByUser(userId, request.pagination)
         val activitiesJson = Json.encodeToString(ActivityListOutput(activities))
 
         return Response(Status.OK)
@@ -100,7 +98,7 @@ class ActivityRoutes(
      */
     private fun getAllActivities(request: Request): Response {
         logger.infoLogRequest(request)
-        val activities = activityServices.getAllActivities(PaginationInfo.fromRequest(request))
+        val activities = activityServices.getAllActivities(request.pagination)
         val activitiesJson = Json.encodeToString(ActivityListOutput(activities))
 
         return Response(Status.OK)
@@ -117,9 +115,7 @@ class ActivityRoutes(
         val activityId = request.path("aid")
         val sportID = request.path("sid")
 
-        val token: UserToken? = getBearerToken(request)
-
-        activityServices.deleteActivity(token, activityId, sportID)
+        activityServices.deleteActivity(request.token, activityId, sportID)
         return Response(Status.NO_CONTENT)
     }
 
@@ -130,9 +126,8 @@ class ActivityRoutes(
         logger.infoLogRequest(request)
 
         val activityIds = request.query("activityIDs")
-        val token: UserToken? = getBearerToken(request)
 
-        activityServices.deleteActivities(token, activityIds)
+        activityServices.deleteActivities(request.token, activityIds)
         return Response(Status.NO_CONTENT)
     }
 
@@ -144,7 +139,7 @@ class ActivityRoutes(
         val sportID = request.path("sid")
         val routeID = request.query("rid")
 
-        val users = activityServices.getUsersByActivity(sportID, routeID, PaginationInfo.fromRequest(request))
+        val users = activityServices.getUsersByActivity(sportID, routeID, request.pagination)
         val bodyString = Json.encodeToString(UserListOutput(users))
 
         return Response(Status.OK)
@@ -161,9 +156,15 @@ class ActivityRoutes(
         val activityBody = Json.decodeFromString<ActivityInput>(request.bodyString())
         val activityId = request.path("aid")
         val sportId = request.path("sid")
-        val token: UserToken? = getBearerToken(request)
 
-        activityServices.updateActivity(token, sportId, activityId, activityBody.duration, activityBody.date, activityBody.rid)
+        activityServices.updateActivity(
+            request.token,
+            sportId,
+            activityId,
+            activityBody.duration,
+            activityBody.date,
+            activityBody.rid
+        ) // TODO: Put parameters in objects
 
         return Response(Status.NO_CONTENT)
     }
@@ -184,7 +185,7 @@ class ActivityRoutes(
             order,
             date,
             routeID,
-            PaginationInfo.fromRequest(request)
+            request.pagination
         )
         val activitiesJson = Json.encodeToString(ActivityListOutput(activities))
 
@@ -192,6 +193,7 @@ class ActivityRoutes(
             .contentJson()
             .body(activitiesJson)
     }
+
     val handler = routes(
         "/sports/{sid}/activities" bind routes(
             "/" bind Method.POST to ::createActivity,
@@ -210,5 +212,8 @@ class ActivityRoutes(
     )
 }
 
-fun Activity(activityServices: ActivityServices) =
+/**
+ * Gets the routes for the activities
+ */
+fun Activity(activityServices: ActivityServices): RoutingHttpHandler =
     ActivityRoutes(activityServices).handler

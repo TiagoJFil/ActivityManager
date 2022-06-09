@@ -71,10 +71,9 @@ tasks.register("docker-build") {
 tasks.register("docker-clean") {
     group = "docker"
     val dockerRmCommand = "docker rmi -f sports-server"
-
     val outFile = File("gradle_docker_clean_output.txt")
-    doLast {
 
+    doLast {
         ProcessBuilder(dockerRmCommand.split(" "))
             .inheritIO() // inherit sys envs
             .redirectOutput(outFile)

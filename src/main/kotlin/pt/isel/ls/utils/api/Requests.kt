@@ -2,19 +2,28 @@ package pt.isel.ls.utils.api
 
 import org.http4k.core.Request
 import org.http4k.core.Response
+import pt.isel.ls.service.InvalidParameter
 import pt.isel.ls.utils.UserToken
 
 /**
- * Gets the user token from the request
- *
- * @param request request to get the token from
- * @return the user token or null if not found or in invalid format
+ * Gets the user token from the request if it exists
+ * otherwise returns null
  */
-fun getBearerToken(request: Request): UserToken? =
-    request
-        .header("Authorization")
+val Request.token: UserToken? get() =
+    header("Authorization")
         ?.substringAfter("Bearer ", missingDelimiterValue = "")
         ?.ifBlank { null }
+
+/**
+ * Extracts the pagination information from a request.
+ */
+val Request.pagination: PaginationInfo get() {
+    val limit = query("limit")?.toIntOrNull() ?: 10
+    val offset = query("skip")?.toIntOrNull() ?: 0
+    if (limit <= 0) throw InvalidParameter("limit must be positive")
+    if (offset < 0) throw InvalidParameter("offset must be non-negative")
+    return PaginationInfo(limit, offset)
+}
 
 /**
  * Sets the content type of the response to application/json

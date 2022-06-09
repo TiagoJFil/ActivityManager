@@ -23,8 +23,9 @@ enum class EnvironmentType(val dbMode: DBMODE) {
 private fun getEnvType(): EnvironmentType {
 
     try {
-        val envType = System.getenv("APP_ENV_TYPE") ?: error("Please specify APP_ENV_TYPE environment variable")
-        println("APP_ENV_TYPE: $envType")
+        val envType = System.getenv("APP_ENV_TYPE")
+            ?: error("Please specify APP_ENV_TYPE environment variable")
+
 
         return when (envType) {
             "PROD" -> EnvironmentType.PROD

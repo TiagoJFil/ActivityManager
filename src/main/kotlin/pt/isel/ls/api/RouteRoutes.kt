@@ -15,10 +15,9 @@ import pt.isel.ls.service.RouteServices
 import pt.isel.ls.service.dto.RouteDTO
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.RouteID
-import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.api.contentJson
-import pt.isel.ls.utils.api.fromRequest
-import pt.isel.ls.utils.api.getBearerToken
+import pt.isel.ls.utils.api.pagination
+import pt.isel.ls.utils.api.token
 import pt.isel.ls.utils.getLoggerFor
 import pt.isel.ls.utils.infoLogRequest
 
@@ -46,7 +45,7 @@ class RouteRoutes(
         val endLocationQuery = request.query("endLocation")
         val startLocationQuery = request.query("startLocation")
 
-        val routes = routeServices.getRoutes(PaginationInfo.fromRequest(request), startLocationQuery, endLocationQuery)
+        val routes = routeServices.getRoutes(request.pagination, startLocationQuery, endLocationQuery)
 
         val bodyString = Json.encodeToString(RouteListOutput(routes))
         return Response(Status.OK).contentJson().body(bodyString)
@@ -76,9 +75,12 @@ class RouteRoutes(
         logger.infoLogRequest(request)
 
         val routeInfo = Json.decodeFromString<RouteInput>(request.bodyString())
-        val token = getBearerToken(request)
-
-        val routeId: RouteID = routeServices.createRoute(token, routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)
+        val routeId: RouteID = routeServices.createRoute(
+            request.token,
+            routeInfo.startLocation,
+            routeInfo.endLocation,
+            routeInfo.distance
+        )
 
         return Response(Status.CREATED)
             .contentJson()
@@ -93,9 +95,14 @@ class RouteRoutes(
 
         val routeID = request.path("rid")
         val routeInfo = Json.decodeFromString<RouteInput>(request.bodyString())
-        val token = getBearerToken(request)
 
-        routeServices.updateRoute(token, routeID, routeInfo.startLocation, routeInfo.endLocation, routeInfo.distance)
+        routeServices.updateRoute(
+            request.token,
+            routeID,
+            routeInfo.startLocation,
+            routeInfo.endLocation,
+            routeInfo.distance
+        )
 
         return Response(Status.NO_CONTENT)
     }
