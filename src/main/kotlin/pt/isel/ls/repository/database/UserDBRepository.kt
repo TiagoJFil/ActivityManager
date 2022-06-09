@@ -3,23 +3,26 @@ package pt.isel.ls.repository.database
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
+import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
+import pt.isel.ls.utils.repository.activityTable
 import pt.isel.ls.utils.repository.applyPagination
+import pt.isel.ls.utils.repository.emailTable
 import pt.isel.ls.utils.repository.generatedKey
 import pt.isel.ls.utils.repository.ifNext
 import pt.isel.ls.utils.repository.toListOf
 import pt.isel.ls.utils.repository.toUser
+import pt.isel.ls.utils.repository.tokenTable
+import pt.isel.ls.utils.repository.userTable
 import java.sql.Connection
 import java.sql.PreparedStatement
+import java.sql.ResultSet
 import java.sql.Statement
 
 class UserDBRepository(private val connection: Connection) : UserRepository {
-
-    private val userTable = """"User""""
-    private val emailTable = "Email"
-    private val tokenTable = "Token"
 
     /**
      * Returns the user with the given id.
@@ -100,6 +103,31 @@ class UserDBRepository(private val connection: Connection) : UserRepository {
                     } ?: throw IllegalStateException("Database has inconsistent data on emails and users")
                 }
             }
+        }
+    }
+
+    /**
+     * Gets the users that have an activity matching the given sport id and route id.
+     * @param sportID sport identifier
+     * @param routeID route identifier
+     * @return [List] of [User]
+     */
+    override fun getUsersBy(sportID: SportID, routeID: RouteID, paginationInfo: PaginationInfo): List<User> {
+        val query =
+            "select distinct * from (" +
+                "SELECT $userTable.id ,$userTable.name, $emailTable.email " +
+                "FROM $activityTable " +
+                "JOIN $userTable ON ($activityTable.user = $userTable.id) " +
+                "JOIN $emailTable ON ($emailTable.user = $userTable.id) " +
+                "WHERE $activityTable.sport = ? AND $activityTable.route = ? " +
+                "ORDER BY $activityTable.duration DESC " +
+                "LIMIT ? OFFSET ?) as t"
+        connection.prepareStatement(query).use {
+            it.applyPagination(paginationInfo, indexes = Pair(3, 4))
+            it.setInt(1, sportID)
+            it.setInt(2, routeID)
+            val rs = it.executeQuery()
+            return rs.toListOf(ResultSet::toUser)
         }
     }
 

@@ -14,6 +14,8 @@ import pt.isel.ls.utils.service.generateUUId
 import pt.isel.ls.utils.service.hashPassword
 import pt.isel.ls.utils.service.requireIdInteger
 import pt.isel.ls.utils.service.requireParameter
+import pt.isel.ls.utils.service.requireRoute
+import pt.isel.ls.utils.service.requireSport
 import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.traceFunction
 
@@ -95,6 +97,33 @@ class UserServices(
         return transactionFactory.getTransaction().execute {
             usersRepository
                 .getUsers(paginationInfo)
+                .map(User::toDTO)
+        }
+    }
+
+    /**
+     * Gets the users that match activities with the given sport id and route id.
+     * @param sportID The sport id of the activity.
+     * @param routeID The route id of the activity.
+     */
+    fun getUsersByActivity(sportID: Param, routeID: Param, paginationInfo: PaginationInfo): List<UserDTO> {
+        logger.traceFunction(::getUsersByActivity.name) {
+            listOf(
+                SportsServices.SPORT_ID_PARAM to sportID,
+                ActivityServices.ROUTE_ID_PARAM to routeID
+            )
+        }
+        val safeSID = requireParameter(sportID, "SportID")
+        val safeRID = requireParameter(routeID, "RouteID")
+        val sidInt = requireIdInteger(safeSID, SportsServices.SPORT_ID_PARAM)
+
+        return transactionFactory.getTransaction().execute {
+            sportsRepository.requireSport(sidInt)
+            val ridInt = requireIdInteger(safeRID, ActivityServices.ROUTE_ID_PARAM)
+            routesRepository.requireRoute(ridInt)
+
+            return@execute usersRepository
+                .getUsersBy(sidInt, ridInt, paginationInfo)
                 .map(User::toDTO)
         }
     }

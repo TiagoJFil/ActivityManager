@@ -65,10 +65,10 @@ object InMemoryTransactionScope : TransactionScope() {
     override var routesRepository: RouteRepository = RouteDataMemRepository(testRoute)
         private set
 
-    override var usersRepository: UserRepository = UserDataMemRepository(guestUser)
+    override var activitiesRepository: ActivityRepository = ActivityDataMemRepository(testActivity)
         private set
 
-    override var activitiesRepository: ActivityRepository = ActivityDataMemRepository(testActivity, usersRepository as UserDataMemRepository)
+    override var usersRepository: UserRepository = UserDataMemRepository(guestUser, activitiesRepository as ActivityDataMemRepository)
         private set
 
     /**
@@ -77,10 +77,10 @@ object InMemoryTransactionScope : TransactionScope() {
     fun reset() {
         sportsRepository = SportDataMemRepository(testSport)
         routesRepository = RouteDataMemRepository(testRoute)
-        usersRepository = UserDataMemRepository(guestUser)
-        activitiesRepository = ActivityDataMemRepository(
-            testActivity,
-            usersRepository as UserDataMemRepository
+        activitiesRepository = ActivityDataMemRepository(testActivity)
+        usersRepository = UserDataMemRepository(
+            guestUser,
+            activitiesRepository as ActivityDataMemRepository
         )
     }
 }

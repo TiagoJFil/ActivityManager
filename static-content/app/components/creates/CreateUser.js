@@ -14,9 +14,10 @@ export default function CreateUser(onSubmit) {
         const email = document.querySelector("#email").value;
         const password = document.querySelector("#password").value;
         const checkPassword = document.querySelector("#checkPassword").value;
-        onSubmit(userName, email, password, checkPassword);
+        onSubmit(userName, email, password, checkPassword,submitButton);
     }
-
+    const submitButton = Button(styles.BUTTON, onSubmitForm, Text(styles.TEXT, "Register"))
+    
     return Form(styles.ADD_ITEM,
             Text(styles.SEARCH_HEADER, "NAME"),
             Input(styles.FORM_TEXT_INPUT, "text", "name", null),
@@ -26,7 +27,7 @@ export default function CreateUser(onSubmit) {
             Input(styles.FORM_TEXT_INPUT, "password", "password", null),
             Text(styles.SEARCH_HEADER, "REINSERT PASSWORD"),
             Input(styles.FORM_TEXT_INPUT, "password", "checkPassword", null),
-            Button(styles.BUTTON, onSubmitForm, Text(styles.TEXT, "Register"))
+            submitButton
         )
     
 }

@@ -14,7 +14,7 @@ import { onRouteLocationsChange, DURATION_REGEX, onSportTextChange } from './uti
 /**
  * Displays an activity list with the given query
  */
- async function displayActivityList(mainContent, params, query) {
+ async function displayActivityList( params, query) {
     const activityList = await activityApi.fetchActivitiesBySport(params.sid,query)
     
     const activities = query.deleted 
@@ -24,7 +24,7 @@ import { onRouteLocationsChange, DURATION_REGEX, onSportTextChange } from './uti
     const total = query.deleted ? activityList.total - 1 : activityList.total
     const sport = params.sid ? await sportApi.fetchSport(params.sid) : null
 
-    mainContent.replaceChildren(
+    return [
         H1(styles.HEADER, `Activities for ${sport.name}`),
         
         ActivityList(activities),
@@ -32,14 +32,14 @@ import { onRouteLocationsChange, DURATION_REGEX, onSportTextChange } from './uti
             total,
             (skip, limit) => onPaginationChange(`sports/${params.sid}/activities`, query, skip, limit)
         )
-    )
+    ]
 }
 
 
 /**
  * Displays a list of activities for the given sport with the given query
  */
-async function displaySearchActivities(mainContent, _, query) {
+async function displaySearchActivities( _, query) {
 
     const onFilterSubmit = (date, sid, rid, sortOrder) => {
 
@@ -62,35 +62,36 @@ async function displaySearchActivities(mainContent, _, query) {
     } 
     
 
-    mainContent.replaceChildren(
+    return [
         Div('activity-header-filter',
             H1(styles.HEADER, `Activity search`),
             ActivitySearchFilter(onFilterSubmit, onRouteLocationsChange, onSportTextChange, query),
         ),
        
-    )
+    ]
 }
 
 /**
  * Displays the activities from the given user with the given query
  */
-async function displayActivitiesByUser(mainContent, params, query) {
+async function displayActivitiesByUser( params, query) {
     const activityList = await activityApi.fetchActivitiesByUser(params.uid, query)
     const user = await userApi.fetchUser(params.uid)
-    mainContent.replaceChildren(
+
+    return [
         H1(styles.HEADER, `Activities for ${user.name}`),
         ActivityList(activityList.activities),
         Pagination(
             activityList.total,
             (skip, limit) => onPaginationChange(`users/${params.uid}/activities`, query, skip, limit)
         )
-    )
+    ]
 }
 
 /**
  * Displays the activity details for the given activity id
  */
-async function displayActivityDetails(mainContent, params, _) {
+async function displayActivityDetails( params, _) {
     const activity = await activityApi.fetchActivity(params.sid, params.aid)
     const route = activity.route ? await routeApi.fetchRoute(activity.route) : null
 
@@ -124,9 +125,9 @@ async function displayActivityDetails(mainContent, params, _) {
         })
     }
 
-    mainContent.replaceChildren(
+    return [
         ActivityDetails(activity, onDeleteConfirm, onEditConfirm, onRouteLocationsChange, route)
-    )
+    ]
 }
 
 
@@ -134,7 +135,7 @@ async function displayActivityDetails(mainContent, params, _) {
 /**
  * Displays the activty creation page
  */
-async function createActivity(mainContent, params, _){
+async function createActivity( params, _){
     
     const onSubmit = async (date, duration, route) => {
         try{
@@ -189,12 +190,12 @@ async function createActivity(mainContent, params, _){
         window.location.hash = `sports/${params.sid}`
     }
 
-    mainContent.replaceChildren(
+    return [
         H1(styles.HEADER, 'Add an Activity' ),
         Div(styles.ADD_CONTAINER,
             ActivityCreate(onSubmit, onRouteLocationsChange)
         )
-    )
+    ]
 }
 
 export const activityHandlers = {

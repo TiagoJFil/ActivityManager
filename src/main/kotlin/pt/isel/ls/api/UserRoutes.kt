@@ -67,6 +67,22 @@ class UserRoutes(
     }
 
     /**
+     * Get the list of [User] that have an activity with the given sport and rid.
+     */
+    private fun getUsersByActivity(request: Request): Response {
+        logger.infoLogRequest(request)
+        val sportID = request.path("sid")
+        val routeID = request.query("rid")
+
+        val users = userServices.getUsersByActivity(sportID, routeID, PaginationInfo.fromRequest(request))
+        val bodyString = Json.encodeToString(UserListOutput(users))
+
+        return Response(Status.OK)
+            .contentJson()
+            .body(bodyString)
+    }
+
+    /**
      * Gets all the users.
      */
     private fun getUsers(request: Request): Response {
@@ -103,7 +119,8 @@ class UserRoutes(
             "/{$UID_PLACEHOLDER}" bind Method.GET to ::getUserDetails,
             // TODO: Trocar o display da activity com o nome do sport e a data da mesma.
         ),
-        "/login" bind Method.POST to ::authenticate
+        "/login" bind Method.POST to ::authenticate,
+        "/sports/{sid}/users" bind Method.GET to ::getUsersByActivity
     )
 }
 

@@ -4,7 +4,6 @@ import kotlinx.datetime.LocalDate
 import pt.isel.ls.repository.ActivityRepository
 import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.service.entities.Order
-import pt.isel.ls.service.entities.User
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
@@ -12,7 +11,7 @@ import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.service.applyPagination
 
-class ActivityDataMemRepository(testActivity: Activity, private val userRepo: UserDataMemRepository) : ActivityRepository {
+class ActivityDataMemRepository(testActivity: Activity) : ActivityRepository {
 
     private var currentID = 0
 
@@ -20,6 +19,9 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
      * Mapping between the [ActivityID] and the [Activity]
      */
     private val activitiesMap = mutableMapOf(testActivity.id to testActivity)
+
+    val map: Map<Int, Activity>
+        get() = activitiesMap.toMap()
 
     /**
      * Creates a new activity using the parameters received
@@ -124,20 +126,6 @@ class ActivityDataMemRepository(testActivity: Activity, private val userRepo: Us
      */
     override fun deleteActivity(activityID: ActivityID): Boolean =
         activitiesMap.remove(activityID) != null
-
-    /**
-     * Gets the users that have an activity matching the given sport id and route id.
-     * @param sportID sport identifier
-     * @param routeID route identifier
-     * @return [List] of [User] sorted by activity duration ASCENDING
-     */
-    override fun getUsersBy(sportID: SportID, routeID: RouteID, paginationInfo: PaginationInfo): List<User> =
-        activitiesMap.values
-            .filter { it.route == routeID && it.sport == sportID }
-            .sortedBy { it.duration.millis }
-            .mapNotNull { userRepo.map[it.user] }
-            .distinct()
-            .applyPagination(paginationInfo)
 
     /**
      * Gets all existing activities.

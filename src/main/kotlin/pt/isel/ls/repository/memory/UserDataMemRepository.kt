@@ -6,12 +6,14 @@ import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
+import pt.isel.ls.utils.RouteID
+import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.service.applyPagination
 
-class UserDataMemRepository(guest: User) : UserRepository {
+class UserDataMemRepository(guest: User, private val activityRepo: ActivityDataMemRepository) : UserRepository {
 
     private var currentID = 0
 
@@ -68,6 +70,20 @@ class UserDataMemRepository(guest: User) : UserRepository {
     override fun getUsers(paginationInfo: PaginationInfo): List<User> =
         usersMap.values
             .toList()
+            .applyPagination(paginationInfo)
+
+    /**
+     * Gets the users that have an activity matching the given sport id and route id.
+     * @param sportID sport identifier
+     * @param routeID route identifier
+     * @return [List] of [User] sorted by activity duration ASCENDING
+     */
+    override fun getUsersBy(sportID: SportID, routeID: RouteID, paginationInfo: PaginationInfo): List<User> =
+        activityRepo.map.values
+            .filter { it.route == routeID && it.sport == sportID }
+            .sortedBy { it.duration.millis }
+            .mapNotNull { usersMap[it.user] }
+            .distinct()
             .applyPagination(paginationInfo)
 
     /**

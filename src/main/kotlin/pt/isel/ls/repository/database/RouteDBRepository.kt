@@ -9,6 +9,7 @@ import pt.isel.ls.utils.repository.applyPagination
 import pt.isel.ls.utils.repository.generatedKey
 import pt.isel.ls.utils.repository.ifNext
 import pt.isel.ls.utils.repository.queryTableByID
+import pt.isel.ls.utils.repository.routeTable
 import pt.isel.ls.utils.repository.setRoute
 import pt.isel.ls.utils.repository.toListOf
 import pt.isel.ls.utils.repository.toRoute
@@ -17,8 +18,6 @@ import java.sql.ResultSet
 import java.sql.Statement
 
 class RouteDBRepository(private val connection: Connection) : RouteRepository {
-
-    private val routeTable = "Route"
 
     /**
      * Returns all the routes stored in the repository.

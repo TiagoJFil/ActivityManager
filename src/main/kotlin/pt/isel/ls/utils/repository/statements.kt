@@ -6,6 +6,13 @@ import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
+val routeTable = "Route"
+val sportTable = "Sport"
+val activityTable = "Activity"
+val userTable = """"User""""
+val emailTable = "Email"
+val tokenTable = "Token"
+
 /**
  * Gets the last generated key from the given [PreparedStatement].
  * Called after a successful insertion.

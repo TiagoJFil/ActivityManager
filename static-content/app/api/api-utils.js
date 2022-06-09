@@ -1,4 +1,4 @@
-import {setUserInfo, getUserInfo} from "./session.js"
+import {setUserInfo, getUserToken} from "./session.js"
 
 
 /**
@@ -12,7 +12,7 @@ export function queryBuilder(queryObject){
     
     return Object
         .keys(queryObject)
-        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(queryObject[key])}`)
+        .map(key => `${key}=${queryObject[key]}`)
         .join('&')
 }
 
@@ -72,7 +72,6 @@ export async function fetchResourceList(uri, queryObject, listPropertyName) {
 }
 
 
-const token =  getUserInfo()   //'1b6cfbdf-ab9f-4c3f-bd58-5a894e040f9d'
 
 /**
  * Sends a request with the provided method and body
@@ -81,7 +80,7 @@ export async function sendRequest(uri, requestMethod, body) {
     return await fetch(uri, {
         method: requestMethod,
         headers: {
-            'Authorization': 'Bearer ' + token,
+            'Authorization': 'Bearer ' + getUserToken(),
             'Content-Type': 'application/json'
         },
         body

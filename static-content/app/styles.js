@@ -58,6 +58,9 @@ const styles = {
     ACTIVE : 'active',
     AUTH : 'auth',
     MAIN_NAV : 'main-nav',
+    REGISTER_ANCHOR : 'register-anchor',
+    LOGIN_ELEMS : 'login-elems',
+    REGISTER_ELEMS : 'register-elems',
 
 
     LIST_BUTTON: 'list-button',

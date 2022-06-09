@@ -59,9 +59,25 @@ export async function onSportTextChange (sportText){
    )
 }
 
-
+/**
+ *  Reloads the main app navigation bar with the updated information
+ */
 export function reloadNav(){
     document.querySelector(".main-nav").replaceChildren(
         Navigation(isLoggedIn()),
     )
+}
+
+/**
+ * Debounces the callback to run only when the function 
+ * hasn't been called in [delay] milliseconds.
+ */
+export function debounce(cb, delay=250){
+    let timeout
+    return (...args) => {
+        clearTimeout(timeout)
+        timeout = setTimeout(() => {
+            cb(...args)
+        }, delay)
+    }
 }

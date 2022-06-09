@@ -8,12 +8,16 @@ import styles from "../styles.js";
  * @returns {HTMLElement} - The form element.
  */
 export default function Login(onSubmit) {
-
+    
+    
     const onSubmitForm = () => {
         const email = document.querySelector("#email").value;
         const password = document.querySelector("#password").value;
-        onSubmit(email, password);
+
+        onSubmit(email, password, submitButton);
     }
+
+    const submitButton = Button(styles.BUTTON, onSubmitForm, Text(styles.TEXT, "Log in"))
 
     return (
         Form(styles.LOGIN_ITEM,
@@ -21,7 +25,7 @@ export default function Login(onSubmit) {
             Input(styles.FORM_TEXT_INPUT, "text", "email", null),
             Text(styles.SEARCH_HEADER, "PASSWORD"),
             Input(styles.FORM_TEXT_INPUT, "password", "password", null),
-            Button(styles.BUTTON, onSubmitForm, Text(styles.TEXT, "Log in"))
+            submitButton
         )
     )
 }
