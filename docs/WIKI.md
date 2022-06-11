@@ -379,18 +379,18 @@ e.g execute being used to create a sport.
 ```kotlin
 // SportService.kt
 
-fun createSport(token: UserToken?, name: String?, description: String?): SportID {
-    logger.traceFunction(::createSport.name) { listOf(NAME_PARAM to name, DESCRIPTION_PARAM to description) }
+   fun createSport(token: UserToken?, name: Param, description: Param): SportID {
+        logger.traceFunction(::createSport.name) { listOf(NAME_PARAM to name, DESCRIPTION_PARAM to description) }
 
-    return transactionFactory.getTransaction().execute {
+        return transactionFactory.getTransaction().execute {
 
-        val userID = usersRepository.requireAuthenticated(token) // db access
-        val safeName = requireParameter(name, NAME_PARAM)
-        val handledDescription = description?.ifBlank { null }
+            val userID = usersRepository.requireAuthenticated(token)
+            val safeName = requireParameter(name, NAME_PARAM)
+            val handledDescription = description?.ifBlank { null }
 
-        sportsRepository.addSport(safeName, handledDescription, userID) // db access
+            sportsRepository.addSport(safeName, handledDescription, userID)
+        }
     }
-}
 
 ```
 
