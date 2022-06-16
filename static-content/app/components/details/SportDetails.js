@@ -1,4 +1,4 @@
-import {List, Item, Text, Div, } from "../dsl.js"
+import {List, Item, Text, Div, HidenElem } from "../dsl.js"
 import {LinkIcon, ButtonIcon} from "../Icons.js"
 import styles from "../../styles.js";
 import {SportEditModal, DESCRIPTION_TEXT}  from '../edits/SportEdit.js'
@@ -12,7 +12,7 @@ import {isLoggedIn} from "../../api/session.js";
  * @param onEditConfirm callback to call when the edit modal is confirmed
  * @returns {Div} the sport details component
  */
-export default function SportDetails(sport, onEditConfirm) {
+export default function SportDetails(sport, onEditConfirm, isAuthOptionsEnabled) {
     const description = sport.description ?
         [
             Text(styles.DETAIL_HEADER, 'Description: '),
@@ -25,7 +25,9 @@ export default function SportDetails(sport, onEditConfirm) {
     const onEdit = () => {
         modal.style.display = "flex";
     }
-    const addButton =  isLoggedIn() ?  LinkIcon(styles.ADD_ACTIVITY_ICON, `#sports/${sport.id}/activities/add`,"Add an activity") : Div()
+    const addButton =  isLoggedIn() ?  LinkIcon(styles.ADD_ACTIVITY_ICON, `#sports/${sport.id}/activities/add`,"Add an activity") : HidenElem()
+
+    const editButton = isAuthOptionsEnabled ? ButtonIcon(styles.EDIT_ICON, onEdit, "Edit sport") : HidenElem()
 
     return List(styles.DETAILS,
             Item('name-item',
@@ -37,7 +39,7 @@ export default function SportDetails(sport, onEditConfirm) {
             ),
             Div(styles.ICON_GROUP,
                 LinkIcon(styles.USER_ICON, `#users/${sport.user}`, "Get user details"),
-                ButtonIcon(styles.EDIT_ICON, onEdit, "Edit sport"),
+                editButton,
                 addButton
             ),
             modal

@@ -1,5 +1,4 @@
 import ResourceList from './ResourceList.js';
-import {Div} from "../dsl.js";
 
 /**
  * ActivityList component

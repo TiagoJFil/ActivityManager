@@ -26,7 +26,6 @@ private fun getEnvType(): EnvironmentType {
         val envType = System.getenv("APP_ENV_TYPE")
             ?: error("Please specify APP_ENV_TYPE environment variable")
 
-
         return when (envType) {
             "PROD" -> EnvironmentType.PROD
             "TEST" -> EnvironmentType.TEST

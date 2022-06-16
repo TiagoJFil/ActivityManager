@@ -4,7 +4,7 @@ import RouteDetails from '../components/details/RouteDetails.js'
 import {getItemsPerPage, Pagination} from '../components/Pagination.js'
 import { onPaginationChange} from './app-handlers.js'
 import styles from '../styles.js'
-import { H1, Div} from '../components/dsl.js'
+import { H1, Div, HidenElem} from '../components/dsl.js'
 import SearchBar from '../components/SearchBar.js'
 import RouteCreate from "../components/creates/CreateRoute.js";
 import { SuccessToast, ErrorToast ,InfoToast} from '../toasts.js'
@@ -71,7 +71,7 @@ async function displayRouteList(_, query) {
        await updateRouteDisplayItems(newQuery)
     }
 
-    const addButton =  isLoggedIn() ? BoardlessIconButton(`#routes/add`,"Add a route") : Div()
+    const addButton =  isLoggedIn() ? BoardlessIconButton(`#routes/add`,"Add a route") : HidenElem()
 
     const startingSLocationSearchBarValue = query.startLocation ?? null
     const startingELocationSearchBarValue = query.endLocation ?? null

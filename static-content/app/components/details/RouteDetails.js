@@ -1,4 +1,4 @@
-import {List, Item, Text, Div} from "../dsl.js"
+import {List, Item, Text, Div, HidenElem} from "../dsl.js"
 import styles from "../../styles.js";
 import {LinkIcon, OuterLinkIcon, ButtonIcon} from "../Icons.js"
 import RouteEdit  from '../edits/RouteEdit.js'
@@ -10,13 +10,16 @@ import RouteEdit  from '../edits/RouteEdit.js'
  * @param {Route} route route to display
  * @returns {List} the route details component
  */
-export default function RouteDetails(route, onEditConfirm) {
+export default function RouteDetails(route, onEditConfirm, isAuthOptionsEnabled) {
 
     const modal = RouteEdit(route,onEditConfirm)
     
     const onEdit = () => {
         modal.style.display = "flex";
     }
+
+    const editButton = isAuthOptionsEnabled ? ButtonIcon(styles.EDIT_ICON, onEdit, "Edit route") : HidenElem()
+
 
     return List('route',
             Div('route-display',
@@ -38,7 +41,7 @@ export default function RouteDetails(route, onEditConfirm) {
             Div(styles.ICON_GROUP,
                 LinkIcon(styles.USER_ICON, `#users/${route.user}`, "Get users details"),
                 OuterLinkIcon(styles.MAP_ICON, `https://www.google.com/maps/dir/${route.startLocation}/${route.endLocation}/`),
-                ButtonIcon(styles.EDIT_ICON, onEdit, "Edit route")           
+                editButton,       
             ),
             modal
         

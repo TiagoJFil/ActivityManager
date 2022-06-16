@@ -76,7 +76,8 @@ export function Pagination(totalElements, onPageChange, currentLimit){
         Icon(styles.BX_CLASS, 'bx-chevron-left', styles.PAGINATION_ICONS)
     )
 
-    const endButtonSkip = isComplete ? totalPages * itemsPerPage : totalPages * itemsPerPage - itemsPerPage
+    const endButtonSkip = isComplete ? (totalPages * itemsPerPage ) -1
+        : totalPages * itemsPerPage - itemsPerPage
     const endButton = Button(styles.PAGE_ARROW, () => onPageChange(endButtonSkip , itemsPerPage),
         Icon(styles.BX_CLASS, 'bx-chevrons-right', styles.PAGINATION_ICONS)
     )

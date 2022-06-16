@@ -74,7 +74,7 @@ class UserRoutes(
         val sportID = request.path("sid")
         val routeID = request.query("rid")
 
-        val users = userServices.getUsersByActivity(sportID, routeID, PaginationInfo.fromRequest(request))
+        val users = userServices.getUsersByActivity(sportID, routeID, request.pagination)
         val bodyString = Json.encodeToString(UserListOutput(users))
 
         return Response(Status.OK)
