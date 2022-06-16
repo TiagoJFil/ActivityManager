@@ -12,27 +12,27 @@ const LOCATION_MAX_LENGTH = 30
 /**
  * Route editing component
  * Makes a modal window for editing a route
- * 
+ *
  * @param {Object} route - the route to edit
  * @param {Function} onEditConfirm - callback to call when the confirm button is clicked
  */
-export default function RouteEdit(route, onEditConfirm){
+export default function RouteEditModal(route, onEditConfirm) {
 
-    const startLocationInput = Input('editedSLocation','text', null, null, "e.g Lisboa", route.startLocation, true)
-    const endLocationInput = Input('editedELocation','text', null, null, "e.g Porto", route.endLocation,false)
-    const distanceInput = Input('editedDistance','number', null, null, "e.g 320.5", route.distance,false, 0, 50000)
+    const startLocationInput = Input('editedSLocation', 'text', null, null, "e.g Lisboa", route.startLocation, true)
+    const endLocationInput = Input('editedELocation', 'text', null, null, "e.g Porto", route.endLocation, false)
+    const distanceInput = Input('editedDistance', 'number', null, null, "e.g 320.5", route.distance, false, 0, 50000)
 
     const onClickConfirm = async () => {
-        const editedSLocation= startLocationInput.value
+        const editedSLocation = startLocationInput.value
         const editedELocation = endLocationInput.value
         const editedDistance = distanceInput.value
 
         let toasts = [];
 
-        if(editedSLocation.length <= 0 || editedELocation.length <= 0){
+        if (editedSLocation.length <= 0 || editedELocation.length <= 0) {
             toasts.push(ErrorToast("Location cannot be empty."))
         }
-        if(editedSLocation.length > LOCATION_MAX_LENGTH || editedELocation > LOCATION_MAX_LENGTH){
+        if (editedSLocation.length > LOCATION_MAX_LENGTH || editedELocation > LOCATION_MAX_LENGTH) {
             toasts.push(ErrorToast("Location cannot have more than 150 characters."))
         }
         if(editedDistance === ""){

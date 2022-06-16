@@ -63,7 +63,7 @@ export async function onSportTextChange (sportText){
  *  Reloads the main app navigation bar with the updated information
  */
 export function reloadNav(){
-    document.querySelector(".main-nav").replaceChildren(
+    document.querySelector("#mainNav").replaceWith(
         Navigation(isLoggedIn()),
     )
 }

@@ -2,6 +2,7 @@ import router from './router.js'
 import handlers from './handlers/app-handlers.js'
 import { Navigation } from './components/Navigation.js'
 import {isLoggedIn} from './api/session.js'
+import LoadingSpinner from "./components/LoadingSpinner.js";
 window.addEventListener('load', loadHandler)
 window.addEventListener('hashchange', hashChangeHandler)
 
@@ -48,18 +49,33 @@ function loadHandler(){
  * Its called everytime the hash changes.
  * Gets the route handler associated to the path after the hash.
  */
-async function hashChangeHandler(){
+async function hashChangeHandler() {
     const mainContent = document.querySelector('#mainContent')
+    const nav = document.querySelector("#mainNav")
     const path = window.location.hash.replace('#', '')
     const handlerInfo = router.getRouteHandler(path)
-    
-    try{
-        mainContent.replaceChildren(
-            ...await handlerInfo.handler(handlerInfo.params, handlerInfo.query)
-        ) 
-    }catch(e){
+
+    try {
+        loading(mainContent, nav)
+        const content = await handlerInfo.handler(handlerInfo.params, handlerInfo.query)
+        renderContent(mainContent, nav, content)
+    } catch (e) {
         console.log(e)
         handlers.getErrorPage(mainContent, e)
     }
-    
+
+}
+
+function loading(mainContent, navigation) {
+    navigation.style.display = "none"
+    mainContent.style.display = "none"
+    document.body.prepend(LoadingSpinner())
+}
+
+function renderContent(mainContent, navigation, content) {
+    mainContent.style.display = "flex"
+    navigation.style.display = "block"
+    const loadingRing = document.querySelector("#loadingSpinner")
+    document.body.removeChild(loadingRing)
+    mainContent.replaceChildren(...content)
 }

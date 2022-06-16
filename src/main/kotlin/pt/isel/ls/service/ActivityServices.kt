@@ -14,7 +14,7 @@ import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
-import pt.isel.ls.utils.getLoggerFor
+import pt.isel.ls.utils.loggerFor
 import pt.isel.ls.utils.repository.transactions.TransactionFactory
 import pt.isel.ls.utils.service.requireActivityWith
 import pt.isel.ls.utils.service.requireAuthenticated
@@ -28,13 +28,13 @@ import pt.isel.ls.utils.service.requireUser
 import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.traceFunction
 import java.text.ParseException
-import java.util.Date
+import java.util.*
 
 class ActivityServices(
     private val transactionFactory: TransactionFactory
 ) {
     companion object {
-        private val logger = getLoggerFor<ActivityServices>()
+        private val logger = loggerFor<ActivityServices>()
 
         const val ACTIVITY_ID_PARAM = "activityID"
         const val ROUTE_ID_PARAM = "routeID"

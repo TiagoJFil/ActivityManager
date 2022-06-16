@@ -18,21 +18,28 @@ import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
-import pt.isel.ls.utils.api.contentJson
+import pt.isel.ls.utils.api.json
 import pt.isel.ls.utils.api.pagination
-import pt.isel.ls.utils.getLoggerFor
-import pt.isel.ls.utils.infoLogRequest
+import pt.isel.ls.utils.logRequest
+import pt.isel.ls.utils.loggerFor
 
 class UserRoutes(
     private val userServices: UserServices
 ) {
-    @Serializable data class UserInput(val name: Param = null, val email: Param = null, val password: Param = null)
-    @Serializable data class UserIDOutput(val authToken: UserToken, val id: UserID)
-    @Serializable data class UserListOutput(val users: List<UserDTO>)
-    @Serializable data class AuthInput(val email: Param = null, val password: Param = null)
+    @Serializable
+    data class UserInput(val name: Param = null, val email: Param = null, val password: Param = null)
+
+    @Serializable
+    data class UserListOutput(val users: List<UserDTO>)
+
+    @Serializable
+    data class AuthInput(val email: Param = null, val password: Param = null)
+
+    @Serializable
+    data class AuthOutput(val authToken: UserToken, val id: UserID)
 
     companion object {
-        private val logger = getLoggerFor<UserRoutes>()
+        private val logger = loggerFor<UserRoutes>()
         private const val UID_PLACEHOLDER = "uid"
     }
 
@@ -40,76 +47,76 @@ class UserRoutes(
      * Creates an [UserDTO] with the information that comes in the body of the HTTP request.
      */
     private fun createUser(request: Request): Response {
-        logger.infoLogRequest(request)
+        logger.logRequest(request)
 
         val bodyString = request.bodyString()
         val body = Json.decodeFromString<UserInput>(bodyString)
 
         val (token, id) = userServices.createUser(body.name, body.email, body.password)
 
+        val authJson = Json.encodeToString(AuthOutput(token, id))
+
         return Response(CREATED)
-            .contentJson()
-            .body(Json.encodeToString(UserIDOutput(token, id)))
+            .json(authJson)
     }
 
     /**
      * Gets the user that is identified by the id that comes in the params of uri's path.
      */
     private fun getUserDetails(request: Request): Response {
-        logger.infoLogRequest(request)
+        logger.logRequest(request)
 
         val userId = request.path(UID_PLACEHOLDER)
         val userResponse = userServices.getUserByID(userId)
-        val userEncoded = Json.encodeToString(userResponse)
+        val userJson = Json.encodeToString(userResponse)
+
         return Response(Status.OK)
-            .contentJson()
-            .body(userEncoded)
+            .json(userJson)
     }
 
     /**
      * Get the list of [User] that have an activity with the given sport and rid.
      */
     private fun getUsersByActivity(request: Request): Response {
-        logger.infoLogRequest(request)
+        logger.logRequest(request)
         val sportID = request.path("sid")
         val routeID = request.query("rid")
 
-        val users = userServices.getUsersByActivity(sportID, routeID, PaginationInfo.fromRequest(request))
-        val bodyString = Json.encodeToString(UserListOutput(users))
+        val users = userServices.getUsersByActivity(sportID, routeID, request.pagination)
+        val userListJson = Json.encodeToString(UserListOutput(users))
 
         return Response(Status.OK)
-            .contentJson()
-            .body(bodyString)
+            .json(userListJson)
     }
 
     /**
      * Gets all the users.
      */
     private fun getUsers(request: Request): Response {
-        logger.infoLogRequest(request)
+        logger.logRequest(request)
 
         val users = userServices.getUsers(request.pagination)
-        val usersJsonString = Json.encodeToString(UserListOutput(users))
+        val userListJson = Json.encodeToString(UserListOutput(users))
 
         return Response(Status.OK)
-            .contentJson()
-            .body(usersJsonString)
+            .json(userListJson)
     }
 
     /**
      * Gets the token for the user that is identified by the email that comes in the body of the HTTP request.
      */
     private fun authenticate(request: Request): Response {
-        logger.infoLogRequest(request)
+        logger.logRequest(request)
 
         val bodyString = request.bodyString()
         val body = Json.decodeFromString<AuthInput>(bodyString)
 
         val (token, id) = userServices.getUserInfoByAuth(body.email, body.password)
 
+        val authOutput = Json.encodeToString(AuthOutput(token, id))
+
         return Response(Status.OK)
-            .contentJson()
-            .body(Json.encodeToString(UserIDOutput(token, id)))
+            .json(authOutput)
     }
 
     val handler: RoutingHttpHandler = routes(

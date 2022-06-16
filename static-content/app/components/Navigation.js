@@ -23,29 +23,29 @@ export function Navigation(isLoggedIn){
             Text(styles.NAV_TEXT, "Sign In")
         )
     )
-    return Nav(styles.MAIN_NAV,
+    return Nav(styles.MAIN_NAV, "mainNav",
         Anchor(styles.LOGO, "#home",
             Image(styles.LOGO_IMAGE, null, "img/logo.png")
         ),
         List(styles.NAV_LINKS,
             Item(null,
-                Anchor(null, "#home", 
+                Anchor(null, "#home",
                     BoxIcon(styles.HOME_ICON),
                     Text(styles.NAV_TEXT, "Home")
-                    )
-                ),   
+                )
+            ),
             Item(null,
-                Anchor(null, "#users/ranking", 
+                Anchor(null, "#users/ranking",
                     BoxIcon(styles.USERS_ICON),
                     Text(styles.NAV_TEXT, "UserRanking")
-                    )
-                ),
+                )
+            ),
             Item(null,
-                Anchor(null, "#sports?limit=20&skip=0", 
+                Anchor(null, "#sports?limit=20&skip=0",
                     BoxIcon(styles.SPORT_ICON),
                     Text(styles.NAV_TEXT, "Sports")
-                    )
-                ),
+                )
+            ),
             Item(null,
                 Anchor(null, "#routes?limit=20&skip=0",
                     BoxIcon(styles.ROUTE_ICON),

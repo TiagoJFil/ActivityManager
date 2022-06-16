@@ -11,32 +11,35 @@ const DURATION_REGEX = /^(?:2[0-3]|[01]?[0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][
 /**
  * Activity editing component
  * Makes a modal window for editing an activity
- * 
+ *
  * @param {Object} activity - the activity to edit
  * @param {Function} onEditConfirm - callback to call when the activity is edited
  * @param {Function} onRouteChange - callback to call when the route is changed
  * @param {Object} route - the route associated with the activity
  */
-export default function ActivityEdit(activity, onEditConfirm, onRouteChange, route){
+export default function ActivityEditModal(activity, onEditConfirm, onRouteChange, route) {
 
-    const durationInput = Input('editedDuration','text', null, null, "e.g 10:10:10.555", activity.duration, true)
-    const date = DatePicker(activity.date)
+    const durationInput = Input('editedDuration', 'text', null, null,
+        "e.g 10:10:10.555",
+        activity.duration,
+        true)
+    const datePicker = DatePicker(activity.date)
     const sLocation = route ? route.startLocation : ""
     const eLocation = route ? route.endLocation : ""
-    const routeSearch =  RouteSearch(onRouteChange,"Select a route", sLocation, eLocation)
+    const routeSearchElement = RouteSearch(onRouteChange, "Select a route", sLocation, eLocation)
 
 
     const onClickConfirm = async () => {
-        const editedDuration= durationInput.value
-        const editedDate = date.value
+        const editedDuration = durationInput.value
+        const editedDate = datePicker.value
         const editedRouteId = document.querySelector('#routeSelector').value
 
         let toasts = [];
 
-        if(editedDate.length <= 0){
+        if (editedDate.length <= 0) {
             toasts.push(ErrorToast("Date cannot be empty."))
         }
-        if(editedDuration.length <= 0) {
+        if (editedDuration.length <= 0) {
             toasts.push(ErrorToast("Duration cannot be empty."))
         }
         
@@ -59,19 +62,18 @@ export default function ActivityEdit(activity, onEditConfirm, onRouteChange, rou
         
 
         dateOnDisplay.textContent = editedDate
-        
         durationOnDisplay.textContent = editedDuration
     }
    
     const resetEdit = async () => {
         const dateOnDisplay = document.querySelector('.date-item .text')
         const durationOnDisplay = document.querySelector('.duration-item .text')
-        
+
         const sLocationOnDisplay = document.querySelector('#startLocationDL')
         const eLocationOnDisplay = document.querySelector('#endLocationDL')
-        
-    
-        date.value = dateOnDisplay.textContent 
+
+
+        datePicker.value = dateOnDisplay.textContent
         durationInput.value = durationOnDisplay.textContent
         sLocationOnDisplay.value = sLocation
         eLocationOnDisplay.value = eLocation
@@ -81,12 +83,12 @@ export default function ActivityEdit(activity, onEditConfirm, onRouteChange, rou
 
     const modal = Modal('activity-edit',"Edit the activity",
         List(styles.DETAILS,
-            date,
+            datePicker,
             Item('duration-item',
                 Text(styles.DETAIL_HEADER, 'Duration: '),
                 durationInput,
             ),
-           routeSearch
+            routeSearchElement
         ),
         Div(styles.ICON_GROUP,
             ButtonIcon(styles.UNDO_ICON, resetEdit, 'Undo'),

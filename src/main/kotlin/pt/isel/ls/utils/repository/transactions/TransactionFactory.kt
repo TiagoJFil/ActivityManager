@@ -4,7 +4,6 @@ import javax.sql.DataSource
 
 /**
  * A factory for creating [Transaction] instances.
- *
  */
 interface TransactionFactory {
 

@@ -68,7 +68,8 @@ object InMemoryTransactionScope : TransactionScope() {
     override var activitiesRepository: ActivityRepository = ActivityDataMemRepository(testActivity)
         private set
 
-    override var usersRepository: UserRepository = UserDataMemRepository(guestUser, activitiesRepository as ActivityDataMemRepository)
+    override var usersRepository: UserRepository =
+        UserDataMemRepository(guestUser, activitiesRepository as ActivityDataMemRepository)
         private set
 
     /**

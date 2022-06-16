@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   description: "Api reference for Sports"
-  version: "0.3.3"
+  version: "0.3.4"
   title: "Swagger Sports"
   termsOfService: "https://swagger.io/terms/"
   license:
@@ -19,6 +19,8 @@ tags:
 servers:
   - url: http://localhost:9000/api
     description: Local Server
+  - url: https://isel-ls-2122-2-42d-g04.herokuapp.com/api
+    description: Production Server
 paths:
   /users/{uid}:
     get:

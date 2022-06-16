@@ -5,9 +5,10 @@ import org.http4k.core.Status
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-inline fun <reified T> getLoggerFor(): Logger = LoggerFactory.getLogger(T::class.java)
+inline fun <reified T> loggerFor(): Logger = LoggerFactory.getLogger(T::class.java)
 
-fun Logger.infoLogRequest(request: Request) {
+// Filter to log requests
+fun Logger.logRequest(request: Request) {
     info(
         "[REQUEST]: method={}, uri={}, content-type={} accept={}",
         request.method,
@@ -23,5 +24,5 @@ inline fun Logger.traceFunction(functionName: String, args: () -> List<Pair<Stri
             args().joinToString(", ") { "${it.first}: ${it.second}" }
     )
 
-fun Logger.warnStatus(status: Status, message: String) =
+fun Logger.warnResponse(status: Status, message: String?) =
     warn("[STATUS]:$status with : $message")

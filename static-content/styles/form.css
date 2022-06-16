@@ -16,20 +16,36 @@
     gap: 10px;
 }
 
-.search-bar-with-add .search-bar-container{
+.search-bar-with-add .search-bar-container {
     width: 400px;
     height: 100%;
     gap: 10px;
 }
 
-.rankings-form{
+.rankings-form, .activity-filter {
     display: flex;
     justify-content: space-evenly;
-    width: 52%;
-    height: 100%;
+    gap: 20px;
 }
 
-.user-rankings{
+/**
+selector for input type date
+ */
+
+.activity-filter {
+    flex-direction: column;
+    margin-top: 40px;
+}
+
+.activity-filter button {
+    height: 60px;
+}
+
+.activity-filter input[type="date"], .activity-filter select {
+    height: 20px;
+}
+
+.user-rankings {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -37,14 +53,39 @@
     width: 100%;
 }
 
-.user-rankings button{
+.user-rankings button {
     margin-top: 50px;
 }
 
-.add-item .date-filter{
+.add-item .date-filter {
     width: inherit;
 }
-textarea{
+
+
+textarea {
     resize: none;
+}
+
+@media screen and (max-width: 600px) {
+    .search-bar-with-add .search-bar-container {
+        width: 100%;
+    }
+
+    .rankings-form, .activity-filter {
+        flex-direction: column;
+        height: 100%;
+    }
+
+    #mainContent {
+        overflow-y: scroll;
+    }
+
+    .rankings-form form, .activity-filter form {
+        width: 98%;
+    }
+
+    .activity-filter {
+        overflow-y: auto;
+    }
 }
 

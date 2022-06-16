@@ -8,7 +8,7 @@ import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
-import pt.isel.ls.utils.getLoggerFor
+import pt.isel.ls.utils.loggerFor
 import pt.isel.ls.utils.repository.transactions.TransactionFactory
 import pt.isel.ls.utils.service.generateUUId
 import pt.isel.ls.utils.service.hashPassword
@@ -24,7 +24,7 @@ class UserServices(
 ) {
 
     companion object {
-        private val logger = getLoggerFor<UserServices>()
+        private val logger = loggerFor<UserServices>()
 
         const val NAME_PARAM = "User name"
         const val EMAIL_PARAM = "email"

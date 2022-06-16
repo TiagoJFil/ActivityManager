@@ -15,18 +15,18 @@ import { onRouteLocationsChange, DURATION_REGEX, onSportTextChange } from './uti
  * Displays an activity list with the given query
  */
  async function displayActivityList( params, query) {
-    const activityList = await activityApi.fetchActivitiesBySport(params.sid,query)
-    
-    const activities = query.deleted 
-    ? activityList.activities.filter( (activity) => activity.id != query.deleted )
-    : activityList.activities
-    
+    const activityList = await activityApi.fetchActivitiesBySport(params.sid, query)
+
+    const activities = query.deleted
+        ? activityList.activities.filter((activity) => activity.id !== query.deleted)
+        : activityList.activities
+
     const total = query.deleted ? activityList.total - 1 : activityList.total
     const sport = params.sid ? await sportApi.fetchSport(params.sid) : null
 
     return [
         H1(styles.HEADER, `Activities for ${sport.name}`),
-        
+
         ActivityList(activities),
         Pagination(
             total,
@@ -44,7 +44,6 @@ async function displaySearchActivities( _, query) {
     const onFilterSubmit = (date, sid, rid, sortOrder) => {
 
         if(!sid){
-            // ErrorToast("Could not search").showToast()
             InfoToast("Please select a sport").showToast()
             return
         }
@@ -63,11 +62,8 @@ async function displaySearchActivities( _, query) {
     
 
     return [
-        Div('activity-header-filter',
-            H1(styles.HEADER, `Activity search`),
-            ActivitySearchFilter(onFilterSubmit, onRouteLocationsChange, onSportTextChange, query),
-        ),
-       
+        H1(styles.HEADER, `Activity search`),
+        ActivitySearchFilter(onFilterSubmit, onRouteLocationsChange, onSportTextChange, query),
     ]
 }
 

@@ -14,6 +14,7 @@ import org.http4k.core.Status.Companion.FORBIDDEN
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.NOT_FOUND
 import org.http4k.core.Status.Companion.UNAUTHORIZED
+import org.http4k.core.then
 import org.http4k.routing.ResourceLoader
 import org.http4k.routing.ResourceLoader.Companion.Classpath
 import org.http4k.routing.RoutingHttpHandler
@@ -31,9 +32,14 @@ import pt.isel.ls.service.MissingParameter
 import pt.isel.ls.service.ResourceNotFound
 import pt.isel.ls.service.UnauthenticatedError
 import pt.isel.ls.service.dto.HttpError
-import pt.isel.ls.utils.warnStatus
+import pt.isel.ls.utils.logRequest
+import pt.isel.ls.utils.warnResponse
 import java.sql.SQLException
 import kotlin.system.measureTimeMillis
+
+private val eLogger = LoggerFactory.getLogger("ERRORS")
+private val tLogger = LoggerFactory.getLogger("TIMER")
+private val rLogger = LoggerFactory.getLogger("REQUESTS")
 
 /**
  * Binds [routes] to "/api" and applies [onErrorFilter] in all of them
@@ -42,7 +48,7 @@ import kotlin.system.measureTimeMillis
  */
 fun getApiRoutes(routes: RoutingHttpHandler) = routes(
 
-    "/api" bind routes.withFilter(timeFilter).withFilter(onErrorFilter),
+    "/api" bind routes.withFilter(loggingFilter.then(onErrorFilter).then(timeFilter)),
     static(Classpath("public")),
     singlePageApp(ResourceLoader.Directory("static-content")) // For SPA
 
@@ -69,9 +75,6 @@ fun getAppRoutes(env: Environment) = routes(
     swaggerUi()
 )
 
-private val eLogger = LoggerFactory.getLogger("pt.isel.ls.api.ERRORS")
-private val tLogger = LoggerFactory.getLogger("pt.isel.ls.api.TIMER")
-
 /**
  *
  * Catches app errors thrown on request handlers
@@ -90,35 +93,34 @@ private val onErrorFilter = Filter { handler ->
 
             when (appError) {
                 is ResourceNotFound -> {
-                    eLogger.warnStatus(NOT_FOUND, appError.message ?: "Resource not found")
+                    eLogger.warnResponse(NOT_FOUND, appError.message)
                     baseResponse.status(NOT_FOUND)
                 }
                 is UnauthenticatedError -> {
-                    eLogger.warnStatus(UNAUTHORIZED, appError.message ?: "Unauthenticated")
+                    eLogger.warnResponse(UNAUTHORIZED, appError.message)
                     baseResponse.status(UNAUTHORIZED)
                 }
                 is AuthorizationError -> {
-                    eLogger.warnStatus(FORBIDDEN, appError.message ?: "Forbidden")
+                    eLogger.warnResponse(FORBIDDEN, appError.message)
                     baseResponse.status(FORBIDDEN)
                 }
                 is MissingParameter, is InvalidParameter -> {
-                    eLogger.warnStatus(BAD_REQUEST, appError.message ?: "Invalid parameter")
+                    eLogger.warnResponse(BAD_REQUEST, appError.message)
                     baseResponse
                 }
                 is InternalError -> {
-                    eLogger.warnStatus(INTERNAL_SERVER_ERROR, appError.message)
+                    eLogger.warnResponse(INTERNAL_SERVER_ERROR, appError.message)
                     baseResponse.status(INTERNAL_SERVER_ERROR)
                 }
             }
         } catch (serializerException: SerializationException) {
 
-            eLogger.error(serializerException.stackTraceToString())
             val body = Json.encodeToString(HttpError(0, "Invalid body."))
-            eLogger.warnStatus(BAD_REQUEST, "Invalid body.")
+            eLogger.warnResponse(BAD_REQUEST, "Invalid body.")
             Response(BAD_REQUEST).header("content-type", "application/json").body(body)
         } catch (dbError: SQLException) {
             val body = Json.encodeToString(HttpError(2004, "Internal Error."))
-            eLogger.warnStatus(INTERNAL_SERVER_ERROR, dbError.message ?: "Database Error")
+            eLogger.warnResponse(INTERNAL_SERVER_ERROR, dbError.message ?: "Database Error")
             Response(INTERNAL_SERVER_ERROR).header("content-type", "application/json").body(body)
         } catch (e: Exception) {
             eLogger.error(e.stackTraceToString())
@@ -137,6 +139,14 @@ private val timeFilter = Filter { handler ->
         }
         tLogger.info("Request from ${request.source?.address}:${request.source?.port} to ${request.uri} took $time ms")
         returnedValue
+    }
+    handlerWrapper
+}
+
+private val loggingFilter = Filter { handler ->
+    val handlerWrapper: HttpHandler = { request: Request ->
+        rLogger.logRequest(request)
+        handler(request)
     }
     handlerWrapper
 }

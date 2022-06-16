@@ -1,17 +1,17 @@
-import {Div, H1, Text, Image, Button, Anchor} from "../components/dsl.js"
-import { sportHandlers } from "./sports-handlers.js";
-import { userHandlers } from "./users-handlers.js";
-import { routeHandlers } from "./routes-handlers.js";
-import { activityHandlers } from "./activities-handlers.js";
-import { getBodyOrThrow, queryBuilder } from "../api/api-utils.js";
-import { ErrorToast, SuccessToast , InfoToast} from "../toasts.js";
+import {Div, H1, Text, Image, Anchor} from "../components/dsl.js"
+import {sportHandlers} from "./sports-handlers.js";
+import {userHandlers} from "./users-handlers.js";
+import {routeHandlers} from "./routes-handlers.js";
+import {activityHandlers} from "./activities-handlers.js";
+import {queryBuilder} from "../api/api-utils.js";
+import {ErrorToast, SuccessToast, InfoToast} from "../toasts.js";
 import CreateUser from "../components/creates/CreateUser.js";
 import styles from "../styles.js";
 import Login from "../components/Login.js";
-import { userApi } from "../api/api.js";
-import {setUserInfo ,isLoggedIn, logOut} from "../api/session.js"
+import {userApi} from "../api/api.js";
+import {setUserInfo, isLoggedIn, logOut} from "../api/session.js"
 
-import { reloadNav} from "./utils.js"
+import {reloadNav} from "./utils.js"
 
 /**
  * Displays the home page 
@@ -21,9 +21,9 @@ function getHome() {
     return [
         Div("home-page",
             H1(styles.HEADER, 'Sports Isel'),
-            Div("image-group", 
-                Image("home-image", "homeImage", "./img/running.svg","https://api.vexels.com/v1/download/263640/"),
-                Image("home-image", "homeImageGirl", "./img/running-girl.svg","https://api.vexels.com/v1/download/263646/")
+            Div("image-group",
+                Image("home-image", "homeImage", "./img/running.svg", "Running boy"),
+                Image("home-image", "homeImageGirl", "./img/running-girl.svg", "Running girl")
             )
         )
     ]
@@ -128,32 +128,31 @@ function getLogout(){
 function getRegister(){
 
     const onRegisterConfirm = async (name, email, password, reinsertedPassword, Button) => {
-        try{ 
-            if(password != reinsertedPassword){
+        try {
+            if (password !== reinsertedPassword) {
                 ErrorToast("Passwords do not match").showToast()
-                return 
+                return
             }
 
             Button.disabled = true
 
             const User = await userApi.createUser(name, email, password)
             window.location.hash = "home"
-            
+
             setUserInfo(User)
             reloadNav()
             SuccessToast(`Welcome ${name}`).showToast()
-            
-            
-        }catch(e){
-            let message = ''
-            if(e.code = 2000)
+
+
+        } catch (e) {
+            let message;
+            if (e.code === 2000)
                 message = "Name should not be empty or email already taken"
             else
                 message = "An error has occurred. Please try again later."
-                
+
             ErrorToast(message).showToast()
             Button.disabled = false
-            return
         }
     }
 

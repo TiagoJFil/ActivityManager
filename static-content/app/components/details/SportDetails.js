@@ -1,7 +1,7 @@
 import {List, Item, Text, Div, } from "../dsl.js"
 import {LinkIcon, ButtonIcon} from "../Icons.js"
 import styles from "../../styles.js";
-import {SportEditModal, DESCRIPTION_TEXT}  from '../edits/SportEdit.js'
+import {SportEditModal, DESCRIPTION_TEXT} from '../edits/SportEditModal.js'
 import {isLoggedIn} from "../../api/session.js";
 
 /**

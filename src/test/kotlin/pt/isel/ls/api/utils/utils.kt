@@ -9,7 +9,7 @@ import pt.isel.ls.api.RouteRoutes.RouteIDOutput
 import pt.isel.ls.api.RouteRoutes.RouteInput
 import pt.isel.ls.api.SportRoutes.SportIDOutput
 import pt.isel.ls.api.SportRoutes.SportInput
-import pt.isel.ls.api.UserRoutes.UserIDOutput
+import pt.isel.ls.api.UserRoutes.AuthOutput
 import pt.isel.ls.api.UserRoutes.UserInput
 import pt.isel.ls.config.Environment
 import pt.isel.ls.config.GUEST_TOKEN
@@ -39,11 +39,11 @@ val TEST_ENV: Environment
 fun authHeader(token: String): Headers = listOf("Authorization" to "Bearer $token")
 
 /**
- * Helper function to create a user, ensures it is created and returns the respective [UserIDOutput]
+ * Helper function to create a user, ensures it is created and returns the respective [AuthOutput]
  * @param userCreationBody the body of the user to be created. Must be valid.
  */
-fun HttpHandler.createUser(userCreationBody: UserInput): UserIDOutput =
-    postRequest<UserInput, UserIDOutput>(
+fun HttpHandler.createUser(userCreationBody: UserInput): AuthOutput =
+    postRequest<UserInput, AuthOutput>(
         this,
         USER_PATH,
         userCreationBody,

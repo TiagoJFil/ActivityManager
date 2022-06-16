@@ -137,26 +137,11 @@ input[type="date"] {
     border: 3px;
 }
 
-.activity-filter{
-    height: 58px;
-    display: flex;
-    flex-direction: row;
-    justify-content:end;
-    margin-top: 30px;
-}
-
-.route-user{
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
 #rid{
     min-height:58px;
     width:300px;
     overflow: scroll;
  }
-
 
 
 @media only screen and (max-width: 600px) {

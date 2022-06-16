@@ -2,8 +2,6 @@
 const ID_PROP = "id"
 const TOKEN_PROP = "authToken"
 
-
-
 function getUserInfo(){
     return {
         ID_KEY: sessionStorage.getItem(ID_PROP),

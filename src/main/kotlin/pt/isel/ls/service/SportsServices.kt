@@ -6,7 +6,7 @@ import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
-import pt.isel.ls.utils.getLoggerFor
+import pt.isel.ls.utils.loggerFor
 import pt.isel.ls.utils.repository.transactions.TransactionFactory
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireIdInteger
@@ -21,7 +21,7 @@ class SportsServices(
 ) {
 
     companion object {
-        private val logger = getLoggerFor<UserServices>()
+        private val logger = loggerFor<UserServices>()
         const val NAME_PARAM = "Sport name"
         const val DESCRIPTION_PARAM = "description"
         const val SPORT_ID_PARAM = "sportID"
@@ -54,7 +54,7 @@ class SportsServices(
      * @param description the description of the [SportDTO] to be created.
      * @return [SportID] the sport's unique identifier
      */
-    fun createSport(token: UserToken?, name: String?, description: String?): SportID {
+    fun createSport(token: UserToken?, name: Param, description: Param): SportID {
         logger.traceFunction(::createSport.name) { listOf(NAME_PARAM to name, DESCRIPTION_PARAM to description) }
 
         return transactionFactory.getTransaction().execute {

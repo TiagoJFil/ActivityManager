@@ -16,11 +16,11 @@ import org.http4k.routing.routes
 import pt.isel.ls.service.SportsServices
 import pt.isel.ls.service.dto.SportDTO
 import pt.isel.ls.utils.SportID
-import pt.isel.ls.utils.api.contentJson
+import pt.isel.ls.utils.api.bearerToken
+import pt.isel.ls.utils.api.json
 import pt.isel.ls.utils.api.pagination
-import pt.isel.ls.utils.api.token
-import pt.isel.ls.utils.getLoggerFor
-import pt.isel.ls.utils.infoLogRequest
+import pt.isel.ls.utils.logRequest
+import pt.isel.ls.utils.loggerFor
 
 class SportRoutes(
     private val sportsServices: SportsServices
@@ -31,28 +31,29 @@ class SportRoutes(
     @Serializable data class SportListOutput(val sports: List<SportDTO>)
 
     companion object {
-        private val logger = getLoggerFor<SportRoutes>()
+        private val logger = loggerFor<SportRoutes>()
     }
 
     /**
      * Create a new sport with the information from the body of the HTTP request.
      */
     private fun createSport(request: Request): Response {
-        logger.infoLogRequest(request)
+        logger.logRequest(request)
 
         val sportsBody = Json.decodeFromString<SportInput>(request.bodyString())
-        val sportID = sportsServices.createSport(request.token, sportsBody.name, sportsBody.description)
+        val sportID = sportsServices.createSport(request.bearerToken, sportsBody.name, sportsBody.description)
+
+        val sportIDJson = Json.encodeToString(SportIDOutput(sportID))
 
         return Response(Status.CREATED)
-            .contentJson()
-            .body(Json.encodeToString(SportIDOutput(sportID)))
+            .json(sportIDJson)
     }
 
     /**
      * Gets the sport that its given in the params of the path of the uri.
      */
     private fun getSport(request: Request): Response {
-        logger.infoLogRequest(request)
+        logger.logRequest(request)
 
         val sportID = request.path("sid")
         val sport = sportsServices.getSport(sportID)
@@ -60,36 +61,34 @@ class SportRoutes(
         val sportJson = Json.encodeToString(sport)
 
         return Response(Status.OK)
-            .contentJson()
-            .body(sportJson)
+            .json(sportJson)
     }
 
     /**
      * Gets all the available sports.
      */
     private fun getSports(request: Request): Response {
-        logger.infoLogRequest(request)
+        logger.logRequest(request)
 
         val search = request.query("search")
 
         val sports = sportsServices.getSports(search, request.pagination)
-        val bodyString = Json.encodeToString(SportListOutput(sports))
+        val listJson = Json.encodeToString(SportListOutput(sports))
         return Response(Status.OK)
-            .contentJson()
-            .body(bodyString)
+            .json(listJson)
     }
 
     /**
      * Updates a sport with the information from the body of the HTTP request.
      */
     private fun updateSport(request: Request): Response {
-        logger.infoLogRequest(request)
+        logger.logRequest(request)
 
         val sportBody = Json.decodeFromString<SportInput>(request.bodyString())
 
         val sportID = request.path("sid")
 
-        sportsServices.updateSport(request.token, sportID, sportBody.name, sportBody.description)
+        sportsServices.updateSport(request.bearerToken, sportID, sportBody.name, sportBody.description)
 
         return Response(Status.NO_CONTENT)
     }

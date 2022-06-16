@@ -1,8 +1,8 @@
 import {List, Item, Text, Div, H1} from "../dsl.js"
-import {LinkIcon,ButtonIcon} from "../Icons.js"
+import {LinkIcon, ButtonIcon} from "../Icons.js"
 import styles from "../../styles.js";
-import ActivityDelete  from '../deletes/ActivityDelete.js'
-import ActivityEdit  from '../edits/ActivityEdit.js'
+import ActivityDelete from '../deletes/ActivityDelete.js'
+import ActivityEditModal from '../edits/ActivityEditModal.js'
 
 /**
  * ActivityDetails component
@@ -19,8 +19,7 @@ export default function ActivityDetails(activity, onDeleteConfirm, onEditConfirm
     const emptyText = Text(styles.TEXT, '')
 
     const deleteModal = ActivityDelete(onDeleteConfirm)
-
-    const editModal = ActivityEdit(activity, onEditConfirm, onRouteChange, route)
+    const editModal = ActivityEditModal(activity, onEditConfirm, onRouteChange, route)
 
     const onDeleteClick = () => {
         deleteModal.style.display = "flex";
@@ -41,15 +40,20 @@ export default function ActivityDetails(activity, onDeleteConfirm, onEditConfirm
                 Text(styles.DETAIL_HEADER, 'Duration: '),
                 Text(styles.TEXT, activity.duration)
             ),
-            Div(styles.ICON_GROUP, 
-                LinkIcon(styles.SPORT_ICON,`#sports/${activity.sport}`,"Get Sport Details"),
+            Div(styles.ICON_GROUP,
+                LinkIcon(styles.SPORT_ICON, `#sports/${activity.sport}`, "Get Sport Details"),
                 LinkIcon(styles.USER_ICON, `#users/${activity.user}`, "Get User Details"),
-                ButtonIcon(styles.TRASH_ICON, onDeleteClick, "Delete Activity"),
                 ButtonIcon(styles.EDIT_ICON, onEdit, "Edit activity", "Edit-button"),
-                activity.route 
-                ? LinkIcon(styles.ROUTE_ICON,`#routes/${activity.route}`,"Get Route Details", "route-link") : emptyText, // Route Link if route exists
-                activity.route 
-                ? LinkIcon(styles.USERS_ICON, `#sports/${activity.sport}/users?rid=${activity.route}`, "Get users by rid and sid") : emptyText  // Users Link if route exists
+                activity.route
+                    ? LinkIcon(styles.ROUTE_ICON,
+                        `#routes/${activity.route}`,
+                        "Get Route Details",
+                        "route-link") : emptyText, // Route Link if route exists
+                activity.route
+                    ? LinkIcon(styles.USERS_ICON,
+                        `#sports/${activity.sport}/users?rid=${activity.route}`,
+                        "Get users by rid and sid") : emptyText,  // Users Link if route exists
+                ButtonIcon(styles.TRASH_ICON, onDeleteClick, "Delete Activity"),
             )
         ),
         deleteModal,

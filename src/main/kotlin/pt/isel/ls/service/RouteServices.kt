@@ -6,7 +6,7 @@ import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
-import pt.isel.ls.utils.getLoggerFor
+import pt.isel.ls.utils.loggerFor
 import pt.isel.ls.utils.repository.transactions.TransactionFactory
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireIdInteger
@@ -21,7 +21,7 @@ class RouteServices(
     private val transactionFactory: TransactionFactory
 ) {
     companion object {
-        private val logger = getLoggerFor<RouteServices>()
+        private val logger = loggerFor<RouteServices>()
         const val ROUTE_ID_PARAM = "routeID"
         const val START_LOCATION_PARAM = "startLocation"
         const val END_LOCATION_PARAM = "endLocation"
