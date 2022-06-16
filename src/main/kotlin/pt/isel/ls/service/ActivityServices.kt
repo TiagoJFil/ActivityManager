@@ -8,6 +8,7 @@ import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.service.entities.Activity
 import pt.isel.ls.service.entities.Activity.Duration
 import pt.isel.ls.service.entities.Order
+import pt.isel.ls.service.transactions.TransactionFactory
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.RouteID
@@ -15,7 +16,6 @@ import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.loggerFor
-import pt.isel.ls.utils.repository.transactions.TransactionFactory
 import pt.isel.ls.utils.service.requireActivityWith
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireIdInteger

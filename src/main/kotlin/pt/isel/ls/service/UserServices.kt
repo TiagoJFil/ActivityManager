@@ -4,12 +4,13 @@ import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.entities.User.Email
+import pt.isel.ls.service.transactions.Transaction.IsolationLevel
+import pt.isel.ls.service.transactions.TransactionFactory
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.loggerFor
-import pt.isel.ls.utils.repository.transactions.TransactionFactory
 import pt.isel.ls.utils.service.generateUUId
 import pt.isel.ls.utils.service.hashPassword
 import pt.isel.ls.utils.service.requireIdInteger
@@ -56,7 +57,7 @@ class UserServices(
 
         val hashedPassword = hashPassword(safePassword)
 
-        return transactionFactory.getTransaction().execute {
+        return transactionFactory.getTransaction().execute(IsolationLevel.SERIALIZABLE) {
 
             if (usersRepository.hasRepeatedEmail(possibleEmail))
                 throw InvalidParameter(EMAIL_TAKEN)

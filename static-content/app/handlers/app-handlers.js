@@ -1,15 +1,15 @@
-import {Div, H1, Text, Image, Anchor} from "../components/dsl.js"
+import {Anchor, Div, H1, Image, Text} from "../components/dsl.js"
 import {sportHandlers} from "./sports-handlers.js";
 import {userHandlers} from "./users-handlers.js";
 import {routeHandlers} from "./routes-handlers.js";
 import {activityHandlers} from "./activities-handlers.js";
 import {queryBuilder} from "../api/api-utils.js";
-import {ErrorToast, SuccessToast, InfoToast} from "../toasts.js";
+import {ErrorToast, InfoToast, SuccessToast} from "../toasts.js";
 import CreateUser from "../components/creates/CreateUser.js";
 import styles from "../styles.js";
 import Login from "../components/Login.js";
 import {userApi} from "../api/api.js";
-import {setUserInfo, isLoggedIn, logOut} from "../api/session.js"
+import {isLoggedIn, logOut, setUserInfo} from "../api/session.js"
 
 import {reloadNav} from "./utils.js"
 
@@ -49,11 +49,11 @@ function getNotFoundPage() {
 /**
  * Displays the error page with the given error message
  */
-function getErrorPage( error) {
+function getErrorPage(error) {
     let message;
     let header;
-    
-    switch(error.code){
+
+    switch (error.code) {
         case 2002:
             header = 'Content Not Found'
             message = NOT_FOUND_MESSAGE
@@ -78,38 +78,35 @@ function getErrorPage( error) {
 function getLogin(){
 
     const onLoginConfirm = async (email, password, Button) => {
-        try{
+        try {
             Button.disabled = true
             const auth = await userApi.login(email, password)
             const user = userApi.fetchUser(auth.id)
-            
-            user.then( userObj => {
+
+            user.then(userObj => {
                 SuccessToast(`Welcome ${userObj.name}`).showToast()
                 reloadNav()
             })
-            
+
             setUserInfo(auth)
             window.location.hash = "home"
-        }
-        catch(e) {
+        } catch (e) {
             ErrorToast(e.message).showToast()
             Button.disabled = false
-            
+
             return false
         }
     }
 
-    return[
-        Div("login-page",
-            H1(styles.HEADER, 'Sign In'),
-            Div(styles.LOGIN_ELEMS,
-                Login(onLoginConfirm),
-                Div(styles.SPACER),
-                Text(styles.TEXT, "Don't have an account yet? "),
-                    Anchor(styles.REGISTER_ANCHOR, "#register", Text(styles.TEXT, "Register"))
-            )
+    return Div("login-page",
+        H1(styles.HEADER, 'Sign In'),
+        Div(styles.LOGIN_ELEMS,
+            Login(onLoginConfirm),
+            Div(styles.SPACER),
+            Text(styles.TEXT, "Don't have an account yet? "),
+            Anchor(styles.REGISTER_ANCHOR, "#register", Text(styles.TEXT, "Register"))
         )
-    ]
+    )
 }
 
 function getLogout(){

@@ -905,7 +905,7 @@ components:
     RouteOutput:
       type: "object"
       properties:
-        routeID:
+        id:
           type: "integer"
           example: 123
     Sport:
@@ -948,7 +948,7 @@ components:
     SportOutput:
       type: "object"
       properties:
-        sportID:
+        id:
           type: "integer"
           example: 12314
     Activity:
@@ -1003,6 +1003,6 @@ components:
     ActivityOutput:
       type: "object"
       properties:
-        activityID:
+        id:
           type: "integer"
           example: 123141245

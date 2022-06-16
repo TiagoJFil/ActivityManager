@@ -1,4 +1,4 @@
-import {fetchResourceList, getRequest, getBodyOrThrow, isSuccessful, sendRequest} from "./api-utils.js";
+import {fetchResourceList, getBodyOrThrow, getRequest, isSuccessful, sendRequest} from "./api-utils.js";
 
 // URL Related Constants
 
@@ -55,13 +55,14 @@ async function createRoute(sLocation, eLocation, distance) {
  */
 async function createActivity(sid, date, duration, rid) {
     const uri = BASE_API_URL + ACTIVITY_SPORT_URL(sid)
-    const body = JSON.stringify({
+    const body = {
         duration: duration,
         date: date,
-        rid: rid || ''
-    })
-    const response = await sendRequest(uri, 'POST',body)
-    
+    }
+    if (rid != null && rid && undefined) body.rid = rid
+    const bodyString = JSON.stringify(body)
+    const response = await sendRequest(uri, 'POST', bodyString)
+
     return await getBodyOrThrow(response)
 }
 
@@ -203,7 +204,6 @@ export const activityApi = {
     deleteActivity,
     updateActivity,
     createActivity
-
 }
 
 export const routeApi = {

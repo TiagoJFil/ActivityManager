@@ -1,17 +1,24 @@
-package pt.isel.ls.utils.repository.transactions
+package pt.isel.ls.service.transactions
 
 /**
  * Represents an app transaction.
  *
  */
-sealed interface Transaction {
+interface Transaction {
 
     val scope: TransactionScope
+
+    enum class IsolationLevel {
+        READ_COMMITTED,
+        READ_UNCOMMITTED,
+        REPEATABLE_READ,
+        SERIALIZABLE
+    }
 
     /**
      * Begins the transaction.
      */
-    fun begin()
+    fun begin(level: IsolationLevel = IsolationLevel.READ_COMMITTED)
 
     /**
      * Commits the changes made in the transaction.
@@ -37,8 +44,8 @@ sealed interface Transaction {
      *
      * The exception thrown by the block is propagated after rollback.
      */
-    fun <T> execute(block: TransactionScope.() -> T): T {
-        begin()
+    fun <T> execute(level: IsolationLevel = IsolationLevel.READ_COMMITTED, block: TransactionScope.() -> T): T {
+        begin(level)
         try {
             val result = scope.block()
             commit()

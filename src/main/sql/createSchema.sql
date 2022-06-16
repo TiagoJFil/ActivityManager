@@ -1,4 +1,3 @@
-
 create table if not exists "User" (
     id serial primary key,
     name varchar(20) not null,

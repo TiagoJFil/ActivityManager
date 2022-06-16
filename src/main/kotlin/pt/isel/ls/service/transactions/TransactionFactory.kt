@@ -1,5 +1,7 @@
-package pt.isel.ls.utils.repository.transactions
+package pt.isel.ls.service.transactions
 
+import pt.isel.ls.repository.database.JDBCTransaction
+import pt.isel.ls.repository.memory.InMemoryTransaction
 import javax.sql.DataSource
 
 /**

@@ -2,12 +2,12 @@ package pt.isel.ls.service
 
 import pt.isel.ls.service.dto.RouteDTO
 import pt.isel.ls.service.entities.Route
+import pt.isel.ls.service.transactions.TransactionFactory
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.loggerFor
-import pt.isel.ls.utils.repository.transactions.TransactionFactory
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireIdInteger
 import pt.isel.ls.utils.service.requireNotBlankParameter

@@ -1,5 +1,8 @@
-package pt.isel.ls.utils.repository.transactions
+package pt.isel.ls.repository.database
 
+import pt.isel.ls.service.transactions.JDBCTransactionScope
+import pt.isel.ls.service.transactions.Transaction
+import pt.isel.ls.service.transactions.TransactionScope
 import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.Statement
@@ -9,10 +12,23 @@ class JDBCTransaction(val connection: Connection) : Transaction {
     override val scope: TransactionScope = JDBCTransactionScope(connection)
 
     /**
+     * Sets the isolation level of the transaction.
+     */
+    private fun setIsolationLevel(level: Transaction.IsolationLevel) {
+        connection.transactionIsolation = when (level) {
+            Transaction.IsolationLevel.READ_UNCOMMITTED -> Connection.TRANSACTION_READ_UNCOMMITTED
+            Transaction.IsolationLevel.READ_COMMITTED -> Connection.TRANSACTION_READ_COMMITTED
+            Transaction.IsolationLevel.REPEATABLE_READ -> Connection.TRANSACTION_REPEATABLE_READ
+            Transaction.IsolationLevel.SERIALIZABLE -> Connection.TRANSACTION_SERIALIZABLE
+        }
+    }
+
+    /**
      * Begins the transaction.
      */
-    override fun begin() {
+    override fun begin(level: Transaction.IsolationLevel) {
         connection.autoCommit = false
+        setIsolationLevel(level)
     }
 
     /**
@@ -46,7 +62,10 @@ class JDBCTransaction(val connection: Connection) : Transaction {
      * @param block the block to execute in the transaction
      * @return the result of the block function invoked in the transaction
      */
-    override fun <T> execute(block: TransactionScope.() -> T): T {
-        return connection.use { super.execute(block) }
+    override fun <T> execute(
+        level: Transaction.IsolationLevel,
+        block: TransactionScope.() -> T
+    ): T {
+        return connection.use { super.execute(level, block) }
     }
 }

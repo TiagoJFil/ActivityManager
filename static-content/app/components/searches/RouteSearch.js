@@ -1,6 +1,6 @@
-import {Text, Select, Option,Form} from "../dsl.js"
+import {Form, Option, Select, Text} from "../dsl.js"
 import styles from "../../styles.js";
-import SearchBar  from "../SearchBar.js";
+import SearchBar from "../SearchBar.js";
 
 
 /**
@@ -31,8 +31,8 @@ export default function RouteSearch(onLocationsChange,header,defaultSLocation,de
         Text(styles.SEARCH_HEADER, header),
         SearchBar("startLocationDL", styles.FORM_TEXT_INPUT, onStartChange, "Lisbon", "Start Location",defaultSLocation),
         SearchBar("endLocationDL", styles.FORM_TEXT_INPUT, onEndChange, "Porto", "End Location: ",defaultELocation),
-        Select(styles.FILTER_SELECTOR, "routeSelector", 1, 
-            Option(styles.SELECTOR_OPTION, "", "Please search for locations...")
+        Select(styles.FILTER_SELECTOR, "routeSelector", 1,
+            Option(styles.SELECTOR_OPTION, null, "Please search for locations...")
         )
     )
 }

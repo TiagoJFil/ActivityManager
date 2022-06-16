@@ -20,7 +20,6 @@ import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.json
 import pt.isel.ls.utils.api.pagination
-import pt.isel.ls.utils.loggerFor
 
 class UserRoutes(
     private val userServices: UserServices
@@ -38,7 +37,6 @@ class UserRoutes(
     data class AuthOutput(val authToken: UserToken, val id: UserID)
 
     companion object {
-        private val logger = loggerFor<UserRoutes>()
         private const val UID_PLACEHOLDER = "uid"
     }
 
@@ -46,7 +44,6 @@ class UserRoutes(
      * Creates an [UserDTO] with the information that comes in the body of the HTTP request.
      */
     private fun createUser(request: Request): Response {
-
 
         val bodyString = request.bodyString()
         val body = Json.decodeFromString<UserInput>(bodyString)
@@ -92,7 +89,6 @@ class UserRoutes(
      */
     private fun getUsers(request: Request): Response {
 
-
         val users = userServices.getUsers(request.pagination)
         val userListJson = Json.encodeToString(UserListOutput(users))
 
@@ -104,7 +100,6 @@ class UserRoutes(
      * Gets the token for the user that is identified by the email that comes in the body of the HTTP request.
      */
     private fun authenticate(request: Request): Response {
-
 
         val bodyString = request.bodyString()
         val body = Json.decodeFromString<AuthInput>(bodyString)

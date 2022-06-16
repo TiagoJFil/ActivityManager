@@ -1,3 +1,5 @@
+export const TOAST_IN_BETWEEN_DELAY = 300
+
 
 /**
  * Toast that gives an error message
@@ -29,6 +31,14 @@ export function InfoToast(message) {
         text: message,
         backgroundColor: "linear-gradient(to right, #66b3ff, #6699ff)",
         oldestFirst: false,
-    })     
+    })
+}
+
+export function showToasts(toasts) {
+    toasts.forEach((toast, i) =>
+        setTimeout(() => {
+            toast.showToast()
+        }, TOAST_IN_BETWEEN_DELAY * i)
+    )
 }
 

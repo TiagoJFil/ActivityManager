@@ -1,4 +1,4 @@
-package pt.isel.ls.utils.repository.transactions
+package pt.isel.ls.service.transactions
 
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.config.testActivity
