@@ -6,8 +6,8 @@ import pt.isel.ls.api.utils.TEST_ENV
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.service.inputs.UserInputs.UserAuthInput
 import pt.isel.ls.service.inputs.UserInputs.UserCreateInput
+import pt.isel.ls.service.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.api.PaginationInfo
-import pt.isel.ls.utils.repository.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

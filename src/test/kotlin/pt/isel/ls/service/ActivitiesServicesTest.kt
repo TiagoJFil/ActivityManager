@@ -15,8 +15,8 @@ import pt.isel.ls.service.inputs.ActivityInputs.ActivitySearchInput
 import pt.isel.ls.service.inputs.ActivityInputs.ActivityUpdateInput
 import pt.isel.ls.service.inputs.RouteInputs.RouteCreateInput
 import pt.isel.ls.service.inputs.UserInputs.UserCreateInput
+import pt.isel.ls.service.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.api.PaginationInfo
-import pt.isel.ls.utils.repository.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

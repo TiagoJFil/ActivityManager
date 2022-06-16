@@ -6,12 +6,12 @@ import pt.isel.ls.service.entities.User
 import pt.isel.ls.service.inputs.ActivityInputs.validateID
 import pt.isel.ls.service.inputs.UserInputs.UserAuthInput
 import pt.isel.ls.service.inputs.UserInputs.UserCreateInput
+import pt.isel.ls.service.transactions.TransactionFactory
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.loggerFor
-import pt.isel.ls.utils.repository.transactions.TransactionFactory
 import pt.isel.ls.utils.service.generateUUId
 import pt.isel.ls.utils.service.requireRoute
 import pt.isel.ls.utils.service.requireSport

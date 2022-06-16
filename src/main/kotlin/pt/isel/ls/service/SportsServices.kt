@@ -5,12 +5,12 @@ import pt.isel.ls.service.entities.Sport
 import pt.isel.ls.service.inputs.ActivityInputs.validateID
 import pt.isel.ls.service.inputs.SportInputs.SportCreateInput
 import pt.isel.ls.service.inputs.SportInputs.SportUpdateInput
+import pt.isel.ls.service.transactions.TransactionFactory
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.loggerFor
-import pt.isel.ls.utils.repository.transactions.TransactionFactory
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireOwnership
 import pt.isel.ls.utils.service.toDTO
