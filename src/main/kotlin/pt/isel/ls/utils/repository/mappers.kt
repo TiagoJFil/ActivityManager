@@ -72,3 +72,8 @@ inline fun <T> ResultSet.toListOf(mapper: ResultSet.() -> T): List<T> =
         }
         return list
     }
+
+/**
+ * Takes the result of [function] and returns it if the result set has a next row otherwise returns null.
+ */
+inline fun <T> ResultSet.ifNext(function: () -> T): T? = if (next()) function() else null

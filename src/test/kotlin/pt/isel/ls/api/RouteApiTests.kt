@@ -25,8 +25,8 @@ import pt.isel.ls.config.guestUser
 import pt.isel.ls.config.testRoute
 import pt.isel.ls.service.dto.HttpError
 import pt.isel.ls.service.dto.RouteDTO
+import pt.isel.ls.service.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.RouteID
-import pt.isel.ls.utils.repository.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertContains
 import kotlin.test.assertEquals

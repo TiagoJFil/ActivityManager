@@ -1,5 +1,5 @@
-import {List, Item, Text, Div, H1 , HidenElem} from "../dsl.js"
-import {LinkIcon,ButtonIcon} from "../Icons.js"
+import {Div, H1, HidenElem, Item, List, Text} from "../dsl.js"
+import {ButtonIcon, LinkIcon} from "../Icons.js"
 import styles from "../../styles.js";
 import ActivityDelete from '../deletes/ActivityDelete.js'
 import ActivityEditModal from '../edits/ActivityEditModal.js'
@@ -13,9 +13,10 @@ import ActivityEditModal from '../edits/ActivityEditModal.js'
  * @param onEditConfirm the function to call when the user confirms the edition
  * @param onRouteChange the function to call when the route changes
  * @param route the current route
+ * @param isOwner whether the user is the owner of the activity
  * @returns {HTMLElement} the activity details component
  */
-export default function ActivityDetails(activity, route ,onDeleteConfirm, onEditConfirm, onRouteChange, isAuthOptionsEnabled) {
+export default function ActivityDetails(activity, route, onDeleteConfirm, onEditConfirm, onRouteChange, isOwner) {
     const emptyText = Text(styles.TEXT, '')
 
     const deleteModal = ActivityDelete(onDeleteConfirm)
@@ -29,9 +30,8 @@ export default function ActivityDetails(activity, route ,onDeleteConfirm, onEdit
         editModal.style.display = "flex";
     }
 
-    const editButton = isAuthOptionsEnabled ? ButtonIcon(styles.EDIT_ICON, onEdit, "Edit activity", "Edit-button") : HidenElem()
-
-    const deleteButton = isAuthOptionsEnabled ? ButtonIcon(styles.TRASH_ICON, onDeleteClick, "Delete Activity") : HidenElem()
+    const editButton = isOwner ? ButtonIcon(styles.EDIT_ICON, onEdit, "Edit activity", "Edit-button") : HidenElem()
+    const deleteButton = isOwner ? ButtonIcon(styles.TRASH_ICON, onDeleteClick, "Delete Activity") : HidenElem()
 
     return Div(styles.HEADER_DIV,
         H1(styles.HEADER, 'Activity Details'),

@@ -1,26 +1,27 @@
 import router from './router.js'
 import handlers from './handlers/app-handlers.js'
-import { Navigation } from './components/Navigation.js'
+import {Navigation} from './components/Navigation.js'
 import {isLoggedIn} from './api/session.js'
 import LoadingSpinner from "./components/LoadingSpinner.js";
+import {isRendering, previousHash, renderContent, setIsRendering} from "./rendering.js";
+
 window.addEventListener('load', loadHandler)
 window.addEventListener('hashchange', hashChangeHandler)
-
 
 /**
  * Loads the default routes
  */
-function loadHandler(){
-    if(!location.hash) location.hash = "#home" 
+function loadHandler() {
+    if (!location.hash) location.hash = "#home"
     document.body.prepend(Navigation(isLoggedIn()))
 
 
     router.addDefaultNotFoundRouteHandler(handlers.getNotFoundPage)
     router.addRouteHandler('home', handlers.getHome)
-    
+
     router.addRouteHandler('sports', handlers.getSports)
     router.addRouteHandler('sports/add', handlers.createSport)
-    router.addRouteHandler('sports/:sid', handlers.getSport) 
+    router.addRouteHandler('sports/:sid', handlers.getSport)
     router.addRouteHandler('sports/:sid/users', handlers.getUsersByActivity)  
     
 
@@ -45,40 +46,31 @@ function loadHandler(){
     hashChangeHandler()
 }
 
+
 /**
  * Its called everytime the hash changes.
  * Gets the route handler associated to the path after the hash.
  */
 async function hashChangeHandler() {
+    if (isRendering()) {
+        window.location.hash = previousHash()
+        return;
+    }
+    setIsRendering(true)
+
     const mainContent = document.querySelector('#mainContent')
-    const nav = document.querySelector("#mainNav")
     const path = window.location.hash.replace('#', '')
     const handlerInfo = router.getRouteHandler(path)
 
     try {
-        loading(mainContent, nav)
-        setTimeout(async () => {
-            const content = await handlerInfo.handler(handlerInfo.params, handlerInfo.query)
-            renderContent(mainContent, nav, content)
-        }, 5000)
-
+        renderContent(mainContent, LoadingSpinner())
+        const content = await handlerInfo.handler(handlerInfo.params, handlerInfo.query)
+        renderContent(mainContent, content)
     } catch (e) {
         console.log(e)
-        handlers.getErrorPage(mainContent, e)
+        handlers.getErrorPage(e)
+    } finally {
+        setIsRendering(false)
     }
-
 }
 
-function loading(mainContent, navigation) {
-    navigation.style.display = "none"
-    mainContent.style.display = "none"
-    document.body.prepend(LoadingSpinner())
-}
-
-function renderContent(mainContent, navigation, content) {
-    mainContent.style.display = "flex"
-    navigation.style.display = "block"
-    const loadingRing = document.querySelector("#loadingSpinner")
-    document.body.removeChild(loadingRing)
-    mainContent.replaceChildren(...content)
-}

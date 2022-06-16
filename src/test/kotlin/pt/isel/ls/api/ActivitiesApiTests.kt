@@ -39,10 +39,10 @@ import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.service.dto.HttpError
 import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.service.entities.Activity.Duration
+import pt.isel.ls.service.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
-import pt.isel.ls.utils.repository.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

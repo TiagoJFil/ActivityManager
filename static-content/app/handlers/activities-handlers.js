@@ -1,20 +1,21 @@
-import { activityApi, routeApi, sportApi, userApi } from '../api/api.js'
+import {activityApi, routeApi, sportApi, userApi} from '../api/api.js'
 import ActivityDetails from '../components/details/ActivityDetails.js'
 import ActivityList from '../components/lists/ActivityList.js'
 import {Pagination} from '../components/Pagination.js'
-import {H1, Div} from '../components/dsl.js'
+import {Div, H1} from '../components/dsl.js'
 import {onPaginationChange} from './app-handlers.js'
 import {queryBuilder} from "../api/api-utils.js";
 import ActivitySearchFilter from '../components/filters/ActivitySearchFilter.js'
 import ActivityCreate from '../components/creates/CreateActivity.js'
 import styles from '../styles.js'
-import { ErrorToast , InfoToast, SuccessToast } from '../toasts.js'
-import { onRouteLocationsChange, DURATION_REGEX, onSportTextChange, isOptionEnabled } from './utils.js'
+import {ErrorToast, InfoToast, showToasts, SuccessToast} from '../toasts.js'
+import {DURATION_REGEX, isOwner, onRouteLocationsChange, onSportTextChange} from './utils.js'
+import {forceReloadHash} from "../rendering.js";
 
 /**
  * Displays an activity list with the given query
  */
- async function displayActivityList( params, query) {
+async function displayActivityList(params, query) {
     const activityList = await activityApi.fetchActivitiesBySport(params.sid, query)
 
     const activities = query.deleted
@@ -111,8 +112,7 @@ async function displayActivityDetails( params, _) {
         activityApi.updateActivity(params.sid, params.aid, date, duration, rid)
         .then(() => {
             SuccessToast("Saved!").showToast()
-            const routeButton = document.querySelector("#route-link")
-            routeButton.onclick = () => window.location.href = `#routes/${rid}`
+            forceReloadHash()
             return true
         }).catch((e) => {
             ErrorToast("Error updating sport").showToast()
@@ -122,10 +122,7 @@ async function displayActivityDetails( params, _) {
     }
 
 
-
-    return [
-        ActivityDetails(activity, route, onDeleteConfirm, onEditConfirm, onRouteLocationsChange,isOptionEnabled(activity.id))
-    ]
+    return ActivityDetails(activity, route, onDeleteConfirm, onEditConfirm, onRouteLocationsChange, isOwner(activity.user))
 }
 
 
@@ -136,41 +133,31 @@ async function displayActivityDetails( params, _) {
 async function createActivity( params, _){
     
     const onSubmit = async (date, duration, route) => {
-        try{
+        try {
             const toasts = []
-                
-            if(date.length <= 0){
-                toasts.push(Toastify({
-                    text: "Date cannot be empty.",
-                    backgroundColor: "linear-gradient(to right, #ff6c6c, #f66262)"
-                }))
+
+            if (date.length <= 0) {
+                toasts.push(ErrorToast("Date cannot be empty."))
             }
-            if(duration.length <= 0) {
-                toasts.push(Toastify({
-                    text: "Duration cannot be empty.",
-                    backgroundColor: "linear-gradient(to right, #ff6c6c, #f66262)"
-                }))
+            if (duration.length <= 0) {
+                toasts.push(ErrorToast("Duration cannot be empty."))
             }
-            
-            if(!DURATION_REGEX.test(duration)){
+
+            if (!DURATION_REGEX.test(duration)) {
                 toasts.push(ErrorToast("Duration must be in the format hh:mm:ss.fff"))
-                
             }
-            if(toasts.length > 0){
-                toasts.forEach((toast, i) => 
-                    setTimeout(() => {
-                        toast.showToast()
-                    }, 300 * i)
-                )
+
+            if (toasts.length > 0) {
+                showToasts(toasts)
                 return
             }
-                
-            
-            await activityApi.createActivity(params.sid, date, duration, route)
+
+            const activityJson = await activityApi.createActivity(params.sid, date, duration, route)
 
             SuccessToast("Activity created").showToast()
+            console.log(activityJson)
 
-            window.location.hash = `sports/${params.sid}`
+            window.location.hash = `#sports/activities/${activityJson.activityID}`
         }catch(e){
             console.log(e)
             let message = ""
@@ -181,12 +168,7 @@ async function createActivity( params, _){
             else if(e.code === 2003)
                 message = "Try logging in to create a route."
 
-            Toastify({
-                text: message,
-                backgroundColor: "linear-gradient(to right, #ff6c6c, #f66262)",
-                oldestFirst: false,
-            }).showToast()
-            return
+            ErrorToast(message).showToast()
         }
 
     }

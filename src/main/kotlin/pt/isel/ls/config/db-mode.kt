@@ -2,9 +2,9 @@ package pt.isel.ls.config
 
 import org.postgresql.ds.PGSimpleDataSource
 import org.postgresql.util.PSQLException
-import pt.isel.ls.utils.repository.transactions.InMemoryTransactionFactory
-import pt.isel.ls.utils.repository.transactions.JDBCTransactionFactory
-import pt.isel.ls.utils.repository.transactions.TransactionFactory
+import pt.isel.ls.service.transactions.InMemoryTransactionFactory
+import pt.isel.ls.service.transactions.JDBCTransactionFactory
+import pt.isel.ls.service.transactions.TransactionFactory
 
 enum class DBMODE {
     MEMORY, POSTGRESQL;

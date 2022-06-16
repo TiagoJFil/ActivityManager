@@ -16,7 +16,7 @@ import pt.isel.ls.api.utils.postRequest
 import pt.isel.ls.config.guestUser
 import pt.isel.ls.service.dto.HttpError
 import pt.isel.ls.service.dto.UserDTO
-import pt.isel.ls.utils.repository.transactions.InMemoryTransactionScope
+import pt.isel.ls.service.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.service.generateUUId
 import pt.isel.ls.utils.service.toDTO
 import kotlin.test.Test

@@ -1,14 +1,14 @@
-import { routeApi } from '../api/api.js'
+import {routeApi} from '../api/api.js'
 import RouteList from '../components/lists/RouteList.js'
 import RouteDetails from '../components/details/RouteDetails.js'
 import {getItemsPerPage, Pagination} from '../components/Pagination.js'
-import { onPaginationChange} from './app-handlers.js'
+import {onPaginationChange} from './app-handlers.js'
 import styles from '../styles.js'
-import { H1, Div, HidenElem} from '../components/dsl.js'
+import {Div, H1, HidenElem} from '../components/dsl.js'
 import SearchBar from '../components/SearchBar.js'
 import RouteCreate from "../components/creates/CreateRoute.js";
-import { SuccessToast, ErrorToast ,InfoToast} from '../toasts.js'
-import { BoardlessIconButton } from "../components/Icons.js";
+import {ErrorToast, InfoToast, SuccessToast} from '../toasts.js'
+import {BoardlessIconButton} from "../components/Icons.js";
 import {isLoggedIn} from "../api/session.js"
 import {queryBuilder} from "../api/api-utils.js"
 
@@ -41,12 +41,8 @@ async function displayRouteList(_, query) {
                 endLocation: query.endLocation
             }
         }else{
-
             newQuery.startLocation = searchText
-
         }
-            
-        
 
         window.location.hash = `routes?${queryBuilder(newQuery)}`
         await updateRouteDisplayItems(newQuery, listElement)
@@ -61,28 +57,36 @@ async function displayRouteList(_, query) {
                 endLocation: searchText
             }
         }else{
-
             newQuery.endLocation = searchText
-        
         }
-        
 
         window.location.hash = `routes?${queryBuilder(newQuery)}`
-       await updateRouteDisplayItems(newQuery)
+        await updateRouteDisplayItems(newQuery)
     }
 
     const addButton =  isLoggedIn() ? BoardlessIconButton(`#routes/add`,"Add a route") : HidenElem()
-
     const startingSLocationSearchBarValue = query.startLocation ?? null
     const startingELocationSearchBarValue = query.endLocation ?? null
-
-    
 
     return[
         H1(styles.HEADER, 'Routes'),
         Div(styles.SEARCH_BAR_WITH_ADD,
-            SearchBar("searchRes", styles.FORM_TEXT_INPUT, onStartLocationTextChange, "Search for a starting location", "Start Location",startingSLocationSearchBarValue),
-            SearchBar("searchRes", styles.FORM_TEXT_INPUT, onEndLocationTextChange, "Search for an ending location", "End Location",startingELocationSearchBarValue),
+            SearchBar(
+                "startLocationSearch",
+                styles.FORM_TEXT_INPUT,
+                onStartLocationTextChange,
+                "Search for a starting location",
+                "Start Location",
+                startingSLocationSearchBarValue
+            ),
+            SearchBar(
+                "endLocationSearch",
+                styles.FORM_TEXT_INPUT,
+                onEndLocationTextChange,
+                "Search for an ending location",
+                "End Location",
+                startingELocationSearchBarValue
+            ),
             addButton
         ),
         listElement,
@@ -132,9 +136,9 @@ async function displayRouteDetails(params, _) {
         })
     }
 
-    return[
+    return [
         H1(styles.HEADER, 'Route Details'),
-        RouteDetails(route,onEditConfirm),
+        RouteDetails(route, onEditConfirm, isLoggedIn()),
         Div(styles.SPACER)
     ]
 }
@@ -146,40 +150,24 @@ async function displayRouteDetails(params, _) {
  * Displays the route creation page
  */
 async function createRoute(params, _) {
-    const nItems = getItemsPerPage()
 
     const onSubmit = async (sLocation, eLocation, distance) => {
-        try{
+        try {
             const toasts = []
-            if(sLocation === "") 
-                toasts.push(Toastify({
-                    text: "Please enter a start location",
-                    backgroundColor: "linear-gradient(to right, #ff6c6c, #f66262)"
-                }))
-            if(eLocation === "")
-                toasts.push(Toastify({
-                    text: "Please enter an end location",
-                    backgroundColor: "linear-gradient(to right, #ff6c6c, #f66262)"
-                }))
-            if(distance === "" || isNaN(distance))
-                toasts.push(Toastify({
-                    text: "Please provide a distance in kilometers",
-                    backgroundColor: "linear-gradient(to right, #ff6c6c, #f66262)"
-                }))
+            if (sLocation === "")
+                toasts.push(ErrorToast("Please enter a starting location"))
+            if (eLocation === "")
+                toasts.push(ErrorToast("Please enter an end location"))
+            if (distance === "" || isNaN(distance))
+                toasts.push(ErrorToast("Please provide a distance in kilometers"))
 
-            if(toasts.length > 0){
-                toasts.forEach((toast, i) => 
-                    setTimeout(() => {
-                        toast.showToast()
-                    }, 300 * i)
-                )
+            if (toasts.length > 0) {
+                showToasts(toasts)
                 return
             }
-                
-            
+
             await routeApi.createRoute(sLocation, eLocation, distance)
         }catch(e){
-            console.log(e)
             let message = ""
             if(e.code === 2000)
                 message = "Invalid start location, end location or distance."
@@ -188,15 +176,11 @@ async function createRoute(params, _) {
             else if(e.code === 2003)
                 message = "Try logging in to create a route."
 
-            Toastify({
-                text: message,
-                backgroundColor: "linear-gradient(to right, #ff6c6c, #f66262)",
-                oldestFirst: false,
-            }).showToast()
+            ErrorToast(message).showToast()
             return
         }
 
-        window.location.hash = `routes?skip=0&limit=${nItems}`
+        window.location.hash = `routes?skip=0&limit=${getItemsPerPage()}`
     }
 
     return[

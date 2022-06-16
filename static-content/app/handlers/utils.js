@@ -1,8 +1,8 @@
 import {routeApi, sportApi} from '../api/api.js'
 import {Option} from '../components/dsl.js'
 import styles from '../styles.js'
-import { isLoggedIn, getUserInfo } from "../api/session.js"
-import { Navigation } from "../components/Navigation.js";
+import {getUserInfo, isLoggedIn} from "../api/session.js"
+import {Navigation} from "../components/Navigation.js";
 
 export const DURATION_REGEX = /^(?:2[0-3]|[01]?[0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]$/
 
@@ -10,8 +10,8 @@ export const DURATION_REGEX = /^(?:2[0-3]|[01]?[0-9]):[0-5][0-9]:[0-5][0-9].[0-9
  * Auxiliary function to deal with input change events of route
  * Replaces Route's selector with routes that are relevant to both of the locations
  */
- export async function onRouteLocationsChange(startLocation, endLocation) {
-   const routeSelector = document.querySelector("#routeSelector")
+export async function onRouteLocationsChange(startLocation, endLocation) {
+    const routeSelector = document.querySelector("#routeSelector")
    
    if(startLocation.length < 1 && endLocation.length < 1) {
        routeSelector.replaceChildren(
@@ -83,13 +83,12 @@ export function debounce(cb, delay=250){
 }
 
 /**
- * Verifies wheter an option is enabled by checking if the user logged in owns the resource
- * @param {Number} id the User Id of the resource 
- * @returns 
+ * Checks if the user logged in owns the resource
+ * @param {Number} id the User Id of the resource
+ * @returns
  */
-export function isOptionEnabled(id){
-    if(!isLoggedIn) return false
+export function isOwner(id) {
+    if (!isLoggedIn()) return false
     const userInfo = getUserInfo()
-    if(userInfo.ID_KEY == id) return true
-    return false
+    return parseInt(userInfo.ID_KEY) === id;
 }
