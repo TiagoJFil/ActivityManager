@@ -14,6 +14,9 @@ import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.service.ActivityServices
 import pt.isel.ls.service.dto.ActivityDTO
+import pt.isel.ls.service.inputs.ActivityInputs.ActivityCreateInput
+import pt.isel.ls.service.inputs.ActivityInputs.ActivitySearchInput
+import pt.isel.ls.service.inputs.ActivityInputs.ActivityUpdateInput
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.api.bearerToken
@@ -47,10 +50,7 @@ class ActivityRoutes(
 
         val activityId = activityServices.createActivity(
             request.bearerToken,
-            sportID,
-            activityBody.duration,
-            activityBody.date,
-            activityBody.rid
+            ActivityCreateInput(sportID, activityBody.duration, activityBody.date, activityBody.rid)
         )
 
         val output = Json.encodeToString(ActivityIDOutput(activityId))
@@ -134,13 +134,14 @@ class ActivityRoutes(
 
         activityServices.updateActivity(
             request.bearerToken,
-            sportId,
-            activityId,
-            activityBody.duration,
-            activityBody.date,
-            activityBody.rid
-        ) // TODO: Put parameters in objects
-
+            ActivityUpdateInput(
+                sportId,
+                activityId,
+                activityBody.duration,
+                activityBody.date,
+                activityBody.rid
+            )
+        )
         return Response(Status.NO_CONTENT)
     }
 
@@ -155,10 +156,12 @@ class ActivityRoutes(
         val sportID = request.path("sid")
 
         val activities = activityServices.getActivities(
-            sportID,
-            order,
-            date,
-            routeID,
+            ActivitySearchInput(
+                sportID,
+                order,
+                date,
+                routeID,
+            ),
             request.pagination
         )
         val activitiesJson = Json.encodeToString(ActivityListOutput(activities))

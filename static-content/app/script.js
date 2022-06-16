@@ -57,8 +57,11 @@ async function hashChangeHandler() {
 
     try {
         loading(mainContent, nav)
-        const content = await handlerInfo.handler(handlerInfo.params, handlerInfo.query)
-        renderContent(mainContent, nav, content)
+        setTimeout(async () => {
+            const content = await handlerInfo.handler(handlerInfo.params, handlerInfo.query)
+            renderContent(mainContent, nav, content)
+        }, 5000)
+
     } catch (e) {
         console.log(e)
         handlers.getErrorPage(mainContent, e)

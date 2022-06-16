@@ -13,6 +13,8 @@ import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.service.RouteServices
 import pt.isel.ls.service.dto.RouteDTO
+import pt.isel.ls.service.inputs.RouteInputs.RouteCreateInput
+import pt.isel.ls.service.inputs.RouteInputs.RouteUpdateInput
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.api.bearerToken
@@ -70,9 +72,11 @@ class RouteRoutes(
         val routeInfo = Json.decodeFromString<RouteInput>(request.bodyString())
         val routeId: RouteID = routeServices.createRoute(
             request.bearerToken,
-            routeInfo.startLocation,
-            routeInfo.endLocation,
-            routeInfo.distance
+            RouteCreateInput(
+                routeInfo.startLocation,
+                routeInfo.endLocation,
+                routeInfo.distance
+            )
         )
 
         val routeIdJson = Json.encodeToString(RouteIDOutput(routeId))
@@ -91,10 +95,12 @@ class RouteRoutes(
 
         routeServices.updateRoute(
             request.bearerToken,
-            routeID,
-            routeInfo.startLocation,
-            routeInfo.endLocation,
-            routeInfo.distance
+            RouteUpdateInput(
+                routeID,
+                routeInfo.startLocation,
+                routeInfo.endLocation,
+                routeInfo.distance
+            )
         )
 
         return Response(Status.NO_CONTENT)

@@ -15,12 +15,13 @@ import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.service.UserServices
 import pt.isel.ls.service.dto.UserDTO
+import pt.isel.ls.service.inputs.UserInputs.UserAuthInput
+import pt.isel.ls.service.inputs.UserInputs.UserCreateInput
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.json
 import pt.isel.ls.utils.api.pagination
-import pt.isel.ls.utils.loggerFor
 
 class UserRoutes(
     private val userServices: UserServices
@@ -38,7 +39,6 @@ class UserRoutes(
     data class AuthOutput(val authToken: UserToken, val id: UserID)
 
     companion object {
-        private val logger = loggerFor<UserRoutes>()
         private const val UID_PLACEHOLDER = "uid"
     }
 
@@ -47,11 +47,10 @@ class UserRoutes(
      */
     private fun createUser(request: Request): Response {
 
-
         val bodyString = request.bodyString()
         val body = Json.decodeFromString<UserInput>(bodyString)
 
-        val (token, id) = userServices.createUser(body.name, body.email, body.password)
+        val (token, id) = userServices.createUser(UserCreateInput(body.name, body.email, body.password))
 
         val authJson = Json.encodeToString(AuthOutput(token, id))
 
@@ -92,7 +91,6 @@ class UserRoutes(
      */
     private fun getUsers(request: Request): Response {
 
-
         val users = userServices.getUsers(request.pagination)
         val userListJson = Json.encodeToString(UserListOutput(users))
 
@@ -105,11 +103,10 @@ class UserRoutes(
      */
     private fun authenticate(request: Request): Response {
 
-
         val bodyString = request.bodyString()
         val body = Json.decodeFromString<AuthInput>(bodyString)
 
-        val (token, id) = userServices.getUserInfoByAuth(body.email, body.password)
+        val (token, id) = userServices.getUserInfoByAuth(UserAuthInput(body.email, body.password))
 
         val authOutput = Json.encodeToString(AuthOutput(token, id))
 

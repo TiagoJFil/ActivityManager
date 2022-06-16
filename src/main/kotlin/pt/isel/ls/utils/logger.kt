@@ -18,7 +18,7 @@ fun Logger.logRequest(request: Request) {
     )
 }
 
-inline fun Logger.traceFunction(functionName: String, args: () -> List<Pair<String, String?>> = { emptyList() }) =
+inline fun Logger.traceFunction(functionName: String, args: () -> List<Pair<String, Any?>> = { emptyList() }) =
     trace(
         "Entered $functionName with the following arguments: " +
             args().joinToString(", ") { "${it.first}: ${it.second}" }

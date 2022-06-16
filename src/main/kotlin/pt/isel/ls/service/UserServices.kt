@@ -3,7 +3,9 @@ package pt.isel.ls.service
 import pt.isel.ls.repository.UserRepository
 import pt.isel.ls.service.dto.UserDTO
 import pt.isel.ls.service.entities.User
-import pt.isel.ls.service.entities.User.Email
+import pt.isel.ls.service.inputs.ActivityInputs.validateID
+import pt.isel.ls.service.inputs.UserInputs.UserAuthInput
+import pt.isel.ls.service.inputs.UserInputs.UserCreateInput
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
@@ -11,9 +13,6 @@ import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.loggerFor
 import pt.isel.ls.utils.repository.transactions.TransactionFactory
 import pt.isel.ls.utils.service.generateUUId
-import pt.isel.ls.utils.service.hashPassword
-import pt.isel.ls.utils.service.requireIdInteger
-import pt.isel.ls.utils.service.requireParameter
 import pt.isel.ls.utils.service.requireRoute
 import pt.isel.ls.utils.service.requireSport
 import pt.isel.ls.utils.service.toDTO
@@ -38,30 +37,27 @@ class UserServices(
 
     /**
      * Verifies the parameters received and calls the function [UserRepository] to create a [UserDTO].
-     * @param name the user's name
-     * @param email the user's email
+     * @param user [UserCreateInput] contains the data given by the user.
      * @return a pair of [Pair] with a [UserToken] and a [UserID]
      * @throws IllegalArgumentException
      */
-    fun createUser(name: Param, email: Param, password: Param): Pair<UserToken, UserID> {
+    fun createUser(user: UserCreateInput): Pair<UserToken, UserID> {
+        val name = user.name
+        val email = user.email
+        val passwordHash = user.password
+
         logger.traceFunction(::createUser.name) {
             listOf(NAME_PARAM to name, EMAIL_PARAM to email)
         }
-        val safeName = requireParameter(name, NAME_PARAM)
-        val safeEmail = requireParameter(email, EMAIL_PARAM)
-        val safePassword = requireParameter(password, PASSWORD_PARAM)
 
         val userAuthToken = generateUUId()
-        val possibleEmail = Email(safeEmail)
-
-        val hashedPassword = hashPassword(safePassword)
 
         return transactionFactory.getTransaction().execute {
 
-            if (usersRepository.hasRepeatedEmail(possibleEmail))
+            if (usersRepository.hasRepeatedEmail(email))
                 throw InvalidParameter(EMAIL_TAKEN)
 
-            val userID = usersRepository.addUser(safeName, possibleEmail, userAuthToken, hashedPassword)
+            val userID = usersRepository.addUser(name, email, userAuthToken, passwordHash)
 
             return@execute Pair(userAuthToken, userID)
         }
@@ -77,11 +73,10 @@ class UserServices(
     fun getUserByID(uid: Param): UserDTO {
         logger.traceFunction(::getUserByID.name) { listOf(USER_ID_PARAM to uid) }
 
-        val safeUserID = requireParameter(uid, USER_ID_PARAM)
-        val uidInt = requireIdInteger(safeUserID, USER_ID_PARAM)
+        val safeUserID = validateID(uid, USER_ID_PARAM)
 
         return transactionFactory.getTransaction().execute {
-            usersRepository.getUserBy(uidInt)?.toDTO()
+            usersRepository.getUserBy(safeUserID)?.toDTO()
                 ?: throw ResourceNotFound(RESOURCE_NAME, "$uid")
         }
     }
@@ -113,38 +108,33 @@ class UserServices(
                 ActivityServices.ROUTE_ID_PARAM to routeID
             )
         }
-        val safeSID = requireParameter(sportID, "SportID")
-        val safeRID = requireParameter(routeID, "RouteID")
-        val sidInt = requireIdInteger(safeSID, SportsServices.SPORT_ID_PARAM)
+        val safeSID = validateID(sportID, "SportID")
+        val safeRID = validateID(routeID, "RouteID")
 
         return transactionFactory.getTransaction().execute {
-            sportsRepository.requireSport(sidInt)
-            val ridInt = requireIdInteger(safeRID, ActivityServices.ROUTE_ID_PARAM)
-            routesRepository.requireRoute(ridInt)
+            sportsRepository.requireSport(safeSID)
+            routesRepository.requireRoute(safeRID)
 
             return@execute usersRepository
-                .getUsersBy(sidInt, ridInt, paginationInfo)
+                .getUsersBy(safeSID, safeRID, paginationInfo)
                 .map(User::toDTO)
         }
     }
 
     /**
      * Gets the token of the user that has the given email.
-     * @param email the email of the user
-     * @param password the password of the user
+     * @param user [UserAuthInput] contains the data given by the user while authenticating.
      * @return the token of the user
      */
-    fun getUserInfoByAuth(email: Param, password: Param): Pair<UserToken, UserID> {
+    fun getUserInfoByAuth(user: UserAuthInput): Pair<UserToken, UserID> {
+        val email = user.email
+        val passwordHash = user.password
+
         logger.traceFunction(::getUserInfoByAuth.name) { listOf(EMAIL_PARAM to email) }
-
-        val safeEmail = Email(requireParameter(email, EMAIL_PARAM))
-        val safePassword = requireParameter(password, PASSWORD_PARAM)
-
-        val passwordHash = hashPassword(safePassword)
 
         return transactionFactory.getTransaction().execute {
 
-            usersRepository.getUserInfoByAuth(safeEmail, passwordHash)
+            usersRepository.getUserInfoByAuth(email, passwordHash)
                 ?: throw InvalidParameter(INVALID_CREDENTIALS)
         }
     }

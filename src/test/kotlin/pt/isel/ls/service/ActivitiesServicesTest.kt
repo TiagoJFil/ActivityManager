@@ -10,6 +10,11 @@ import pt.isel.ls.config.testRoute
 import pt.isel.ls.config.testSport
 import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.service.entities.Activity.Duration
+import pt.isel.ls.service.inputs.ActivityInputs.ActivityCreateInput
+import pt.isel.ls.service.inputs.ActivityInputs.ActivitySearchInput
+import pt.isel.ls.service.inputs.ActivityInputs.ActivityUpdateInput
+import pt.isel.ls.service.inputs.RouteInputs.RouteCreateInput
+import pt.isel.ls.service.inputs.UserInputs.UserCreateInput
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.repository.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.service.toDTO
@@ -30,21 +35,45 @@ class ActivitiesServicesTest {
 
     @Test
     fun `try to create an activity with a blank duration`() {
-        assertFailsWith<InvalidParameter> { activitiesServices.createActivity(GUEST_TOKEN, "123", " ", "2002-12-31", "123") }
+        assertFailsWith<InvalidParameter> {
+            activitiesServices.createActivity(
+                GUEST_TOKEN,
+                ActivityCreateInput(
+                    "123",
+                    " ",
+                    "2002-12-31",
+                    "123"
+                )
+            )
+        }
     }
+
     @Test
     fun `try to create an activity with a blank date`() {
-        assertFailsWith<InvalidParameter> { activitiesServices.createActivity(GUEST_TOKEN, "123", "02:16:32.993", " ", "123") }
+        assertFailsWith<InvalidParameter> {
+            activitiesServices.createActivity(
+                GUEST_TOKEN,
+                ActivityCreateInput(
+                    "123",
+                    "02:16:32.993",
+                    " ",
+                    "123"
+                )
+            )
+        }
     }
+
     @Test
     fun `try to create an activity with the wrong date format`() {
         assertFailsWith<InvalidParameter> {
             activitiesServices.createActivity(
                 GUEST_TOKEN,
-                testSport.id.toString(),
-                "02:16:32.993",
-                "2020-12-76",
-                testRoute.id.toString()
+                ActivityCreateInput(
+                    testSport.id.toString(),
+                    "02:16:32.993",
+                    "2020-12-76",
+                    testRoute.id.toString()
+                )
             )
         }
     }
@@ -54,10 +83,12 @@ class ActivitiesServicesTest {
         assertFailsWith<InvalidParameter> {
             activitiesServices.createActivity(
                 token = GUEST_TOKEN,
-                sportID = testSport.id.toString(),
-                "INVALIDO",
-                "2002-12-31",
-                rid = testRoute.id.toString()
+                ActivityCreateInput(
+                    testSport.id.toString(),
+                    "INVALIDO",
+                    "2002-12-31",
+                    testRoute.id.toString()
+                )
             )
         }
     }
@@ -65,13 +96,29 @@ class ActivitiesServicesTest {
     @Test
     fun `try to create an activity with a blank rid throws invalid parameter`() {
         assertFailsWith<InvalidParameter> {
-            activitiesServices.createActivity(GUEST_TOKEN, testSport.id.toString(), "02:16:32.993", "2002-12-31", " ")
+            activitiesServices.createActivity(
+                GUEST_TOKEN,
+                ActivityCreateInput(
+                    testSport.id.toString(),
+                    "02:16:32.993",
+                    "2002-12-31",
+                    " "
+                )
+            )
         }
     }
 
     @Test
     fun `try to create an activity without a rid works`() {
-        activitiesServices.createActivity(GUEST_TOKEN, testSport.id.toString(), "02:16:32.993", "2002-12-31", null)
+        activitiesServices.createActivity(
+            GUEST_TOKEN,
+            ActivityCreateInput(
+                testSport.id.toString(),
+                "02:16:32.993",
+                "2002-12-31",
+                null
+            )
+        )
         // doesn't throw
     }
 
@@ -96,10 +143,12 @@ class ActivitiesServicesTest {
         val activityID =
             activitiesServices.createActivity(
                 GUEST_TOKEN,
-                sportID.toString(),
-                "02:10:32.123",
-                "2002-05-20",
-                testRoute.id.toString()
+                ActivityCreateInput(
+                    sportID.toString(),
+                    "02:10:32.123",
+                    "2002-05-20",
+                    testRoute.id.toString()
+                )
             )
 
         val activitiesExpected = listOf(
@@ -132,10 +181,12 @@ class ActivitiesServicesTest {
         val activityID =
             activitiesServices.createActivity(
                 GUEST_TOKEN,
-                sportID.toString(),
-                "02:10:32.123",
-                "2002-05-20",
-                testRoute.id.toString()
+                ActivityCreateInput(
+                    sportID.toString(),
+                    "02:10:32.123",
+                    "2002-05-20",
+                    testRoute.id.toString()
+                )
             )
 
         val activitiesExpected = listOf(
@@ -144,10 +195,12 @@ class ActivitiesServicesTest {
         )
 
         val activities = activitiesServices.getActivities(
-            sportID.toString(),
-            "ascending",
-            null,
-            null,
+            ActivitySearchInput(
+                sportID.toString(),
+                "ascending",
+                null,
+                null,
+            ),
             PaginationInfo(10, 0)
         )
 
@@ -158,7 +211,15 @@ class ActivitiesServicesTest {
     fun `get activities of a sport with a blank date throws invalid parameter`() {
         assertFailsWith<InvalidParameter> {
             val sportID = testSport.id.toString()
-            activitiesServices.getActivities(sportID, "ascending", "", null, PaginationInfo(10, 0))
+            activitiesServices.getActivities(
+                ActivitySearchInput(
+                    sportID,
+                    "ascending",
+                    "",
+                    null
+                ),
+                PaginationInfo(10, 0)
+            )
         }
     }
 
@@ -166,7 +227,15 @@ class ActivitiesServicesTest {
     fun `get activities of a sport with a blank route id throws invalid parameter`() {
         assertFailsWith<InvalidParameter> {
             val sportID = testSport.id.toString()
-            activitiesServices.getActivities(sportID, "ascending", null, "", PaginationInfo(10, 0))
+            activitiesServices.getActivities(
+                ActivitySearchInput(
+                    sportID,
+                    "ascending",
+                    null,
+                    ""
+                ),
+                PaginationInfo(10, 0)
+            )
         }
     }
 
@@ -176,7 +245,15 @@ class ActivitiesServicesTest {
 
         activitiesServices.deleteActivity(GUEST_TOKEN, testActivity.id.toString(), sportID)
 
-        val activities = activitiesServices.getActivities(sportID, "ascending", null, null, PaginationInfo(10, 0))
+        val activities = activitiesServices.getActivities(
+            ActivitySearchInput(
+                sportID,
+                "ascending",
+                null,
+                null
+            ),
+            PaginationInfo(10, 0)
+        )
 
         assertEquals(emptyList(), activities)
     }
@@ -185,7 +262,15 @@ class ActivitiesServicesTest {
     fun `delete an activity with a user that didn't create it throws Unauthenticated`() {
         val sportID = testSport.id.toString()
         val activityID =
-            activitiesServices.createActivity(GUEST_TOKEN, sportID, "02:10:32.123", "2002-05-20", testRoute.id.toString())
+            activitiesServices.createActivity(
+                GUEST_TOKEN,
+                ActivityCreateInput(
+                    sportID,
+                    "02:10:32.123",
+                    "2002-05-20",
+                    testRoute.id.toString()
+                )
+            )
 
         assertFailsWith<UnauthenticatedError> {
             activitiesServices.deleteActivity("RANDOM_USER", activityID.toString(), sportID)
@@ -196,7 +281,15 @@ class ActivitiesServicesTest {
     fun `delete an activity with a sport that doesn't exist throws resource not found`() {
         val sportID = testSport.id.toString()
         val activityID =
-            activitiesServices.createActivity(GUEST_TOKEN, sportID, "02:10:32.123", "2002-05-20", testRoute.id.toString())
+            activitiesServices.createActivity(
+                GUEST_TOKEN,
+                ActivityCreateInput(
+                    sportID,
+                    "02:10:32.123",
+                    "2002-05-20",
+                    testRoute.id.toString()
+                )
+            )
 
         assertFailsWith<ResourceNotFound> {
             activitiesServices.deleteActivity(GUEST_TOKEN, activityID.toString(), "1111111")
@@ -215,7 +308,15 @@ class ActivitiesServicesTest {
     fun `get users of an activity with a valid rid and sid`() {
         val sportID = testSport.id.toString()
         val routeId = testRoute.id.toString()
-        activitiesServices.createActivity(GUEST_TOKEN, sportID, "02:10:32.123", "2002-05-20", routeId)
+        activitiesServices.createActivity(
+            GUEST_TOKEN,
+            ActivityCreateInput(
+                sportID,
+                "02:10:32.123",
+                "2002-05-20",
+                routeId
+            )
+        )
         val users = userServices.getUsersByActivity(sportID, routeId, PaginationInfo(10, 0))
         assertEquals(listOf(guestUser.toDTO()), users)
     }
@@ -230,10 +331,12 @@ class ActivitiesServicesTest {
     fun `get all activities returns a list with existing activities`() {
         val aid = activitiesServices.createActivity(
             GUEST_TOKEN,
-            testSport.id.toString(),
-            "02:10:32.123",
-            "2002-05-20",
-            testRoute.id.toString()
+            ActivityCreateInput(
+                testSport.id.toString(),
+                "02:10:32.123",
+                "2002-05-20",
+                testRoute.id.toString()
+            )
         )
         val activity = activitiesServices.getActivity(aid.toString(), "0")
         val activities = activitiesServices.getAllActivities(PaginationInfo(10, 0))
@@ -249,15 +352,24 @@ class ActivitiesServicesTest {
 
     @Test
     fun `update all the properties of the activity successfully`() {
-        val rid = routeServices.createRoute(GUEST_TOKEN, "a", "b", 220.0F)
+        val rid = routeServices.createRoute(
+            GUEST_TOKEN,
+            RouteCreateInput(
+                "a",
+                "b",
+                220.0F
+            )
+        )
 
         activitiesServices.updateActivity(
             GUEST_TOKEN,
-            testSport.id.toString(),
-            testActivity.id.toString(),
-            "05:10:32.123",
-            "2012-05-20",
-            rid.toString()
+            ActivityUpdateInput(
+                testSport.id.toString(),
+                testActivity.id.toString(),
+                "05:10:32.123",
+                "2012-05-20",
+                rid.toString()
+            )
         )
 
         val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
@@ -277,11 +389,13 @@ class ActivitiesServicesTest {
 
         activitiesServices.updateActivity(
             GUEST_TOKEN,
-            testSport.id.toString(),
-            testActivity.id.toString(),
-            null,
-            "2016-07-20",
-            null
+            ActivityUpdateInput(
+                testSport.id.toString(),
+                testActivity.id.toString(),
+                null,
+                "2016-07-20",
+                null
+            )
         )
 
         val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
@@ -298,14 +412,24 @@ class ActivitiesServicesTest {
 
     @Test
     fun `update route of the activity successfully`() {
-        val rid = routeServices.createRoute(GUEST_TOKEN, "a", "b", 220.0F)
+        val rid = routeServices.createRoute(
+            GUEST_TOKEN,
+            RouteCreateInput(
+                "a",
+                "b",
+                220.0F
+            )
+        )
+
         activitiesServices.updateActivity(
             GUEST_TOKEN,
-            testSport.id.toString(),
-            testActivity.id.toString(),
-            null,
-            null,
-            rid.toString()
+            ActivityUpdateInput(
+                testSport.id.toString(),
+                testActivity.id.toString(),
+                null,
+                null,
+                rid.toString()
+            )
         )
 
         val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
@@ -324,11 +448,13 @@ class ActivitiesServicesTest {
     fun `update duration of the activity successfully`() {
         activitiesServices.updateActivity(
             GUEST_TOKEN,
-            testSport.id.toString(),
-            testActivity.id.toString(),
-            "15:10:32.123",
-            null,
-            null
+            ActivityUpdateInput(
+                testSport.id.toString(),
+                testActivity.id.toString(),
+                "15:10:32.123",
+                null,
+                null
+            )
         )
 
         val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
@@ -345,14 +471,24 @@ class ActivitiesServicesTest {
 
     @Test
     fun `update duration and route of the activity successfully`() {
-        val rid = routeServices.createRoute(GUEST_TOKEN, "a", "b", 220.0F)
+        val rid = routeServices.createRoute(
+            GUEST_TOKEN,
+            RouteCreateInput(
+                "a",
+                "b",
+                220.0F
+            )
+        )
+
         activitiesServices.updateActivity(
             GUEST_TOKEN,
-            testSport.id.toString(),
-            testActivity.id.toString(),
-            "20:10:32.123",
-            null,
-            rid.toString()
+            ActivityUpdateInput(
+                testSport.id.toString(),
+                testActivity.id.toString(),
+                "20:10:32.123",
+                null,
+                rid.toString()
+            )
         )
 
         val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
@@ -371,11 +507,13 @@ class ActivitiesServicesTest {
     fun `update duration and date of the activity successfully`() {
         activitiesServices.updateActivity(
             GUEST_TOKEN,
-            testSport.id.toString(),
-            testActivity.id.toString(),
-            "20:10:32.123",
-            "2018-08-20",
-            null
+            ActivityUpdateInput(
+                testSport.id.toString(),
+                testActivity.id.toString(),
+                "20:10:32.123",
+                "2018-08-20",
+                null
+            )
         )
 
         val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
@@ -392,14 +530,24 @@ class ActivitiesServicesTest {
 
     @Test
     fun `update date and route of the activity successfully`() {
-        val rid = routeServices.createRoute(GUEST_TOKEN, "a", "b", 220.0F)
+        val rid = routeServices.createRoute(
+            GUEST_TOKEN,
+            RouteCreateInput(
+                "a",
+                "b",
+                220.0F
+            )
+        )
+
         activitiesServices.updateActivity(
             GUEST_TOKEN,
-            testSport.id.toString(),
-            testActivity.id.toString(),
-            null,
-            "2019-08-20",
-            rid.toString()
+            ActivityUpdateInput(
+                testSport.id.toString(),
+                testActivity.id.toString(),
+                null,
+                "2019-08-20",
+                rid.toString()
+            )
         )
 
         val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
@@ -418,11 +566,13 @@ class ActivitiesServicesTest {
     fun `update with blank route removes the route successfully`() {
         activitiesServices.updateActivity(
             GUEST_TOKEN,
-            testSport.id.toString(),
-            testActivity.id.toString(),
-            null,
-            null,
-            ""
+            ActivityUpdateInput(
+                testSport.id.toString(),
+                testActivity.id.toString(),
+                null,
+                null,
+                ""
+            )
         )
 
         val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
@@ -441,11 +591,13 @@ class ActivitiesServicesTest {
     fun `updating nothing keeps the previous activity`() {
         activitiesServices.updateActivity(
             GUEST_TOKEN,
-            testSport.id.toString(),
-            testActivity.id.toString(),
-            null,
-            null,
-            null
+            ActivityUpdateInput(
+                testSport.id.toString(),
+                testActivity.id.toString(),
+                null,
+                null,
+                null
+            )
         )
 
         val activity = activitiesServices.getActivity(testActivity.id.toString(), testActivity.sport.toString())
@@ -454,16 +606,24 @@ class ActivitiesServicesTest {
 
     @Test
     fun `update activity with user that didn't create it throws UnauthenticatedError`() {
-        val (token, _) = userServices.createUser("John", "john@email.com", "123456")
+        val (token, _) = userServices.createUser(
+            UserCreateInput(
+                "John",
+                "john@email.com",
+                "123456"
+            )
+        )
 
         assertFailsWith<AuthorizationError> {
             activitiesServices.updateActivity(
                 token,
-                testSport.id.toString(),
-                testActivity.id.toString(),
-                null,
-                null,
-                null
+                ActivityUpdateInput(
+                    testSport.id.toString(),
+                    testActivity.id.toString(),
+                    null,
+                    null,
+                    null
+                )
             )
         }
     }
@@ -473,11 +633,13 @@ class ActivitiesServicesTest {
         assertFailsWith<ResourceNotFound> {
             activitiesServices.updateActivity(
                 GUEST_TOKEN,
-                testSport.id.toString(),
-                "999986",
-                null,
-                null,
-                null
+                ActivityUpdateInput(
+                    testSport.id.toString(),
+                    "999986",
+                    null,
+                    null,
+                    null
+                )
             )
         }
     }
@@ -487,11 +649,13 @@ class ActivitiesServicesTest {
         assertFailsWith<InvalidParameter> {
             activitiesServices.updateActivity(
                 GUEST_TOKEN,
-                testSport.id.toString(),
-                testActivity.id.toString(),
-                null,
-                "2562-001-689",
-                null
+                ActivityUpdateInput(
+                    testSport.id.toString(),
+                    testActivity.id.toString(),
+                    null,
+                    "2562-001-689",
+                    null
+                )
             )
         }
     }
@@ -501,11 +665,13 @@ class ActivitiesServicesTest {
         assertFailsWith<InvalidParameter> {
             activitiesServices.updateActivity(
                 GUEST_TOKEN,
-                testSport.id.toString(),
-                testActivity.id.toString(),
-                "1234566",
-                null,
-                null
+                ActivityUpdateInput(
+                    testSport.id.toString(),
+                    testActivity.id.toString(),
+                    "1234566",
+                    null,
+                    null
+                )
             )
         }
     }
@@ -515,11 +681,13 @@ class ActivitiesServicesTest {
         assertFailsWith<ResourceNotFound> {
             activitiesServices.updateActivity(
                 GUEST_TOKEN,
-                testSport.id.toString(),
-                testActivity.id.toString(),
-                null,
-                null,
-                "9999898"
+                ActivityUpdateInput(
+                    testSport.id.toString(),
+                    testActivity.id.toString(),
+                    null,
+                    null,
+                    "9999898"
+                )
             )
         }
     }
@@ -529,9 +697,11 @@ class ActivitiesServicesTest {
     fun `Delete activities doesnt work when deleting the same activity twice`() {
         val aid = activitiesServices.createActivity(
             GUEST_TOKEN,
-            testSport.id.toString(),
-            "02:10:32.123", "2002-05-20",
-            testRoute.id.toString()
+            ActivityCreateInput(
+                testSport.id.toString(),
+                "02:10:32.123", "2002-05-20",
+                testRoute.id.toString()
+            )
         )
         val activities = activitiesServices.getAllActivities(PaginationInfo(10, 0))
         assertFailsWith<InvalidParameter> {

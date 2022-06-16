@@ -2,6 +2,9 @@ package pt.isel.ls.service
 
 import pt.isel.ls.service.dto.RouteDTO
 import pt.isel.ls.service.entities.Route
+import pt.isel.ls.service.inputs.ActivityInputs.validateID
+import pt.isel.ls.service.inputs.RouteInputs.RouteCreateInput
+import pt.isel.ls.service.inputs.RouteInputs.RouteUpdateInput
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.UserToken
@@ -9,11 +12,7 @@ import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.loggerFor
 import pt.isel.ls.utils.repository.transactions.TransactionFactory
 import pt.isel.ls.utils.service.requireAuthenticated
-import pt.isel.ls.utils.service.requireIdInteger
-import pt.isel.ls.utils.service.requireNotBlankParameter
 import pt.isel.ls.utils.service.requireOwnership
-import pt.isel.ls.utils.service.requireParameter
-import pt.isel.ls.utils.service.requireValidDistance
 import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.traceFunction
 
@@ -54,12 +53,14 @@ class RouteServices(
     /**
      * Creates a new route.
      * @param token the user token to be used to verify the user.
-     * @param startLocation the starting location
-     * @param endLocation the end location
-     * @param distance the route's distance
+     * @param route [RouteCreateInput] data given by the user creating the route.
      * @return [RouteID] the unique id that identifies the route
      */
-    fun createRoute(token: UserToken?, startLocation: String?, endLocation: String?, distance: Float?): RouteID {
+    fun createRoute(token: UserToken?, route: RouteCreateInput): RouteID {
+        val startLocation = route.startLocation
+        val endLocation = route.endLocation
+        val distance = route.distance
+
         logger.traceFunction(::createRoute.name) {
             listOf(
                 START_LOCATION_PARAM to startLocation,
@@ -68,15 +69,9 @@ class RouteServices(
             )
         }
         return transactionFactory.getTransaction().execute {
-
             val userID = usersRepository.requireAuthenticated(token)
 
-            val safeStartLocation = requireParameter(startLocation, START_LOCATION_PARAM)
-            val safeEndLocation = requireParameter(endLocation, END_LOCATION_PARAM)
-            if (distance == null) throw MissingParameter(DISTANCE_PARAM)
-            requireValidDistance(distance, DISTANCE_PARAM)
-
-            routesRepository.addRoute(safeStartLocation, safeEndLocation, distance, userID)
+            routesRepository.addRoute(startLocation, endLocation, distance, userID)
         }
     }
 
@@ -89,16 +84,20 @@ class RouteServices(
     fun getRoute(rid: Param): RouteDTO {
         logger.traceFunction(::getRoute.name) { listOf(ROUTE_ID_PARAM to rid) }
 
-        val safeRouteID = requireParameter(rid, ROUTE_ID_PARAM)
-        val ridInt: RouteID = requireIdInteger(safeRouteID, ROUTE_ID_PARAM)
+        val routeID = validateID(rid, ROUTE_ID_PARAM)
 
         return transactionFactory.getTransaction().execute {
-            routesRepository.getRoute(ridInt)?.toDTO()
-                ?: throw ResourceNotFound(RESOURCE_NAME, "$rid")
+            routesRepository.getRoute(routeID)?.toDTO()
+                ?: throw ResourceNotFound(RESOURCE_NAME, "$routeID")
         }
     }
 
-    fun updateRoute(token: UserToken?, routeID: Param, startLocation: Param, endLocation: Param, distance: Float?) {
+    fun updateRoute(token: UserToken?, route: RouteUpdateInput) {
+        val routeID = route.routeID
+        val startLocation = route.startLocation
+        val endLocation = route.endLocation
+        val distance = route.distance
+
         logger.traceFunction(::updateRoute.name) {
             listOf(
                 ROUTE_ID_PARAM to routeID,
@@ -111,20 +110,13 @@ class RouteServices(
         return transactionFactory.getTransaction().execute {
 
             val userID = usersRepository.requireAuthenticated(token)
-            val safeRouteID = requireParameter(routeID, ROUTE_ID_PARAM)
-            val ridInt: RouteID = requireIdInteger(safeRouteID, ROUTE_ID_PARAM)
+            routesRepository.requireOwnership(userID, routeID)
 
-            routesRepository.requireOwnership(userID, ridInt)
-
-            if (startLocation == null && endLocation == null && distance == null) return@execute
+            if (route.hasNothingToUpdate) return@execute
             // No update needed, don't waste resources
 
-            requireNotBlankParameter(startLocation, START_LOCATION_PARAM)
-            requireNotBlankParameter(endLocation, END_LOCATION_PARAM)
-            requireValidDistance(distance, DISTANCE_PARAM)
-
-            if (!routesRepository.updateRoute(ridInt, startLocation, endLocation, distance))
-                throw ResourceNotFound(RESOURCE_NAME, safeRouteID)
+            if (!routesRepository.updateRoute(routeID, startLocation, endLocation, distance))
+                throw ResourceNotFound(RESOURCE_NAME, routeID.toString())
         }
     }
 }
