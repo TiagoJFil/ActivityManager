@@ -4,7 +4,7 @@ import SportList from '../components/lists/SportList.js'
 import { getItemsPerPage, Pagination } from '../components/Pagination.js'
 import { onPaginationChange } from './app-handlers.js'
 import styles from '../styles.js'
-import { H1, Div } from '../components/dsl.js'
+import { H1, Div, HidenElem } from '../components/dsl.js'
 import SportCreate from "../components/creates/CreateSport.js";
 import SearchBar from  "../components/SearchBar.js";
 import { SuccessToast, ErrorToast, InfoToast } from '../toasts.js'
@@ -59,7 +59,7 @@ async function displaySportList(params, query) {
         paginationElement = newPagination
     }
 
-    const addButton =  isLoggedIn() ? BoardlessIconButton( `#sports/add`, "Add a sport") : Div()
+    const addButton =  isLoggedIn() ? BoardlessIconButton( `#sports/add`, "Add a sport") : HidenElem()
 
 
     const startingSearchBarValue = query.search ? decodeURI(query.search) : null

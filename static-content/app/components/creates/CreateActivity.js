@@ -22,12 +22,16 @@ export default function ActivityCreate(onSubmit, onRouteChange) {
         onSubmit(datePicker.value, duration, routeId);
     }
 
-    return (
+    const inputDuration = Input(styles.FORM_TEXT_INPUT, "time", "duration", null,null,null,true)
+    inputDuration.setAttribute("step", 0.001)
+
+
+        return (
         Form(styles.ADD_ITEM,
             Text(styles.SEARCH_HEADER, "DATE"),
             datePicker,
             Text(styles.SEARCH_HEADER, "DURATION"),
-            Input(styles.FORM_TEXT_INPUT, "text", "duration", null),
+            inputDuration,
             routeSearch,
             Button(styles.BUTTON, onSubmitForm, Text(styles.TEXT, "Add"))
         )

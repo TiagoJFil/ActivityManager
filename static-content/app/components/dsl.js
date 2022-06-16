@@ -32,6 +32,7 @@ export function Div(className, ...children) {
     return createElement('div', className, null, ...children)
 }
 
+
 /**
  * Represents a text item element as a component
  *
@@ -219,6 +220,18 @@ export function Image(className, id, src, alt){
     image.src = src
     image.alt = alt
     return image
+}
+
+
+/**
+ * Creates a hidden element with no data
+ * @returns {HTMLElement} a input element
+ */
+ export function HidenElem(){
+    const input = document.createElement('input')
+    input.type = 'hidden'
+    input.value = 'null'
+    return input
 }
 
 /**

@@ -9,7 +9,7 @@ import ActivitySearchFilter from '../components/filters/ActivitySearchFilter.js'
 import ActivityCreate from '../components/creates/CreateActivity.js'
 import styles from '../styles.js'
 import { ErrorToast , InfoToast, SuccessToast } from '../toasts.js'
-import { onRouteLocationsChange, DURATION_REGEX, onSportTextChange } from './utils.js'
+import { onRouteLocationsChange, DURATION_REGEX, onSportTextChange, isOptionEnabled } from './utils.js'
 
 /**
  * Displays an activity list with the given query
@@ -121,8 +121,10 @@ async function displayActivityDetails( params, _) {
         })
     }
 
+
+
     return [
-        ActivityDetails(activity, onDeleteConfirm, onEditConfirm, onRouteLocationsChange, route)
+        ActivityDetails(activity, route, onDeleteConfirm, onEditConfirm, onRouteLocationsChange,isOptionEnabled(activity.id))
     ]
 }
 
@@ -165,6 +167,10 @@ async function createActivity( params, _){
                 
             
             await activityApi.createActivity(params.sid, date, duration, route)
+
+            SuccessToast("Activity created").showToast()
+
+            window.location.hash = `sports/${params.sid}`
         }catch(e){
             console.log(e)
             let message = ""
@@ -183,7 +189,6 @@ async function createActivity( params, _){
             return
         }
 
-        window.location.hash = `sports/${params.sid}`
     }
 
     return [
