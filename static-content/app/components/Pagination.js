@@ -47,13 +47,6 @@ export function Pagination(totalElements, onPageChange, currentLimit){
     const pagesPerView = (totalPages >= MAX_PAGES_PER_VIEW) ? MAX_PAGES_PER_VIEW : totalPages
     const visiblePages = getVisiblePages(totalPages, actualPage, pagesPerView)
 
-//    console.log("Total Elements:", totalElements)
-//    console.log("Items per page: ", itemsPerPage)
-//    console.log("Total pages: ", totalPages)
-//    console.log("Actual page: ", actualPage)
- //   console.log("Pages per view: ", pagesPerView)
-//    console.log("Visible pages: ", visiblePages)
-
 
     const pageButtons = visiblePages.map((pageNumber) => {
         const skipValue = pageNumber * itemsPerPage

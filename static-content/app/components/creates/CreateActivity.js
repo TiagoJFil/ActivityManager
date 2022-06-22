@@ -1,4 +1,4 @@
-import {Button, Form, Input, Text} from "../dsl.js"
+import {Button, Div, Form, Input, Text} from "../dsl.js"
 import styles from "../../styles.js";
 import { DatePicker } from "../filters/ActivitySearchFilter.js";
 import RouteSearch from "../searches/RouteSearch.js";
@@ -26,7 +26,7 @@ export default function ActivityCreate(onSubmit, onRouteChange) {
     inputDuration.setAttribute("step", 0.001)
 
 
-        return (
+    return Div(styles.ADD_CONTAINER,
         Form(styles.ADD_ITEM,
             Text(styles.SEARCH_HEADER, "DATE"),
             datePicker,

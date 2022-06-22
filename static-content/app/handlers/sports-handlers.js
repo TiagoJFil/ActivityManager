@@ -35,7 +35,6 @@ async function displaySportList(params, query) {
 
         if(searchText != query.search){
             const builtQuery = queryBuilder(newQuery)
-            console.log(builtQuery)
             window.location.hash = `sports?${builtQuery}`
         }
       
