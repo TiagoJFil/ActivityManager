@@ -1,5 +1,3 @@
-# Phase 3
-
 ## Introduction
 
 This project aims to design and implement the server side of an application that manages physical activities, like running or cycling.
@@ -42,11 +40,11 @@ It was necessary to create a table for the tokens and emails to normalize the mo
 
 ### Open-API Specification ###
 
-https://github.com/isel-leic-ls/2122-2-LEIC42D-G04/docs/sports-api-spec.yaml
+https://github.com/isel-leic-ls/2122-2-LEIC42D-G04/blob/main/docs/sports-api-spec.yaml
 
 Swagger-UI is available at `/api/docs` with the server running.
 
-It´s needed authentication on `POST` and `DELETE` operations.
+Authentication is needed  on `POST`, `DELETE` and `PUT` operations.
 This authorization is provided by supplying the bearer token in the `Authorization` header.
 
 Every data transfer object is specified in this specification.
@@ -71,7 +69,7 @@ Each layer is divided in the following resources:
 Each resource is responsible for handling only the requests that are relevant to it.
 Therefore, each resource has a limited set of endpoints that it can handle.
 
-_e.g._ Set of endpoints assigned to the **[Activity](https://github.com/isel-leic-ls/2122-2-LEIC42D-G04/blob/main/src/main/kotlin/pt/isel/ls/api/ActivityRoutes.kt#L118)** resource:
+_e.g._ Set of endpoints assigned to the **[Activity](https://github.com/isel-leic-ls/2122-2-LEIC42D-G04/blob/main/src/main/kotlin/pt/isel/ls/api/ActivityRoutes.kt#L173)** resource:
 ```kotlin
 // ActivityRoutes.kt
 val handler = routes(
@@ -142,28 +140,30 @@ Finally, the control layer returns the result to the client in the form of an **
 The app has a [configuration module](https://github.com/isel-leic-ls/2122-2-LEIC42D-G04/tree/side/src/main/kotlin/pt/isel/ls/config) that is responsible for setting up the environment.
 
 -To change between these modes its possible to use the **APP_ENV_TYPE** environment variable that could either be:
+
 -**PROD**
 -**TEST**
 
 #### Database configuration
 
-There are two ways of [accessing data](https://github.com/isel-leic-ls/2122-2-LEIC42D-G04/blob/main/src/main/kotlin/pt/isel/ls/config/db-mode.kt#L17)
+There are two ways of [accessing data](https://github.com/isel-leic-ls/2122-2-LEIC42D-G04/blob/main/src/main/kotlin/pt/isel/ls/config/db-mode.kt#L10)
 
 - **PostgreSQL**: Uses a remote postgreSQL database.
-    - It has a configurable environment variable:
-        - **JDBC_DATABASE_URL**: the url of the database.
-        - 
+  - It has a configurable environment variable:
+    - **JDBC_DATABASE_URL**: the url of the database containing the db information using the following format:
+
+    "jdbc:postgresql://**IP**:**PORT**/**DB_NAME**?user=**USERNAME**&password=**PASSWORD**"
 - **Memory**: Uses an in-memory database. On startup, the database is populated with mock data for testing purposes.
 
 #### Environment
 
 There are two environment types:
-- **test**: test environment used for testing the application.
-    - Memory.
-- **prod**: production environment used for the main application.
-    - PostgreSQL.
+- **TEST**: test environment used for testing the application.
+  - Memory.
+- **PROD**: production environment used for the main application.
+  - PostgreSQL.
 
-Another configurable environment variable is **SERVER_PORT** that defines the port the server will listen on
+Another configurable environment variable is **PORT** that defines the port the server will listen on.
 
 ### Data Access
 
@@ -268,23 +268,28 @@ For the get sports and get routes operation, the [query](https://github.com/isel
 ```kotlin
 //RouteDBRepository.kt
   /**
-     * Auxiliary function to build the query to the get Routes function
-     */
-    private fun buildSearchQuery(startLocationSearch: String?, endLocationSearch: String?): String {
-        return if (startLocationSearch == null && endLocationSearch == null) {
-            """SELECT id, startLocation, endLocation, distance, "user" FROM $routeTable LIMIT ? OFFSET ?"""
-        } else {
-            val startLocationQuery = """SELECT id, startLocation, endLocation, distance, "user" FROM $routeTable """ +
-                "WHERE to_tsvector(coalesce(startLocation, '')) @@ to_tsquery(?)"
-            val endLocationQuery = """SELECT  id, startLocation, endLocation, distance, "user" FROM $routeTable """ +
-                "WHERE to_tsvector(coalesce(endLocation, '')) @@ to_tsquery(?)"
-            when {
-                startLocationSearch != null && endLocationSearch == null -> """$startLocationQuery LIMIT ? OFFSET ?"""
-                startLocationSearch == null && endLocationSearch != null -> """$endLocationQuery LIMIT ? OFFSET ?"""
-                else -> """ SELECT * FROM (($startLocationQuery) INTERSECT ($endLocationQuery)) as locationQuery LIMIT ? OFFSET ?"""
-            }
-        }
+   * Auxiliary function to build the query to the get Routes function
+   */
+  private fun buildSearchQuery(startLocationSearch: String?, endLocationSearch: String?): String {
+    val baseQuery = """SELECT id, startLocation, endLocation, distance, "user" FROM $routeTable """
+    val pagination = " LIMIT ? OFFSET ?"
+    return if (startLocationSearch == null && endLocationSearch == null) {
+      baseQuery + pagination
+    } else {
+      val columnSearchQuery = { columnName: String ->
+        baseQuery + "WHERE to_tsvector(coalesce($columnName, '')) @@ to_tsquery(?)"
+      }
+      when {
+        startLocationSearch != null && endLocationSearch == null -> columnSearchQuery("startLocation") + pagination
+        startLocationSearch == null -> columnSearchQuery("endLocation") + pagination
+        else -> "SELECT * FROM (" +
+                "(" +
+                "${columnSearchQuery("startLocation")})" + "INTERSECT (${columnSearchQuery("endLocation")})" +
+                ")" +
+                "as locationQuery LIMIT ? OFFSET ?"
+      }
     }
+  }
 ```
 
 ## Transaction Management
@@ -309,18 +314,19 @@ sealed interface Transaction {
     
     val scope: TransactionScope
     
-    fun begin()
+    fun begin(level: IsolationLevel)
     
     fun commit()
     
     fun rollback()
     
     fun end()
-    
 }
 
 ```
 The interface has these four trivial methods that are used to manage the state of the transaction.
+
+A transaction may be executed with an isolation level.
 
 #### TransactionFactory
 
@@ -351,7 +357,7 @@ fun transactionExample(transactionFactory: TransactionFactory) {
 
 ```
 
-Using kotlin higher order functions allowed the creation of an abstraction 
+Using kotlin higher order functions allowed the creation of an abstraction
 of the transaction management mechanism.
 
 
@@ -379,24 +385,24 @@ e.g execute being used to create a sport.
 ```kotlin
 // SportService.kt
 
-   fun createSport(token: UserToken?, name: Param, description: Param): SportID {
-        logger.traceFunction(::createSport.name) { listOf(NAME_PARAM to name, DESCRIPTION_PARAM to description) }
+fun createSport(token: UserToken?, name: String?, description: String?): SportID {
+    logger.traceFunction(::createSport.name) { listOf(NAME_PARAM to name, DESCRIPTION_PARAM to description) }
 
-        return transactionFactory.getTransaction().execute {
+    return transactionFactory.getTransaction().execute {
 
-            val userID = usersRepository.requireAuthenticated(token)
-            val safeName = requireParameter(name, NAME_PARAM)
-            val handledDescription = description?.ifBlank { null }
+        val userID = usersRepository.requireAuthenticated(token) // db access
+        val safeName = requireParameter(name, NAME_PARAM)
+        val handledDescription = description?.ifBlank { null }
 
-            sportsRepository.addSport(safeName, handledDescription, userID)
-        }
+        sportsRepository.addSport(safeName, handledDescription, userID) // db access
     }
+}
 
 ```
 
 #### TransactionScope
 
-This domain class is responsible for providing 
+This domain class is responsible for providing
 the data access operations to be executed in a transaction.
 
 Is the receiver of the execute function parameter `block`.
@@ -450,9 +456,8 @@ class JDBCTransaction(val connection: Connection) : Transaction {
 Each JDBC transaction is associated with a connection, which means that all database operations that are executed in this transaction
 have to use the same connection.
 This was accomplished by passing the connection to the respective scope and then to the respective repositories, provided by the same scope.
-A database operation may not use all the repositories provided by the scope. 
-With this in mind all the repository objects are created lazily, so that the scope does not create them
-until they are needed.
+A database operation may not use all the repositories provided by the scope.
+With this in mind all the repository objects are created lazily, so that the scope does not create them until they are needed.
 
 
 ### Error Handling Processing
@@ -468,28 +473,28 @@ Errors extend from `AppError` which is our main error class that has a `code` an
 
 ```kotlin
 /**
-* Error class used to represent errors in the application.
-* @property code The error code.
-* @property message The error message.
-  */
-  sealed class AppError(val code: Int, message: String): Exception(message)
+ * Error class used to represent errors in the application.
+ * @property code The error code.
+ * @property message The error message.
+ */
+sealed class AppError(val code: Int, message: String): Exception(message)
 ```
 Types of AppError:
 * `2000 - InvalidParameter`
-    - Thrown when a parameter that comes from the body of the request or from the URI's parameters is blank (empty string or whitespace characters)
+  - Thrown when a parameter that comes from the body of the request or from the URI's parameters is blank (empty string or whitespace characters)
 * `2001 - MissingParameter `
-    - Thrown when a required parameter is missing from the body of the request or from the URI's parameters
+  - Thrown when a required parameter is missing from the body of the request or from the URI's parameters
 * `2002 - ResourceNotFound`
-    - Thrown when a parameter that identifies a resource is not found in the repository
+  - Thrown when a parameter that identifies a resource is not found in the repository
 * `2003 - UnauthenticatedError`
-    - Thrown when the user is not authenticated
+  - Thrown when the user is not authenticated
 * `2004 - Forbidden`
-    - Thrown when the user tries to access a resource that is not his
+  - Thrown when the user tries to access a resource that is not his
 * `2005 - InternalError`
-    - Thrown when an internal error occurs
+  - Thrown when an internal error occurs
 
 
-The app errors are handled by an [OnErrorFilter](https://github.com/isel-leic-ls/2122-2-LEIC42D-G04/blob/main/src/main/kotlin/pt/isel/ls/api/sports-web-api.kt#L46) that runs on every request and converts the errors to HTTP errors.
+The app errors are handled by an [OnErrorFilter](https://github.com/isel-leic-ls/2122-2-LEIC42D-G04/blob/main/src/main/kotlin/pt/isel/ls/api/sports-web-api.kt#L85) that runs on every request and converts the errors to HTTP errors.
 
 ```kotlin
 /**
@@ -502,16 +507,16 @@ data class HttpError(val code: Int, val message: String?)
 `AppError` respective HTTP error codes:
 
 * `400 - Bad request`
-    - 2000 - InvalidParameter
-    - 2001 - MissingParameter
+  - 2000 - InvalidParameter
+  - 2001 - MissingParameter
 * `404 - Not found`
-    - 2002 - ResourceNotFound
+  - 2002 - ResourceNotFound
 * `401 - Unauthorized`
-    - 2003 - UnauthenticatedError
+  - 2003 - UnauthenticatedError
 * `403 - Forbidden`
-    - 2004 - AuthorizationError
+  - 2004 - AuthorizationError
 * `500 - Internal server error`
-    - 2005 - InternalError
+  - 2005 - InternalError
 
 
 ## Pagination
@@ -556,7 +561,7 @@ _e.g_: Usage of the router with placeholders and query for the route '/users/:si
 const func = ... a function
 router.addRouteHandler('/users/:sid/', func)
 
-const response = router.getRouteHandler('/users/123/')  
+const response = router.getRouteHandler('/users/123/')
 // response -> {handler: func, params: {sid: '123'}, query: {} )
 
 const responseWithQuery = router.getRouteHandler('/users/1/?rid=412')
@@ -579,7 +584,7 @@ It uses the following flow of information:
  * @returns {HTMLUListElement} a div element
  */
 export function Div(className, ...children) {
-    return createElement('div', className, ...children)
+  return createElement('div', className, ...children)
 }
 ```
 
@@ -595,7 +600,7 @@ The base components and respective html elements:
 - Input - `<input></input>`
 - Select - `<select></select>`
 - Option - `<option></option>` used as child of Select
-- Image - `<img>` 
+- Image - `<img>`
 - Anchor - `<a></a>`
 - Datalist - `<datalist></datalist>`
 - Form  - `<form></form>`
@@ -615,12 +620,12 @@ These elements were built using the following function:
  * @returns
  */
 function createElement(tag, className, ...children) {
-    const elem = document.createElement(tag)
-    children.forEach(child => {
-        elem.append(child)
-    })
-    elem.classList.add(className)
-    return elem
+  const elem = document.createElement(tag)
+  children.forEach(child => {
+    elem.append(child)
+  })
+  elem.classList.add(className)
+  return elem
 }
 ```
 
@@ -636,36 +641,36 @@ The base components can be used in order to build more complex views such as:
  */
 export default function RouteDetails(route, onEditConfirm) {
 
-    const modal = RouteEdit(route,onEditConfirm)
-    
-    const onEdit = () => {
-        modal.style.display = "flex";
-    }
+  const modal = RouteEdit(route,onEditConfirm)
 
-    return List('route',
-            Div('route-display',
-                Item('distance-item',
-                    Text(styles.DETAIL_HEADER, 'Distance: '),
-                    Text(styles.TEXT, `${route.distance}`),
-                    Text(styles.TEXT, ' Kilometers')
-                ),
-                Div('locations',
-                    Item('start-location-item',
-                        Text(styles.TEXT, `${route.startLocation}`)
-                    ),
-                    Div('locations-line'),
-                    Item('end-location-item',
-                        Text(styles.TEXT, `${route.endLocation}`)
-                    )
-                )
-            ),
-            Div(styles.ICON_GROUP,
-                LinkIcon(styles.USER_ICON, `#users/${route.user}`, "Get users details"),
-                OuterLinkIcon(styles.MAP_ICON, `https://www.google.com/maps/dir/${route.startLocation}/${route.endLocation}/`),
-                ButtonIcon(styles.EDIT_ICON, onEdit, "Edit route")           
-            ),
-            modal
-        )
+  const onEdit = () => {
+    modal.style.display = "flex";
+  }
+
+  return List('route',
+          Div('route-display',
+                  Item('distance-item',
+                          Text(styles.DETAIL_HEADER, 'Distance: '),
+                          Text(styles.TEXT, `${route.distance}`),
+                          Text(styles.TEXT, ' Kilometers')
+                  ),
+                  Div('locations',
+                          Item('start-location-item',
+                                  Text(styles.TEXT, `${route.startLocation}`)
+                          ),
+                          Div('locations-line'),
+                          Item('end-location-item',
+                                  Text(styles.TEXT, `${route.endLocation}`)
+                          )
+                  )
+          ),
+          Div(styles.ICON_GROUP,
+                  LinkIcon(styles.USER_ICON, `#users/${route.user}`, "Get users details"),
+                  OuterLinkIcon(styles.MAP_ICON, `https://www.google.com/maps/dir/${route.startLocation}/${route.endLocation}/`),
+                  ButtonIcon(styles.EDIT_ICON, onEdit, "Edit route")
+          ),
+          modal
+  )
 }
 
 ```

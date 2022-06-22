@@ -170,9 +170,7 @@ async function createActivity( params, _) {
 
     return [
         H1(styles.HEADER, 'Add an Activity' ),
-        Div(styles.ADD_CONTAINER,
-            ActivityCreate(onSubmit, onRouteLocationsChange)
-        )
+        ActivityCreate(onSubmit, onRouteLocationsChange)
     ]
 }
 

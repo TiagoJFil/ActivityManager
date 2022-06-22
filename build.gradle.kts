@@ -99,36 +99,3 @@ tasks.register("docker-run") {
             .waitFor()
     }
 }
-
-tasks.register("heroku-deploy") {
-    group = "docker"
-    dependsOn("docker-build")
-
-    val outFile = File("gradle_heroku_deploy_output.txt")
-    val herokuLogin = "heroku container:login"
-    val herokuPushCommand = "heroku container:push web"
-    val herokuDeployCommand = "heroku container:release web"
-
-    doLast {
-        ProcessBuilder(herokuLogin.split(" "))
-            .inheritIO()
-            .redirectOutput(outFile)
-            .redirectError(outFile)
-            .start()
-            .waitFor()
-
-        ProcessBuilder(herokuPushCommand.split(" "))
-            .inheritIO()
-            .redirectOutput(outFile)
-            .redirectError(outFile)
-            .start()
-            .waitFor()
-
-        ProcessBuilder(herokuDeployCommand.split(" "))
-            .inheritIO()
-            .redirectOutput(outFile)
-            .redirectError(outFile)
-            .start()
-            .waitFor()
-    }
-}

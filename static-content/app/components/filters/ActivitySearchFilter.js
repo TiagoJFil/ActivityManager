@@ -30,10 +30,16 @@ export default function ActivitySearchFilter(onFilterSubmit, onRouteChange, onSp
 
 
     return Div(styles.ACTIVITY_FILTER,
-        DatePicker(null),
-        OrderBySelector(query),
-        SportSearch(onSportChange,true,true),
-        RouteSearch(onRouteChange,"ROUTE"),
+        Div(styles.FILTERS_CONTAINER,
+            Text(styles.SEARCH_HEADER, "DATE"),
+            DatePicker(null),
+            Text(styles.SEARCH_HEADER, "DURATION Sorted by:"),
+            OrderBySelector(query),
+        ),
+        Div(styles.SEARCHES_CONTAINER,
+            SportSearch(onSportChange,true,"SPORT"),
+            RouteSearch(onRouteChange,"ROUTE"),
+        ),
         Button(styles.BUTTON, onSubmit, Text('filter-text', 'Filter'))
     )
  

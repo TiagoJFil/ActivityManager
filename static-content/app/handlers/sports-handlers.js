@@ -1,17 +1,17 @@
-import {sportApi} from '../api/api.js'
+import { sportApi } from '../api/api.js'
 import SportDetails from '../components/details/SportDetails.js'
 import SportList from '../components/lists/SportList.js'
-import {getItemsPerPage, Pagination} from '../components/Pagination.js'
-import {onPaginationChange} from './app-handlers.js'
+import { getItemsPerPage, Pagination } from '../components/Pagination.js'
+import { onPaginationChange } from './app-handlers.js'
 import styles from '../styles.js'
-import {Div, H1, HiddenElem} from '../components/dsl.js'
+import { H1, Div, HidenElem } from '../components/dsl.js'
 import SportCreate from "../components/creates/CreateSport.js";
-import SearchBar from "../components/SearchBar.js";
-import {ErrorToast, InfoToast, SuccessToast} from '../toasts.js'
-import {BoardlessIconButton} from '../components/Icons.js'
+import SearchBar from  "../components/SearchBar.js";
+import { SuccessToast, ErrorToast, InfoToast } from '../toasts.js'
+import { BoardlessIconButton } from '../components/Icons.js'
 import {isLoggedIn} from "../api/session.js"
-import {isOwner} from "./utils.js"
-import LoadingSpinner from "../components/LoadingSpinner.js";
+import {queryBuilder} from "../api/api-utils.js"
+import { debounce } from "./utils.js"
 
 /**
  * Displays a sport list with the given query
@@ -32,9 +32,6 @@ async function displaySportList(params, query) {
             search: encodeURI(searchText) ?? null
         }
 
-        const spinner = LoadingSpinner()
-        listElement.replaceWith(spinner)
-
         const innerSportsList = await sportApi.fetchSports(newQuery)
         const newPagination = Pagination(
             innerSportsList.total,
@@ -43,7 +40,7 @@ async function displaySportList(params, query) {
         )
         const newListElement = SportList(innerSportsList.sports)
 
-        spinner.replaceWith(
+        listElement.replaceWith(
             newListElement
         )
         paginationElement.replaceWith(
@@ -99,7 +96,6 @@ async function displaySportDetails(params, _) {
         Div(styles.SPACER),
         Div(styles.SPACER)
     ]
-
 }
 
 /**
