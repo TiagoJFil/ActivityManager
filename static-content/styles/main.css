@@ -151,7 +151,7 @@ button{
     cursor: pointer;
 }
 
-.icon-button, .outer-icon-button{
+.icon-button, .outer-icon-button {
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -161,7 +161,11 @@ button{
     background-color: var(--primary);
 }
 
-.icons{
+.icon-button.delete {
+    background-color: indianred;
+}
+
+.icons {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -169,7 +173,7 @@ button{
     margin-top: 20px;
 }
 
-.login-page .spacer{
+.login-page .spacer {
     padding-top: 10px;
 }
 

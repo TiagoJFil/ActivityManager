@@ -1,6 +1,6 @@
-import {List, Item, Text, Div, HidenElem} from "../dsl.js"
+import {Div, HiddenElem, Item, List, Text} from "../dsl.js"
 import styles from "../../styles.js";
-import {LinkIcon, OuterLinkIcon, ButtonIcon} from "../Icons.js"
+import {ButtonIcon, LinkIcon, OuterLinkIcon} from "../Icons.js"
 import RouteEditModal from '../edits/RouteEditModal.js'
 
 /**
@@ -8,23 +8,23 @@ import RouteEditModal from '../edits/RouteEditModal.js'
  * Contains the details of a route and its links in form of buttons
  *
  * @param {Route} route route to display
- * @param isLoggedIn auto-explanatory
+ * @param isOwner auto-explanatory
  * @param onEditConfirm function called when the confirm button is pressed
  * @returns {List} the route details component
  */
-export default function RouteDetails(route, onEditConfirm, isLoggedIn) {
+export default function RouteDetails(route, onEditConfirm, isOwner) {
 
-    const modal = RouteEdit(route,onEditConfirm)
-    
+    const modal = RouteEditModal(route, onEditConfirm)
+
     const onEdit = () => {
         modal.style.display = "flex";
     }
 
-    const editButton = isLoggedIn ? ButtonIcon(styles.EDIT_ICON, onEdit, "Edit route") : HidenElem()
+    const editButton = isOwner ? ButtonIcon(styles.EDIT_ICON, onEdit, "Edit route") : HiddenElem()
 
 
     return List('route',
-            Div('route-display',
+        Div('route-display',
                 Item('distance-item',
                     Text(styles.DETAIL_HEADER, 'Distance: '),
                     Text(styles.TEXT, `${route.distance}`),

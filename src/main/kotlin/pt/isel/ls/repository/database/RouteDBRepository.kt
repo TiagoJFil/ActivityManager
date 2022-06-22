@@ -44,17 +44,23 @@ class RouteDBRepository(private val connection: Connection) : RouteRepository {
      * Auxiliary function to build the query to the get Routes function
      */
     private fun buildSearchQuery(startLocationSearch: String?, endLocationSearch: String?): String {
+        val baseQuery = """SELECT id, startLocation, endLocation, distance, "user" FROM $routeTable """
+        val pagination = " LIMIT ? OFFSET ?"
         return if (startLocationSearch == null && endLocationSearch == null) {
-            """SELECT id, startLocation, endLocation, distance, "user" FROM $routeTable LIMIT ? OFFSET ?"""
+            baseQuery + pagination
         } else {
-            val startLocationQuery = """SELECT id, startLocation, endLocation, distance, "user" FROM $routeTable """ +
-                "WHERE to_tsvector(coalesce(startLocation, '')) @@ to_tsquery(?)"
-            val endLocationQuery = """SELECT  id, startLocation, endLocation, distance, "user" FROM $routeTable """ +
-                "WHERE to_tsvector(coalesce(endLocation, '')) @@ to_tsquery(?)"
+            val columnSearchQuery = { columnName: String ->
+                baseQuery + "WHERE to_tsvector(coalesce($columnName, '')) @@ to_tsquery(?)"
+            }
             when {
-                startLocationSearch != null && endLocationSearch == null -> """$startLocationQuery LIMIT ? OFFSET ?"""
-                startLocationSearch == null && endLocationSearch != null -> """$endLocationQuery LIMIT ? OFFSET ?"""
-                else -> """ SELECT * FROM (($startLocationQuery) INTERSECT ($endLocationQuery)) as locationQuery LIMIT ? OFFSET ?"""
+                startLocationSearch != null && endLocationSearch == null -> columnSearchQuery("startLocation") + pagination
+                startLocationSearch == null -> columnSearchQuery("endLocation") + pagination
+                else ->
+                    "SELECT * FROM (" +
+                            "(" +
+                            "${columnSearchQuery("startLocation")})" + "INTERSECT (${columnSearchQuery("endLocation")})" +
+                            ")" +
+                            "as locationQuery LIMIT ? OFFSET ?"
             }
         }
     }

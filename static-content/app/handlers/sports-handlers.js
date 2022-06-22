@@ -1,17 +1,17 @@
-import { sportApi } from '../api/api.js'
+import {sportApi} from '../api/api.js'
 import SportDetails from '../components/details/SportDetails.js'
 import SportList from '../components/lists/SportList.js'
-import { getItemsPerPage, Pagination } from '../components/Pagination.js'
-import { onPaginationChange } from './app-handlers.js'
+import {getItemsPerPage, Pagination} from '../components/Pagination.js'
+import {onPaginationChange} from './app-handlers.js'
 import styles from '../styles.js'
-import { H1, Div, HidenElem } from '../components/dsl.js'
+import {Div, H1, HiddenElem} from '../components/dsl.js'
 import SportCreate from "../components/creates/CreateSport.js";
-import SearchBar from  "../components/SearchBar.js";
-import { SuccessToast, ErrorToast, InfoToast } from '../toasts.js'
-import { BoardlessIconButton } from '../components/Icons.js'
+import SearchBar from "../components/SearchBar.js";
+import {ErrorToast, InfoToast, SuccessToast} from '../toasts.js'
+import {BoardlessIconButton} from '../components/Icons.js'
 import {isLoggedIn} from "../api/session.js"
-import {queryBuilder} from "../api/api-utils.js"
-import { debounce } from "./utils.js"
+import {isOwner} from "./utils.js"
+import LoadingSpinner from "../components/LoadingSpinner.js";
 
 /**
  * Displays a sport list with the given query
@@ -32,13 +32,8 @@ async function displaySportList(params, query) {
             search: encodeURI(searchText) ?? null
         }
 
-
-        if(searchText != query.search){
-            const builtQuery = queryBuilder(newQuery)
-            console.log(builtQuery)
-            window.location.hash = `sports?${builtQuery}`
-        }
-      
+        const spinner = LoadingSpinner()
+        listElement.replaceWith(spinner)
 
         const innerSportsList = await sportApi.fetchSports(newQuery)
         const newPagination = Pagination(
@@ -48,7 +43,7 @@ async function displaySportList(params, query) {
         )
         const newListElement = SportList(innerSportsList.sports)
 
-        listElement.replaceWith(
+        spinner.replaceWith(
             newListElement
         )
         paginationElement.replaceWith(
@@ -59,7 +54,7 @@ async function displaySportList(params, query) {
         paginationElement = newPagination
     }
 
-    const addButton =  isLoggedIn() ? BoardlessIconButton( `#sports/add`, "Add a sport") : HidenElem()
+    const addButton = isLoggedIn() ? BoardlessIconButton(`#sports/add`, "Add a sport") : HiddenElem()
 
 
     const startingSearchBarValue = query.search ? decodeURI(query.search) : null
@@ -90,20 +85,21 @@ async function displaySportDetails(params, _) {
             SuccessToast("Saved!").showToast()
             return true
         }).catch((e) => {
-            ErrorToast("Error updating sport").showToast()
-            InfoToast(e.message).showToast()
-            return false
-        })
+                [ErrorToast("Error updating sport"),
+                    InfoToast(e.message)].forEach(toast => toast.showToast())
+                return false
+            })
 
     }
-    
-    return[
+
+    return [
         H1(styles.HEADER, 'Sport Details'),
-        SportDetails(sport, onEditConfirm),
+        SportDetails(sport, onEditConfirm, isOwner(sport.user)),
         Div(styles.SPACER),
         Div(styles.SPACER),
         Div(styles.SPACER)
     ]
+
 }
 
 /**

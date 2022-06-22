@@ -32,6 +32,7 @@ import pt.isel.ls.service.MissingParameter
 import pt.isel.ls.service.ResourceNotFound
 import pt.isel.ls.service.UnauthenticatedError
 import pt.isel.ls.service.dto.HttpError
+import pt.isel.ls.utils.api.json
 import pt.isel.ls.utils.logRequest
 import pt.isel.ls.utils.warnResponse
 import java.sql.SQLException
@@ -75,50 +76,36 @@ fun getAppRoutes(env: Environment) = routes(
     swaggerUi()
 )
 
+private val statusMapping = mapOf(
+    InternalError::class to INTERNAL_SERVER_ERROR,
+    ResourceNotFound::class to NOT_FOUND,
+    UnauthenticatedError::class to UNAUTHORIZED,
+    AuthorizationError::class to FORBIDDEN,
+    MissingParameter::class to BAD_REQUEST,
+    InvalidParameter::class to BAD_REQUEST,
+)
+
 /**
- *
  * Catches app errors thrown on request handlers
  * and sends the respective status code
  * with an [HttpError] body.
- *
  */
 private val onErrorFilter = Filter { handler ->
     val handlerWrapper: HttpHandler = { request ->
         try {
             handler(request)
         } catch (appError: AppError) {
-
             val body = Json.encodeToString(HttpError(appError.code, appError.message))
-            val baseResponse = Response(BAD_REQUEST).header("content-type", "application/json").body(body)
 
-            when (appError) {
-                is ResourceNotFound -> {
-                    eLogger.warnResponse(NOT_FOUND, appError.message)
-                    baseResponse.status(NOT_FOUND)
-                }
-                is UnauthenticatedError -> {
-                    eLogger.warnResponse(UNAUTHORIZED, appError.message)
-                    baseResponse.status(UNAUTHORIZED)
-                }
-                is AuthorizationError -> {
-                    eLogger.warnResponse(FORBIDDEN, appError.message)
-                    baseResponse.status(FORBIDDEN)
-                }
-                is MissingParameter, is InvalidParameter -> {
-                    eLogger.warnResponse(BAD_REQUEST, appError.message)
-                    baseResponse
-                }
-                is InternalError -> {
-                    eLogger.warnResponse(INTERNAL_SERVER_ERROR, appError.message)
-                    baseResponse.status(INTERNAL_SERVER_ERROR)
-                }
-            }
+            val status = statusMapping[appError::class] ?: error("Closed hierarchy. Null never expected")
+            Response(status).json(body)
         } catch (serializerException: SerializationException) {
 
             val body = Json.encodeToString(HttpError(0, "Invalid body."))
             eLogger.warnResponse(BAD_REQUEST, "Invalid body.")
-            Response(BAD_REQUEST).header("content-type", "application/json").body(body)
+            Response(BAD_REQUEST).json(body)
         } catch (dbError: SQLException) {
+
             val body = Json.encodeToString(HttpError(2004, "Internal Error."))
             eLogger.warnResponse(INTERNAL_SERVER_ERROR, dbError.message ?: "Database Error")
             Response(INTERNAL_SERVER_ERROR).header("content-type", "application/json").body(body)

@@ -70,6 +70,7 @@ class ActivityServices(
                 ROUTE_ID_PARAM to date
             )
         }
+
         return transactionFactory.getTransaction().execute {
 
             val userID = usersRepository.requireAuthenticated(token)

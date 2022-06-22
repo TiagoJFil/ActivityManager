@@ -9,30 +9,30 @@
 
 /*                               List Scrollbar styles                                    */
 /* width */
-::-webkit-scrollbar {
+list::-webkit-scrollbar {
     width: 10px;
-  }
-  
-  /* Track */
-  ::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 5px grey; 
-    border-radius: 10px;
-  }
-   
-  /* Handle */
-  ::-webkit-scrollbar-thumb {
-    background: gray; 
-    border-radius: 10px;
-  }
-  
-  /* Handle on hover */
-  ::-webkit-scrollbar-thumb:hover {
-    background: gray; 
-  }
+}
 
-  /*                           List Container and elements style                            */
+/* Track */
+list::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+}
 
-.list{
+/* Handle */
+list::-webkit-scrollbar-thumb {
+    background: gray;
+    border-radius: 10px;
+}
+
+/* Handle on hover */
+list::-webkit-scrollbar-thumb:hover {
+    background: gray;
+}
+
+/*                           List Container and elements style                            */
+
+.list {
     --items-per-page: 20;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(calc(var(--button-width) + var(--button-margin-right)), 1fr));
@@ -43,11 +43,13 @@
     padding: 50px;
     overflow-y: auto;
     overflow-x: hidden;
-    box-shadow: 0 0 5px 0 rgba(0,0,0,0.25);
-   /**
-   background-color: #2f4353;
-   background-image: linear-gradient(315deg, #2f4353 0%, #d2ccc4 74%);
-   */
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.25);
+    /**
+    background-color: #2f4353;
+    background-image: linear-gradient(315deg, #2f4353 0%, #d2ccc4 74%);
+    */
+    scrollbar-width: normal;
+    scrollbar-color: gray transparent;
 }
 
 .list-button{

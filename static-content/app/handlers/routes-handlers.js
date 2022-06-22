@@ -4,13 +4,13 @@ import RouteDetails from '../components/details/RouteDetails.js'
 import {getItemsPerPage, Pagination} from '../components/Pagination.js'
 import {onPaginationChange} from './app-handlers.js'
 import styles from '../styles.js'
-import {Div, H1, HidenElem} from '../components/dsl.js'
+import {Div, H1, HiddenElem} from '../components/dsl.js'
 import SearchBar from '../components/SearchBar.js'
 import RouteCreate from "../components/creates/CreateRoute.js";
 import {ErrorToast, InfoToast, SuccessToast} from '../toasts.js'
 import {BoardlessIconButton} from "../components/Icons.js";
 import {isLoggedIn} from "../api/session.js"
-import {queryBuilder} from "../api/api-utils.js"
+import {isOwner} from "./utils.js";
 
 /**
  * Displays a route list with the given query
@@ -28,43 +28,28 @@ async function displayRouteList(_, query) {
         query.limit
     )
 
-    let newQuery  = {
+    let newQuery = {
         limit: query.limit ?? getItemsPerPage(),
         skip: 0,
     }
-    const onStartLocationTextChange = async (searchText) => {
-        if(newQuery && query.endLocation){
+
+    const onLocationTextChange = async (locationName, searchText) => {
+        const other = locationName === "startLocation" ? "endLocation" : "startLocation"
+        if (newQuery && query[locationName]) {
             newQuery = {
                 limit: query.limit ?? getItemsPerPage(),
                 skip: 0,
-                startLocation: searchText,
-                endLocation: query.endLocation
+                [locationName]: searchText,
+                [other]: query[other]
             }
-        }else{
-            newQuery.startLocation = searchText
+        } else {
+            newQuery[locationName] = searchText
         }
 
-        window.location.hash = `routes?${queryBuilder(newQuery)}`
-        await updateRouteDisplayItems(newQuery, listElement)
-    }
-
-    const onEndLocationTextChange = async (searchText) => {
-        if(newQuery && query.startLocation){
-            newQuery = {
-                limit: query.limit ?? getItemsPerPage(),
-                skip: 0,
-                startLocation: query.startLocation,
-                endLocation: searchText
-            }
-        }else{
-            newQuery.endLocation = searchText
-        }
-
-        window.location.hash = `routes?${queryBuilder(newQuery)}`
         await updateRouteDisplayItems(newQuery)
     }
 
-    const addButton =  isLoggedIn() ? BoardlessIconButton(`#routes/add`,"Add a route") : HidenElem()
+    const addButton = isLoggedIn() ? BoardlessIconButton(`#routes/add`, "Add a route") : HiddenElem()
     const startingSLocationSearchBarValue = query.startLocation ?? null
     const startingELocationSearchBarValue = query.endLocation ?? null
 
@@ -74,7 +59,7 @@ async function displayRouteList(_, query) {
             SearchBar(
                 "startLocationSearch",
                 styles.FORM_TEXT_INPUT,
-                onStartLocationTextChange,
+                (searchText) => onLocationTextChange("startLocation", searchText),
                 "Search for a starting location",
                 "Start Location",
                 startingSLocationSearchBarValue
@@ -82,7 +67,7 @@ async function displayRouteList(_, query) {
             SearchBar(
                 "endLocationSearch",
                 styles.FORM_TEXT_INPUT,
-                onEndLocationTextChange,
+                (searchText) => onLocationTextChange("endLocation", searchText),
                 "Search for an ending location",
                 "End Location",
                 startingELocationSearchBarValue
@@ -138,7 +123,7 @@ async function displayRouteDetails(params, _) {
 
     return [
         H1(styles.HEADER, 'Route Details'),
-        RouteDetails(route, onEditConfirm, isLoggedIn()),
+        RouteDetails(route, onEditConfirm, isOwner(route.user)),
         Div(styles.SPACER)
     ]
 }

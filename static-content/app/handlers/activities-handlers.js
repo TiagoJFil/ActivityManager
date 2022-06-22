@@ -27,7 +27,6 @@ async function displayActivityList(params, query) {
 
     return [
         H1(styles.HEADER, `Activities for ${sport.name}`),
-
         ActivityList(activities),
         Pagination(
             total,
@@ -96,6 +95,7 @@ async function displayActivityDetails( params, _) {
         activityApi.deleteActivity(params.sid, params.aid)
             .then(() => {
                 SuccessToast("Activity deleted").showToast()
+                window.location.href = `#sports/${params.sid}/activities`
                 return true
             }).catch((e) => {
                 ErrorToast("Error deleting sport").showToast()
@@ -103,8 +103,6 @@ async function displayActivityDetails( params, _) {
                 window.location.href = `#sports/${params.sid}/activities`
                 return false
             })
-        
-        window.location.hash = `#sports/${params.sid}/activities?deleted=${params.aid}`
     }
 
     const onEditConfirm = async (date, duration, rid) => {
@@ -121,7 +119,6 @@ async function displayActivityDetails( params, _) {
         })
     }
 
-
     return ActivityDetails(activity, route, onDeleteConfirm, onEditConfirm, onRouteLocationsChange, isOwner(activity.user))
 }
 
@@ -130,9 +127,9 @@ async function displayActivityDetails( params, _) {
 /**
  * Displays the activty creation page
  */
-async function createActivity( params, _){
-    
-    const onSubmit = async (date, duration, route) => {
+async function createActivity( params, _) {
+
+    const onSubmit = async (date, duration, rid) => {
         try {
             const toasts = []
 
@@ -152,12 +149,10 @@ async function createActivity( params, _){
                 return
             }
 
-            const activityJson = await activityApi.createActivity(params.sid, date, duration, route)
-
+            const activityJson = await activityApi.createActivity(params.sid, date, duration, rid)
             SuccessToast("Activity created").showToast()
-            console.log(activityJson)
+            window.location.hash = `#sports/${params.sid}/activities/${activityJson.activityID}`
 
-            window.location.hash = `#sports/activities/${activityJson.activityID}`
         }catch(e){
             console.log(e)
             let message = ""

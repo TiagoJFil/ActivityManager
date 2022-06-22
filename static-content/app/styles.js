@@ -87,6 +87,7 @@ const styles = {
     ADD_ACTIVITY_ICON: 'bx-calendar-plus',
     LOGIN_ICON: 'bx-log-in',
     LOGOUT_ICON: 'bx-log-out',
+    DELETE_ICON: 'delete'
 }
 
 export default styles;

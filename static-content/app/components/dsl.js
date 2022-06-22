@@ -227,7 +227,7 @@ export function Image(className, id, src, alt){
  * Creates a hidden element with no data
  * @returns {HTMLElement} a input element
  */
- export function HidenElem(){
+export function HiddenElem() {
     const input = document.createElement('input')
     input.type = 'hidden'
     input.value = 'null'

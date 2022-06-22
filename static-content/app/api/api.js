@@ -59,7 +59,7 @@ async function createActivity(sid, date, duration, rid) {
         duration: duration,
         date: date,
     }
-    if (rid != null && rid && undefined) body.rid = rid
+    if (rid !== null && rid !== undefined) body.rid = rid
     const bodyString = JSON.stringify(body)
     const response = await sendRequest(uri, 'POST', bodyString)
 
