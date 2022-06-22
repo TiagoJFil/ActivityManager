@@ -8,6 +8,8 @@ import pt.isel.ls.config.guestUser
 import pt.isel.ls.config.testRoute
 import pt.isel.ls.service.dto.RouteDTO
 import pt.isel.ls.service.entities.Route.Companion.MAX_LOCATION_LENGTH
+import pt.isel.ls.service.inputs.RouteInputs.RouteCreateInput
+import pt.isel.ls.service.inputs.RouteInputs.RouteUpdateInput
 import pt.isel.ls.service.transactions.InMemoryTransactionScope
 import pt.isel.ls.utils.RouteID
 import pt.isel.ls.utils.api.PaginationInfo
@@ -33,9 +35,12 @@ class RouteServicesTest {
     fun `get routes with a startlocation search query`() {
         val newRid = routeServices.createRoute(
             GUEST_TOKEN,
-            startLocation = "Porto",
-            endLocation = "Lisboa",
-            distance = 100.1F,
+            RouteCreateInput(
+                "Porto",
+                "Lisboa",
+                100.1F
+            )
+
         )
 
         val routes = routeServices.getRoutes(PaginationInfo(10, 0), "Porto", null)
@@ -47,9 +52,11 @@ class RouteServicesTest {
     fun `get routes with an endlocation search query`() {
         val newRid = routeServices.createRoute(
             GUEST_TOKEN,
-            startLocation = "Porto",
-            endLocation = "Lisboa",
-            distance = 100.1F,
+            RouteCreateInput(
+                "Porto",
+                "Lisboa",
+                100.1F,
+            )
         )
 
         val routes = routeServices.getRoutes(PaginationInfo(10, 0), null, "Lisboa")
@@ -61,9 +68,11 @@ class RouteServicesTest {
     fun `get routes with a startlocation and an endlocation search query`() {
         val newRid = routeServices.createRoute(
             GUEST_TOKEN,
-            startLocation = "Porto",
-            endLocation = "Lisboa",
-            distance = 100.1F,
+            RouteCreateInput(
+                "Porto",
+                "Lisboa",
+                100.1F,
+            )
         )
 
         val routes = routeServices.getRoutes(PaginationInfo(10, 0), "Porto", "Lisboa")
@@ -75,9 +84,11 @@ class RouteServicesTest {
     fun `get routes without finding a location`() {
         routeServices.createRoute(
             GUEST_TOKEN,
-            startLocation = "Porto",
-            endLocation = "Lisboa",
-            distance = 100.1F,
+            RouteCreateInput(
+                "Porto",
+                "Lisboa",
+                100.1F,
+            )
         )
 
         val routes = routeServices.getRoutes(PaginationInfo(10, 0), null, "Porto")
@@ -102,31 +113,61 @@ class RouteServicesTest {
     @Test
     fun `create a route`() {
         val routeID: RouteID =
-            routeServices.createRoute(token = GUEST_TOKEN, startLocation = "a", endLocation = "b", distance = 10.0F)
+            routeServices.createRoute(
+                token = GUEST_TOKEN,
+                RouteCreateInput(
+                    "a",
+                    "b",
+                    10.0F
+                )
+
+            )
 
         val routeCreated = routeServices.getRoute(routeID.toString())
-        val routeExpected = RouteDTO(id = routeID, user = guestUser.id, startLocation = "a", endLocation = "b", distance = 10.0F)
+        val routeExpected =
+            RouteDTO(id = routeID, user = guestUser.id, startLocation = "a", endLocation = "b", distance = 10.0F)
         assertEquals(routeExpected, routeCreated)
     }
 
     @Test
     fun `create a route with an invalid start location`() {
         assertFailsWith<InvalidParameter> {
-            routeServices.createRoute(token = GUEST_TOKEN, startLocation = " ", endLocation = "b", distance = 10.0F)
+            routeServices.createRoute(
+                token = GUEST_TOKEN,
+                RouteCreateInput(
+                    " ",
+                    "b",
+                    10.0F
+                )
+            )
         }
     }
 
     @Test
     fun `create a route without end location`() {
         assertFailsWith<MissingParameter> {
-            routeServices.createRoute(token = GUEST_TOKEN, startLocation = "a", endLocation = null, distance = 10.0F)
+            routeServices.createRoute(
+                token = GUEST_TOKEN,
+                RouteCreateInput(
+                    "a",
+                    null,
+                    10.0F
+                )
+            )
         }
     }
 
     @Test
     fun `create a route without distance`() {
         assertFailsWith<MissingParameter> {
-            routeServices.createRoute(token = GUEST_TOKEN, startLocation = "a", endLocation = "b", distance = null)
+            routeServices.createRoute(
+                token = GUEST_TOKEN,
+                RouteCreateInput(
+                    "a",
+                    "b",
+                    null
+                )
+            )
         }
     }
 
@@ -135,21 +176,45 @@ class RouteServicesTest {
         val name = "".padEnd(MAX_LOCATION_LENGTH + 1, 'a')
 
         assertFailsWith<InvalidParameter> {
-            routeServices.updateRoute(token = GUEST_TOKEN, routeID = testRoute.id.toString(), startLocation = name, endLocation = "b", distance = 10.0F)
+            routeServices.updateRoute(
+                token = GUEST_TOKEN,
+                RouteUpdateInput(
+                    testRoute.id.toString(),
+                    name,
+                    "b",
+                    10.0F
+                )
+            )
         }
     }
 
     @Test
     fun `update a route with an invalid distance throws InvalidParameter`() {
         assertFailsWith<InvalidParameter> {
-            routeServices.updateRoute(token = GUEST_TOKEN, routeID = testRoute.id.toString(), startLocation = "a", endLocation = "b", distance = -10.0F)
+            routeServices.updateRoute(
+                token = GUEST_TOKEN,
+                RouteUpdateInput(
+                    testRoute.id.toString(),
+                    "a",
+                    "b",
+                    -10.0F
+                )
+            )
         }
     }
 
     @Test
     fun `update a route without any parameters does not update anything`() {
 
-        routeServices.updateRoute(token = GUEST_TOKEN, routeID = testRoute.id.toString(), startLocation = null, endLocation = null, distance = null)
+        routeServices.updateRoute(
+            token = GUEST_TOKEN,
+            RouteUpdateInput(
+                testRoute.id.toString(),
+                null,
+                null,
+                null
+            )
+        )
 
         assertEquals(testRoute.toDTO(), routeServices.getRoute(testRoute.id.toString()))
     }
@@ -160,10 +225,12 @@ class RouteServicesTest {
 
         routeServices.updateRoute(
             token = GUEST_TOKEN,
-            routeID = testRoute.id.toString(),
-            startLocation = null,
-            endLocation = null,
-            distance = newDistance
+            RouteUpdateInput(
+                testRoute.id.toString(),
+                null,
+                null,
+                newDistance
+            )
         )
         val updatedRoute = routeServices.getRoute(testRoute.id.toString())
         assertEquals(newDistance, updatedRoute.distance)

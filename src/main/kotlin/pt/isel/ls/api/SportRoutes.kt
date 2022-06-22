@@ -15,6 +15,8 @@ import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.service.SportsServices
 import pt.isel.ls.service.dto.SportDTO
+import pt.isel.ls.service.inputs.SportInputs.SportCreateInput
+import pt.isel.ls.service.inputs.SportInputs.SportUpdateInput
 import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.api.bearerToken
 import pt.isel.ls.utils.api.json
@@ -41,7 +43,10 @@ class SportRoutes(
         logger.logRequest(request)
 
         val sportsBody = Json.decodeFromString<SportInput>(request.bodyString())
-        val sportID = sportsServices.createSport(request.bearerToken, sportsBody.name, sportsBody.description)
+        val sportID = sportsServices.createSport(
+            request.bearerToken,
+            SportCreateInput(sportsBody.name, sportsBody.description)
+        )
 
         val sportIDJson = Json.encodeToString(SportIDOutput(sportID))
 
@@ -88,7 +93,10 @@ class SportRoutes(
 
         val sportID = request.path("sid")
 
-        sportsServices.updateSport(request.bearerToken, sportID, sportBody.name, sportBody.description)
+        sportsServices.updateSport(
+            request.bearerToken,
+            SportUpdateInput(sportID, sportBody.name, sportBody.description)
+        )
 
         return Response(Status.NO_CONTENT)
     }

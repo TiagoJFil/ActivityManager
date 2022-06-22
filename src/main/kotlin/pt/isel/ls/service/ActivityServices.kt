@@ -1,25 +1,23 @@
 package pt.isel.ls.service
 
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toLocalDate
 import pt.isel.ls.service.SportsServices.Companion.SPORT_ID_PARAM
 import pt.isel.ls.service.UserServices.Companion.USER_ID_PARAM
 import pt.isel.ls.service.dto.ActivityDTO
 import pt.isel.ls.service.entities.Activity
-import pt.isel.ls.service.entities.Activity.Duration
 import pt.isel.ls.service.entities.Order
+import pt.isel.ls.service.inputs.ActivityInputs.ActivityCreateInput
+import pt.isel.ls.service.inputs.ActivityInputs.ActivitySearchInput
+import pt.isel.ls.service.inputs.ActivityInputs.ActivityUpdateInput
+import pt.isel.ls.service.inputs.ActivityInputs.validateID
 import pt.isel.ls.service.transactions.TransactionFactory
 import pt.isel.ls.utils.ActivityID
 import pt.isel.ls.utils.Param
-import pt.isel.ls.utils.RouteID
-import pt.isel.ls.utils.SportID
 import pt.isel.ls.utils.UserToken
 import pt.isel.ls.utils.api.PaginationInfo
 import pt.isel.ls.utils.loggerFor
 import pt.isel.ls.utils.service.requireActivityWith
 import pt.isel.ls.utils.service.requireAuthenticated
 import pt.isel.ls.utils.service.requireIdInteger
-import pt.isel.ls.utils.service.requireNotBlankParameter
 import pt.isel.ls.utils.service.requireOwnership
 import pt.isel.ls.utils.service.requireParameter
 import pt.isel.ls.utils.service.requireRoute
@@ -27,8 +25,6 @@ import pt.isel.ls.utils.service.requireSport
 import pt.isel.ls.utils.service.requireUser
 import pt.isel.ls.utils.service.toDTO
 import pt.isel.ls.utils.traceFunction
-import java.text.ParseException
-import java.util.*
 
 class ActivityServices(
     private val transactionFactory: TransactionFactory
@@ -52,60 +48,42 @@ class ActivityServices(
      * Creates a new activity.
      *
      * @param token the token of the user that is going to create the activity
-     * @param sportID the sports id of the activity
-     * @param duration the duration of the activity
-     * @param date the date of the activity
-     * @param rid the id of the route where the activity will take place
+     * @param activityCreateInput [ActivityCreateInput] data given by the user creating the activity,
      *
      * @return [ActivityID] the unique activity identifier
      */
     fun createActivity(
         token: UserToken?,
-        sportID: Param,
-        duration: Param,
-        date: Param,
-        rid: Param
+        activityCreateInput: ActivityCreateInput
     ): ActivityID {
+
+        val sportID = activityCreateInput.sportID
+        val routeID = activityCreateInput.routeID
+        val duration = activityCreateInput.activityDuration
+        val date = activityCreateInput.activityDate
 
         logger.traceFunction(::createActivity.name) {
             listOf(
                 SPORT_ID_PARAM to sportID,
-                DURATION_PARAM to duration,
-                DATE_PARAM to date,
-                ROUTE_ID_PARAM to rid
+                DURATION_PARAM to routeID,
+                DATE_PARAM to duration,
+                ROUTE_ID_PARAM to date
             )
         }
         return transactionFactory.getTransaction().execute {
-            try {
-                val userID = usersRepository.requireAuthenticated(token)
-                val sid = requireParameter(sportID, SPORT_ID_PARAM)
-                val sidInt = requireIdInteger(sid, SPORT_ID_PARAM)
-                val safeDate = requireParameter(date, DATE_PARAM)
-                requireParameter(duration, DURATION_PARAM)
-                requireNotBlankParameter(rid, ROUTE_ID_PARAM)
 
-                val parsedDuration: Date = Duration.format.parse(duration)
-                val millis: Long = parsedDuration.time
+            val userID = usersRepository.requireAuthenticated(token)
+            usersRepository.requireUser(userID)
+            sportsRepository.requireSport(activityCreateInput.sportID)
+            routeID?.let { routesRepository.requireRoute(it) }
 
-                sportsRepository.requireSport(sidInt)
-                usersRepository.requireUser(userID)
-                val ridInt = rid?.let {
-                    val ridInt = requireIdInteger(it, ROUTE_ID_PARAM)
-                    routesRepository.requireRoute(ridInt)
-                    ridInt
-                }
-                activitiesRepository.addActivity(
-                    date = safeDate.toLocalDate(),
-                    duration = Duration(millis),
-                    sportID = sidInt,
-                    routeID = ridInt,
-                    userID = userID
-                )
-            } catch (e: ParseException) {
-                throw InvalidParameter(DURATION_INVALID_FORMAT)
-            } catch (e: IllegalArgumentException) {
-                throw InvalidParameter(DATE_INVALID_FORMAT)
-            }
+            activitiesRepository.addActivity(
+                date = date,
+                duration = duration,
+                sportID = sportID,
+                routeID = routeID,
+                userID = userID
+            )
         }
     }
 
@@ -117,18 +95,14 @@ class ActivityServices(
      */
     fun getActivity(activityID: Param, sid: Param): ActivityDTO {
         logger.traceFunction(::getActivity.name) { listOf(ACTIVITY_ID_PARAM to activityID) }
-
-        val safeSID = requireParameter(sid, SPORT_ID_PARAM)
-        val safeActivityID = requireParameter(activityID, ACTIVITY_ID_PARAM)
-        val aidInt = requireIdInteger(safeActivityID, ACTIVITY_ID_PARAM)
-        val sidInt = requireIdInteger(safeSID, SPORT_ID_PARAM)
-
+        val aidInt = validateID(activityID, ACTIVITY_ID_PARAM)
+        val sidInt = validateID(sid, SPORT_ID_PARAM)
         return transactionFactory.getTransaction().execute {
             sportsRepository.requireSport(sidInt)
             activitiesRepository.requireActivityWith(aidInt, sidInt)
 
             activitiesRepository.getActivity(aidInt)?.toDTO()
-                ?: throw ResourceNotFound(RESOURCE_NAME, safeActivityID)
+                ?: throw ResourceNotFound(RESOURCE_NAME, sidInt.toString())
         }
     }
 
@@ -141,8 +115,7 @@ class ActivityServices(
     fun getActivitiesByUser(uid: Param, paginationInfo: PaginationInfo = PaginationInfo(10, 0)): List<ActivityDTO> {
         logger.traceFunction(::getActivitiesByUser.name) { listOf("userID" to uid) }
 
-        val safeUID = requireParameter(uid, USER_ID_PARAM)
-        val uidInt = requireIdInteger(safeUID, USER_ID_PARAM)
+        val uidInt = validateID(uid, USER_ID_PARAM)
 
         return transactionFactory.getTransaction().execute {
             usersRepository.requireUser(uidInt)
@@ -156,46 +129,34 @@ class ActivityServices(
      * Gets the activities that match the given sport id, date, route id
      * and orders it by the given orderBy ([Order.ASCENDING] or [Order.DESCENDING])
      *
-     * @param sid sport identifier
-     * @param orderBy order by duration time, this parameter only has two possible values - ascending or descending
-     * @param date activity date (optional)
-     * @param rid route identifier (optional)
+     * @param activity [ActivitySearchInput] data given by the user searching for the activity.
      *
      * @return [List] of [ActivityDTO]
      */
-    fun getActivities(sid: Param, orderBy: Param, date: Param, rid: Param, paginationInfo: PaginationInfo): List<ActivityDTO> {
+    fun getActivities(
+        activity: ActivitySearchInput,
+        paginationInfo: PaginationInfo
+    ): List<ActivityDTO> {
+
+        val sportID = activity.sportID
+        val routeID = activity.routeID
+        val orderBy = activity.order
+        val date = activity.activityDate
+
         logger.traceFunction(::getActivities.name) {
             listOf(
-                SPORT_ID_PARAM to sid,
+                SPORT_ID_PARAM to sportID,
                 ORDER_PARAM to orderBy,
                 DATE_PARAM to date,
-                ROUTE_ID_PARAM to rid
+                ROUTE_ID_PARAM to routeID
             )
         }
-        val safeSID = requireParameter(sid, SPORT_ID_PARAM)
-        val sidInt: SportID = requireIdInteger(safeSID, SPORT_ID_PARAM)
 
         return transactionFactory.getTransaction().execute {
 
-            sportsRepository.requireSport(sidInt)
+            sportsRepository.requireSport(sportID)
 
-            val orderByToSend = when (orderBy?.lowercase()) {
-                "ascending", null -> Order.ASCENDING
-                "descending" -> Order.DESCENDING
-                else -> throw InvalidParameter(ORDER_POSSIBLE_VALUES)
-            }
-
-            requireNotBlankParameter(date, DATE_PARAM)
-            requireNotBlankParameter(rid, ROUTE_ID_PARAM)
-            val ridInt: RouteID? = rid?.let { requireIdInteger(it, ROUTE_ID_PARAM) }
-
-            try {
-                if (date != null) LocalDate.parse(date)
-            } catch (e: IllegalArgumentException) {
-                throw InvalidParameter(DATE_PARAM)
-            }
-
-            activitiesRepository.getActivities(sidInt, orderByToSend, date?.toLocalDate(), ridInt, paginationInfo)
+            activitiesRepository.getActivities(sportID, orderBy, date, routeID, paginationInfo)
                 .map(Activity::toDTO)
         }
     }
@@ -203,66 +164,44 @@ class ActivityServices(
     /**
      * Updates an activity with the new given data.
      * @param token the token of the user that wants to update the activity
-     * @param activityID the unique identifier of the activity
-     * @param duration the duration of the activity
-     * @param date the date of the activity
-     * @param rid the route associated to the activity
+     * @param activity [ActivityUpdateInput] data given by the user updating the activity.
      */
-    fun updateActivity(token: UserToken?, sportID: Param, activityID: Param, duration: Param, date: Param, rid: Param) {
+    fun updateActivity(token: UserToken?, activity: ActivityUpdateInput) {
+
+        val sportID = activity.sportID
+        val routeID = activity.routeID
+        val activityID = activity.activityID
+        val date = activity.activityDate
+        val duration = activity.activityDuration
+
         logger.traceFunction(::updateActivity.name) {
             listOf(
                 DURATION_PARAM to duration,
                 DATE_PARAM to date,
-                ROUTE_ID_PARAM to rid
+                ROUTE_ID_PARAM to routeID
             )
         }
         return transactionFactory.getTransaction().execute {
 
             val userID = usersRepository.requireAuthenticated(token)
             usersRepository.requireUser(userID)
-
-            val safeActivityID = requireParameter(activityID, ACTIVITY_ID_PARAM)
-            val aidInt = requireIdInteger(safeActivityID, ACTIVITY_ID_PARAM)
-
-            activitiesRepository.requireOwnership(userID, aidInt)
-
+            activitiesRepository.requireOwnership(userID, activityID)
             sportID?.let {
-                val sidInt = requireIdInteger(sportID, SPORT_ID_PARAM)
-                sportsRepository.requireSport(sidInt)
-                activitiesRepository.requireActivityWith(aidInt, sidInt)
+                sportsRepository.requireSport(it)
+                activitiesRepository.requireActivityWith(activityID, it)
             }
+            routeID?.let { routesRepository.requireRoute(it) }
 
-            if (duration == null && date == null && rid == null) return@execute
+            if (activity.hasNothingToUpdate) return@execute
 
-            val handledDuration = duration?.ifBlank { null }
-            try {
-                val durationValue = handledDuration?.let {
-                    val parsedDate: Date = Duration.format.parse(duration)
-                    val millis: Long = parsedDate.time
-                    Duration(millis)
-                }
-
-                val removeRoute = rid?.isBlank() == true
-                val handledRoute = rid?.ifBlank { null }
-                val ridInt = handledRoute?.let {
-                    val ridInt = requireIdInteger(it, ROUTE_ID_PARAM)
-                    routesRepository.requireRoute(ridInt)
-                    ridInt
-                }
-
-                if (!activitiesRepository.updateActivity(
-                        newDate = date?.toLocalDate(),
-                        newDuration = durationValue,
-                        newRouteID = ridInt,
-                        activityID = aidInt,
-                        removeRoute
-                    )
-                ) throw ResourceNotFound(SportsServices.RESOURCE_NAME, safeActivityID)
-            } catch (e: ParseException) {
-                throw InvalidParameter(DURATION_INVALID_FORMAT)
-            } catch (e: IllegalArgumentException) {
-                throw InvalidParameter(DATE_INVALID_FORMAT)
-            }
+            if (!activitiesRepository.updateActivity(
+                    newDate = date,
+                    newDuration = duration,
+                    newRouteID = routeID,
+                    activityID = activityID,
+                    activity.removeRoute
+                )
+            ) throw ResourceNotFound(SportsServices.RESOURCE_NAME, activityID.toString())
         }
     }
 
@@ -282,17 +221,14 @@ class ActivityServices(
         }
         return transactionFactory.getTransaction().execute {
             val userID = usersRepository.requireAuthenticated(token)
-            val safeSID = requireParameter(sid, SPORT_ID_PARAM)
-            val safeAID = requireParameter(aid, ACTIVITY_ID_PARAM)
-            val sidInt = requireIdInteger(safeSID, SPORT_ID_PARAM)
-            sportsRepository.requireSport(sidInt)
-            val aidInt = requireIdInteger(safeAID, ACTIVITY_ID_PARAM)
 
-            activitiesRepository.requireActivityWith(aidInt, sidInt)
+            val sportID = validateID(sid, SPORT_ID_PARAM)
+            val activityID = validateID(aid, ACTIVITY_ID_PARAM)
 
-            activitiesRepository.requireOwnership(userID, aidInt)
-
-            activitiesRepository.deleteActivity(aidInt)
+            activitiesRepository.requireOwnership(userID, activityID)
+            sportsRepository.requireSport(sportID)
+            activitiesRepository.requireActivityWith(activityID, sportID)
+            activitiesRepository.deleteActivity(activityID)
         }
     }
 

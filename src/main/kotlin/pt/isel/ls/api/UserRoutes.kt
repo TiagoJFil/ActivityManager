@@ -15,6 +15,8 @@ import org.http4k.routing.path
 import org.http4k.routing.routes
 import pt.isel.ls.service.UserServices
 import pt.isel.ls.service.dto.UserDTO
+import pt.isel.ls.service.inputs.UserInputs.UserAuthInput
+import pt.isel.ls.service.inputs.UserInputs.UserCreateInput
 import pt.isel.ls.utils.Param
 import pt.isel.ls.utils.UserID
 import pt.isel.ls.utils.UserToken
@@ -48,7 +50,7 @@ class UserRoutes(
         val bodyString = request.bodyString()
         val body = Json.decodeFromString<UserInput>(bodyString)
 
-        val (token, id) = userServices.createUser(body.name, body.email, body.password)
+        val (token, id) = userServices.createUser(UserCreateInput(body.name, body.email, body.password))
 
         val authJson = Json.encodeToString(AuthOutput(token, id))
 
@@ -104,7 +106,7 @@ class UserRoutes(
         val bodyString = request.bodyString()
         val body = Json.decodeFromString<AuthInput>(bodyString)
 
-        val (token, id) = userServices.getUserInfoByAuth(body.email, body.password)
+        val (token, id) = userServices.getUserInfoByAuth(UserAuthInput(body.email, body.password))
 
         val authOutput = Json.encodeToString(AuthOutput(token, id))
 
