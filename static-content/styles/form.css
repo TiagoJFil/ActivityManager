@@ -2,7 +2,7 @@
 .search-bar-container{
     display: flex;
     flex-direction: column;
-    justify-content: end;
+    justify-content: center;
     width: 100%;
     height: 100%;
     gap: 10px;
@@ -24,17 +24,22 @@
 
 .rankings-form, .activity-filter {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     gap: 20px;
 }
 
-/**
-selector for input type date
- */
-
 .activity-filter {
+    align-items: center;
+    width: 50%;
+}
+
+.activity-filter-container {
+    display: flex;
     flex-direction: column;
-    margin-top: 40px;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    gap: 4em;
 }
 
 .activity-filter button {
@@ -42,7 +47,7 @@ selector for input type date
 }
 
 .activity-filter input[type="date"], .activity-filter select {
-    height: 20px;
+    width: inherit;
 }
 
 .user-rankings {

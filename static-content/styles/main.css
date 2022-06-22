@@ -28,11 +28,11 @@ body{
 
 .filters-container,
 .searches-container{
-    width: 100%;
+    width: 300px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-
+    align-items: center;
 }
 
 .big{
@@ -279,6 +279,7 @@ button{
     color: #ffffff;
     text-align: center;
     background-color: var(--primary);
+    width: inherit;
 }
 
 .details-container{

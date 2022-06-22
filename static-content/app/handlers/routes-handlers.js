@@ -11,6 +11,7 @@ import {ErrorToast, InfoToast, SuccessToast} from '../toasts.js'
 import {BoardlessIconButton} from "../components/Icons.js";
 import {isLoggedIn} from "../api/session.js"
 import {isOwner} from "./utils.js";
+import LoadingSpinner from "../components/LoadingSpinner.js";
 
 /**
  * Displays a route list with the given query
@@ -80,6 +81,10 @@ async function displayRouteList(_, query) {
 
 
     async function updateRouteDisplayItems(newQuery) {
+
+        const spinner = LoadingSpinner()
+        listElement.replaceWith(spinner)
+
         const innerRoutesList = await routeApi.fetchRoutes(newQuery)
 
         const newPagination = Pagination(
@@ -89,9 +94,10 @@ async function displayRouteList(_, query) {
         )
         const newListElement = RouteList(innerRoutesList.routes)
 
-        listElement.replaceWith(
+        spinner.replaceWith(
             newListElement
         )
+
         paginationElement.replaceWith(
             newPagination
         )

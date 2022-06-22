@@ -24,12 +24,11 @@ export default function UserRankingFilter(onSportTextChange, onLocationsChange, 
             onSubmit(routeID, sportID);
         }
 
-        const withHeader = true
         return (
             Form(styles.USER_RANKINGS,
                 Div(styles.RANKINGS_FORM,
-                    RouteSearch(onLocationsChange,"ROUTE"),
-                    SportSearch(onSportTextChange, true, withHeader),
+                    RouteSearch(onLocationsChange, "ROUTE"),
+                    SportSearch(onSportTextChange, true, "SPORT"),
                 ),
                 Button(styles.BUTTON, onSubmitForm, Text(styles.TEXT, "Search"))
             )

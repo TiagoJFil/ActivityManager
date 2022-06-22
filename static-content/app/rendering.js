@@ -1,3 +1,4 @@
+
 let _isRendering = false;
 let _currentHash = "";
 

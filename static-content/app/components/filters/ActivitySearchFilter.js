@@ -1,4 +1,4 @@
-import { Div, Input, Select, Option, Text, Button } from "../dsl.js";
+import {Button, Div, Input, Option, Select, Text} from "../dsl.js";
 import styles from "../../styles.js";
 import RouteSearch from "../searches/RouteSearch.js";
 import SportSearch from "../searches/SportSearch.js";
@@ -6,12 +6,12 @@ import SportSearch from "../searches/SportSearch.js";
 
 /**
  * Creates a div with the filter components.
- * 
- * @param {Function} onFilterSubmit 
+ *
+ * @param {Function} onFilterSubmit
  * @param {Function} onRouteChange
  * @param {Function} onSportChange
- * @param {Object} query 
- * @returns {Div} component with the filter components.
+ * @param {Object} query
+ * @returns {HTMLElement} component with the filter components.
  */
 export default function ActivitySearchFilter(onFilterSubmit, onRouteChange, onSportChange, query) {
 
@@ -29,20 +29,22 @@ export default function ActivitySearchFilter(onFilterSubmit, onRouteChange, onSp
     }
 
 
-    return Div(styles.ACTIVITY_FILTER,
-        Div(styles.FILTERS_CONTAINER,
-            Text(styles.SEARCH_HEADER, "DATE"),
-            DatePicker(null),
-            Text(styles.SEARCH_HEADER, "DURATION Sorted by:"),
-            OrderBySelector(query),
-        ),
-        Div(styles.SEARCHES_CONTAINER,
-            SportSearch(onSportChange,true,"SPORT"),
-            RouteSearch(onRouteChange,"ROUTE"),
+    return Div("activity-filter-container",
+        Div(styles.ACTIVITY_FILTER,
+            Div(styles.FILTERS_CONTAINER,
+                Text(styles.SEARCH_HEADER, "DATE"),
+                DatePicker(null),
+                Text(styles.SEARCH_HEADER, "DURATION Sorted by:"),
+                OrderBySelector(query),
+            ),
+            Div(styles.SEARCHES_CONTAINER,
+                SportSearch(onSportChange, true, "SPORT"),
+                RouteSearch(onRouteChange, "ROUTE"),
+            ),
         ),
         Button(styles.BUTTON, onSubmit, Text('filter-text', 'Filter'))
     )
- 
+
 }
 
 /**
@@ -82,8 +84,8 @@ function OrderBySelector(query){
 /**
  * Creates a DatePicker component.
  * Inserts the value of the query.date property into the input field.
- * @param {Object} query 
  * @returns {Input} the DatePicker component created.
+ * @param initialDate the initial value of the date field.
  */
 export function DatePicker(initialDate){
     const date = Input('date-filter', 'date', 'dateFilter')
