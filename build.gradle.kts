@@ -56,16 +56,8 @@ tasks.register("docker-build") {
 
     // docker build
     val outFile = File("gradle_docker_build_output.txt")
-    doLast {
-        val dockerBuildCommand = "docker build -t sports-server:latest $projectDir"
-        println("Executing: $dockerBuildCommand")
-        ProcessBuilder(dockerBuildCommand.split(" "))
-            .inheritIO() // inherit sys envs
-            .redirectOutput(outFile)
-            .redirectError(outFile)
-            .start()
-            .waitFor()
-    }
+    val dockerBuildCommand = "docker build -t sports-server:latest $projectDir"
+    executeLast(dockerBuildCommand, outFile)
 }
 
 tasks.register("docker-clean") {
@@ -73,28 +65,26 @@ tasks.register("docker-clean") {
     val dockerRmCommand = "docker rmi -f sports-server"
     val outFile = File("gradle_docker_clean_output.txt")
 
-    doLast {
-        ProcessBuilder(dockerRmCommand.split(" "))
-            .inheritIO() // inherit sys envs
-            .redirectOutput(outFile)
-            .redirectError(outFile)
-            .start()
-            .waitFor()
-    }
+    executeLast(dockerRmCommand, outFile)
 }
 
 tasks.register("docker-run") {
     group = "docker"
     dependsOn("docker-build")
     dependsOn("docker-clean")
+
     val outFile = File("gradle_docker_run_output.txt")
+    val dockerRunCommand = "docker run -p 9000:9000 -d sports-server:latest"
+    executeLast(dockerRunCommand, outFile)
+}
+
+fun Task.executeLast(command: String, outputFile: File) {
     doLast {
-        val dockerRunCommand = "docker run -p 9000:9000 -d sports-server:latest"
-        println("Executing: $dockerRunCommand")
-        ProcessBuilder(dockerRunCommand.split(" "))
+        println("Executing: $command")
+        ProcessBuilder(command.split(" "))
             .inheritIO() // inherit sys envs
-            .redirectOutput(outFile)
-            .redirectError(outFile)
+            .redirectOutput(outputFile)
+            .redirectError(outputFile)
             .start()
             .waitFor()
     }

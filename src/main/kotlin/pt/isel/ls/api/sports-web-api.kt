@@ -38,6 +38,7 @@ import pt.isel.ls.utils.warnResponse
 import java.sql.SQLException
 import kotlin.system.measureTimeMillis
 
+private const val INVALID_BODY_CODE = 2090
 private val eLogger = LoggerFactory.getLogger("ERRORS")
 private val tLogger = LoggerFactory.getLogger("TIMER")
 private val rLogger = LoggerFactory.getLogger("REQUESTS")
@@ -100,24 +101,29 @@ private val onErrorFilter = Filter { handler ->
             val status = statusMapping[appError::class] ?: error("Closed hierarchy. Null never expected")
             Response(status).json(body)
         } catch (serializerException: SerializationException) {
+            val message = "Invalid JSON body"
+            eLogger.warnResponse(BAD_REQUEST, message)
 
-            val body = Json.encodeToString(HttpError(0, "Invalid body."))
-            eLogger.warnResponse(BAD_REQUEST, "Invalid body.")
+            val body = Json.encodeToString(HttpError(INVALID_BODY_CODE, message))
             Response(BAD_REQUEST).json(body)
         } catch (dbError: SQLException) {
 
             val body = Json.encodeToString(HttpError(2004, "Internal Error."))
             eLogger.warnResponse(INTERNAL_SERVER_ERROR, dbError.message ?: "Database Error")
-            Response(INTERNAL_SERVER_ERROR).header("content-type", "application/json").body(body)
+            Response(INTERNAL_SERVER_ERROR).json(body)
         } catch (e: Exception) {
+
             eLogger.error(e.stackTraceToString())
             val body = Json.encodeToString(HttpError(0, "Internal Error."))
-            Response(INTERNAL_SERVER_ERROR).header("content-type", "application/json").body(body)
+            Response(INTERNAL_SERVER_ERROR).json(body)
         }
     }
     handlerWrapper
 }
 
+/**
+ * Calculates the time it took to serve the request
+ */
 private val timeFilter = Filter { handler ->
     val handlerWrapper: HttpHandler = { request: Request ->
         val returnedValue: Response
@@ -130,6 +136,9 @@ private val timeFilter = Filter { handler ->
     handlerWrapper
 }
 
+/**
+ * Logs each requests received by the server
+ */
 private val loggingFilter = Filter { handler ->
     val handlerWrapper: HttpHandler = { request: Request ->
         rLogger.logRequest(request)
