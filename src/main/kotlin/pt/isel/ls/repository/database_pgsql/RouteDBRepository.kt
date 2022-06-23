@@ -57,10 +57,10 @@ class RouteDBRepository(private val connection: Connection) : RouteRepository {
                 startLocationSearch == null -> columnSearchQuery("endLocation") + pagination
                 else ->
                     "SELECT * FROM (" +
-                            "(" +
-                            "${columnSearchQuery("startLocation")})" + "INTERSECT (${columnSearchQuery("endLocation")})" +
-                            ")" +
-                            "as locationQuery LIMIT ? OFFSET ?"
+                        "(" +
+                        "${columnSearchQuery("startLocation")})" + "INTERSECT (${columnSearchQuery("endLocation")})" +
+                        ")" +
+                        "as locationQuery LIMIT ? OFFSET ?"
             }
         }
     }

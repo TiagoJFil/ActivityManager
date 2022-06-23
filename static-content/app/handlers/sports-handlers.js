@@ -11,6 +11,7 @@ import {ErrorToast, InfoToast, SuccessToast} from '../toasts.js'
 import {BoardlessIconButton} from '../components/Icons.js'
 import {isLoggedIn} from "../api/session.js"
 import LoadingSpinner from "../components/LoadingSpinner.js";
+import { isOwner } from './utils.js'
 
 /**
  * Displays a sport list with the given query
