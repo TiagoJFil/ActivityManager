@@ -16,6 +16,7 @@ function addRouteHandler(path, handler){
     .map(p => p.replace(":", ""))
     // [sid, aid]
     routes.push({pathRegex, handler, placeholderNames})
+    return router
 }
 
 /**
